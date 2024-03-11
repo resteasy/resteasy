@@ -35,7 +35,7 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartConstants;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartInput;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartRelatedInput;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/mime")
 public class MimeMultipartProviderResource {
@@ -127,8 +127,8 @@ public class MimeMultipartProviderResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces("text/html")
     public String post(@MultipartForm Form2 form) {
-        Assert.assertEquals(ERR_MULTIPART_FORM, "Bill", form.name.trim());
-        Assert.assertEquals(ERR_MULTIPART_FORM, "hello world", new String(form.file).trim());
+        Assertions.assertEquals("Bill", form.name.trim(), ERR_MULTIPART_FORM);
+        Assertions.assertEquals("hello world", new String(form.file).trim(), ERR_MULTIPART_FORM);
         return "hello world";
     }
 
@@ -160,19 +160,19 @@ public class MimeMultipartProviderResource {
     @Consumes("multipart/form-data")
     public void putMultipartFormData(MultipartFormDataInput multipart)
             throws IOException {
-        Assert.assertEquals(ERR_NUMBER, 2, multipart.getParts().size());
+        Assertions.assertEquals(2, multipart.getParts().size(), ERR_NUMBER);
 
-        Assert.assertTrue(ERR_MULTIPART_FORM, multipart.getFormDataMap().containsKey("bill"));
-        Assert.assertTrue(ERR_MULTIPART_FORM, multipart.getFormDataMap().containsKey("monica"));
+        Assertions.assertTrue(multipart.getFormDataMap().containsKey("bill"), ERR_MULTIPART_FORM);
+        Assertions.assertTrue(multipart.getFormDataMap().containsKey("monica"), ERR_MULTIPART_FORM);
 
         logger.info(multipart.getFormDataMap().get("bill").get(0).getBodyAsString());
         MimeMultipartProviderCustomer cust = multipart.getFormDataPart("bill", MimeMultipartProviderCustomer.class, null);
-        Assert.assertNotNull(ERR_CUST_NULL, cust);
-        Assert.assertEquals(ERR_MULTIPART_FORM, "bill", cust.getName());
+        Assertions.assertNotNull(cust, ERR_CUST_NULL);
+        Assertions.assertEquals("bill", cust.getName(), ERR_MULTIPART_FORM);
 
         cust = multipart.getFormDataPart("monica", MimeMultipartProviderCustomer.class, null);
-        Assert.assertNotNull(ERR_CUST_NULL, cust);
-        Assert.assertEquals(ERR_VALUE, "monica", cust.getName());
+        Assertions.assertNotNull(cust, ERR_CUST_NULL);
+        Assertions.assertEquals("monica", cust.getName(), ERR_VALUE);
 
     }
 
@@ -181,44 +181,46 @@ public class MimeMultipartProviderResource {
     @Consumes(MultipartConstants.MULTIPART_RELATED)
     public void putMultipartRelated(MultipartRelatedInput multipart)
             throws IOException {
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, MultipartConstants.APPLICATION_XOP_XML, multipart.getType());
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, "<mymessage.xml@example.org>", multipart.getStart());
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, "text/xml", multipart.getStartInfo());
-        Assert.assertEquals(ERR_NUMBER, 3, multipart.getParts().size());
+        Assertions.assertEquals(MultipartConstants.APPLICATION_XOP_XML, multipart.getType(), ERR_MULTIPART_PROPERTY);
+        Assertions.assertEquals("<mymessage.xml@example.org>", multipart.getStart(), ERR_MULTIPART_PROPERTY);
+        Assertions.assertEquals("text/xml", multipart.getStartInfo(), ERR_MULTIPART_PROPERTY);
+        Assertions.assertEquals(3, multipart.getParts().size(), ERR_NUMBER);
         Iterator<InputPart> inputParts = multipart.getParts().iterator();
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, inputParts.next(), multipart.getRootPart());
+        Assertions.assertEquals(inputParts.next(), multipart.getRootPart(), ERR_MULTIPART_PROPERTY);
         InputPart rootPart = multipart.getRootPart();
 
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, "application", rootPart.getMediaType().getType());
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, "xop+xml", rootPart.getMediaType().getSubtype());
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, StandardCharsets.UTF_8.name(),
-                rootPart.getMediaType().getParameters().get("charset"));
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, "text/xml", rootPart.getMediaType().getParameters().get("type"));
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, "<mymessage.xml@example.org>",
-                rootPart.getHeaders().getFirst("Content-ID"));
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, "8bit", rootPart.getHeaders().getFirst("Content-Transfer-Encoding"));
-        Assert.assertEquals(ERR_VALUE,
+        Assertions.assertEquals("application", rootPart.getMediaType().getType(), ERR_MULTIPART_PROPERTY);
+        Assertions.assertEquals("xop+xml", rootPart.getMediaType().getSubtype(), ERR_MULTIPART_PROPERTY);
+        Assertions.assertEquals(StandardCharsets.UTF_8.name(),
+                rootPart.getMediaType().getParameters().get("charset"), ERR_MULTIPART_PROPERTY);
+        Assertions.assertEquals("text/xml", rootPart.getMediaType().getParameters().get("type"), ERR_MULTIPART_PROPERTY);
+        Assertions.assertEquals("<mymessage.xml@example.org>",
+                rootPart.getHeaders().getFirst("Content-ID"), ERR_MULTIPART_PROPERTY);
+        Assertions.assertEquals("8bit", rootPart.getHeaders().getFirst("Content-Transfer-Encoding"), ERR_MULTIPART_PROPERTY);
+        Assertions.assertEquals(
                 "<m:data xmlns:m='http://example.org/stuff'>"
                         + "<m:photo><xop:Include xmlns:xop='http://www.w3.org/2004/08/xop/include' href='cid:http://example.org/me.png'/></m:photo>"
                         + "<m:sig><xop:Include xmlns:xop='http://www.w3.org/2004/08/xop/include' href='cid:http://example.org/my.hsh'/></m:sig>"
                         + "</m:data>",
-                rootPart.getBodyAsString());
+                rootPart.getBodyAsString(), ERR_VALUE);
 
         InputPart relatedPart1 = inputParts.next();
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, "image", relatedPart1.getMediaType().getType());
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, "png", relatedPart1.getMediaType().getSubtype());
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, "<http://example.org/me.png>", relatedPart1
-                .getHeaders().getFirst("Content-ID"));
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, "binary", relatedPart1.getHeaders().getFirst("Content-Transfer-Encoding"));
-        Assert.assertEquals(ERR_VALUE, "// binary octets for png", relatedPart1.getBodyAsString());
+        Assertions.assertEquals("image", relatedPart1.getMediaType().getType(), ERR_MULTIPART_PROPERTY);
+        Assertions.assertEquals("png", relatedPart1.getMediaType().getSubtype(), ERR_MULTIPART_PROPERTY);
+        Assertions.assertEquals("<http://example.org/me.png>", relatedPart1
+                .getHeaders().getFirst("Content-ID"), ERR_MULTIPART_PROPERTY);
+        Assertions.assertEquals("binary",
+                relatedPart1.getHeaders().getFirst("Content-Transfer-Encoding"), ERR_MULTIPART_PROPERTY);
+        Assertions.assertEquals("// binary octets for png", relatedPart1.getBodyAsString(), ERR_VALUE);
 
         InputPart relatedPart2 = inputParts.next();
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, "application", relatedPart2.getMediaType().getType());
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, "pkcs7-signature", relatedPart2.getMediaType().getSubtype());
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, "<http://example.org/me.hsh>", relatedPart2
-                .getHeaders().getFirst("Content-ID"));
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, "binary", relatedPart2.getHeaders().getFirst("Content-Transfer-Encoding"));
-        Assert.assertEquals(ERR_VALUE, "// binary octets for signature", relatedPart2.getBodyAsString());
+        Assertions.assertEquals("application", relatedPart2.getMediaType().getType(), ERR_MULTIPART_PROPERTY);
+        Assertions.assertEquals("pkcs7-signature", relatedPart2.getMediaType().getSubtype(), ERR_MULTIPART_PROPERTY);
+        Assertions.assertEquals("<http://example.org/me.hsh>", relatedPart2
+                .getHeaders().getFirst("Content-ID"), ERR_MULTIPART_PROPERTY);
+        Assertions.assertEquals("binary",
+                relatedPart2.getHeaders().getFirst("Content-Transfer-Encoding"), ERR_MULTIPART_PROPERTY);
+        Assertions.assertEquals("// binary octets for signature", relatedPart2.getBodyAsString(), ERR_VALUE);
     }
 
     @PUT
@@ -226,18 +228,18 @@ public class MimeMultipartProviderResource {
     @Consumes("multipart/form-data")
     public void putMultipartMap(Map<String, MimeMultipartProviderCustomer> multipart)
             throws IOException {
-        Assert.assertEquals(ERR_NUMBER, 2, multipart.size());
+        Assertions.assertEquals(2, multipart.size(), ERR_NUMBER);
 
-        Assert.assertTrue(ERR_VALUE, multipart.containsKey("bill"));
-        Assert.assertTrue(ERR_VALUE, multipart.containsKey("monica"));
+        Assertions.assertTrue(multipart.containsKey("bill"), ERR_VALUE);
+        Assertions.assertTrue(multipart.containsKey("monica"), ERR_VALUE);
 
         MimeMultipartProviderCustomer cust = multipart.get("bill");
-        Assert.assertNotNull(ERR_CUST_NULL, cust);
-        Assert.assertEquals(ERR_VALUE, "bill", cust.getName());
+        Assertions.assertNotNull(cust, ERR_CUST_NULL);
+        Assertions.assertEquals("bill", cust.getName(), ERR_VALUE);
 
         cust = multipart.get("monica");
-        Assert.assertNotNull(ERR_CUST_NULL, cust);
-        Assert.assertEquals(ERR_VALUE, "monica", cust.getName());
+        Assertions.assertNotNull(cust, ERR_CUST_NULL);
+        Assertions.assertEquals("monica", cust.getName(), ERR_VALUE);
 
     }
 
@@ -245,16 +247,16 @@ public class MimeMultipartProviderResource {
     @Path("multi")
     @Consumes("multipart/form-data")
     public void putMultipartData(MultipartInput multipart) throws IOException {
-        Assert.assertEquals(ERR_NUMBER, 2, multipart.getParts().size());
+        Assertions.assertEquals(2, multipart.getParts().size(), ERR_NUMBER);
 
         MimeMultipartProviderCustomer cust = multipart.getParts().get(0).getBody(MimeMultipartProviderCustomer.class,
                 null);
-        Assert.assertNotNull(ERR_CUST_NULL, cust);
-        Assert.assertEquals(ERR_VALUE, "bill", cust.getName());
+        Assertions.assertNotNull(cust, ERR_CUST_NULL);
+        Assertions.assertEquals("bill", cust.getName(), ERR_VALUE);
 
         cust = multipart.getParts().get(1).getBody(MimeMultipartProviderCustomer.class, null);
-        Assert.assertNotNull(ERR_CUST_NULL, cust);
-        Assert.assertEquals(ERR_VALUE, "monica", cust.getName());
+        Assertions.assertNotNull(cust, ERR_CUST_NULL);
+        Assertions.assertEquals("monica", cust.getName(), ERR_VALUE);
 
     }
 
@@ -262,16 +264,16 @@ public class MimeMultipartProviderResource {
     @Path("mixed")
     @Consumes("multipart/mixed")
     public void putMultipartMixed(MultipartInput multipart) throws IOException {
-        Assert.assertEquals(ERR_NUMBER, 2, multipart.getParts().size());
+        Assertions.assertEquals(2, multipart.getParts().size(), ERR_NUMBER);
 
         MimeMultipartProviderCustomer cust = multipart.getParts().get(0).getBody(MimeMultipartProviderCustomer.class,
                 null);
-        Assert.assertNotNull(ERR_CUST_NULL, cust);
-        Assert.assertEquals(ERR_VALUE, "bill", cust.getName());
+        Assertions.assertNotNull(cust, ERR_CUST_NULL);
+        Assertions.assertEquals("bill", cust.getName(), ERR_VALUE);
 
         cust = multipart.getParts().get(1).getBody(MimeMultipartProviderCustomer.class, null);
-        Assert.assertNotNull(ERR_CUST_NULL, cust);
-        Assert.assertEquals(ERR_VALUE, "monica", cust.getName());
+        Assertions.assertNotNull(cust, ERR_CUST_NULL);
+        Assertions.assertEquals("monica", cust.getName(), ERR_VALUE);
 
     }
 
@@ -279,15 +281,15 @@ public class MimeMultipartProviderResource {
     @Path("multi/list")
     @Consumes("multipart/form-data")
     public void putMultipartList(List<MimeMultipartProviderCustomer> multipart) throws IOException {
-        Assert.assertEquals(ERR_NUMBER, 2, multipart.size());
+        Assertions.assertEquals(2, multipart.size(), ERR_NUMBER);
 
         MimeMultipartProviderCustomer cust = multipart.get(0);
-        Assert.assertNotNull(ERR_CUST_NULL, cust);
-        Assert.assertEquals(ERR_VALUE, "bill", cust.getName());
+        Assertions.assertNotNull(cust, ERR_CUST_NULL);
+        Assertions.assertEquals("bill", cust.getName(), ERR_VALUE);
 
         cust = multipart.get(1);
-        Assert.assertNotNull(ERR_CUST_NULL, cust);
-        Assert.assertEquals(ERR_VALUE, "monica", cust.getName());
+        Assertions.assertNotNull(cust, ERR_CUST_NULL);
+        Assertions.assertEquals("monica", cust.getName(), ERR_VALUE);
 
     }
 
@@ -295,11 +297,11 @@ public class MimeMultipartProviderResource {
     @Path("form/class")
     @Consumes("multipart/form-data")
     public void putMultipartForm(@MultipartForm Form form) throws IOException {
-        Assert.assertNotNull(ERR_CUST_NULL, form.getBill());
-        Assert.assertEquals(ERR_VALUE, "bill", form.getBill().getName());
+        Assertions.assertNotNull(form.getBill(), ERR_CUST_NULL);
+        Assertions.assertEquals("bill", form.getBill().getName(), ERR_VALUE);
 
-        Assert.assertNotNull(ERR_CUST_NULL, form.getMonica());
-        Assert.assertEquals(ERR_VALUE, "monica", form.getMonica().getName());
+        Assertions.assertNotNull(form.getMonica(), ERR_CUST_NULL);
+        Assertions.assertEquals("monica", form.getMonica().getName(), ERR_VALUE);
     }
 
     @PUT
@@ -307,15 +309,15 @@ public class MimeMultipartProviderResource {
     @Consumes(MultipartConstants.MULTIPART_RELATED)
     public void putXopWithMultipartRelated(@XopWithMultipartRelated Xop xop)
             throws IOException {
-        Assert.assertNotNull(ERR_CUST_NULL, xop.getBill());
-        Assert.assertEquals(ERR_VALUE, "bill\u00E9", xop.getBill().getName());
+        Assertions.assertNotNull(xop.getBill(), ERR_CUST_NULL);
+        Assertions.assertEquals("bill\u00E9", xop.getBill().getName(), ERR_VALUE);
 
-        Assert.assertNotNull(ERR_CUST_NULL, xop.getMonica());
-        Assert.assertEquals(ERR_VALUE, "monica", xop.getMonica().getName());
-        Assert.assertNotNull(ERR_CUST_NULL, xop.getMyBinary());
-        Assert.assertNotNull(ERR_CUST_NULL, xop.getMyDataHandler());
-        Assert.assertEquals(ERR_VALUE, "Hello Xop World!", new String(xop.getMyBinary(),
-                StandardCharsets.UTF_8));
+        Assertions.assertNotNull(xop.getMonica(), ERR_CUST_NULL);
+        Assertions.assertEquals("monica", xop.getMonica().getName(), ERR_VALUE);
+        Assertions.assertNotNull(xop.getMyBinary(), ERR_CUST_NULL);
+        Assertions.assertNotNull(xop.getMyDataHandler(), ERR_CUST_NULL);
+        Assertions.assertEquals("Hello Xop World!", new String(xop.getMyBinary(),
+                StandardCharsets.UTF_8), ERR_VALUE);
         // lets do it twice to test that we get different InputStream-s each
         // time.
         for (int fi = 0; fi < 2; fi++) {
@@ -329,7 +331,7 @@ public class MimeMultipartProviderResource {
                 while ((n = inputStreamReader.read(buffer)) != -1) {
                     writer.write(buffer, 0, n);
                 }
-                Assert.assertEquals(ERR_VALUE, "Hello Xop World!", writer.toString());
+                Assertions.assertEquals("Hello Xop World!", writer.toString(), ERR_VALUE);
             } finally {
                 if (inputStreamReader != null) {
                     inputStreamReader.close();

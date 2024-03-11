@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.request;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Variant;
 
 import org.jboss.resteasy.core.request.ServerDrivenNegotiation;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Requests
@@ -57,10 +57,10 @@ public class VariantSelectionTest {
         }
 
         Variant best = negotiation.getBestMatch(available);
-        assertNotNull("Variant should not be null", best);
-        assertEquals("Wrong media type", mediaTypeWithCharset, best.getMediaType());
-        assertEquals("Wrong encoding", encoding, best.getEncoding());
-        assertEquals("Wrong locale", locale, best.getLanguage());
+        assertNotNull(best, "Variant should not be null");
+        assertEquals(mediaTypeWithCharset, best.getMediaType(), "Wrong media type");
+        assertEquals(encoding, best.getEncoding(), "Wrong encoding");
+        assertEquals(locale, best.getLanguage(), "Wrong locale");
     }
 
     @Test
@@ -76,13 +76,13 @@ public class VariantSelectionTest {
 
         List<Variant> available = new ArrayList<>();
         available.add(o4);
-        assertEquals(ERROR_MSG, o4, negotiation.getBestMatch(available));
+        assertEquals(o4, negotiation.getBestMatch(available), ERROR_MSG);
         available.add(o3);
-        assertEquals(ERROR_MSG, o3, negotiation.getBestMatch(available));
+        assertEquals(o3, negotiation.getBestMatch(available), ERROR_MSG);
         available.add(o2);
-        assertEquals(ERROR_MSG, o2, negotiation.getBestMatch(available));
+        assertEquals(o2, negotiation.getBestMatch(available), ERROR_MSG);
         available.add(o1);
-        assertEquals(ERROR_MSG, o1, negotiation.getBestMatch(available));
+        assertEquals(o1, negotiation.getBestMatch(available), ERROR_MSG);
     }
 
     @Test
@@ -103,17 +103,17 @@ public class VariantSelectionTest {
 
         List<Variant> available = new ArrayList<Variant>();
         available.add(q03);
-        assertEquals(ERROR_MSG, q03, negotiation.getBestMatch(available));
+        assertEquals(q03, negotiation.getBestMatch(available), ERROR_MSG);
         available.add(q04);
-        assertEquals(ERROR_MSG, q04, negotiation.getBestMatch(available));
+        assertEquals(q04, negotiation.getBestMatch(available), ERROR_MSG);
         available.add(q05);
-        assertEquals(ERROR_MSG, q05, negotiation.getBestMatch(available));
+        assertEquals(q05, negotiation.getBestMatch(available), ERROR_MSG);
         available.add(q07);
-        assertEquals(ERROR_MSG, q07, negotiation.getBestMatch(available));
+        assertEquals(q07, negotiation.getBestMatch(available), ERROR_MSG);
         available.add(q07plus);
-        assertEquals(ERROR_MSG, q07plus, negotiation.getBestMatch(available));
+        assertEquals(q07plus, negotiation.getBestMatch(available), ERROR_MSG);
         available.add(q10);
-        assertEquals(ERROR_MSG, q10, negotiation.getBestMatch(available));
+        assertEquals(q10, negotiation.getBestMatch(available), ERROR_MSG);
     }
 
 }

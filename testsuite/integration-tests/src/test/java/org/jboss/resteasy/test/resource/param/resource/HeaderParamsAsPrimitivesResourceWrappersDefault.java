@@ -7,21 +7,21 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 
 import org.jboss.resteasy.test.resource.param.HeaderParamsAsPrimitivesTest;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/wrappers/default")
 public class HeaderParamsAsPrimitivesResourceWrappersDefault {
     @GET
     @Produces("application/boolean")
     public String doGet(@HeaderParam("boolean") @DefaultValue("true") Boolean v) {
-        Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, true, v.booleanValue());
+        Assertions.assertEquals(true, v.booleanValue(), HeaderParamsAsPrimitivesTest.ERROR_MESSAGE);
         return "content";
     }
 
     @GET
     @Produces("application/byte")
     public String doGet(@HeaderParam("byte") @DefaultValue("127") Byte v) {
-        Assert.assertTrue(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 127 == v.byteValue());
+        Assertions.assertTrue(127 == v.byteValue(), HeaderParamsAsPrimitivesTest.ERROR_MESSAGE);
 
         return "content";
     }
@@ -29,42 +29,42 @@ public class HeaderParamsAsPrimitivesResourceWrappersDefault {
     @GET
     @Produces("application/short")
     public String doGet(@HeaderParam("short") @DefaultValue("32767") Short v) {
-        Assert.assertTrue(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 32767 == v.shortValue());
+        Assertions.assertTrue(32767 == v.shortValue(), HeaderParamsAsPrimitivesTest.ERROR_MESSAGE);
         return "content";
     }
 
     @GET
     @Produces("application/int")
     public String doGet(@HeaderParam("int") @DefaultValue("2147483647") Integer v) {
-        Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 2147483647, v.intValue());
+        Assertions.assertEquals(2147483647, v.intValue(), HeaderParamsAsPrimitivesTest.ERROR_MESSAGE);
         return "content";
     }
 
     @GET
     @Produces("application/long")
     public String doGet(@HeaderParam("long") @DefaultValue("9223372036854775807") Long v) {
-        Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 9223372036854775807L, v.longValue());
+        Assertions.assertEquals(9223372036854775807L, v.longValue(), HeaderParamsAsPrimitivesTest.ERROR_MESSAGE);
         return "content";
     }
 
     @GET
     @Produces("application/float")
     public String doGet(@HeaderParam("float") @DefaultValue("3.14159265") Float v) {
-        Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 3.14159265f, v.floatValue(), 0.0f);
+        Assertions.assertEquals(3.14159265f, v.floatValue(), 0.0f, HeaderParamsAsPrimitivesTest.ERROR_MESSAGE);
         return "content";
     }
 
     @GET
     @Produces("application/double")
     public String doGet(@HeaderParam("double") @DefaultValue("3.14159265358979") Double v) {
-        Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 3.14159265358979d, v.doubleValue(), 0.0);
+        Assertions.assertEquals(3.14159265358979d, v.doubleValue(), 0.0, HeaderParamsAsPrimitivesTest.ERROR_MESSAGE);
         return "content";
     }
 
     @GET
     @Produces("application/char")
     public String doGet(@HeaderParam("char") @DefaultValue("a") Character v) {
-        Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 'a', v.charValue());
+        Assertions.assertEquals('a', v.charValue(), HeaderParamsAsPrimitivesTest.ERROR_MESSAGE);
         return "content";
     }
 }

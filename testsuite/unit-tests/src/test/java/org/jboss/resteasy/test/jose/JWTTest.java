@@ -7,7 +7,7 @@ import org.hamcrest.MatcherAssert;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.jwt.JsonSerialization;
 import org.jboss.resteasy.jwt.JsonWebToken;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Jose tests

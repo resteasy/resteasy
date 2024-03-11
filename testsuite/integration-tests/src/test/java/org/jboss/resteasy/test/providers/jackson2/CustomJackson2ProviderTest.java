@@ -2,7 +2,6 @@ package org.jboss.resteasy.test.providers.jackson2;
 
 import static org.hamcrest.CoreMatchers.containsString;
 
-import java.io.File;
 import java.lang.reflect.ReflectPermission;
 import java.util.PropertyPermission;
 
@@ -14,7 +13,7 @@ import jakarta.ws.rs.core.Response;
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.config.security.ConfigPropertyPermission;
 import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2ProviderApplication;
@@ -22,21 +21,22 @@ import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2Provide
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
-import org.jboss.resteasy.utils.maven.MavenUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Jackson2 provider
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.23
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class CustomJackson2ProviderTest {
 
@@ -57,33 +57,21 @@ public class CustomJackson2ProviderTest {
                 new ConfigPropertyPermission("*"),
                 new PropertyPermission("*", "read"),
                 new RuntimePermission("getenv.*")), "permissions.xml");
-        MavenUtil mavenUtil;
-        mavenUtil = MavenUtil.create(true);
-        String version = System.getProperty("project.version");
-        try {
-            war.addAsLibraries(
-                    mavenUtil.createMavenGavRecursiveFiles("org.jboss.resteasy:resteasy-servlet-initializer:" + version)
-                            .toArray(new File[] {}));
-            war.addAsLibraries(mavenUtil.createMavenGavRecursiveFiles("org.jboss.resteasy:resteasy-core:" + version)
-                    .toArray(new File[] {}));
-            war.addAsLibraries(mavenUtil.createMavenGavRecursiveFiles("org.jboss.resteasy:resteasy-core-spi:" + version)
-                    .toArray(new File[] {}));
-            war.addAsLibraries(
-                    mavenUtil.createMavenGavRecursiveFiles("org.jboss.resteasy:resteasy-jackson2-provider:" + version)
-                            .toArray(new File[] {}));
-
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to get artifacts from maven via Aether library", e);
-        }
+        final PomEquippedResolveStage resolver = Maven.resolver().loadPomFromFile("pom.xml");
+        war.addAsLibraries(resolver.resolve(
+                "org.jboss.resteasy:resteasy-servlet-initializer",
+                "org.jboss.resteasy:resteasy-core",
+                "org.jboss.resteasy:resteasy-core-spi",
+                "org.jboss.resteasy:resteasy-jackson2-provider").withTransitivity().asFile());
         return war;
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -105,7 +93,7 @@ public class CustomJackson2ProviderTest {
         WebTarget target = client.target(generateURL("/jackson2providerpath"));
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         MatcherAssert.assertThat("Jackson2Provider jar was loaded from unexpected source",
                 entity, containsString(
                         CustomJackson2ProviderTest.class.getSimpleName() + ".war/WEB-INF/lib/resteasy-jackson2-provider"));

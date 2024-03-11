@@ -18,19 +18,19 @@ import jakarta.ws.rs.client.Invocation.Builder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.response.resource.TestResourceImpl;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ResponseStreamPrematurelyClosedTest {
 
@@ -42,12 +42,12 @@ public class ResponseStreamPrematurelyClosedTest {
         return TestUtil.finishContainerPrepare(war, null, TestResourceImpl.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -83,7 +83,7 @@ public class ResponseStreamPrematurelyClosedTest {
                     coutDown.await(10, TimeUnit.SECONDS);
 
                     ins.transferTo(baos);
-                    Assert.assertEquals("Received string: " + baos.toShortString(), 10000000, baos.size());
+                    Assertions.assertEquals(10000000, baos.size(), () -> "Received string: " + baos.toShortString());
                 } finally {
                     //remove the listener
                     for (GarbageCollectorMXBean gcbean : gcbeans) {
@@ -96,7 +96,7 @@ public class ResponseStreamPrematurelyClosedTest {
                 try (InputStream in = builder.get().readEntity(InputStream.class)) {
                     in.transferTo(baos);
                 }
-                Assert.assertEquals(100000000, baos.size());
+                Assertions.assertEquals(100000000, baos.size());
             }
         }
     }

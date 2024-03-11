@@ -15,7 +15,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.rx.resource.Bytes;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
@@ -30,15 +30,14 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.MethodName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Reactive classes
@@ -50,9 +49,9 @@ import org.junit.runners.MethodSorters;
  *
  *          The client makes synchronous calls.
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestMethodOrder(MethodName.class)
 public class Rx2ObservableServerAsyncTest {
 
     private static ResteasyClient client;
@@ -122,12 +121,12 @@ public class Rx2ObservableServerAsyncTest {
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         stringList.clear();
         thingList.clear();
@@ -135,7 +134,7 @@ public class Rx2ObservableServerAsyncTest {
         bytesList.clear();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -146,30 +145,30 @@ public class Rx2ObservableServerAsyncTest {
     public void testGet() throws Exception {
         Builder request = client.target(generateURL("/get/string")).request();
         Response response = request.get();
-        Assert.assertEquals(xStringList, response.readEntity(LIST_OF_STRING));
+        Assertions.assertEquals(xStringList, response.readEntity(LIST_OF_STRING));
     }
 
     @Test
     public void testGetThing() throws Exception {
         Builder request = client.target(generateURL("/get/thing")).request();
         List<Thing> list = request.get(LIST_OF_THING);
-        Assert.assertEquals(xThingList, list);
+        Assertions.assertEquals(xThingList, list);
     }
 
     @Test
     public void testGetThingList() throws Exception {
         Builder request = client.target(generateURL("/get/thing/list")).request();
         List<List<Thing>> list = request.get(LIST_OF_LIST_OF_THING);
-        Assert.assertEquals(xThingListList, list);
+        Assertions.assertEquals(xThingListList, list);
     }
 
     @Test
     public void testGetBytes() throws Exception {
         Builder request = client.target(generateURL("/get/bytes")).request();
         List<byte[]> list = request.get(LIST_OF_BYTE_ARRAYS);
-        Assert.assertEquals(3, list.size());
+        Assertions.assertEquals(3, list.size());
         for (byte[] b : list) {
-            Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
+            Assertions.assertTrue(Arrays.equals(Bytes.BYTES, b));
         }
     }
 
@@ -177,30 +176,30 @@ public class Rx2ObservableServerAsyncTest {
     public void testPut() throws Exception {
         Builder request = client.target(generateURL("/put/string")).request();
         Response response = request.put(aEntity);
-        Assert.assertEquals(aStringList, response.readEntity(LIST_OF_STRING));
+        Assertions.assertEquals(aStringList, response.readEntity(LIST_OF_STRING));
     }
 
     @Test
     public void testPutThing() throws Exception {
         Builder request = client.target(generateURL("/put/thing")).request();
         List<Thing> list = request.put(aEntity, LIST_OF_THING);
-        Assert.assertEquals(aThingList, list);
+        Assertions.assertEquals(aThingList, list);
     }
 
     @Test
     public void testPutThingList() throws Exception {
         Builder request = client.target(generateURL("/put/thing/list")).request();
         List<List<Thing>> list = request.put(aEntity, LIST_OF_LIST_OF_THING);
-        Assert.assertEquals(aThingListList, list);
+        Assertions.assertEquals(aThingListList, list);
     }
 
     @Test
     public void testPutBytes() throws Exception {
         Builder request = client.target(generateURL("/put/bytes")).request();
         List<byte[]> list = request.put(threeEntity, LIST_OF_BYTE_ARRAYS);
-        Assert.assertEquals(3, list.size());
+        Assertions.assertEquals(3, list.size());
         for (byte[] b : list) {
-            Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
+            Assertions.assertTrue(Arrays.equals(Bytes.BYTES, b));
         }
     }
 
@@ -208,30 +207,30 @@ public class Rx2ObservableServerAsyncTest {
     public void testPost() throws Exception {
         Builder request = client.target(generateURL("/post/string")).request();
         Response response = request.post(aEntity);
-        Assert.assertEquals(aStringList, response.readEntity(LIST_OF_STRING));
+        Assertions.assertEquals(aStringList, response.readEntity(LIST_OF_STRING));
     }
 
     @Test
     public void testPostThing() throws Exception {
         Builder request = client.target(generateURL("/post/thing")).request();
         List<Thing> list = request.post(aEntity, LIST_OF_THING);
-        Assert.assertEquals(aThingList, list);
+        Assertions.assertEquals(aThingList, list);
     }
 
     @Test
     public void testPostThingList() throws Exception {
         Builder request = client.target(generateURL("/post/thing/list")).request();
         List<List<Thing>> list = request.post(aEntity, LIST_OF_LIST_OF_THING);
-        Assert.assertEquals(aThingListList, list);
+        Assertions.assertEquals(aThingListList, list);
     }
 
     @Test
     public void testPostBytes() throws Exception {
         Builder request = client.target(generateURL("/post/bytes")).request();
         List<byte[]> list = request.post(threeEntity, LIST_OF_BYTE_ARRAYS);
-        Assert.assertEquals(3, list.size());
+        Assertions.assertEquals(3, list.size());
         for (byte[] b : list) {
-            Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
+            Assertions.assertTrue(Arrays.equals(Bytes.BYTES, b));
         }
     }
 
@@ -239,30 +238,30 @@ public class Rx2ObservableServerAsyncTest {
     public void testDelete() throws Exception {
         Builder request = client.target(generateURL("/delete/string")).request();
         Response response = request.delete();
-        Assert.assertEquals(xStringList, response.readEntity(LIST_OF_STRING));
+        Assertions.assertEquals(xStringList, response.readEntity(LIST_OF_STRING));
     }
 
     @Test
     public void testDeleteThing() throws Exception {
         Builder request = client.target(generateURL("/delete/thing")).request();
         List<Thing> list = request.delete(LIST_OF_THING);
-        Assert.assertEquals(xThingList, list);
+        Assertions.assertEquals(xThingList, list);
     }
 
     @Test
     public void testDeleteThingList() throws Exception {
         Builder request = client.target(generateURL("/delete/thing/list")).request();
         List<List<Thing>> list = request.delete(LIST_OF_LIST_OF_THING);
-        Assert.assertEquals(xThingListList, list);
+        Assertions.assertEquals(xThingListList, list);
     }
 
     @Test
     public void testDeleteBytes() throws Exception {
         Builder request = client.target(generateURL("/delete/bytes")).request();
         List<byte[]> list = request.delete(LIST_OF_BYTE_ARRAYS);
-        Assert.assertEquals(3, list.size());
+        Assertions.assertEquals(3, list.size());
         for (byte[] b : list) {
-            Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
+            Assertions.assertTrue(Arrays.equals(Bytes.BYTES, b));
         }
     }
 
@@ -270,72 +269,68 @@ public class Rx2ObservableServerAsyncTest {
     public void testHead() throws Exception {
         Builder request = client.target(generateURL("/head/string")).request();
         Response response = request.head();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
     }
 
     @Test
     public void testOptions() throws Exception {
         Builder request = client.target(generateURL("/options/string")).request();
         Response response = request.options();
-        Assert.assertEquals(xStringList, response.readEntity(LIST_OF_STRING));
+        Assertions.assertEquals(xStringList, response.readEntity(LIST_OF_STRING));
     }
 
     @Test
     public void testOptionsThing() throws Exception {
         Builder request = client.target(generateURL("/options/thing")).request();
         List<Thing> list = request.options(LIST_OF_THING);
-        Assert.assertEquals(xThingList, list);
+        Assertions.assertEquals(xThingList, list);
     }
 
     @Test
     public void testOptionsThingList() throws Exception {
         Builder request = client.target(generateURL("/options/thing/list")).request();
         List<List<Thing>> list = request.options(LIST_OF_LIST_OF_THING);
-        Assert.assertEquals(xThingListList, list);
+        Assertions.assertEquals(xThingListList, list);
     }
 
     @Test
     public void testOptionsBytes() throws Exception {
         Builder request = client.target(generateURL("/options/bytes")).request();
         List<byte[]> list = request.options(LIST_OF_BYTE_ARRAYS);
-        Assert.assertEquals(3, list.size());
+        Assertions.assertEquals(3, list.size());
         for (byte[] b : list) {
-            Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
+            Assertions.assertTrue(Arrays.equals(Bytes.BYTES, b));
         }
     }
 
     @Test
-    @Ignore // TRACE turned off by default in Wildfly
     public void testTrace() throws Exception {
         Builder request = client.target(generateURL("/trace/string")).request();
         Response response = request.trace();
-        Assert.assertEquals(xStringList, response.readEntity(LIST_OF_STRING));
+        Assertions.assertEquals(xStringList, response.readEntity(LIST_OF_STRING));
     }
 
     @Test
-    @Ignore // TRACE turned off by default in Wildfly
     public void testTraceThing() throws Exception {
         Builder request = client.target(generateURL("/trace/thing")).request();
         List<Thing> list = request.trace(LIST_OF_THING);
-        Assert.assertEquals(xThingList, list);
+        Assertions.assertEquals(xThingList, list);
     }
 
     @Test
-    @Ignore // TRACE turned off by default in Wildfly
     public void testTraceThingList() throws Exception {
         Builder request = client.target(generateURL("/trace/thing/list")).request();
         List<List<Thing>> list = request.trace(LIST_OF_LIST_OF_THING);
-        Assert.assertEquals(xThingListList, list);
+        Assertions.assertEquals(xThingListList, list);
     }
 
     @Test
-    @Ignore // TRACE turned off by default in Wildfly
     public void testTraceBytes() throws Exception {
         Builder request = client.target(generateURL("/trace/bytes")).request();
         List<byte[]> list = request.trace(LIST_OF_BYTE_ARRAYS);
-        Assert.assertEquals(3, list.size());
+        Assertions.assertEquals(3, list.size());
         for (byte[] b : list) {
-            Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
+            Assertions.assertTrue(Arrays.equals(Bytes.BYTES, b));
         }
     }
 
@@ -343,30 +338,30 @@ public class Rx2ObservableServerAsyncTest {
     public void testMethodGet() throws Exception {
         Builder request = client.target(generateURL("/get/string")).request();
         Response response = request.method("GET");
-        Assert.assertEquals(xStringList, response.readEntity(LIST_OF_STRING));
+        Assertions.assertEquals(xStringList, response.readEntity(LIST_OF_STRING));
     }
 
     @Test
     public void testMethodGetThing() throws Exception {
         Builder request = client.target(generateURL("/get/thing")).request();
         List<Thing> list = request.method("GET", LIST_OF_THING);
-        Assert.assertEquals(xThingList, list);
+        Assertions.assertEquals(xThingList, list);
     }
 
     @Test
     public void testMethodGetThingList() throws Exception {
         Builder request = client.target(generateURL("/get/thing/list")).request();
         List<List<Thing>> list = request.method("GET", LIST_OF_LIST_OF_THING);
-        Assert.assertEquals(xThingListList, list);
+        Assertions.assertEquals(xThingListList, list);
     }
 
     @Test
     public void testMethodGetBytes() throws Exception {
         Builder request = client.target(generateURL("/get/bytes")).request();
         List<byte[]> list = request.method("GET", LIST_OF_BYTE_ARRAYS);
-        Assert.assertEquals(3, list.size());
+        Assertions.assertEquals(3, list.size());
         for (byte[] b : list) {
-            Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
+            Assertions.assertTrue(Arrays.equals(Bytes.BYTES, b));
         }
     }
 
@@ -374,30 +369,30 @@ public class Rx2ObservableServerAsyncTest {
     public void testMethodPost() throws Exception {
         Builder request = client.target(generateURL("/post/string")).request();
         Response response = request.method("POST", aEntity);
-        Assert.assertEquals(aStringList, response.readEntity(LIST_OF_STRING));
+        Assertions.assertEquals(aStringList, response.readEntity(LIST_OF_STRING));
     }
 
     @Test
     public void testMethodPostThing() throws Exception {
         Builder request = client.target(generateURL("/post/thing")).request();
         List<Thing> list = request.method("POST", aEntity, LIST_OF_THING);
-        Assert.assertEquals(aThingList, list);
+        Assertions.assertEquals(aThingList, list);
     }
 
     @Test
     public void testMethodPostThingList() throws Exception {
         Builder request = client.target(generateURL("/post/thing/list")).request();
         List<List<Thing>> list = request.method("POST", aEntity, LIST_OF_LIST_OF_THING);
-        Assert.assertEquals(aThingListList, list);
+        Assertions.assertEquals(aThingListList, list);
     }
 
     @Test
     public void testMethodPostBytes() throws Exception {
         Builder request = client.target(generateURL("/post/bytes")).request();
         List<byte[]> list = request.method("POST", threeEntity, LIST_OF_BYTE_ARRAYS);
-        Assert.assertEquals(3, list.size());
+        Assertions.assertEquals(3, list.size());
         for (byte[] b : list) {
-            Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
+            Assertions.assertTrue(Arrays.equals(Bytes.BYTES, b));
         }
     }
 
@@ -406,10 +401,10 @@ public class Rx2ObservableServerAsyncTest {
         Builder request = client.target(generateURL("/exception/unhandled")).request();
         try {
             request.get(Thing.class);
-            Assert.fail("expecting Exception");
+            Assertions.fail("expecting Exception");
         } catch (Exception e) {
-            Assert.assertEquals(InternalServerErrorException.class, e.getClass());
-            Assert.assertTrue(e.getMessage().contains("500"));
+            Assertions.assertEquals(InternalServerErrorException.class, e.getClass());
+            Assertions.assertTrue(e.getMessage().contains("500"));
         }
     }
 
@@ -418,10 +413,10 @@ public class Rx2ObservableServerAsyncTest {
         Builder request = client.target(generateURL("/exception/handled")).request();
         try {
             request.get(Thing.class);
-            Assert.fail("expecting Exception");
+            Assertions.fail("expecting Exception");
         } catch (Exception e) {
-            Assert.assertEquals(ClientErrorException.class, e.getClass());
-            Assert.assertTrue(e.getMessage().contains("444"));
+            Assertions.assertEquals(ClientErrorException.class, e.getClass());
+            Assertions.assertTrue(e.getMessage().contains("444"));
         }
     }
 
@@ -438,9 +433,9 @@ public class Rx2ObservableServerAsyncTest {
         List<String> list2 = response2.readEntity(LIST_OF_STRING);
 
         list1.addAll(list2);
-        Assert.assertEquals(6, list1.size());
+        Assertions.assertEquals(6, list1.size());
         for (int i = 0; i < 6; i++) {
-            Assert.assertEquals("x", list1.get(i));
+            Assertions.assertEquals("x", list1.get(i));
         }
         client1.close();
         client2.close();
@@ -457,9 +452,9 @@ public class Rx2ObservableServerAsyncTest {
         List<String> list2 = response2.readEntity(LIST_OF_STRING);
 
         list1.addAll(list2);
-        Assert.assertEquals(6, list1.size());
+        Assertions.assertEquals(6, list1.size());
         for (int i = 0; i < 6; i++) {
-            Assert.assertEquals("x", list1.get(i));
+            Assertions.assertEquals("x", list1.get(i));
         }
     }
 
@@ -473,9 +468,9 @@ public class Rx2ObservableServerAsyncTest {
         List<String> list2 = response2.readEntity(LIST_OF_STRING);
 
         list1.addAll(list2);
-        Assert.assertEquals(6, list1.size());
+        Assertions.assertEquals(6, list1.size());
         for (int i = 0; i < 6; i++) {
-            Assert.assertEquals("x", list1.get(i));
+            Assertions.assertEquals("x", list1.get(i));
         }
     }
 }

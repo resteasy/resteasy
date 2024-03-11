@@ -19,10 +19,10 @@ import org.jboss.resteasy.test.client.resource.ClientResponseFilterStatusOverrid
 import org.jboss.resteasy.test.client.resource.NullStringBeanRuntimeDelegate;
 import org.jboss.resteasy.test.client.resource.StringBean;
 import org.jboss.resteasy.test.client.resource.StringBeanRuntimeDelegate;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -35,13 +35,13 @@ public class ClientResponseFilterTest {
 
     String dummyUrl = "dummyUrl";
 
-    @BeforeClass
+    @BeforeAll
     public static void setupClient() {
         client = ClientBuilder.newClient();
 
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -65,7 +65,7 @@ public class ClientResponseFilterTest {
                     .build();
             Response response = client.target(dummyUrl).register(new ClientResponseFilterAbortWith(abortWith))
                     .register(ClientResponseFilterNullHeaderString.class).request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         } finally {
             RuntimeDelegate.setInstance(original);
             StringBeanRuntimeDelegate.assertNotStringBeanRuntimeDelegate();
@@ -86,7 +86,7 @@ public class ClientResponseFilterTest {
                 .header(HttpHeaders.CONTENT_LENGTH, 10).build();
         Response response = client.target(dummyUrl).register(new ClientResponseFilterAbortWith(abortWith))
                 .register(ClientResponseFilterLength.class).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
     }
 
     /**
@@ -102,7 +102,7 @@ public class ClientResponseFilterTest {
                 .header(HttpHeaders.ALLOW, "options").build();
         Response response = client.target(dummyUrl).register(new ClientResponseFilterAbortWith(abortWith))
                 .register(ClientResponseFilterAllowed.class).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
 
     }
 
@@ -116,7 +116,7 @@ public class ClientResponseFilterTest {
     public void statusOverrideTest() {
         Response response = client.target(dummyUrl).register(new ClientResponseFilterAbortWith(Response.ok().build()))
                 .register(ClientResponseFilterStatusOverride.class).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
     }
 
     /**
@@ -133,7 +133,7 @@ public class ClientResponseFilterTest {
         Response abortWith = builder.build();
         Response response = client.target(dummyUrl).register(new ClientResponseFilterAbortWith(abortWith))
                 .register(ClientResponseFilterHeaders.class).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
     }
 
     /**
@@ -154,6 +154,7 @@ public class ClientResponseFilterTest {
                 .register(ClientResponseFilterInterceptorReaderOne.class)
                 .request().get();
         String str = response.readEntity(String.class);
-        Assert.assertEquals("First ReaderInterceptor one didn't catch exception raised by ReaderInterceptor two", "OK", str);
+        Assertions.assertEquals("OK", str,
+                "First ReaderInterceptor one didn't catch exception raised by ReaderInterceptor two");
     }
 }

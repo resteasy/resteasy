@@ -128,6 +128,27 @@ public class SimpleResourceImpl {
         return buildThingList("x", 3);
     }
 
+    @TRACE
+    @Path("trace/string")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String trace() {
+        return "x";
+    }
+
+    @TRACE
+    @Path("trace/thing")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Thing traceThing() {
+        return new Thing("x");
+    }
+
+    @TRACE
+    @Path("trace/thing/list")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Thing> traceThingList() {
+        return buildThingList("x", 3);
+    }
+
     @GET
     @Path("exception/unhandled")
     public Thing exceptionUnhandled() throws Exception {

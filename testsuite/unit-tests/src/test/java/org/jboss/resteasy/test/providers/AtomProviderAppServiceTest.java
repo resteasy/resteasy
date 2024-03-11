@@ -18,8 +18,8 @@ import org.jboss.resteasy.plugins.providers.atom.app.AppCategories;
 import org.jboss.resteasy.plugins.providers.atom.app.AppCollection;
 import org.jboss.resteasy.plugins.providers.atom.app.AppService;
 import org.jboss.resteasy.plugins.providers.atom.app.AppWorkspace;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Providers
@@ -140,7 +140,8 @@ public class AtomProviderAppServiceTest {
 
         marshaller.marshal(element, writer);
         String actualXml = writer.toString();
-        Assert.assertTrue("Wrong serialization of atom provider", actualXml.contains("atom:category"));
+        Assertions.assertTrue(actualXml.contains("atom:category"),
+                "Wrong serialization of atom provider");
     }
 
     /**
@@ -153,6 +154,7 @@ public class AtomProviderAppServiceTest {
         Unmarshaller unmarshaller = ctx.createUnmarshaller();
         AppService service = (AppService) unmarshaller
                 .unmarshal(new StringReader(XML));
-        Assert.assertEquals("Wrong deserialization of atom provider", 2, service.getWorkspace().size());
+        Assertions.assertEquals(2, service.getWorkspace().size(),
+                "Wrong deserialization of atom provider");
     }
 }

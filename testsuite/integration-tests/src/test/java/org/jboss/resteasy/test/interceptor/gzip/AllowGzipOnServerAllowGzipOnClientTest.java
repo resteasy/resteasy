@@ -3,9 +3,9 @@ package org.jboss.resteasy.test.interceptor.gzip;
 import java.net.URL;
 
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Gzip
@@ -15,12 +15,12 @@ import org.junit.Test;
  */
 public class AllowGzipOnServerAllowGzipOnClientTest extends AllowGzipOnServerAbstractTestBase {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         System.setProperty(PROPERTY_NAME, Boolean.TRUE.toString());
     }
 
-    @AfterClass
+    @AfterAll
     public static void clean() {
         System.clearProperty(PROPERTY_NAME);
     }

@@ -12,8 +12,8 @@ import jakarta.enterprise.inject.spi.InjectionPoint;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.cdi.i18n.Messages;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -90,12 +90,12 @@ public abstract class TestMessagesAbstract extends TestMessagesParent {
             return;
         }
 
-        Assert.assertEquals(getExpected(BASE + "00", "annotatedTypeNull"), Messages.MESSAGES.annotatedTypeNull());
-        Assert.assertEquals(getExpected(BASE + "05", "beanDoesNotHaveScopeDefined", getClass(), testAnnotation),
+        Assertions.assertEquals(getExpected(BASE + "00", "annotatedTypeNull"), Messages.MESSAGES.annotatedTypeNull());
+        Assertions.assertEquals(getExpected(BASE + "05", "beanDoesNotHaveScopeDefined", getClass(), testAnnotation),
                 Messages.MESSAGES.beanDoesNotHaveScopeDefined(getClass(), testAnnotation));
-        Assert.assertEquals(getExpected(BASE + "20", "beansFound", getClass().getGenericSuperclass(), beanSet),
+        Assertions.assertEquals(getExpected(BASE + "20", "beansFound", getClass().getGenericSuperclass(), beanSet),
                 Messages.MESSAGES.beansFound(getClass().getGenericSuperclass(), beanSet));
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 getExpected(BASE3 + "630", "usingInterfaceForLookup", getClass().getGenericSuperclass(), getClass()),
                 Messages.MESSAGES.usingInterfaceForLookup(getClass().getGenericSuperclass(), getClass()));
     }

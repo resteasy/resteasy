@@ -1,8 +1,6 @@
 package org.jboss.resteasy.rxjava2;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -19,12 +17,12 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -37,7 +35,7 @@ public class RxTest {
     private static AtomicReference<Object> value = new AtomicReference<Object>();
     private static final Logger LOG = Logger.getLogger(NettyJaxrsServer.class);
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         server = new NettyJaxrsServer();
         server.setPort(TestPortProvider.getPort());
@@ -49,7 +47,7 @@ public class RxTest {
         server.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws Exception {
         server.stop();
         server = null;
@@ -57,7 +55,7 @@ public class RxTest {
 
     private ResteasyClient client;
 
-    @Before
+    @BeforeEach
     public void before() {
         client = ((ResteasyClientBuilder) ClientBuilder.newBuilder())
                 .readTimeout(5, TimeUnit.SECONDS)
@@ -68,7 +66,7 @@ public class RxTest {
         latch = new CountDownLatch(1);
     }
 
-    @After
+    @AfterEach
     public void after() {
         client.close();
     }
@@ -81,7 +79,7 @@ public class RxTest {
             latch.countDown();
         });
         latch.await(5, TimeUnit.SECONDS);
-        assertEquals("got it", value.get());
+        Assertions.assertEquals("got it", value.get());
     }
 
     @Test
@@ -92,7 +90,7 @@ public class RxTest {
             latch.countDown();
         });
         latch.await(5, TimeUnit.SECONDS);
-        assertEquals("got it", value.get());
+        Assertions.assertEquals("got it", value.get());
     }
 
     @Test
@@ -106,7 +104,7 @@ public class RxTest {
                 (Throwable t) -> LOG.error(t.getMessage(), t),
                 () -> latch.countDown());
         latch.await(5, TimeUnit.SECONDS);
-        assertArrayEquals(new String[] { "one", "two" }, data.toArray());
+        Assertions.assertArrayEquals(new String[] { "one", "two" }, data.toArray());
     }
 
     @Test
@@ -121,7 +119,7 @@ public class RxTest {
                 (Throwable t) -> LOG.error(t.getMessage(), t),
                 () -> latch.countDown());
         latch.await(5, TimeUnit.SECONDS);
-        assertArrayEquals(new String[] { "one", "two" }, data.toArray());
+        Assertions.assertArrayEquals(new String[] { "one", "two" }, data.toArray());
     }
 
     @Test
@@ -135,7 +133,7 @@ public class RxTest {
                 (Throwable t) -> LOG.error(t.getMessage(), t),
                 () -> latch.countDown());
         latch.await(5, TimeUnit.SECONDS);
-        assertArrayEquals(new String[] { "one", "two" }, data.toArray());
+        Assertions.assertArrayEquals(new String[] { "one", "two" }, data.toArray());
     }
 
     @Test
@@ -152,7 +150,7 @@ public class RxTest {
                     LOG.info("onComplete()");
                 });
         latch.await(5, TimeUnit.SECONDS);
-        assertArrayEquals(new String[] { "one", "two" }, data.toArray());
+        Assertions.assertArrayEquals(new String[] { "one", "two" }, data.toArray());
     }
 
     // @Test
@@ -160,16 +158,16 @@ public class RxTest {
         Invocation.Builder request = client.target(generateURL("/chunked")).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("onetwo", entity);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("onetwo", entity);
     }
 
     @Test
     public void testInjection() {
         Integer data = client.target(generateURL("/injection")).request().get(Integer.class);
-        assertEquals((Integer) 42, data);
+        Assertions.assertEquals((Integer) 42, data);
 
         data = client.target(generateURL("/injection-async")).request().get(Integer.class);
-        assertEquals((Integer) 42, data);
+        Assertions.assertEquals((Integer) 42, data);
     }
 }

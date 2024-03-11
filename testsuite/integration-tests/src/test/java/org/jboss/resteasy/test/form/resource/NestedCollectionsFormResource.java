@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.form.resource;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -16,13 +16,13 @@ public class NestedCollectionsFormResource {
     @Path("/person")
     public void post(@Form NestedCollectionsFormPerson p) {
         String errorMessage = "Wrong received form";
-        assertEquals(errorMessage, 2, p.telephoneNumbers.size());
-        assertEquals(errorMessage, 2, p.adresses.size());
-        assertEquals(errorMessage, "31", p.telephoneNumbers.get(0).country.code);
-        assertEquals(errorMessage, "91", p.telephoneNumbers.get(1).country.code);
-        assertEquals(errorMessage, "Main Street", p.adresses.get("INVOICE").street);
-        assertEquals(errorMessage, "NL", p.adresses.get("INVOICE").country.code);
-        assertEquals(errorMessage, "Square One", p.adresses.get("SHIPPING").street);
-        assertEquals(errorMessage, "IN", p.adresses.get("SHIPPING").country.code);
+        assertEquals(2, p.telephoneNumbers.size(), errorMessage);
+        assertEquals(2, p.adresses.size(), errorMessage);
+        assertEquals("31", p.telephoneNumbers.get(0).country.code, errorMessage);
+        assertEquals("91", p.telephoneNumbers.get(1).country.code, errorMessage);
+        assertEquals("Main Street", p.adresses.get("INVOICE").street, errorMessage);
+        assertEquals("NL", p.adresses.get("INVOICE").country.code, errorMessage);
+        assertEquals("Square One", p.adresses.get("SHIPPING").street, errorMessage);
+        assertEquals("IN", p.adresses.get("SHIPPING").country.code, errorMessage);
     }
 }

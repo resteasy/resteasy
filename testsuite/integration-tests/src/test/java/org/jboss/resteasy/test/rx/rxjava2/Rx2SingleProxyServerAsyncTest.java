@@ -8,7 +8,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerProvider;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
@@ -22,11 +22,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Reactive classes
@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
  *          In these tests, the server creates and returns a Single<T>.
  *          The client uses a proxy to do a synchronous invocation to get an object of type T.
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class Rx2SingleProxyServerAsyncTest {
 
@@ -71,13 +71,13 @@ public class Rx2SingleProxyServerAsyncTest {
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         client = (ResteasyClient) ClientBuilder.newClient();
         proxy = client.target(generateURL("/")).proxy(SimpleResource.class);
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -87,73 +87,73 @@ public class Rx2SingleProxyServerAsyncTest {
     @Test
     public void testGet() throws Exception {
         String s = proxy.get();
-        Assert.assertEquals("x", s);
+        Assertions.assertEquals("x", s);
     }
 
     @Test
     public void testGetThing() throws Exception {
         Thing t = proxy.getThing();
-        Assert.assertEquals(new Thing("x"), t);
+        Assertions.assertEquals(new Thing("x"), t);
     }
 
     @Test
     public void testGetThingList() throws Exception {
         List<Thing> list = proxy.getThingList();
-        Assert.assertEquals(xThingList, list);
+        Assertions.assertEquals(xThingList, list);
     }
 
     @Test
     public void testPut() throws Exception {
         String s = proxy.put("a");
-        Assert.assertEquals("a", s);
+        Assertions.assertEquals("a", s);
     }
 
     @Test
     public void testPutThing() throws Exception {
         Thing t = proxy.putThing("a");
-        Assert.assertEquals(new Thing("a"), t);
+        Assertions.assertEquals(new Thing("a"), t);
     }
 
     @Test
     public void testPutThingList() throws Exception {
         List<Thing> list = proxy.putThingList("a");
-        Assert.assertEquals(aThingList, list);
+        Assertions.assertEquals(aThingList, list);
     }
 
     @Test
     public void testPost() throws Exception {
         String s = proxy.post("a");
-        Assert.assertEquals("a", s);
+        Assertions.assertEquals("a", s);
     }
 
     @Test
     public void testPostThing() throws Exception {
         Thing t = proxy.postThing("a");
-        Assert.assertEquals(new Thing("a"), t);
+        Assertions.assertEquals(new Thing("a"), t);
     }
 
     @Test
     public void testPostThingList() throws Exception {
         List<Thing> list = proxy.postThingList("a");
-        Assert.assertEquals(aThingList, list);
+        Assertions.assertEquals(aThingList, list);
     }
 
     @Test
     public void testDelete() throws Exception {
         String s = proxy.delete();
-        Assert.assertEquals("x", s);
+        Assertions.assertEquals("x", s);
     }
 
     @Test
     public void testDeleteThing() throws Exception {
         Thing t = proxy.deleteThing();
-        Assert.assertEquals(new Thing("x"), t);
+        Assertions.assertEquals(new Thing("x"), t);
     }
 
     @Test
     public void testDeleteThingList() throws Exception {
         List<Thing> list = proxy.deleteThingList();
-        Assert.assertEquals(xThingList, list);
+        Assertions.assertEquals(xThingList, list);
     }
 
     @Test
@@ -161,26 +161,26 @@ public class Rx2SingleProxyServerAsyncTest {
         try {
             proxy.head();
         } catch (Exception e) {
-            Assert.assertTrue(throwableContains(e, "Input stream was empty, there is no entity"));
+            Assertions.assertTrue(throwableContains(e, "Input stream was empty, there is no entity"));
         }
     }
 
     @Test
     public void testOptions() throws Exception {
         String s = proxy.options();
-        Assert.assertEquals("x", s);
+        Assertions.assertEquals("x", s);
     }
 
     @Test
     public void testOptionsThing() throws Exception {
         Thing t = proxy.optionsThing();
-        Assert.assertEquals(new Thing("x"), t);
+        Assertions.assertEquals(new Thing("x"), t);
     }
 
     @Test
     public void testOptionsThingList() throws Exception {
         List<Thing> list = proxy.optionsThingList();
-        Assert.assertEquals(xThingList, list);
+        Assertions.assertEquals(xThingList, list);
     }
 
     @Test
@@ -188,7 +188,7 @@ public class Rx2SingleProxyServerAsyncTest {
         try {
             proxy.getThing();
         } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("500"));
+            Assertions.assertTrue(e.getMessage().contains("500"));
         }
     }
 
@@ -197,7 +197,7 @@ public class Rx2SingleProxyServerAsyncTest {
         try {
             proxy.getThing();
         } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("444"));
+            Assertions.assertTrue(e.getMessage().contains("444"));
         }
     }
 
@@ -217,9 +217,9 @@ public class Rx2SingleProxyServerAsyncTest {
 
         list.add(s1);
         list.add(s2);
-        Assert.assertEquals(2, list.size());
+        Assertions.assertEquals(2, list.size());
         for (int i = 0; i < 2; i++) {
-            Assert.assertEquals("x", list.get(i));
+            Assertions.assertEquals("x", list.get(i));
         }
         client1.close();
         client2.close();
@@ -237,9 +237,9 @@ public class Rx2SingleProxyServerAsyncTest {
 
         list.add(s1);
         list.add(s2);
-        Assert.assertEquals(2, list.size());
+        Assertions.assertEquals(2, list.size());
         for (int i = 0; i < 2; i++) {
-            Assert.assertEquals("x", list.get(i));
+            Assertions.assertEquals("x", list.get(i));
         }
     }
 
@@ -252,9 +252,9 @@ public class Rx2SingleProxyServerAsyncTest {
 
         list.add(s1);
         list.add(s2);
-        Assert.assertEquals(2, list.size());
+        Assertions.assertEquals(2, list.size());
         for (int i = 0; i < 2; i++) {
-            Assert.assertEquals("x", list.get(i));
+            Assertions.assertEquals("x", list.get(i));
         }
     }
 

@@ -41,19 +41,19 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class DisabledLoadableFeatureTest {
 
@@ -78,8 +78,8 @@ public class DisabledLoadableFeatureTest {
             final Response response = client.target(TestUtil.generateUri(url, "/test/feature"))
                     .request()
                     .get();
-            Assert.assertEquals(response.getStatusInfo().getReasonPhrase(), 200, response.getStatus());
-            Assert.assertEquals("feature", response.readEntity(String.class));
+            Assertions.assertEquals(200, response.getStatus(), response.getStatusInfo().getReasonPhrase());
+            Assertions.assertEquals("feature", response.readEntity(String.class));
         }
     }
 
@@ -89,8 +89,8 @@ public class DisabledLoadableFeatureTest {
             final Response response = client.target(TestUtil.generateUri(url, "/test/dynamic-feature"))
                     .request()
                     .get();
-            Assert.assertEquals(response.getStatusInfo().getReasonPhrase(), 200, response.getStatus());
-            Assert.assertEquals("dynamic-feature", response.readEntity(String.class));
+            Assertions.assertEquals(200, response.getStatus(), response.getStatusInfo().getReasonPhrase());
+            Assertions.assertEquals("dynamic-feature", response.readEntity(String.class));
         }
     }
 

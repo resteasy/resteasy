@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -18,6 +21,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,7 +43,7 @@ import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * Base util class for RESTEasy testing.
@@ -239,17 +243,42 @@ public class TestUtil {
         return builder.toString();
     }
 
-    public static String getErrorMessageForKnownIssue(String jira, String message) {
-        StringBuilder s = new StringBuilder();
-        s.append("https://issues.jboss.org/browse/");
-        s.append(jira);
-        s.append(" - ");
-        s.append(message);
-        return s.toString();
+    public static Supplier<String> getErrorMessageForKnownIssue(String jira, String message) {
+        return getErrorMessageForKnownIssue(jira, message, null);
     }
 
-    public static String getErrorMessageForKnownIssue(String jira) {
+    public static Supplier<String> getErrorMessageForKnownIssue(String jira) {
         return getErrorMessageForKnownIssue(jira, "known issue");
+    }
+
+    public static Supplier<String> getErrorMessageForKnownIssue(String jira, Throwable throwable) {
+        return getErrorMessageForKnownIssue(jira, null, throwable);
+    }
+
+    public static Supplier<String> getErrorMessageForKnownIssue(final String jira, final String message,
+            final Throwable throwable) {
+        return () -> {
+            final String url = "https://issues.redhat.com/browse/";
+            if (throwable == null) {
+                return url + jira + " - " + (message == null ? "" : message);
+            }
+            try (
+                    StringWriter writer = new StringWriter();
+                    PrintWriter pw = new PrintWriter(writer)) {
+                writer.write(url);
+                writer.write(jira);
+                if (message != null) {
+                    writer.write(" - ");
+                    writer.write(message);
+                }
+                writer.write(System.lineSeparator());
+                throwable.printStackTrace(pw);
+                return writer.toString();
+            } catch (IOException e) {
+                // This should never happen, but we need to appease the compiler
+                throw new UncheckedIOException(e);
+            }
+        };
     }
 
     public static String getJbossHome() {
@@ -319,15 +348,6 @@ public class TestUtil {
 
     public static boolean isIbmJdk() {
         return System.getProperty("java.vendor").toLowerCase().contains("ibm");
-    }
-
-    /**
-     * Indicates whether or not the current JVM is a modular (Java 9+) JVM.
-     *
-     * @return {@code true} if this is a modular JVM, otherwise {@code false}
-     */
-    public static boolean isModularJvm() {
-        return MODULAR_JVM;
     }
 
     /**
@@ -407,21 +427,24 @@ public class TestUtil {
      */
     public static void countViolations(ResteasyViolationException e,
             int totalCount, int propertyCount, int classCount, int parameterCount, int returnValueCount) {
-        Assert.assertEquals("Different total count of violations expected", totalCount, e.getViolations().size());
-        Assert.assertEquals("Different count of property violations expected", propertyCount, e.getPropertyViolations().size());
-        Assert.assertEquals("Different count of class violations expected", classCount, e.getClassViolations().size());
-        Assert.assertEquals("Different count of parameter violations expected", parameterCount,
-                e.getParameterViolations().size());
-        Assert.assertEquals("Different count of return value violations expected", returnValueCount,
-                e.getReturnValueViolations().size());
+        Assertions.assertEquals(totalCount, e.getViolations().size(), "Different total count of violations expected");
+        Assertions.assertEquals(propertyCount, e.getPropertyViolations().size(),
+                "Different count of property violations expected");
+        Assertions.assertEquals(classCount, e.getClassViolations().size(), "Different count of class violations expected");
+        Assertions.assertEquals(parameterCount, e.getParameterViolations().size(),
+                "Different count of parameter violations expected");
+        Assertions.assertEquals(returnValueCount, e.getReturnValueViolations().size(),
+                "Different count of return value violations expected");
     }
 
     public static void countViolations(ViolationReport e, int propertyCount, int classCount, int parameterCount,
             int returnValueCount) {
-        Assert.assertEquals("Different count of property violations expected", propertyCount, e.getPropertyViolations().size());
-        Assert.assertEquals("Different count of class violations expected", classCount, e.getClassViolations().size());
-        Assert.assertEquals(parameterCount, e.getParameterViolations().size());
-        Assert.assertEquals(returnValueCount, e.getReturnValueViolations().size());
+        Assertions.assertEquals(propertyCount, e.getPropertyViolations().size(),
+                "Different count of property violations expected");
+        Assertions.assertEquals(classCount, e.getClassViolations().size(),
+                "Different count of class violations expected");
+        Assertions.assertEquals(parameterCount, e.getParameterViolations().size());
+        Assertions.assertEquals(returnValueCount, e.getReturnValueViolations().size());
     }
 
     public static ResteasyConstraintViolation getViolationByMessage(List<ResteasyConstraintViolation> list, String message) {
@@ -486,7 +509,7 @@ public class TestUtil {
     public static boolean isWindows() {
         String osName = System.getProperty("os.name");
         if (osName == null) {
-            Assert.fail("Can't get the operating system name");
+            Assertions.fail("Can't get the operating system name");
         }
         return (osName.indexOf("Windows") > -1) || (osName.indexOf("windows") > -1);
     }

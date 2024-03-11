@@ -27,10 +27,10 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import se.unlogic.eagledns.EagleDNS;
 
@@ -61,7 +61,7 @@ public class SigningDnsTest {
         deployment.getRegistry().addPerRequestResource(resource);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         server = new NettyJaxrsServer();
         server.setPort(TestPortProvider.getPort());
@@ -103,7 +103,7 @@ public class SigningDnsTest {
         dns.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void shutdownDns() {
         dns.shutdown();
         client.close();
@@ -137,8 +137,8 @@ public class SigningDnsTest {
         @Consumes("text/plain")
         @Verify
         public void post(@HeaderParam(DKIMSignature.DKIM_SIGNATURE) DKIMSignature signature, String input) {
-            Assert.assertNotNull(signature);
-            Assert.assertEquals(input, "hello world");
+            Assertions.assertNotNull(signature);
+            Assertions.assertEquals(input, "hello world");
             //         System.out.println(signature);
         }
 
@@ -154,7 +154,7 @@ public class SigningDnsTest {
         Builder request = target.request();
         request.header(DKIMSignature.DKIM_SIGNATURE, contentSignature);
         Response response = request.post(Entity.entity("hello world", "text/plain"));
-        Assert.assertEquals(204, response.getStatus());
+        Assertions.assertEquals(204, response.getStatus());
         response.close();
 
     }
@@ -168,7 +168,7 @@ public class SigningDnsTest {
         contentSignature.setPrivateKey(badKey);
         request.header(DKIMSignature.DKIM_SIGNATURE, contentSignature);
         Response response = request.post(Entity.entity("hello world", "text/plain"));
-        Assert.assertEquals(401, response.getStatus());
+        Assertions.assertEquals(401, response.getStatus());
         response.close();
     }
 
@@ -176,7 +176,7 @@ public class SigningDnsTest {
     public void testBasicVerificationNoSignature() throws Exception {
         Builder request = client.target(TestPortProvider.generateURL("/signed")).request();
         Response response = request.post(Entity.entity("hello world", "text/plain"));
-        Assert.assertEquals(401, response.getStatus());
+        Assertions.assertEquals(401, response.getStatus());
         response.close();
     }
 

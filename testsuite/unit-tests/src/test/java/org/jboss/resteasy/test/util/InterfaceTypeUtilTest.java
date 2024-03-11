@@ -6,8 +6,8 @@ import org.jboss.resteasy.test.util.resource.InterfaceTypeUtilD;
 import org.jboss.resteasy.test.util.resource.InterfaceTypeUtilE;
 import org.jboss.resteasy.test.util.resource.InterfaceTypeUtilI;
 import org.jboss.resteasy.test.util.resource.InterfaceTypeUtilJ;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Util tests
@@ -23,9 +23,10 @@ public class InterfaceTypeUtilTest {
      */
     @Test
     public void testType() throws Exception {
-        Assert.assertNull("Types util class works incorrectly",
-                Types.getTemplateParameterOfInterface(InterfaceTypeUtilD.class, InterfaceTypeUtilJ.class));
-        Assert.assertEquals("Types util class works incorrectly", InterfaceTypeUtilC.class,
-                Types.getTemplateParameterOfInterface(InterfaceTypeUtilE.class, InterfaceTypeUtilI.class));
+        Assertions.assertNull(Types.getTemplateParameterOfInterface(InterfaceTypeUtilD.class, InterfaceTypeUtilJ.class),
+                "Types util class works incorrectly");
+        Assertions.assertEquals(InterfaceTypeUtilC.class,
+                Types.getTemplateParameterOfInterface(InterfaceTypeUtilE.class, InterfaceTypeUtilI.class),
+                "Types util class works incorrectly");
     }
 }

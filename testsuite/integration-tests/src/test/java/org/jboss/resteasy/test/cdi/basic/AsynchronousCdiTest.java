@@ -1,17 +1,13 @@
 package org.jboss.resteasy.test.cdi.basic;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.core.Is.is;
-
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.basic.resource.AsynchronousResource;
 import org.jboss.resteasy.test.cdi.basic.resource.AsynchronousStateless;
@@ -21,9 +17,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter CDI
@@ -31,7 +27,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for asynchronous behavior of RESTEasy with CDI.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class AsynchronousCdiTest {
 
@@ -65,9 +61,8 @@ public class AsynchronousCdiTest {
         long start = System.currentTimeMillis();
         Response response = base.request().get();
 
-        MatcherAssert.assertThat("Response was sent before delay elapsed", System.currentTimeMillis() - start,
-                is(greaterThan(DELAY)));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertTrue((System.currentTimeMillis() - start) > DELAY, "Response was sent before delay elapsed");
+        Assertions.assertEquals(200, response.getStatus());
         client.close();
     }
 
@@ -83,9 +78,8 @@ public class AsynchronousCdiTest {
         long start = System.currentTimeMillis();
         Response response = base.request().get();
 
-        MatcherAssert.assertThat("Response was sent before delay elapsed", System.currentTimeMillis() - start,
-                is(greaterThan(DELAY)));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertTrue((System.currentTimeMillis() - start) > DELAY, "Response was sent before delay elapsed");
+        Assertions.assertEquals(200, response.getStatus());
         client.close();
     }
 }

@@ -1,8 +1,5 @@
 package org.jboss.resteasy.test.security;
 
-import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_PORT_OFFSET_WRONG;
-import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_QUALIFIER_WRONG;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,20 +16,21 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.container.test.api.TargetsContainer;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
+import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.as.arquillian.container.ManagementClient;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.setup.SnapshotServerSetupTask;
 import org.jboss.resteasy.test.security.resource.SslResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Security
@@ -40,9 +38,17 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Tests for SSL - server secured with certificate with wrong hostname "abc"
  * @tpSince RESTEasy 3.7.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@ServerSetup(SslServerWithWrongHostnameCertificateTest.SslServerSetupTask.class)
 public class SslServerWithWrongHostnameCertificateTest extends SslTestBase {
+
+    public static class SslServerSetupTask extends SnapshotServerSetupTask {
+        @Override
+        protected void doSetup(final ManagementClient client, final String containerId) throws Exception {
+            SslTestBase.secureServer(client.getControllerClient(), SERVER_KEYSTORE_PATH);
+        }
+    }
 
     private static final Logger LOG = Logger.getLogger(SslServerWithWrongHostnameCertificateTest.class.getName());
 
@@ -50,30 +56,20 @@ public class SslServerWithWrongHostnameCertificateTest extends SslTestBase {
 
     private static final String SERVER_KEYSTORE_PATH = RESOURCES + "/server-wrong-hostname.keystore";
     private static final String CLIENT_TRUSTSTORE_PATH = RESOURCES + "/client-wrong-hostname.truststore";
-    private static final String URL = generateHttpsURL(SSL_CONTAINER_PORT_OFFSET_WRONG);
+    private static final String URL = generateHttpsURL();
 
-    @TargetsContainer(SSL_CONTAINER_QUALIFIER_WRONG)
-    @Deployment(managed = false, name = DEPLOYMENT_NAME)
+    @Deployment(name = DEPLOYMENT_NAME)
     public static Archive<?> createDeployment() {
         WebArchive war = TestUtil.prepareArchive(DEPLOYMENT_NAME);
         return TestUtil.finishContainerPrepare(war, null, SslResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void prepareTruststore()
             throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
         truststore = KeyStore.getInstance("jks");
         try (InputStream in = new FileInputStream(CLIENT_TRUSTSTORE_PATH)) {
             truststore.load(in, PASSWORD.toCharArray());
-        }
-    }
-
-    @Before
-    public void startContainer() throws Exception {
-        if (!containerController.isStarted(SSL_CONTAINER_QUALIFIER_WRONG)) {
-            containerController.start(SSL_CONTAINER_QUALIFIER_WRONG);
-            secureServer(SERVER_KEYSTORE_PATH, SSL_CONTAINER_PORT_OFFSET_WRONG);
-            deployer.deploy(DEPLOYMENT_NAME);
         }
     }
 
@@ -85,15 +81,19 @@ public class SslServerWithWrongHostnameCertificateTest extends SslTestBase {
      *                HostnameVerificationPolicy is set to STRICT so exception should be thrown.
      * @tpSince RESTEasy 3.7.0
      */
-    @Test(expected = ProcessingException.class)
+    @Test()
     public void testHostnameVerificationPolicyStrict() {
-        resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
-        resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+        ProcessingException thrown = Assertions.assertThrows(ProcessingException.class,
+                () -> {
+                    resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+                    resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
-        resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.STRICT);
+                    resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.STRICT);
 
-        client = resteasyClientBuilder.trustStore(truststore).build();
-        client.target(URL).request().get();
+                    client = resteasyClientBuilder.trustStore(truststore).build();
+                    client.target(URL).request().get();
+                });
+        Assertions.assertTrue(thrown instanceof ProcessingException);
     }
 
     /**
@@ -104,15 +104,19 @@ public class SslServerWithWrongHostnameCertificateTest extends SslTestBase {
      *                HostnameVerificationPolicy is set to WILDCARD so exception should be thrown.
      * @tpSince RESTEasy 3.7.0
      */
-    @Test(expected = ProcessingException.class)
+    @Test()
     public void testHostnameVerificationPolicyWildcard() {
-        resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
-        resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+        ProcessingException thrown = Assertions.assertThrows(ProcessingException.class,
+                () -> {
+                    resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+                    resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
-        resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.WILDCARD);
+                    resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.WILDCARD);
 
-        client = resteasyClientBuilder.trustStore(truststore).build();
-        client.target(URL).request().get();
+                    client = resteasyClientBuilder.trustStore(truststore).build();
+                    client.target(URL).request().get();
+                });
+        Assertions.assertTrue(thrown instanceof ProcessingException);
     }
 
     /**
@@ -132,8 +136,8 @@ public class SslServerWithWrongHostnameCertificateTest extends SslTestBase {
 
         client = resteasyClientBuilder.trustStore(truststore).build();
         Response response = client.target(URL).request().get();
-        Assert.assertEquals("Hello World!", response.readEntity(String.class));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("Hello World!", response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
     }
 
     /**
@@ -155,8 +159,8 @@ public class SslServerWithWrongHostnameCertificateTest extends SslTestBase {
 
         client = resteasyClientBuilder.trustStore(truststore).build();
         Response response = client.target(URL).request().get();
-        Assert.assertEquals("Hello World!", response.readEntity(String.class));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("Hello World!", response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
     }
 
     /**
@@ -177,11 +181,11 @@ public class SslServerWithWrongHostnameCertificateTest extends SslTestBase {
 
         client = resteasyClientBuilder.trustStore(truststore).build();
         Response response = client.target(URL).request().get();
-        Assert.assertEquals("Hello World!", response.readEntity(String.class));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("Hello World!", response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
     }
 
-    @After
+    @AfterEach
     public void after() {
         client.close();
     }

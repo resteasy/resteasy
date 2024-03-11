@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.core.basic.resource.ApplicationFilterCustomer;
@@ -24,11 +24,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.UrlAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Configuration
@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-541
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ApplicationFilterTest {
 
@@ -57,12 +57,12 @@ public class ApplicationFilterTest {
         return PortProviderUtil.generateURL(path, ApplicationFilterTest.class.getSimpleName());
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -84,7 +84,7 @@ public class ApplicationFilterTest {
                 + "</customer>";
         Response response = client.target(generateURL("/customers")).request()
                 .put(Entity.entity(newCustomer, "application/xml"));
-        Assert.assertEquals(405, response.getStatus());
+        Assertions.assertEquals(405, response.getStatus());
     }
 
     /**
@@ -94,8 +94,8 @@ public class ApplicationFilterTest {
     @Test
     public void testStaticResource() throws Exception {
         String response = client.target(generateURL("/foo.html")).request().get(String.class);
-        Assert.assertNotNull(response);
-        Assert.assertTrue(response.indexOf("hello world") > -1);
+        Assertions.assertNotNull(response);
+        Assertions.assertTrue(response.indexOf("hello world") > -1);
     }
 
     /**
@@ -124,7 +124,7 @@ public class ApplicationFilterTest {
         OutputStream os = connection.getOutputStream();
         os.write(newCustomer.getBytes());
         os.flush();
-        Assert.assertEquals(HttpResponseCodes.SC_CREATED, connection.getResponseCode());
+        Assertions.assertEquals(HttpResponseCodes.SC_CREATED, connection.getResponseCode());
         connection.disconnect();
 
         // Get the new customer
@@ -138,7 +138,7 @@ public class ApplicationFilterTest {
         while (line != null) {
             line = reader.readLine();
         }
-        Assert.assertEquals(HttpResponseCodes.SC_OK, connection.getResponseCode());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, connection.getResponseCode());
         connection.disconnect();
 
         // Update the new customer.  Change Bill's name to William
@@ -158,7 +158,7 @@ public class ApplicationFilterTest {
         os = connection.getOutputStream();
         os.write(updateCustomer.getBytes());
         os.flush();
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, connection.getResponseCode());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, connection.getResponseCode());
         connection.disconnect();
 
         // Show the update
@@ -171,7 +171,7 @@ public class ApplicationFilterTest {
         while (line != null) {
             line = reader.readLine();
         }
-        Assert.assertEquals(HttpResponseCodes.SC_OK, connection.getResponseCode());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, connection.getResponseCode());
         connection.disconnect();
     }
 }

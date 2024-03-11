@@ -1,8 +1,5 @@
 package org.jboss.resteasy.test.security;
 
-import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_PORT_OFFSET_SNI;
-import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_QUALIFIER_SNI;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,26 +15,24 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.container.test.api.TargetsContainer;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.as.controller.client.ModelControllerClient;
+import org.jboss.arquillian.junit5.ArquillianExtension;
+import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.as.arquillian.container.ManagementClient;
 import org.jboss.as.controller.client.helpers.Operations;
 import org.jboss.as.controller.client.helpers.Operations.CompositeOperationBuilder;
 import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.setup.SnapshotServerSetupTask;
 import org.jboss.resteasy.test.security.resource.SslResource;
 import org.jboss.resteasy.utils.ServerReload;
-import org.jboss.resteasy.utils.TestManagementClient;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Security
@@ -45,111 +40,24 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for sniHostNames - method to choose which certificate should be presented by the server
  * @tpSince RESTEasy 3.7.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@ServerSetup(SslSniHostNamesTest.SslServerSetupTask.class)
 public class SslSniHostNamesTest extends SslTestBase {
 
-    private static KeyStore truststore;
-    private static String SERVER_WRONG_KEYSTORE_PATH = RESOURCES + "/server-wrong-hostname.keystore";
-    private static String SERVER_TRUSTED_KEYSTORE_PATH = RESOURCES + "/server.keystore";
+    public static class SslServerSetupTask extends SnapshotServerSetupTask {
+        @Override
+        protected void doSetup(final ManagementClient client, final String containerId) throws Exception {
+            File file = new File(SERVER_WRONG_KEYSTORE_PATH);
+            SERVER_WRONG_KEYSTORE_PATH = file.getAbsolutePath();
 
-    private static final String CLIENT_TRUSTSTORE_PATH = RESOURCES + "/client.truststore";
-    private static final String URL = generateHttpsURL(SSL_CONTAINER_PORT_OFFSET_SNI);
+            file = new File(SERVER_TRUSTED_KEYSTORE_PATH);
+            SERVER_TRUSTED_KEYSTORE_PATH = file.getAbsolutePath();
 
-    private static AutoCloseable RESET_CONFIG = null;
-
-    @TargetsContainer(SSL_CONTAINER_QUALIFIER_SNI)
-    @Deployment(managed = false, name = DEPLOYMENT_NAME)
-    public static Archive<?> createDeployment() {
-        WebArchive war = TestUtil.prepareArchive(DEPLOYMENT_NAME);
-        return TestUtil.finishContainerPrepare(war, null, SslResource.class);
-    }
-
-    @BeforeClass
-    public static void prepareTruststore()
-            throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
-        truststore = KeyStore.getInstance("jks");
-        try (InputStream in = new FileInputStream(CLIENT_TRUSTSTORE_PATH)) {
-            truststore.load(in, PASSWORD.toCharArray());
-        }
-    }
-
-    @AfterClass
-    public static void resetConfig() throws Exception {
-        if (containerController.isStarted(SSL_CONTAINER_QUALIFIER_SNI)) {
-            deployer.undeploy(DEPLOYMENT_NAME);
-            if (RESET_CONFIG != null) {
-                RESET_CONFIG.close();
+            if (TestUtil.isWindows()) {
+                SERVER_WRONG_KEYSTORE_PATH = SERVER_WRONG_KEYSTORE_PATH.replace("\\", "\\\\");
+                SERVER_TRUSTED_KEYSTORE_PATH = SERVER_TRUSTED_KEYSTORE_PATH.replace("\\", "\\\\");
             }
-            containerController.stop(SSL_CONTAINER_QUALIFIER_SNI);
-        }
-    }
-
-    @Before
-    public void startContainer() throws Exception {
-        if (!containerController.isStarted(SSL_CONTAINER_QUALIFIER_SNI)) {
-            containerController.start(SSL_CONTAINER_QUALIFIER_SNI);
-            secureServer();
-            deployer.deploy(DEPLOYMENT_NAME);
-        }
-    }
-
-    /**
-     * @tpTestDetails Client has truststore containing self-signed certificate.
-     *                Server/endpoint has two certificates - managed by two separate SSLContexts. Default SSLContext has wrong
-     *                certificate - not trusted by client.
-     * @tpSince RESTEasy 3.7.0
-     */
-    @Test(expected = ProcessingException.class)
-    public void testException() {
-        resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
-        resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
-
-        client = resteasyClientBuilder.trustStore(truststore).build();
-        client.target(URL).request().get();
-    }
-
-    /**
-     * @tpTestDetails Client has truststore containing self-signed certificate.
-     *                Server/endpoint has two certificates - managed by two separate SSLContexts. Default SSLContext has wrong
-     *                certificate - not trusted by client.
-     *                However, client requests certificate for localhost using sniHostNames method.
-     * @tpSince RESTEasy 3.7.0
-     */
-    @Test
-    public void test() {
-        resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
-        resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
-
-        resteasyClientBuilder.sniHostNames(HOSTNAME);
-
-        client = resteasyClientBuilder.trustStore(truststore).build();
-        Response response = client.target(URL).request().get();
-        Assert.assertEquals("Hello World!", response.readEntity(String.class));
-        Assert.assertEquals(200, response.getStatus());
-    }
-
-    /**
-     * Set up ssl in jboss-cli so https endpoint can be accessed only if client trusts certificates in the server keystore.
-     *
-     * @throws Exception
-     */
-    private static void secureServer() throws Exception {
-        File file = new File(SERVER_WRONG_KEYSTORE_PATH);
-        SERVER_WRONG_KEYSTORE_PATH = file.getAbsolutePath();
-
-        file = new File(SERVER_TRUSTED_KEYSTORE_PATH);
-        SERVER_TRUSTED_KEYSTORE_PATH = file.getAbsolutePath();
-
-        if (TestUtil.isWindows()) {
-            SERVER_WRONG_KEYSTORE_PATH = SERVER_WRONG_KEYSTORE_PATH.replace("\\", "\\\\");
-            SERVER_TRUSTED_KEYSTORE_PATH = SERVER_TRUSTED_KEYSTORE_PATH.replace("\\", "\\\\");
-        }
-
-        final int port = TestUtil.getManagementPort(SSL_CONTAINER_PORT_OFFSET_SNI);
-        RESET_CONFIG = ServerReload.takeSnapshot(port);
-
-        try (ModelControllerClient client = TestManagementClient.create(TestUtil.getManagementHost(), port)) {
 
             final CompositeOperationBuilder builder = CompositeOperationBuilder.create();
             ModelNode credentialReference = new ModelNode().setEmptyObject();
@@ -214,15 +122,76 @@ public class SslSniHostNamesTest extends SslTestBase {
             builder.addStep(Operations.createUndefineAttributeOperation(address, "security-realm"));
             builder.addStep(Operations.createWriteAttributeOperation(address, "ssl-context", "test-sni"));
 
-            final ModelNode result = client.execute(builder.build());
+            final ModelNode result = client.getControllerClient().execute(builder.build());
             if (!Operations.isSuccessfulOutcome(result)) {
                 throw new RuntimeException("Failed to configure SSL: " + Operations.getFailureDescription(result).asString());
             }
-            ServerReload.reloadIfRequired(client);
+            ServerReload.reloadIfRequired(client.getControllerClient());
         }
     }
 
-    @After
+    private static KeyStore truststore;
+    private static String SERVER_WRONG_KEYSTORE_PATH = RESOURCES + "/server-wrong-hostname.keystore";
+    private static String SERVER_TRUSTED_KEYSTORE_PATH = RESOURCES + "/server.keystore";
+
+    private static final String CLIENT_TRUSTSTORE_PATH = RESOURCES + "/client.truststore";
+    private static final String URL = generateHttpsURL();
+
+    @Deployment(name = DEPLOYMENT_NAME)
+    public static Archive<?> createDeployment() {
+        WebArchive war = TestUtil.prepareArchive(DEPLOYMENT_NAME);
+        return TestUtil.finishContainerPrepare(war, null, SslResource.class);
+    }
+
+    @BeforeAll
+    public static void prepareTruststore()
+            throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+        truststore = KeyStore.getInstance("jks");
+        try (InputStream in = new FileInputStream(CLIENT_TRUSTSTORE_PATH)) {
+            truststore.load(in, PASSWORD.toCharArray());
+        }
+    }
+
+    /**
+     * @tpTestDetails Client has truststore containing self-signed certificate.
+     *                Server/endpoint has two certificates - managed by two separate SSLContexts. Default SSLContext has wrong
+     *                certificate - not trusted by client.
+     * @tpSince RESTEasy 3.7.0
+     */
+    @Test()
+    public void testException() {
+        ProcessingException thrown = Assertions.assertThrows(ProcessingException.class,
+                () -> {
+                    resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+                    resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+
+                    client = resteasyClientBuilder.trustStore(truststore).build();
+                    client.target(URL).request().get();
+                });
+        Assertions.assertTrue(thrown instanceof ProcessingException);
+    }
+
+    /**
+     * @tpTestDetails Client has truststore containing self-signed certificate.
+     *                Server/endpoint has two certificates - managed by two separate SSLContexts. Default SSLContext has wrong
+     *                certificate - not trusted by client.
+     *                However, client requests certificate for localhost using sniHostNames method.
+     * @tpSince RESTEasy 3.7.0
+     */
+    @Test
+    public void test() {
+        resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+        resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+
+        resteasyClientBuilder.sniHostNames(HOSTNAME);
+
+        client = resteasyClientBuilder.trustStore(truststore).build();
+        Response response = client.target(URL).request().get();
+        Assertions.assertEquals("Hello World!", response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
+    }
+
+    @AfterEach
     public void after() {
         client.close();
     }

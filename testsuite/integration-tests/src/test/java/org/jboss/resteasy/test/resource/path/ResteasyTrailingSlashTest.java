@@ -1,20 +1,20 @@
 package org.jboss.resteasy.test.resource.path;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.resource.path.resource.ResteasyTrailingSlashResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resource
@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Check for slash in URL
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ResteasyTrailingSlashTest {
 
@@ -45,7 +45,7 @@ public class ResteasyTrailingSlashTest {
         Client client = ClientBuilder.newClient();
         String val = client.target(generateURL("/test/"))
                 .request().get(String.class);
-        assertEquals("Wrong response", "hello world", val);
+        assertEquals("hello world", val, "Wrong response");
         client.close();
     }
 }

@@ -19,7 +19,7 @@
 
 package org.jboss.resteasy.utils;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +31,7 @@ import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.as.controller.client.ModelControllerClientConfiguration;
 import org.jboss.as.controller.client.helpers.Operations;
 import org.jboss.dmr.ModelNode;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * Utilities for handling server reloads.
@@ -66,7 +66,7 @@ public class ServerReload {
         try {
             final ModelNode result = client.execute(reloadOp);
             if (!Operations.isSuccessfulOutcome(result)) {
-                Assert.fail(Operations.getFailureDescription(result)
+                Assertions.fail(Operations.getFailureDescription(result)
                         .asString());
             }
         } catch (IOException e) {
@@ -181,7 +181,7 @@ public class ServerReload {
         if ("reload-required".equalsIgnoreCase(runningState)) {
             executeReloadAndWaitForCompletion(client);
         } else {
-            Assert.assertEquals("Server state 'running' is expected", "running", runningState);
+            Assertions.assertEquals("running", runningState, "Server state 'running' is expected");
         }
     }
 
@@ -204,7 +204,7 @@ public class ServerReload {
 
                     final ModelNode result1 = restoreClient.execute(Operations.createOperation("write-config"));
                     if (!Operations.isSuccessfulOutcome(result1)) {
-                        Assert.fail(
+                        Assertions.fail(
                                 "Failed to write config after restoring from snapshot "
                                         + Operations.getFailureDescription(result1)
                                                 .asString());
@@ -234,7 +234,7 @@ public class ServerReload {
 
                 final ModelNode result1 = client.execute(Operations.createOperation("write-config"));
                 if (!Operations.isSuccessfulOutcome(result1)) {
-                    Assert.fail(
+                    Assertions.fail(
                             "Failed to write config after restoring from snapshot " + Operations.getFailureDescription(result1)
                                     .asString());
                 }
@@ -248,7 +248,7 @@ public class ServerReload {
         final ModelNode op = Operations.createOperation("take-snapshot");
         final ModelNode result = client.execute(op);
         if (!Operations.isSuccessfulOutcome(result)) {
-            Assert.fail("Reload operation didn't finish successfully: " + Operations.getFailureDescription(result)
+            Assertions.fail("Reload operation didn't finish successfully: " + Operations.getFailureDescription(result)
                     .asString());
         }
         final String snapshot = Operations.readResult(result)

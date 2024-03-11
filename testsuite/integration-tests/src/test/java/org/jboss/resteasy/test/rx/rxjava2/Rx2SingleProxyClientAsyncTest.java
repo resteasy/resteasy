@@ -13,7 +13,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.rxjava2.SingleRxInvokerProvider;
@@ -29,13 +29,12 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import io.reactivex.Single;
 
@@ -49,7 +48,7 @@ import io.reactivex.Single;
  *
  *          The server synchronously returns objects of type T.
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class Rx2SingleProxyClientAsyncTest {
 
@@ -87,19 +86,19 @@ public class Rx2SingleProxyClientAsyncTest {
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         client = (ResteasyClient) ClientBuilder.newClient();
         proxy = client.target(generateURL("/")).proxy(Rx2SingleResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         latch = new CountDownLatch(1);
         value.set(null);
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -113,8 +112,8 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals("x", value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals("x", value.get());
     }
 
     @Test
@@ -125,8 +124,8 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(new Thing("x"), value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(new Thing("x"), value.get());
     }
 
     @Test
@@ -137,8 +136,8 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(xThingList, value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(xThingList, value.get());
     }
 
     @Test
@@ -149,8 +148,8 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals("a", value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals("a", value.get());
     }
 
     @Test
@@ -161,8 +160,8 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(new Thing("a"), value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(new Thing("a"), value.get());
     }
 
     @Test
@@ -173,8 +172,8 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(aThingList, value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(aThingList, value.get());
     }
 
     @Test
@@ -185,8 +184,8 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals("a", value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals("a", value.get());
     }
 
     @Test
@@ -197,8 +196,8 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(new Thing("a"), value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(new Thing("a"), value.get());
     }
 
     @Test
@@ -209,8 +208,8 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(aThingList, value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(aThingList, value.get());
     }
 
     @Test
@@ -221,8 +220,8 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals("x", value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals("x", value.get());
     }
 
     @Test
@@ -233,8 +232,8 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(new Thing("x"), value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(new Thing("x"), value.get());
     }
 
     @Test
@@ -245,8 +244,8 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(xThingList, value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(xThingList, value.get());
     }
 
     @Test
@@ -258,7 +257,7 @@ public class Rx2SingleProxyClientAsyncTest {
                     latch.countDown();
                 },
                 (Throwable t) -> throwableContains(t, "Input stream was empty"));
-        Assert.assertNull(value.get());
+        Assertions.assertNull(value.get());
     }
 
     @Test
@@ -269,8 +268,8 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals("x", value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals("x", value.get());
     }
 
     @Test
@@ -281,8 +280,8 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(new Thing("x"), value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(new Thing("x"), value.get());
     }
 
     @Test
@@ -293,12 +292,11 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(xThingList, value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(xThingList, value.get());
     }
 
     @Test
-    @Ignore // TRACE is disabled by default in Wildfly
     public void testTrace() throws Exception {
         Single<String> single = proxy.trace();
         single.subscribe((String s) -> {
@@ -306,12 +304,11 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals("x", value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals("x", value.get());
     }
 
     @Test
-    @Ignore // TRACE is disabled by default in Wildfly
     public void testTraceThing() throws Exception {
         Single<Thing> single = proxy.traceThing();
         single.subscribe((Thing t) -> {
@@ -319,12 +316,11 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(new Thing("x"), value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(new Thing("x"), value.get());
     }
 
     @Test
-    @Ignore // TRACE is disabled by default in Wildfly
     public void testTraceThingList() throws Exception {
         Single<List<Thing>> single = proxy.traceThingList();
         single.subscribe((List<Thing> l) -> {
@@ -332,8 +328,8 @@ public class Rx2SingleProxyClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(xThingList, value.get());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(xThingList, value.get());
     }
 
     @Test
@@ -346,9 +342,9 @@ public class Rx2SingleProxyClientAsyncTest {
                 latch.countDown();
             });
             boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-            Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-            Assert.assertFalse(RxScheduledExecutorService.used);
-            Assert.assertEquals("x", value.get());
+            Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+            Assertions.assertFalse(RxScheduledExecutorService.used);
+            Assertions.assertEquals("x", value.get());
         }
 
         {
@@ -364,9 +360,9 @@ public class Rx2SingleProxyClientAsyncTest {
                 latch.countDown();
             });
             boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-            Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-            Assert.assertTrue(RxScheduledExecutorService.used);
-            Assert.assertEquals("x", value.get());
+            Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+            Assertions.assertTrue(RxScheduledExecutorService.used);
+            Assertions.assertEquals("x", value.get());
             client.close();
         }
     }
@@ -382,10 +378,10 @@ public class Rx2SingleProxyClientAsyncTest {
                     latch.countDown();
                 });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
         Throwable t = unwrap((Throwable) value.get(), InternalServerErrorException.class);
-        Assert.assertNotNull(t);
-        Assert.assertTrue(t.getMessage().contains("500"));
+        Assertions.assertNotNull(t);
+        Assertions.assertTrue(t.getMessage().contains("500"));
     }
 
     @Test
@@ -399,10 +395,10 @@ public class Rx2SingleProxyClientAsyncTest {
                     latch.countDown();
                 });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
         Throwable t = unwrap((Throwable) value.get(), ClientErrorException.class);
-        Assert.assertNotNull(t);
-        Assert.assertTrue(t.getMessage().contains("444"));
+        Assertions.assertNotNull(t);
+        Assertions.assertTrue(t.getMessage().contains("444"));
     }
 
     @Test
@@ -430,10 +426,10 @@ public class Rx2SingleProxyClientAsyncTest {
         });
 
         boolean waitResult = cdl.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(2, list.size());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(2, list.size());
         for (int i = 0; i < 2; i++) {
-            Assert.assertEquals("x", list.get(i));
+            Assertions.assertEquals("x", list.get(i));
         }
         client1.close();
         client2.close();
@@ -460,10 +456,10 @@ public class Rx2SingleProxyClientAsyncTest {
         });
 
         boolean waitResult = cdl.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(2, list.size());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(2, list.size());
         for (int i = 0; i < 2; i++) {
-            Assert.assertEquals("x", list.get(i));
+            Assertions.assertEquals("x", list.get(i));
         }
     }
 
@@ -485,10 +481,10 @@ public class Rx2SingleProxyClientAsyncTest {
         });
 
         boolean waitResult = cdl.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(2, list.size());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(2, list.size());
         for (int i = 0; i < 2; i++) {
-            Assert.assertEquals("x", list.get(i));
+            Assertions.assertEquals("x", list.get(i));
         }
     }
 

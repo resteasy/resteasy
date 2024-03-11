@@ -10,8 +10,8 @@ import jakarta.xml.bind.JAXBException;
 
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Providers
@@ -68,11 +68,11 @@ public class UserDefinedContextResolverTest {
         ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
         ContextResolver<JAXBContextFinder> finder1 = providerFactory.getContextResolver(JAXBContextFinder.class,
                 MediaType.TEXT_XML_TYPE);
-        Assert.assertNotNull(finder1);
+        Assertions.assertNotNull(finder1);
         providerFactory.register(TestContextResolver.class);
         ContextResolver<JAXBContextFinder> finder2 = providerFactory.getContextResolver(JAXBContextFinder.class,
                 MediaType.TEXT_XML_TYPE);
         JAXBContextFinder finder = finder2.getContext(JAXBContextFinder.class);
-        Assert.assertTrue(finder instanceof TestContextFinder);
+        Assertions.assertTrue(finder instanceof TestContextFinder);
     }
 }

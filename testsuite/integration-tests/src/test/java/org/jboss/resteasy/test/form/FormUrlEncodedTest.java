@@ -16,7 +16,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -25,18 +25,18 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Form tests
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class FormUrlEncodedTest {
 
@@ -52,12 +52,12 @@ public class FormUrlEncodedTest {
         return PortProviderUtil.generateURL(path, FormUrlEncodedTest.class.getSimpleName());
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -71,9 +71,9 @@ public class FormUrlEncodedTest {
         WebTarget base = client.target(generateURL("/simple"));
         Response response = base.request().post(Entity.form(new Form().param("hello", "world")));
 
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String body = response.readEntity(String.class);
-        Assert.assertEquals("Wrong response content", "hello=world", body);
+        Assertions.assertEquals("hello=world", body, "Wrong response content");
 
         response.close();
     }
@@ -89,7 +89,7 @@ public class FormUrlEncodedTest {
         try {
             response = builder.post(
                     Entity.entity("name=jon&address1=123+Main+St&address2=&zip=12345", MediaType.APPLICATION_FORM_URLENCODED));
-            Assert.assertEquals(204, response.getStatus());
+            Assertions.assertEquals(204, response.getStatus());
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
@@ -106,8 +106,8 @@ public class FormUrlEncodedTest {
         Builder builder = client.target(generateURL("/simple")).request();
         try {
             Response response = builder.post(Entity.form(new Form("hello", "world")));
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals("hello=world", response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals("hello=world", response.readEntity(String.class));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -122,10 +122,10 @@ public class FormUrlEncodedTest {
         Builder builder = client.target(generateURL("/form/twoparams")).request();
         try {
             Response response = builder.post(Entity.form(new Form("hello", "world").param("yo", "mama")));
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             String body = response.readEntity(String.class);
-            Assert.assertTrue(body.indexOf("hello=world") != -1);
-            Assert.assertTrue(body.indexOf("yo=mama") != -1);
+            Assertions.assertTrue(body.indexOf("hello=world") != -1);
+            Assertions.assertTrue(body.indexOf("yo=mama") != -1);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -157,9 +157,9 @@ public class FormUrlEncodedTest {
         MultivaluedMapImpl<String, String> form = new MultivaluedMapImpl<String, String>();
         form.add("hello", "world");
         String body = proxy.post(form);
-        Assert.assertEquals("hello=world", body);
+        Assertions.assertEquals("hello=world", body);
 
         MultivaluedMap<String, String> rtn = proxy.post2(form);
-        Assert.assertEquals(rtn.getFirst("hello"), "world");
+        Assertions.assertEquals(rtn.getFirst("hello"), "world");
     }
 }

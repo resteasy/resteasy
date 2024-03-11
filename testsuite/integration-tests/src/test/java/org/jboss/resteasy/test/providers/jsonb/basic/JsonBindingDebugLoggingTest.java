@@ -1,11 +1,5 @@
 package org.jboss.resteasy.test.providers.jsonb.basic;
 
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-
 import java.io.FilePermission;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -19,9 +13,8 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.setup.LoggingSetupTask;
@@ -36,11 +29,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Interceptors
@@ -49,7 +42,7 @@ import org.junit.runner.RunWith;
  *                    Regression test for RESTEASY-2106 and RESTEASY-2056.
  * @tpSince RESTEasy 4.0.0.Beta7
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @ServerSetup({ LoggingSetupTask.class }) // TBD: remove debug logging activation?
 public class JsonBindingDebugLoggingTest {
 
@@ -77,12 +70,12 @@ public class JsonBindingDebugLoggingTest {
         return TestUtil.finishContainerPrepare(war, null, JsonBindingDebugLoggingEndPoint.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -113,20 +106,18 @@ public class JsonBindingDebugLoggingTest {
         WebTarget base = client.target(generateURL("/get/nok"));
         Response response = base.request().get();
         // check response
-        MatcherAssert.assertThat("Wrong response code", response.getStatus(), is(500));
-        MatcherAssert.assertThat("Response message doesn't contains full stacktrace",
-                response.readEntity(String.class), allOf(
-                        containsString(JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName()),
-                        containsString("jakarta.json.bind.JsonbException: Unable to serialize property 'a'"),
-                        containsString("RESTEASY008205")));
+        Assertions.assertEquals(500, response.getStatus(), "Wrong response code");
+        final String body = response.readEntity(String.class);
+        Assertions.assertAll("Response message doesn't contains full stacktrace",
+                () -> Assertions.assertTrue(body.contains(JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName())),
+                () -> Assertions
+                        .assertTrue(body.contains("jakarta.json.bind.JsonbException: Unable to serialize property 'a'")),
+                () -> Assertions.assertTrue(body.contains("RESTEASY008205")));
 
-        MatcherAssert.assertThat("RESTEasy exception should be logged",
-                resteasyExceptionLog.count(), is(0));
-        MatcherAssert.assertThat("Jakarta JSON Binding exception should be logged",
-                jsonbExceptionLog.count(), greaterThan(0));
+        Assertions.assertEquals(0, resteasyExceptionLog.count(), "RESTEasy exception should not be logged");
+        Assertions.assertTrue(jsonbExceptionLog.count() > 0, "Jakarta JSON Binding exception should be logged");
 
-        MatcherAssert.assertThat("There are not only 1 error logs in server",
-                peStringLog.count(), is(1));
+        Assertions.assertEquals(1, peStringLog.count(), "There are not only 1 error logs in server");
     }
 
     /**
@@ -152,20 +143,15 @@ public class JsonBindingDebugLoggingTest {
         Response response = base.request().post(Entity.entity(wrongItem,
                 MediaType.APPLICATION_JSON));
 
-        // check response
-        MatcherAssert.assertThat("Response message doesn't contains proper message",
-                response.readEntity(String.class), allOf(
-                        containsString("RESTEASY008200: JSON Binding deserialization error"),
-                        containsString(JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName()),
-                        containsString("jakarta.json.bind.JsonbException: ")));
+        final String body = response.readEntity(String.class);
+        Assertions.assertAll("Response message doesn't contains proper message",
+                () -> Assertions.assertTrue(body.contains("RESTEASY008200: JSON Binding deserialization error")),
+                () -> Assertions.assertTrue(body.contains(JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName())),
+                () -> Assertions.assertTrue(body.contains("jakarta.json.bind.JsonbException: ")));
 
-        // assert log messages after request
-        MatcherAssert.assertThat("Application Exception should be logged",
-                applicationExcpetionLog.count(), is(1));
-        MatcherAssert.assertThat("RESTEasy exception should be logged",
-                resteasyExceptionLog.count(), is(1));
-        MatcherAssert.assertThat("Jakarta JSON Binding exception should be logged",
-                jsonbExceptionLog.count(), greaterThanOrEqualTo(1));
+        Assertions.assertEquals(1, applicationExcpetionLog.count(), "Application Exception should be logged");
+        Assertions.assertEquals(1, resteasyExceptionLog.count(), "RESTEasy exception should be logged");
+        Assertions.assertTrue(jsonbExceptionLog.count() > 0, "Jakarta JSON Binding exception should be logged");
     }
 
     /**
@@ -197,28 +183,23 @@ public class JsonBindingDebugLoggingTest {
         // use JsonBindingProvider to get exception
         try {
             response.readEntity(JsonBindingDebugLoggingItemCorruptedSet.class);
-            Assert.fail("Client doesn't throw Exception during reading of corrupted data");
+            Assertions.fail("Client doesn't throw Exception during reading of corrupted data");
         } catch (ProcessingException e) {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
             String stackTrace = errors.toString();
 
-            MatcherAssert.assertThat("Stracktrace doesn't contain jakarta.json.bind.JsonbException", stackTrace,
-                    containsString("jakarta.json.bind.JsonbException"));
-            MatcherAssert.assertThat("Stracktrace doesn't contain application exception", stackTrace,
-                    containsString("Caused by: java.lang.RuntimeException: "
-                            + JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName()));
+            Assertions.assertTrue(stackTrace.contains("jakarta.json.bind.JsonbException"),
+                    "Stracktrace doesn't contain jakarta.json.bind.JsonbException");
+            Assertions.assertTrue(stackTrace.contains("Caused by: java.lang.RuntimeException: "
+                    + JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName()),
+                    "Stracktrace doesn't contain application exception");
         }
 
-        // assert log messages after request
-        MatcherAssert.assertThat("Application Exception should be logged",
-                applicationExcpetionLog.count(), is(1));
-        MatcherAssert.assertThat("RESTEasy exception should be logged",
-                resteasyExceptionLog.count(), is(1));
-        MatcherAssert.assertThat("Jakarta JSON Binding exception should be logged",
-                jsonbExceptionLog.count(), greaterThanOrEqualTo(1));
-        MatcherAssert.assertThat("There shouldn't be any error logs in client",
-                errorStringLog.count(), is(0));
+        Assertions.assertEquals(1, applicationExcpetionLog.count(), "Application Exception should be logged");
+        Assertions.assertEquals(1, resteasyExceptionLog.count(), "RESTEasy exception should be logged");
+        Assertions.assertTrue(jsonbExceptionLog.count() > 0, "Jakarta JSON Binding exception should be logged");
+        Assertions.assertEquals(0, errorStringLog.count(), "There shouldn't be any error logs in client");
     }
 
     /**
@@ -254,21 +235,16 @@ public class JsonBindingDebugLoggingTest {
             e.printStackTrace(new PrintWriter(errors));
             String stackTrace = errors.toString();
 
-            MatcherAssert.assertThat("Stracktrace doesn't contain jakarta.json.bind.JsonbException", stackTrace,
-                    containsString("jakarta.json.bind.JsonbException"));
-            MatcherAssert.assertThat("Stracktrace doesn't contain application exception", stackTrace,
-                    containsString("Caused by: java.lang.RuntimeException: "
-                            + JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName()));
+            Assertions.assertTrue(stackTrace.contains("jakarta.json.bind.JsonbException"),
+                    "Stracktrace doesn't contain jakarta.json.bind.JsonbException");
+            Assertions.assertTrue(stackTrace.contains("Caused by: java.lang.RuntimeException: "
+                    + JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName()),
+                    "Stracktrace doesn't contain application exception");
         }
 
-        // assert log messages after request
-        MatcherAssert.assertThat("Application Exception should be logged",
-                applicationExcpetionLog.count(), is(1));
-        MatcherAssert.assertThat("Jakarta JSON Binding exception should be logged",
-                jsonbExceptionLog.count(), greaterThan(0));
-        MatcherAssert.assertThat("RESTEasy exception should be logged",
-                resteasyExceptionLog.count(), is(1));
-        MatcherAssert.assertThat("There shouldn't be any error logs in client",
-                errorStringLog.count(), is(0));
+        Assertions.assertEquals(1, applicationExcpetionLog.count(), "Application Exception should be logged");
+        Assertions.assertTrue(jsonbExceptionLog.count() > 0, "Jakarta JSON Binding exception should be logged");
+        Assertions.assertEquals(1, resteasyExceptionLog.count(), "RESTEasy exception should be logged");
+        Assertions.assertEquals(0, errorStringLog.count(), "There shouldn't be any error logs in client");
     }
 }

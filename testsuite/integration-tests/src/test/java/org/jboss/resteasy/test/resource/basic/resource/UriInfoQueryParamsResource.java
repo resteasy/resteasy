@@ -11,15 +11,15 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.UriInfo;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/queryParams")
 public class UriInfoQueryParamsResource {
     @GET
     public String doGet(@QueryParam("a") String a, @Context UriInfo info) {
-        Assert.assertNotNull(info);
+        Assertions.assertNotNull(info);
 
-        Assert.assertNotNull(info.getQueryParameters());
+        Assertions.assertNotNull(info.getQueryParameters());
         assertNotMutable(info.getQueryParameters());
 
         return "content";
@@ -32,42 +32,42 @@ public class UriInfoQueryParamsResource {
 
         try {
             params.put(param, Collections.singletonList(param));
-            Assert.fail("mutable UriInfo");
+            Assertions.fail("mutable UriInfo");
         } catch (UnsupportedOperationException uoe) {
             //OK
         }
 
         try {
             params.add(param, param);
-            Assert.fail("mutable UriInfo");
+            Assertions.fail("mutable UriInfo");
         } catch (UnsupportedOperationException uoe) {
             //OK
         }
 
         try {
             params.addAll(param, Collections.singletonList(param));
-            Assert.fail("mutable UriInfo");
+            Assertions.fail("mutable UriInfo");
         } catch (UnsupportedOperationException uoe) {
             //OK
         }
 
         try {
             params.addAll(param, param);
-            Assert.fail("mutable UriInfo");
+            Assertions.fail("mutable UriInfo");
         } catch (UnsupportedOperationException uoe) {
             //OK
         }
 
         try {
             params.addFirst(param, param);
-            Assert.fail("mutable UriInfo");
+            Assertions.fail("mutable UriInfo");
         } catch (UnsupportedOperationException uoe) {
             //OK
         }
 
         try {
             params.putSingle(param, param);
-            Assert.fail("mutable UriInfo");
+            Assertions.fail("mutable UriInfo");
         } catch (UnsupportedOperationException uoe) {
             //OK
         }
@@ -89,49 +89,49 @@ public class UriInfoQueryParamsResource {
                     return Collections.singletonList(param);
                 }
             });
-            Assert.fail("mutable UriInfo");
+            Assertions.fail("mutable UriInfo");
         } catch (UnsupportedOperationException uoe) {
             //OK
         }
 
         try {
             params.keySet().add(param);
-            Assert.fail("mutable UriInfo");
+            Assertions.fail("mutable UriInfo");
         } catch (UnsupportedOperationException uoe) {
             //OK
         }
 
         try {
             params.clear();
-            Assert.fail("mutable UriInfo");
+            Assertions.fail("mutable UriInfo");
         } catch (UnsupportedOperationException uoe) {
             //OK
         }
 
         try {
             params.putAll(params);
-            Assert.fail("mutable UriInfo");
+            Assertions.fail("mutable UriInfo");
         } catch (UnsupportedOperationException uoe) {
             //OK
         }
 
         try {
             params.remove(key);
-            Assert.fail("mutable UriInfo");
+            Assertions.fail("mutable UriInfo");
         } catch (UnsupportedOperationException uoe) {
             //OK
         }
 
         try {
             params.remove(null);
-            Assert.fail("mutable UriInfo");
+            Assertions.fail("mutable UriInfo");
         } catch (UnsupportedOperationException uoe) {
             //OK
         }
 
         try {
             params.values().add(Collections.singletonList(param));
-            Assert.fail("mutable UriInfo");
+            Assertions.fail("mutable UriInfo");
         } catch (UnsupportedOperationException uoe) {
             //OK
         }

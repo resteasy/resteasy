@@ -16,18 +16,18 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.providers.sse.resource.SseSmokeResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SseEventSourceTest {
     private static final Logger logger = Logger.getLogger(SseEventSourceTest.class);
@@ -63,9 +63,9 @@ public class SseEventSourceTest {
                 eventSource.open();
 
                 boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-                Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+                Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
             }
-            Assert.assertEquals("One message was expected.", 1, results.size());
+            Assertions.assertEquals(1, results.size(), "One message was expected.");
             MatcherAssert.assertThat("The message doesn't have expected content.", "data",
                     CoreMatchers.is(CoreMatchers.equalTo(results.get(0).readData(String.class))));
         } finally {
@@ -99,9 +99,9 @@ public class SseEventSourceTest {
                 eventSource.open();
 
                 boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-                Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+                Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
             }
-            Assert.assertEquals("One message was expected.", 1, results.size());
+            Assertions.assertEquals(1, results.size(), "One message was expected.");
             MatcherAssert.assertThat("The message doesn't have expected content.", "data",
                     CoreMatchers.is(CoreMatchers.equalTo(results.get(0).readData(String.class))));
         } finally {
@@ -139,13 +139,13 @@ public class SseEventSourceTest {
                 eventSource.open();
 
                 boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-                Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+                Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
             }
-            Assert.assertEquals(0, errors.get());
-            Assert.assertEquals("One message was expected.", 1, results.size());
+            Assertions.assertEquals(0, errors.get());
+            Assertions.assertEquals(1, results.size(), "One message was expected.");
             MatcherAssert.assertThat("The message doesn't have expected content.", "data",
                     CoreMatchers.is(CoreMatchers.equalTo(results.get(0).readData(String.class))));
-            Assert.assertEquals("On complete callback should be called one time", 1, completed.get());
+            Assertions.assertEquals(1, completed.get(), "On complete callback should be called one time");
         } finally {
             client.close();
         }
@@ -176,16 +176,16 @@ public class SseEventSourceTest {
 
                 boolean waitResult = latch.await(30, TimeUnit.SECONDS);
                 if ((!waitResult) && (results.size() != 1)) {
-                    Assert.assertEquals("Waiting has timed out and only one message was expected.", 1, results.size());
+                    Assertions.assertEquals(1, results.size(), "Waiting has timed out and only one message was expected.");
                 }
 
             }
-            Assert.assertTrue("Waiting for onComplete has timed out.", completed.get() > 0);
-            Assert.assertEquals(0, errors.get());
-            Assert.assertEquals("One message was expected.", 1, results.size());
+            Assertions.assertTrue(completed.get() > 0, "Waiting for onComplete has timed out.");
+            Assertions.assertEquals(0, errors.get());
+            Assertions.assertEquals(1, results.size(), "One message was expected.");
             MatcherAssert.assertThat("The message doesn't have expected content.", "data",
                     CoreMatchers.is(CoreMatchers.equalTo(results.get(0).readData(String.class))));
-            Assert.assertEquals("On complete callback should be called one time", 1, completed.get());
+            Assertions.assertEquals(1, completed.get(), "On complete callback should be called one time");
         } finally {
             client.close();
         }

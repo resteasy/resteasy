@@ -19,10 +19,10 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class HeadContentLengthTest {
     private static UndertowJaxrsServer server;
@@ -46,12 +46,12 @@ public class HeadContentLengthTest {
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() throws Exception {
         server = new UndertowJaxrsServer().start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void stop() throws Exception {
         server.stop();
     }
@@ -64,11 +64,11 @@ public class HeadContentLengthTest {
         WebTarget target = client.target(generateURL("/base/test"));
         Response getResponse = target.request().buildGet().invoke();
         String val = ClientInvocation.extractResult(new GenericType<String>(String.class), getResponse, null);
-        Assert.assertEquals("hello world", val);
+        Assertions.assertEquals("hello world", val);
         Response headResponse = target.request().build(HttpMethod.HEAD).invoke();
-        Assert.assertEquals("HEAD method should return the same Content-Length as the GET method", getResponse.getLength(),
-                headResponse.getLength());
-        Assert.assertTrue(getResponse.getLength() > 0);
+        Assertions.assertEquals(getResponse.getLength(), headResponse.getLength(),
+                "HEAD method should return the same Content-Length as the GET method");
+        Assertions.assertTrue(getResponse.getLength() > 0);
         client.close();
     }
 

@@ -9,7 +9,7 @@ import jakarta.ws.rs.ext.Providers;
 import jakarta.xml.bind.JAXBContext;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.core.ResteasyContext;
@@ -21,16 +21,16 @@ import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class JaxbCacheTest {
 
     static ResteasyClient client;
@@ -68,19 +68,19 @@ public class JaxbCacheTest {
 
             JAXBContext ctx2 = finder.findCachedContext(JaxbCacheChild.class, MediaType.APPLICATION_XML_TYPE, null);
 
-            Assert.assertTrue(ctx == ctx2);
+            Assertions.assertTrue(ctx == ctx2);
         }
 
         {
             ContextResolver<JAXBContextFinder> resolver = factory.getContextResolver(JAXBContextFinder.class,
                     MediaType.APPLICATION_ATOM_XML_TYPE);
             JAXBContextFinder finder = resolver.getContext(JaxbCacheChild.class);
-            Assert.assertNotNull(finder);
+            Assertions.assertNotNull(finder);
             JAXBContext ctx = finder.findCachedContext(JaxbCacheChild.class, MediaType.APPLICATION_ATOM_XML_TYPE, null);
 
             JAXBContext ctx2 = finder.findCachedContext(JaxbCacheChild.class, MediaType.APPLICATION_ATOM_XML_TYPE, null);
 
-            Assert.assertTrue(ctx == ctx2);
+            Assertions.assertTrue(ctx == ctx2);
         }
     }
 
@@ -104,7 +104,7 @@ public class JaxbCacheTest {
             JAXBContext ctx2 = finder.findCacheContext(MediaType.APPLICATION_XML_TYPE, null, JaxbCacheChild.class,
                     JaxbCacheParent.class);
 
-            Assert.assertTrue(ctx == ctx2);
+            Assertions.assertTrue(ctx == ctx2);
         }
 
         {
@@ -117,7 +117,7 @@ public class JaxbCacheTest {
             JAXBContext ctx2 = finder.findCacheContext(MediaType.APPLICATION_ATOM_XML_TYPE, null, JaxbCacheChild.class,
                     JaxbCacheParent.class);
 
-            Assert.assertTrue(ctx == ctx2);
+            Assertions.assertTrue(ctx == ctx2);
         }
     }
 }

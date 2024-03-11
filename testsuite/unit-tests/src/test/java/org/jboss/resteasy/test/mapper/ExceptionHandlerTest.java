@@ -20,8 +20,8 @@ import org.jboss.resteasy.test.mapper.resource.ApplicationExceptionMapper;
 import org.jboss.resteasy.test.mapper.resource.IOExceptionMapper;
 import org.jboss.resteasy.test.mapper.resource.SprocketDBException;
 import org.jboss.resteasy.test.mapper.resource.SprocketDBExceptionMapper;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that the Exception processing and ExceptionMapper handling rules defined in
@@ -48,8 +48,8 @@ public class ExceptionHandlerTest {
         Response result = eHandler.handleException(request,
                 new SprocketDBException("SprocketDBException test"));
 
-        Assert.assertEquals("SprocketDBExceptionMapper: incorrect status code returned",
-                result.getStatus(), SprocketDBExceptionMapper.STATUS_CODE);
+        Assertions.assertEquals(result.getStatus(), SprocketDBExceptionMapper.STATUS_CODE,
+                "SprocketDBExceptionMapper: incorrect status code returned");
     }
 
     @Test
@@ -69,16 +69,16 @@ public class ExceptionHandlerTest {
         ApplicationException appE = new ApplicationException("ApplicationException test", webAppE);
         Response result = eHandler.handleException(request, appE);
 
-        Assert.assertEquals("First ApplicationException: incorrect status code returned",
-                result.getStatus(), statusCode);
+        Assertions.assertEquals(result.getStatus(), statusCode,
+                "First ApplicationException: incorrect status code returned");
 
         // ApplicationException is a 'final' class and can not be subclasses.
         factory.registerProvider(ApplicationExceptionMapper.class);
         Response resultOne = eHandler.handleException(request,
                 new ApplicationException("ApplicationException test", new SprocketDBException()));
 
-        Assert.assertEquals("Second ApplicationException: incorrect status code returned",
-                resultOne.getStatus(), ApplicationExceptionMapper.STATUS_CODE);
+        Assertions.assertEquals(resultOne.getStatus(), ApplicationExceptionMapper.STATUS_CODE,
+                "Second ApplicationException: incorrect status code returned");
     }
 
     @Test
@@ -96,10 +96,10 @@ public class ExceptionHandlerTest {
 
         try {
             Response result = eHandler.handleException(request, sdbe);
-            Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, result.getStatusInfo());
-            Assert.assertEquals("SprocketDBException test", result.readEntity(String.class));
+            Assertions.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, result.getStatusInfo());
+            Assertions.assertEquals("SprocketDBException test", result.readEntity(String.class));
         } catch (UnhandledException ue) {
-            Assert.fail("Test failed to properly handle the exception with the default exception handler");
+            Assertions.fail("Test failed to properly handle the exception with the default exception handler");
         }
     }
 
@@ -117,8 +117,8 @@ public class ExceptionHandlerTest {
         ExceptionHandler eHandler = new ExceptionHandler(factory, unwrappedExceptions);
         Response result = eHandler.handleException(request, nlwae);
 
-        Assert.assertEquals("One WebApplicationException: incorrect status code returned",
-                result.getStatus(), statusCode);
+        Assertions.assertEquals(result.getStatus(), statusCode,
+                "One WebApplicationException: incorrect status code returned");
 
         // When WebApplicationException and response is null an or entity is null
         // use custom internal mapper to produce response.
@@ -127,8 +127,8 @@ public class ExceptionHandlerTest {
                 Response.status(statusCode).build());
         Response resultOne = eHandler.handleException(request, nlwaeOne);
 
-        Assert.assertEquals("One WebApplicationException: incorrect status code returned",
-                resultOne.getStatus(), statusCode);
+        Assertions.assertEquals(resultOne.getStatus(), statusCode,
+                "One WebApplicationException: incorrect status code returned");
     }
 
     @Test
@@ -144,8 +144,8 @@ public class ExceptionHandlerTest {
         ExceptionHandler eHandler = new ExceptionHandler(factory, unwrappedExceptions);
         Response result = eHandler.handleException(request, lf);
 
-        Assert.assertEquals("One LoggableFailure: incorrect status code returned",
-                result.getStatus(), statusCode);
+        Assertions.assertEquals(result.getStatus(), statusCode,
+                "One LoggableFailure: incorrect status code returned");
     }
 
     @Test
@@ -161,8 +161,8 @@ public class ExceptionHandlerTest {
         ExceptionHandler eHandler = new ExceptionHandler(factory, unwrappedExceptions);
         Response result = eHandler.handleException(request, ioe);
 
-        Assert.assertEquals("IOException: incorrect status code returned",
-                result.getStatus(), HttpResponseCodes.SC_NO_CONTENT);
+        Assertions.assertEquals(result.getStatus(), HttpResponseCodes.SC_NO_CONTENT,
+                "IOException: incorrect status code returned");
 
     }
 }

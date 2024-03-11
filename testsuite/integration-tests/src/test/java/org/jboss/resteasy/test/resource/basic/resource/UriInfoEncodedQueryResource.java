@@ -6,7 +6,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/query")
 public class UriInfoEncodedQueryResource {
@@ -14,9 +14,9 @@ public class UriInfoEncodedQueryResource {
 
     @GET
     public String doGet(@QueryParam("a") String a, @Context UriInfo info) {
-        Assert.assertEquals(ERROR_MSG, "a b", a);
-        Assert.assertEquals(ERROR_MSG, "a b", info.getQueryParameters().getFirst("a"));
-        Assert.assertEquals(ERROR_MSG, "a%20b", info.getQueryParameters(false).getFirst("a"));
+        Assertions.assertEquals("a b", a, ERROR_MSG);
+        Assertions.assertEquals("a b", info.getQueryParameters().getFirst("a"), ERROR_MSG);
+        Assertions.assertEquals("a%20b", info.getQueryParameters(false).getFirst("a"), ERROR_MSG);
         return "content";
     }
 }

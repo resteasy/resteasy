@@ -13,7 +13,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.asynch.resource.AsynchContextualDataProduct;
@@ -22,11 +22,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Asynchronous RESTEasy: RESTEASY-1225
@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Tests that Providers context is not discarded prematurely
  * @tpSince RESTEasy 3.1.1.Final
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class AsynchContextualDataTest {
 
@@ -55,12 +55,12 @@ public class AsynchContextualDataTest {
         return PortProviderUtil.generateURL(path, AsynchContextualDataTest.class.getSimpleName());
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void initClient() {
         client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).connectionPoolSize(10).build();
     }
 
-    @AfterClass
+    @AfterAll
     public static void closeClient() {
         client.close();
     }
@@ -87,11 +87,11 @@ public class AsynchContextualDataTest {
         String entity = response.get().readEntity(String.class);
         String resEntity = resResponse.readEntity(String.class);
 
-        Assert.assertEquals(200, response.get().getStatus());
-        Assert.assertEquals("{\"name\":\"Iphone\",\"id\":" + id + "}", entity);
+        Assertions.assertEquals(200, response.get().getStatus());
+        Assertions.assertEquals("{\"name\":\"Iphone\",\"id\":" + id + "}", entity);
 
-        Assert.assertEquals(200, resResponse.getStatus());
-        Assert.assertEquals("{\"name\":\"Nexus 7\",\"id\":" + id + "}", resEntity);
+        Assertions.assertEquals(200, resResponse.getStatus());
+        Assertions.assertEquals("{\"name\":\"Nexus 7\",\"id\":" + id + "}", resEntity);
 
         response.get().close();
         resResponse.close();

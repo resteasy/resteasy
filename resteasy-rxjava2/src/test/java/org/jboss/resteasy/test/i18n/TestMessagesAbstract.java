@@ -7,8 +7,8 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.rxjava2.i18n.Messages;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -33,7 +33,7 @@ public abstract class TestMessagesAbstract extends TestMessagesParent {
             return;
         }
 
-        Assert.assertEquals(getExpected(BASE + "00", "expectedClientInvocationBuilder", "abc"),
+        Assertions.assertEquals(getExpected(BASE + "00", "expectedClientInvocationBuilder", "abc"),
                 Messages.MESSAGES.expectedClientInvocationBuilder("abc"));
     }
 

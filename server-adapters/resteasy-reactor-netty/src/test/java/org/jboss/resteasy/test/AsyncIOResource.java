@@ -9,7 +9,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 
 import org.jboss.resteasy.plugins.server.reactor.netty.NettyUtil;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("async-io")
 public class AsyncIOResource {
@@ -17,7 +17,7 @@ public class AsyncIOResource {
     @GET
     @Path("blocking-writer-on-io-thread")
     public BlockingWriterData blockingWriterOnIoThread() {
-        Assert.assertTrue(NettyUtil.isIoThread());
+        Assertions.assertTrue(NettyUtil.isIoThread());
         return new BlockingWriterData();
     }
 

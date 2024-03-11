@@ -11,7 +11,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.resource.basic.ReponseInfoTest;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class ReponseInfoResource {
@@ -30,7 +30,7 @@ public class ReponseInfoResource {
         Response response = Response.temporaryRedirect(URI.create("new/one")).build();
         URI uri = (URI) response.getMetadata().getFirst(HttpHeaderNames.LOCATION);
         logger.info("Location uri: " + uri);
-        Assert.assertEquals("Wrong path from URI", base.getPath(), uri.getPath());
+        Assertions.assertEquals(base.getPath(), uri.getPath(), "Wrong path from URI");
         return "CONTENT";
     }
 }

@@ -16,7 +16,6 @@
     <properties>
         <version.resteasy.testsuite>${project.version}</version.resteasy.testsuite>
         <additional.surefire.excluded.groups/>
-        <additional.surefire.exclude.tracing.tests/>
         <!-- default value required for cmd-line -->
         <securityManagerArg>-DSECMGR="false"</securityManagerArg>
         <jacoco.agent/>
@@ -26,15 +25,25 @@
         <test.java.home>${java.home}</test.java.home>
 
         <!-- Test dependency versions -->
+        <version.org.jboss.shrinkwrap.resolver>3.3.0</version.org.jboss.shrinkwrap.resolver>
+        <version.org.jboss.slf4j.slf4j-jboss-logmanager>2.0.1.Final</version.org.jboss.slf4j.slf4j-jboss-logmanager>
         <version.org.wildfly.cloud-tests>1.0.0.Alpha2</version.org.wildfly.cloud-tests>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- This is required first to override the dependencies in the Arquillian BOM -->
+            <dependency>
+                <groupId>org.jboss.shrinkwrap.resolver</groupId>
+                <artifactId>shrinkwrap-resolver-bom</artifactId>
+                <version>${version.org.jboss.shrinkwrap.resolver}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
-                <version>${dep.arquillian-bom.version}</version>
+                <version>${version.org.jboss.arquillian}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -60,6 +69,11 @@
                 <groupId>org.jboss.resteasy.test</groupId>
                 <artifactId>test-utils</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly.arquillian</groupId>
+                <artifactId>wildfly-arquillian-common</artifactId>
+                <version>${version.org.wildfly.arquillian.wildfly-arquillian}</version>
             </dependency>
             <dependency>
                 <groupId>org.wildfly.arquillian</groupId>
@@ -89,6 +103,24 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>org.wildfly.arquillian</groupId>
+                <artifactId>wildfly-arquillian-junit-api</artifactId>
+                <version>${version.org.wildfly.arquillian.wildfly-arquillian}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.inject</groupId>
+                        <artifactId>javax.inject</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- Used for surefire logging -->
+            <dependency>
+                <groupId>org.jboss.slf4j</groupId>
+                <artifactId>slf4j-jboss-logmanager</artifactId>
+                <version>${version.org.jboss.slf4j.slf4j-jboss-logmanager}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -111,7 +143,7 @@
                         <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
                         <jboss.server.config.file.name>${jboss.server.config.file.name}</jboss.server.config.file.name>
                     </systemPropertyVariables>
-                    <excludedGroups>org.jboss.resteasy.category.ExpectedFailing${additional.surefire.excluded.groups}${additional.surefire.exclude.tracing.tests}</excludedGroups>
+                    <excludedGroups>${additional.surefire.excluded.groups}</excludedGroups>
                 </configuration>
             </plugin>
             <plugin>
@@ -177,54 +209,6 @@
                 <jboss.home>${server.home}</jboss.home>
             </properties>
         </profile>
-        <profile>
-            <id>server-version-21x-exclusions</id>
-            <activation>
-                <property>
-                    <name>server.version</name>
-                    <value>21.0.1.Final</value>
-                </property>
-            </activation>
-            <properties>
-                <additional.surefire.excluded.groups>,org.jboss.resteasy.category.ExpectedFailingOnWildFly21</additional.surefire.excluded.groups>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-version-20x-exclusions</id>
-            <activation>
-                <property>
-                    <name>server.version</name>
-                    <value>20.0.1.Final</value>
-                </property>
-            </activation>
-            <properties>
-                <additional.surefire.excluded.groups>,org.jboss.resteasy.category.ExpectedFailingOnWildFly20</additional.surefire.excluded.groups>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-version-19x-exclusions</id>
-            <activation>
-                <property>
-                    <name>server.version</name>
-                    <value>19.1.0.Final</value>
-                </property>
-            </activation>
-            <properties>
-                <additional.surefire.excluded.groups>,org.jboss.resteasy.category.ExpectedFailingOnWildFly19</additional.surefire.excluded.groups>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-version-18x-exclusions</id>
-            <activation>
-                <property>
-                    <name>server.version</name>
-                    <value>18.0.1.Final</value>
-                </property>
-            </activation>
-            <properties>
-                <additional.surefire.excluded.groups>,org.jboss.resteasy.category.ExpectedFailingOnWildFly18</additional.surefire.excluded.groups>
-            </properties>
-        </profile>
         <!-- If resteasy.version is specified, it will be used for tests instead of the project.version -->
         <profile>
             <id>custom-resteasy-version</id>
@@ -260,29 +244,9 @@
                                 <project.version>${project.version}</project.version>
                                 <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
                             </systemPropertyVariables>
-                            <excludedGroups>org.jboss.resteasy.category.ExpectedFailing</excludedGroups>
                         </configuration>
                     </plugin>
 
-                </plugins>
-            </build>
-        </profile>
-        <!-- For testing purposes enable to run all tests including the failing ones -->
-        <profile>
-            <id>enable.expected.failing</id>
-            <activation>
-                <property>
-                    <name>enable.expected.failing</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration combine.children="append">
-                            <excludedGroups></excludedGroups>
-                        </configuration>
-                    </plugin>
                 </plugins>
             </build>
         </profile>

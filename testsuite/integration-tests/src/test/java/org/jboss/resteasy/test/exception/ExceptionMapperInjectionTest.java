@@ -6,7 +6,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperCustomRuntimeException;
@@ -19,11 +19,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails ExceptionMapper testing. Regression test for RESTEASY-300 and RESTEASY-396
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ExceptionMapperInjectionTest {
 
@@ -47,12 +47,12 @@ public class ExceptionMapperInjectionTest {
                 ExceptionMapperInjectionResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -70,7 +70,7 @@ public class ExceptionMapperInjectionTest {
         WebTarget base = client.target(generateUrl("/test/nonexistent"));
         Response response = base.request().get();
 
-        Assert.assertEquals(HttpResponseCodes.SC_HTTP_VERSION_NOT_SUPPORTED, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_HTTP_VERSION_NOT_SUPPORTED, response.getStatus());
 
         response.close();
     }
@@ -84,7 +84,7 @@ public class ExceptionMapperInjectionTest {
         WebTarget base = client.target(generateUrl("/test"));
         Response response = base.request().get();
 
-        Assert.assertEquals(Response.Status.PRECONDITION_FAILED.getStatusCode(), response.getStatus());
+        Assertions.assertEquals(Response.Status.PRECONDITION_FAILED.getStatusCode(), response.getStatus());
 
         response.close();
     }
@@ -98,7 +98,7 @@ public class ExceptionMapperInjectionTest {
         WebTarget base = client.target(generateUrl("/test/null"));
         Response response = base.request().get();
 
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
 
         response.close();
     }

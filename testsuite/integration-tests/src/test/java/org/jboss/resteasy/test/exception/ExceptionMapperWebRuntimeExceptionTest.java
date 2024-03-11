@@ -6,7 +6,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperWebRuntimeExceptionMapper;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperWebRuntimeExceptionResource;
@@ -14,9 +14,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Regression test for RESTEASY-595
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ExceptionMapperWebRuntimeExceptionTest {
 
@@ -46,8 +46,9 @@ public class ExceptionMapperWebRuntimeExceptionTest {
                 .target(PortProviderUtil.generateURL("/test", ExceptionMapperWebRuntimeExceptionTest.class.getSimpleName()));
         Response response = base.request().get();
 
-        Assert.assertEquals(Response.Status.PRECONDITION_FAILED.getStatusCode(), response.getStatus());
-        Assert.assertEquals("Wrong headers", response.getHeaders().getFirst("custom"), "header");
+        Assertions.assertEquals(Response.Status.PRECONDITION_FAILED.getStatusCode(), response.getStatus());
+        Assertions.assertEquals(response.getHeaders().getFirst("custom"), "header",
+                "Wrong headers");
 
         response.close();
         client.close();

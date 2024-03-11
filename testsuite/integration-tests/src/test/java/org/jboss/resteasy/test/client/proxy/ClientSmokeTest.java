@@ -4,7 +4,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.client.proxy.resource.ClientSmokeResource;
 import org.jboss.resteasy.test.core.smoke.resource.ResourceWithInterfaceSimpleClient;
@@ -12,9 +12,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Smoke tests for jaxrs
@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Smoke test for client ProxyFactory.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ClientSmokeTest {
 
@@ -43,10 +43,11 @@ public class ClientSmokeTest {
                 PortProviderUtil.generateBaseUrl(ClientSmokeTest.class.getSimpleName()))
                 .proxyBuilder(ResourceWithInterfaceSimpleClient.class).build();
 
-        Assert.assertEquals("Wrong client answer.", "basic", proxy.getBasic());
+        Assertions.assertEquals("basic", proxy.getBasic(), "Wrong client answer.");
         proxy.putBasic("hello world");
-        Assert.assertEquals("Wrong client answer.", "hello world", proxy.getQueryParam("hello world"));
-        Assert.assertEquals("Wrong client answer.", 1234, proxy.getUriParam(1234));
+        Assertions.assertEquals("hello world", proxy.getQueryParam("hello world"),
+                "Wrong client answer.");
+        Assertions.assertEquals(1234, proxy.getUriParam(1234), "Wrong client answer.");
 
         client.close();
     }

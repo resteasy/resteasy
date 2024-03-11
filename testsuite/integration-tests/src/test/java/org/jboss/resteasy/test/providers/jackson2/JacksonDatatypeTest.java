@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.Response;
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
@@ -27,11 +27,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Jackson2 provider
@@ -39,7 +39,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for WFLY-5916. Integration tests for jackson-datatype-jsr310 and jackson-datatype-jdk8 modules
  * @tpSince RESTEasy 3.1.0.CR3
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class JacksonDatatypeTest {
     private static final String DEFAULT_DEPLOYMENT = String.format("%sDefault",
@@ -50,12 +50,12 @@ public class JacksonDatatypeTest {
     static ResteasyClient client;
     protected static final Logger logger = Logger.getLogger(JacksonDatatypeTest.class.getName());
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -82,7 +82,7 @@ public class JacksonDatatypeTest {
         String url = PortProviderUtil.generateURL(String.format("/scanned/%s", endPath), deployment);
         WebTarget base = client.target(url);
         Response response = base.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String strResponse = response.readEntity(String.class);
         logger.info(String.format("Url: %s", url));
         logger.info(String.format("Response: %s", strResponse));
@@ -177,6 +177,7 @@ public class JacksonDatatypeTest {
     @Test
     public void testDatatypeSupportedOptionalNotNull() throws Exception {
         String strResponse = requestHelper("optional/false", DEPLOYMENT_WITH_DATATYPE);
-        MatcherAssert.assertThat("Wrong conversion of Optional (not null)", strResponse, containsString("info@example.com"));
+        MatcherAssert.assertThat("Wrong conversion of Optional (not null)", strResponse,
+                containsString("info@example.com"));
     }
 }

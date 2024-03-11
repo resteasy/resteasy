@@ -13,21 +13,21 @@ import jakarta.ws.rs.sse.SseEventSource;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  *
  * @author Nicolas NESMON
  *
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SseEnablingTest {
 
@@ -151,7 +151,7 @@ public class SseEnablingTest {
             WebTarget baseTarget = client.target(generateURL()).path(SseEnablingTestResource.PATH);
             int responseSTatus = baseTarget.path(SseEnablingTestResource.RESOURCE_METHOD_5_PATH)
                     .request(MediaType.SERVER_SENT_EVENTS_TYPE).get().getStatus();
-            Assert.assertEquals(Status.NO_CONTENT.getStatusCode(), responseSTatus);
+            Assertions.assertEquals(Status.NO_CONTENT.getStatusCode(), responseSTatus);
         } finally {
             client.close();
         }
@@ -182,7 +182,7 @@ public class SseEnablingTest {
                 });
                 eventSource.open();
                 boolean result = countDownLatch.await(30, TimeUnit.SECONDS);
-                Assert.assertTrue("Waiting for event to be delivered has timed out.", result);
+                Assertions.assertTrue(result, "Waiting for event to be delivered has timed out.");
             }
         } finally {
             client.close();
@@ -190,11 +190,11 @@ public class SseEnablingTest {
     }
 
     private void checkResponse(Response response) {
-        Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        Assertions.assertEquals(Status.OK.getStatusCode(), response.getStatus());
         MediaType contentType = response.getMediaType();
-        Assert.assertEquals(MediaType.APPLICATION_XML_TYPE.getType(), contentType.getType());
-        Assert.assertEquals(MediaType.APPLICATION_XML_TYPE.getSubtype(), contentType.getSubtype());
-        Assert.assertEquals(SseEnablingTestResource.OK_MESSAGE, response.readEntity(String.class));
+        Assertions.assertEquals(MediaType.APPLICATION_XML_TYPE.getType(), contentType.getType());
+        Assertions.assertEquals(MediaType.APPLICATION_XML_TYPE.getSubtype(), contentType.getSubtype());
+        Assertions.assertEquals(SseEnablingTestResource.OK_MESSAGE, response.readEntity(String.class));
     }
 
 }

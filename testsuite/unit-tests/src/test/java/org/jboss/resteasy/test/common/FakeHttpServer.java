@@ -1,11 +1,13 @@
 package org.jboss.resteasy.test.common;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Consumer;
 
-import org.junit.rules.ExternalResource;
 import org.xnio.streams.Streams;
 
 import com.sun.net.httpserver.HttpServer;
@@ -13,16 +15,13 @@ import com.sun.net.httpserver.HttpServer;
 /**
  * Tiny fake HTTP server providing a target for testing the RESTEasy client.
  */
-public class FakeHttpServer extends ExternalResource {
+public class FakeHttpServer {
 
     private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
     private HttpServer server;
 
-    private ContextConfigurator configurator;
-
-    public FakeHttpServer(final ContextConfigurator configurator) {
-        this.configurator = configurator;
+    public FakeHttpServer() {
     }
 
     /**
@@ -44,21 +43,33 @@ public class FakeHttpServer extends ExternalResource {
     }
 
     /**
-     * Start the server.
+     * Starts the server.
      */
     public void start() {
-        server.start();
+        start(FakeHttpServer::dummyMethods);
     }
 
-    @Override
-    protected void before() throws Throwable {
-        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+    /**
+     * Start the server.
+     */
+    public void start(final Consumer<HttpServer> configurator) {
+        final HttpServer server;
+        try {
+            server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
 
-        configurator.apply(server);
+        configurator.accept(server);
 
         server.setExecutor(null); // handle on dispatcher thread
 
         this.server = server;
+        server.start();
+    }
+
+    public void stop() {
+        server.stop(1);
     }
 
     public static void dummyMethods(HttpServer server) {
@@ -101,15 +112,5 @@ public class FakeHttpServer extends ExternalResource {
             os.write(response);
             os.close();
         });
-    }
-
-    @FunctionalInterface
-    public interface ContextConfigurator {
-        void apply(HttpServer server);
-    }
-
-    @Override
-    protected void after() {
-        server.stop(1);
     }
 }

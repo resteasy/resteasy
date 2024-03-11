@@ -16,19 +16,19 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class MediaTypeNegotiationTest {
 
@@ -112,12 +112,12 @@ public class MediaTypeNegotiationTest {
                 NoMessageBodyWriterFoundFailureExceptionMapper.class, EchoResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
         client.close();
     }
@@ -132,8 +132,8 @@ public class MediaTypeNegotiationTest {
                 .request("application/*");
         Response response = request.get();
         try {
-            Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
-            Assert.assertTrue(response.getMediaType().toString().startsWith(MediaType.APPLICATION_XML));
+            Assertions.assertEquals(Status.OK.getStatusCode(), response.getStatus());
+            Assertions.assertTrue(response.getMediaType().toString().startsWith(MediaType.APPLICATION_XML));
         } finally {
             response.close();
         }
@@ -145,7 +145,7 @@ public class MediaTypeNegotiationTest {
                 .request("*/xml");
         Response response = request.get();
         try {
-            Assert.assertEquals(Status.NOT_ACCEPTABLE.getStatusCode(), response.getStatus());
+            Assertions.assertEquals(Status.NOT_ACCEPTABLE.getStatusCode(), response.getStatus());
         } finally {
             response.close();
         }
@@ -157,12 +157,12 @@ public class MediaTypeNegotiationTest {
                 .request("foo/bar");
         Response response = request.get();
         try {
-            Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
-            Assert.assertEquals(MediaType.APPLICATION_XML_TYPE.getType(), response.getMediaType().getType());
-            Assert.assertEquals(MediaType.APPLICATION_XML_TYPE.getSubtype(), response.getMediaType().getSubtype());
+            Assertions.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+            Assertions.assertEquals(MediaType.APPLICATION_XML_TYPE.getType(), response.getMediaType().getType());
+            Assertions.assertEquals(MediaType.APPLICATION_XML_TYPE.getSubtype(), response.getMediaType().getSubtype());
             Message message = response.readEntity(Message.class);
-            Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), message.getStatus());
-            Assert.assertEquals(NoMessageBodyWriterFoundFailure.class.getName(), message.getMessage());
+            Assertions.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), message.getStatus());
+            Assertions.assertEquals(NoMessageBodyWriterFoundFailure.class.getName(), message.getMessage());
         } finally {
             response.close();
         }
@@ -173,12 +173,12 @@ public class MediaTypeNegotiationTest {
         Invocation.Builder request = client.target(generateURL()).path("notFound").request(MediaType.APPLICATION_XML_TYPE);
         Response response = request.get();
         try {
-            Assert.assertEquals(Status.NOT_FOUND.getStatusCode(), response.getStatus());
-            Assert.assertEquals(MediaType.APPLICATION_XML_TYPE.getType(), response.getMediaType().getType());
-            Assert.assertEquals(MediaType.APPLICATION_XML_TYPE.getSubtype(), response.getMediaType().getSubtype());
+            Assertions.assertEquals(Status.NOT_FOUND.getStatusCode(), response.getStatus());
+            Assertions.assertEquals(MediaType.APPLICATION_XML_TYPE.getType(), response.getMediaType().getType());
+            Assertions.assertEquals(MediaType.APPLICATION_XML_TYPE.getSubtype(), response.getMediaType().getSubtype());
             Message message = response.readEntity(Message.class);
-            Assert.assertEquals(Status.NOT_FOUND.getStatusCode(), message.getStatus());
-            Assert.assertEquals(Status.NOT_FOUND.getReasonPhrase(), message.getMessage());
+            Assertions.assertEquals(Status.NOT_FOUND.getStatusCode(), message.getStatus());
+            Assertions.assertEquals(Status.NOT_FOUND.getReasonPhrase(), message.getMessage());
         } finally {
             response.close();
         }

@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
@@ -22,9 +22,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Multipart provider
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-929
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class EmbeddedMultipartTest {
 
@@ -66,7 +66,7 @@ public class EmbeddedMultipartTest {
         outerPart.addPart(innerPart, MULTIPART_MIXED);
         Entity<MultipartOutput> entity = Entity.entity(outerPart, MULTIPART_MIXED);
         String response = target.request().post(entity, String.class);
-        Assert.assertEquals("Wrong content of response", "bill", response);
+        Assertions.assertEquals("bill", response, "Wrong content of response");
         client.close();
     }
 
@@ -83,7 +83,7 @@ public class EmbeddedMultipartTest {
         outerPart.addPart(customer, MediaType.APPLICATION_XML_TYPE);
         Entity<MultipartOutput> entity = Entity.entity(outerPart, MULTIPART_MIXED);
         String response = target.request().post(entity, String.class);
-        Assert.assertEquals("Wrong content of response", "bill", response);
+        Assertions.assertEquals("bill", response, "Wrong content of response");
         client.close();
     }
 
@@ -101,10 +101,11 @@ public class EmbeddedMultipartTest {
             outerPart.addPart(customer, MediaType.APPLICATION_XML_TYPE);
             Entity<MultipartOutput> entity = Entity.entity(outerPart, MULTIPART_MIXED);
             target.request().post(entity, String.class);
-            Assert.fail("Exception is expected");
+            Assertions.fail("Exception is expected");
         } catch (InternalServerErrorException e) {
             Response response = e.getResponse();
-            Assert.assertEquals("Wrong type of exception", HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR,
+                    response.getStatus(), "Wrong type of exception");
         } finally {
             client.close();
         }

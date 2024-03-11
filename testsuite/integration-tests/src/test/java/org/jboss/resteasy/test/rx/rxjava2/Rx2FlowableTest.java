@@ -18,7 +18,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.rxjava2.FlowableRxInvoker;
@@ -36,15 +36,14 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.MethodName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import io.reactivex.Flowable;
 
@@ -58,9 +57,9 @@ import io.reactivex.Flowable;
  *
  *          The client makes invocations on an FlowableRxInvoker.
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestMethodOrder(MethodName.class)
 public class Rx2FlowableTest {
 
     private static ResteasyClient client;
@@ -127,12 +126,12 @@ public class Rx2FlowableTest {
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         stringList.clear();
         thingList.clear();
@@ -143,7 +142,7 @@ public class Rx2FlowableTest {
         value.set(null);
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -160,9 +159,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(xStringList, stringList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(xStringList, stringList);
     }
 
     @SuppressWarnings("unchecked")
@@ -175,9 +174,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(xThingList, thingList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(xThingList, thingList);
     }
 
     @SuppressWarnings("unchecked")
@@ -190,9 +189,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(xThingListList, thingListList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(xThingListList, thingListList);
     }
 
     @SuppressWarnings("unchecked")
@@ -205,11 +204,11 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(3, bytesList.size());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(3, bytesList.size());
         for (byte[] b : bytesList) {
-            Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
+            Assertions.assertTrue(Arrays.equals(Bytes.BYTES, b));
         }
     }
 
@@ -223,9 +222,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(aStringList, stringList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(aStringList, stringList);
     }
 
     @SuppressWarnings("unchecked")
@@ -238,9 +237,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(aThingList, thingList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(aThingList, thingList);
     }
 
     @SuppressWarnings("unchecked")
@@ -253,9 +252,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(aThingListList, thingListList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(aThingListList, thingListList);
     }
 
     @SuppressWarnings("unchecked")
@@ -268,11 +267,11 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(3, bytesList.size());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(3, bytesList.size());
         for (byte[] b : bytesList) {
-            Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
+            Assertions.assertTrue(Arrays.equals(Bytes.BYTES, b));
         }
     }
 
@@ -286,9 +285,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(aStringList, stringList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(aStringList, stringList);
     }
 
     @SuppressWarnings("unchecked")
@@ -301,9 +300,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(aThingList, thingList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(aThingList, thingList);
     }
 
     @SuppressWarnings("unchecked")
@@ -316,9 +315,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(aThingListList, thingListList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(aThingListList, thingListList);
     }
 
     @SuppressWarnings("unchecked")
@@ -331,11 +330,11 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(3, bytesList.size());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(3, bytesList.size());
         for (byte[] b : bytesList) {
-            Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
+            Assertions.assertTrue(Arrays.equals(Bytes.BYTES, b));
         }
     }
 
@@ -349,9 +348,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(xStringList, stringList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(xStringList, stringList);
     }
 
     @SuppressWarnings("unchecked")
@@ -364,9 +363,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(xThingList, thingList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(xThingList, thingList);
     }
 
     @SuppressWarnings("unchecked")
@@ -379,9 +378,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(xThingListList, thingListList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(xThingListList, thingListList);
     }
 
     @SuppressWarnings("unchecked")
@@ -394,11 +393,11 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(3, bytesList.size());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(3, bytesList.size());
         for (byte[] b : bytesList) {
-            Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
+            Assertions.assertTrue(Arrays.equals(Bytes.BYTES, b));
         }
     }
 
@@ -410,7 +409,7 @@ public class Rx2FlowableTest {
         flowable.subscribe(
                 (String s) -> value.set(s), // HEAD - no body
                 (Throwable t) -> throwableContains(t, "Input stream was empty"));
-        Assert.assertNull(value.get());
+        Assertions.assertNull(value.get());
     }
 
     @SuppressWarnings("unchecked")
@@ -423,9 +422,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(xStringList, stringList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(xStringList, stringList);
     }
 
     @SuppressWarnings("unchecked")
@@ -438,9 +437,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(xThingList, thingList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(xThingList, thingList);
     }
 
     @SuppressWarnings("unchecked")
@@ -453,9 +452,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(xThingListList, thingListList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(xThingListList, thingListList);
     }
 
     @SuppressWarnings("unchecked")
@@ -468,17 +467,16 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(3, bytesList.size());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(3, bytesList.size());
         for (byte[] b : bytesList) {
-            Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
+            Assertions.assertTrue(Arrays.equals(Bytes.BYTES, b));
         }
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    @Ignore // TRACE turned off by default in Wildfly
     public void testTrace() throws Exception {
         FlowableRxInvoker invoker = client.target(generateURL("/trace/string")).request().rx(FlowableRxInvoker.class);
         Flowable<String> flowable = (Flowable<String>) invoker.trace();
@@ -487,14 +485,13 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(xStringList, stringList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(xStringList, stringList);
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    @Ignore // TRACE turned off by default in Wildfly
     public void testTraceThing() throws Exception {
         FlowableRxInvoker invoker = client.target(generateURL("/trace/thing")).request().rx(FlowableRxInvoker.class);
         Flowable<Thing> flowable = (Flowable<Thing>) invoker.trace(Thing.class);
@@ -503,14 +500,13 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(xThingList, thingList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(xThingList, thingList);
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    @Ignore // TRACE turned off by default in Wildfly
     public void testTraceThingList() throws Exception {
         FlowableRxInvoker invoker = client.target(generateURL("/trace/thing/list")).request().rx(FlowableRxInvoker.class);
         Flowable<List<Thing>> flowable = (Flowable<List<Thing>>) invoker.trace(LIST_OF_THING);
@@ -519,27 +515,26 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(xThingListList, thingListList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(xThingListList, thingListList);
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    @Ignore // TRACE turned off by default in Wildfly
     public void testTraceBytes() throws Exception {
         FlowableRxInvoker invoker = client.target(generateURL("/trace/bytes")).request().rx(FlowableRxInvoker.class);
-        Flowable<byte[]> flowable = (Flowable<byte[]>) invoker.get(byte[].class);
+        Flowable<byte[]> flowable = (Flowable<byte[]>) invoker.trace(byte[].class);
         flowable.subscribe(
                 (byte[] b) -> bytesList.add(b),
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(3, bytesList.size());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(3, bytesList.size());
         for (byte[] b : bytesList) {
-            Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
+            Assertions.assertTrue(Arrays.equals(Bytes.BYTES, b));
         }
     }
 
@@ -553,9 +548,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(xStringList, stringList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(xStringList, stringList);
     }
 
     @SuppressWarnings("unchecked")
@@ -568,9 +563,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(xThingList, thingList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(xThingList, thingList);
     }
 
     @SuppressWarnings("unchecked")
@@ -583,9 +578,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(xThingListList, thingListList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(xThingListList, thingListList);
     }
 
     @SuppressWarnings("unchecked")
@@ -598,11 +593,11 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(3, bytesList.size());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(3, bytesList.size());
         for (byte[] b : bytesList) {
-            Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
+            Assertions.assertTrue(Arrays.equals(Bytes.BYTES, b));
         }
     }
 
@@ -616,9 +611,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(aStringList, stringList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(aStringList, stringList);
     }
 
     @SuppressWarnings("unchecked")
@@ -631,9 +626,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(aThingList, thingList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(aThingList, thingList);
     }
 
     @SuppressWarnings("unchecked")
@@ -646,9 +641,9 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(aThingListList, thingListList);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(aThingListList, thingListList);
     }
 
     @SuppressWarnings("unchecked")
@@ -661,11 +656,11 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(3, bytesList.size());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(3, bytesList.size());
         for (byte[] b : bytesList) {
-            Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
+            Assertions.assertTrue(Arrays.equals(Bytes.BYTES, b));
         }
     }
 
@@ -681,10 +676,10 @@ public class Rx2FlowableTest {
                     (Throwable t) -> errors.incrementAndGet(),
                     () -> latch.countDown());
             boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-            Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-            Assert.assertEquals(0, errors.get());
-            Assert.assertFalse(RxScheduledExecutorService.used);
-            Assert.assertEquals(xStringList, stringList);
+            Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+            Assertions.assertEquals(0, errors.get());
+            Assertions.assertFalse(RxScheduledExecutorService.used);
+            Assertions.assertEquals(xStringList, stringList);
         }
 
         {
@@ -702,10 +697,10 @@ public class Rx2FlowableTest {
                     (Throwable t) -> errors.incrementAndGet(),
                     () -> latch.countDown());
             boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-            Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-            Assert.assertEquals(0, errors.get());
-            Assert.assertTrue(RxScheduledExecutorService.used);
-            Assert.assertEquals(xStringList, stringList);
+            Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+            Assertions.assertEquals(0, errors.get());
+            Assertions.assertTrue(RxScheduledExecutorService.used);
+            Assertions.assertEquals(xStringList, stringList);
             client.close();
         }
     }
@@ -724,10 +719,10 @@ public class Rx2FlowableTest {
                 },
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
         Throwable t = (Throwable) value.get();
-        Assert.assertEquals(InternalServerErrorException.class, t.getClass());
-        Assert.assertTrue(t.getMessage().contains("500"));
+        Assertions.assertEquals(InternalServerErrorException.class, t.getClass());
+        Assertions.assertTrue(t.getMessage().contains("500"));
     }
 
     @SuppressWarnings("unchecked")
@@ -744,10 +739,10 @@ public class Rx2FlowableTest {
                 },
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
         Throwable t = (Throwable) value.get();
-        Assert.assertEquals(ClientErrorException.class, t.getClass());
-        Assert.assertTrue(t.getMessage().contains("444"));
+        Assertions.assertEquals(ClientErrorException.class, t.getClass());
+        Assertions.assertTrue(t.getMessage().contains("444"));
     }
 
     @SuppressWarnings("unchecked")
@@ -777,11 +772,11 @@ public class Rx2FlowableTest {
                 () -> cdl.countDown());
 
         boolean waitResult = cdl.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(6, list.size());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(6, list.size());
         for (int i = 0; i < 6; i++) {
-            Assert.assertEquals("x", list.get(i));
+            Assertions.assertEquals("x", list.get(i));
         }
         client1.close();
         client2.close();
@@ -810,11 +805,11 @@ public class Rx2FlowableTest {
                 () -> cdl.countDown());
 
         boolean waitResult = cdl.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(6, list.size());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(6, list.size());
         for (int i = 0; i < 6; i++) {
-            Assert.assertEquals("x", list.get(i));
+            Assertions.assertEquals("x", list.get(i));
         }
     }
 
@@ -839,11 +834,11 @@ public class Rx2FlowableTest {
                 () -> cdl.countDown());
 
         boolean waitResult = cdl.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(6, list.size());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(6, list.size());
         for (int i = 0; i < 6; i++) {
-            Assert.assertEquals("x", list.get(i));
+            Assertions.assertEquals("x", list.get(i));
         }
     }
 
@@ -858,11 +853,11 @@ public class Rx2FlowableTest {
                 (Throwable t) -> errors.incrementAndGet(),
                 () -> latch.countDown());
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertEquals(0, errors.get());
-        Assert.assertEquals(1000, bytesList.size());
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertEquals(0, errors.get());
+        Assertions.assertEquals(1000, bytesList.size());
         for (byte[] b : bytesList) {
-            Assert.assertTrue(Arrays.equals(Bytes.BYTES, b));
+            Assertions.assertTrue(Arrays.equals(Bytes.BYTES, b));
         }
     }
 

@@ -7,7 +7,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.stream.resource.StreamRawByteArrayMessageBodyReaderWriter;
 import org.jboss.resteasy.test.stream.resource.StreamRawByteMessageBodyReaderWriter;
@@ -20,11 +20,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Reactive classes
@@ -33,7 +33,7 @@ import org.junit.runner.RunWith;
  *
  *          These tests check raw streaming.
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class StreamRawFlowableRxJava2Test {
 
@@ -57,12 +57,12 @@ public class StreamRawFlowableRxJava2Test {
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -80,10 +80,10 @@ public class StreamRawFlowableRxJava2Test {
         Response response = request.get();
         StreamRawMediaTypes.testMediaType("byte", include, MediaType.valueOf(response.getHeaderString("Content-Type")));
         byte[] entity = response.readEntity(byte[].class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(3, entity.length);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(3, entity.length);
         for (int i = 0; i < 3; i++) {
-            Assert.assertEquals((byte) i, entity[i]);
+            Assertions.assertEquals((byte) i, entity[i]);
         }
     }
 
@@ -99,11 +99,11 @@ public class StreamRawFlowableRxJava2Test {
         Response response = request.get();
         StreamRawMediaTypes.testMediaType("byte", include, MediaType.valueOf(response.getHeaderString("Content-Type")));
         byte[] entity = response.readEntity(byte[].class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(9, entity.length);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(9, entity.length);
         byte[] expected = new byte[] { 0, 1, 2, 0, 1, 2, 0, 1, 2 };
         for (int i = 0; i < 9; i++) {
-            Assert.assertEquals(expected[i], entity[i]);
+            Assertions.assertEquals(expected[i], entity[i]);
         }
     }
 
@@ -119,8 +119,8 @@ public class StreamRawFlowableRxJava2Test {
         Response response = request.get();
         StreamRawMediaTypes.testMediaType("char", include, MediaType.valueOf(response.getHeaderString("Content-Type")));
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("abc", entity);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("abc", entity);
     }
 
     @Test
@@ -136,11 +136,11 @@ public class StreamRawFlowableRxJava2Test {
         Response response = request.get();
         StreamRawMediaTypes.testMediaType("char", include, MediaType.valueOf(response.getHeaderString("Content-Type")));
         Character[] entity = response.readEntity(Character[].class);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(9, entity.length);
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(9, entity.length);
         Character[] chars = new Character[] { 'a', 'b', 'c', 'a', 'b', 'c', 'a', 'b', 'c' };
         for (int i = 0; i < entity.length; i++) {
-            Assert.assertEquals(chars[i], entity[i]);
+            Assertions.assertEquals(chars[i], entity[i]);
         }
     }
 }

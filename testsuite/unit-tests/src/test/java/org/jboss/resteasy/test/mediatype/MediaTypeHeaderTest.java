@@ -1,14 +1,19 @@
 package org.jboss.resteasy.test.mediatype;
 
 import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class MediaTypeHeaderTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNewLineInHeaderValueIsRejected() {
-        MediaTypeHeaderDelegate delegate = new MediaTypeHeaderDelegate();
+        IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class,
+                () -> {
+                    MediaTypeHeaderDelegate delegate = new MediaTypeHeaderDelegate();
 
-        delegate.fromString("foo/bar\n");
+                    delegate.fromString("foo/bar\n");
+                });
+        Assertions.assertTrue(thrown instanceof IllegalArgumentException);
     }
 }

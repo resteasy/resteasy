@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.util;
 
 import org.jboss.resteasy.util.BasicAuthHelper;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Util tests
@@ -19,7 +19,7 @@ public class PasswordColonTest {
     public void testPasswordWithColon() {
         String header = BasicAuthHelper.createHeader("user", "pass:word");
         String[] credentials = BasicAuthHelper.parseHeader(header);
-        Assert.assertEquals("Wrong user", "user", credentials[0]);
-        Assert.assertEquals("Wrong password", "pass:word", credentials[1]);
+        Assertions.assertEquals("user", credentials[0], "Wrong user");
+        Assertions.assertEquals("pass:word", credentials[1], "Wrong password");
     }
 }

@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.cdi.interceptors;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.swing.text.Utilities;
 
@@ -11,10 +10,9 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.cdi.interceptors.resource.InterceptorBook;
 import org.jboss.resteasy.test.cdi.interceptors.resource.InterceptorBookReader;
@@ -52,8 +50,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter CDI
@@ -61,7 +60,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Interceptors test.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class InterceptorTest {
     protected static final Logger log = Logger.getLogger(InterceptorTest.class.getName());
@@ -109,14 +108,14 @@ public class InterceptorTest {
         Response response = base.request().post(Entity.entity(book, Constants.MEDIA_TYPE_TEST_XML));
         assertEquals(200, response.getStatus());
         int id = response.readEntity(int.class);
-        MatcherAssert.assertThat("Id of stored book is wrong.", 0, is(id));
+        Assertions.assertEquals(id, 0, "Id of stored book is wrong.");
 
         // Retrieve book.
         base = client.target(generateURL("/book/" + id));
         response = base.request().accept(Constants.MEDIA_TYPE_TEST_XML).get();
         assertEquals(200, response.getStatus());
         InterceptorBook result = response.readEntity(InterceptorBook.class);
-        assertEquals("Wrong book is received.", book, result);
+        assertEquals(book, result, "Wrong book is received.");
 
         // check interceptors
         base = client.target(generateURL("/test/"));

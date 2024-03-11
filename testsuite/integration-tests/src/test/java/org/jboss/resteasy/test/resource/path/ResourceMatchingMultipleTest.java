@@ -5,7 +5,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.resource.path.resource.ResourceMatchingMultipleUserCertResource;
 import org.jboss.resteasy.test.resource.path.resource.ResourceMatchingMultipleUserMembershipResource;
 import org.jboss.resteasy.test.resource.path.resource.ResourceMatchingMultipleUserResource;
@@ -13,18 +13,18 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ResourceMatchingMultipleTest {
 
@@ -41,12 +41,12 @@ public class ResourceMatchingMultipleTest {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -60,7 +60,8 @@ public class ResourceMatchingMultipleTest {
     @Test
     public void testMatchingUsers() throws Exception {
         String answer = client.target(generateURL("/users/1")).request().get(String.class);
-        Assert.assertEquals("The incorrect resource path was chosen", "users/{id} 1", answer);
+        Assertions.assertEquals("users/{id} 1", answer,
+                "The incorrect resource path was chosen");
     }
 
     /**
@@ -72,7 +73,8 @@ public class ResourceMatchingMultipleTest {
     @Test
     public void testMatchingMemberShips() throws Exception {
         String answer = client.target(generateURL("/users/1/memberships")).request().get(String.class);
-        Assert.assertEquals("The incorrect resource path was chosen", "users/{id}/memberships 1", answer);
+        Assertions.assertEquals("users/{id}/memberships 1", answer,
+                "The incorrect resource path was chosen");
     }
 
     /**
@@ -84,7 +86,8 @@ public class ResourceMatchingMultipleTest {
     @Test
     public void testMatchingCerts() throws Exception {
         String answer = client.target(generateURL("/users/1/certs")).request().get(String.class);
-        Assert.assertEquals("The incorrect resource path was chosen", "users/{id}/certs 1", answer);
+        Assertions.assertEquals("users/{id}/certs 1", answer,
+                "The incorrect resource path was chosen");
     }
 
 }

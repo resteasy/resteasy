@@ -6,7 +6,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.resource.path.resource.EmailResource;
@@ -17,9 +17,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resource
@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Spec requires that HEAD and OPTIONS are handled in a default manner
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class PathParamTest {
 
@@ -57,8 +57,8 @@ public class PathParamTest {
                     .request();
             request.header("Accept", "text/plain");
             Response response = request.get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals(header, response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(header, response.readEntity(String.class));
         }
         client.close();
     }
@@ -74,7 +74,7 @@ public class PathParamTest {
             Invocation.Builder request = client
                     .target(PortProviderUtil.generateURL("/digits/5150", PathLimitedTest.class.getSimpleName())).request();
             Response response = request.get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             response.close();
         }
 
@@ -82,7 +82,7 @@ public class PathParamTest {
             Invocation.Builder request = client
                     .target(PortProviderUtil.generateURL("/digits/5150A", PathLimitedTest.class.getSimpleName())).request();
             Response response = request.get();
-            Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
             response.close();
         }
         client.close();
@@ -99,27 +99,27 @@ public class PathParamTest {
                 .generateURL("/cars/mercedes/matrixparam/e55;color=black/2006", PathLimitedTest.class.getSimpleName()))
                 .request();
         Response response = request.get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("A black 2006 mercedes e55", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("A black 2006 mercedes e55", response.readEntity(String.class));
         // This must be a typo.  Should be "A midnight blue 2006 Porsche 911 Carrera S".
 
         request = client.target(PortProviderUtil.generateURL("/cars/mercedes/pathsegment/e55;color=black/2006",
                 PathLimitedTest.class.getSimpleName())).request();
         response = request.get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("A black 2006 mercedes e55", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("A black 2006 mercedes e55", response.readEntity(String.class));
 
         request = client.target(PortProviderUtil.generateURL("/cars/mercedes/pathsegments/e55/amg/year/2006",
                 PathLimitedTest.class.getSimpleName())).request();
         response = request.get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("A 2006 mercedes e55 amg", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("A 2006 mercedes e55 amg", response.readEntity(String.class));
 
         request = client.target(PortProviderUtil.generateURL("/cars/mercedes/uriinfo/e55;color=black/2006",
                 PathLimitedTest.class.getSimpleName())).request();
         response = request.get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("A black 2006 mercedes e55", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("A black 2006 mercedes e55", response.readEntity(String.class));
         client.close();
     }
 
@@ -133,7 +133,7 @@ public class PathParamTest {
         Response response = client.target(PortProviderUtil.generateURL("/employeeinfo/employees/bill.burke@burkecentral.com",
                 PathLimitedTest.class.getSimpleName())).request().get();
         String str = response.readEntity(String.class);
-        Assert.assertEquals("burke", str);
+        Assertions.assertEquals("burke", str);
         client.close();
     }
 }

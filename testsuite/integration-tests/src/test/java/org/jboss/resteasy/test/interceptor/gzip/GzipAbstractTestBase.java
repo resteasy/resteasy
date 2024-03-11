@@ -6,6 +6,7 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.PropertyPermission;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -14,7 +15,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.interceptor.gzip.resource.GzipInterface;
@@ -24,8 +25,8 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Abstract base class for gzip tests
@@ -36,7 +37,7 @@ import org.junit.runner.RunWith;
  * AllowGzipOnServerAbstractTestBase
  * NotAllowGzipOnServerAbstractTestBase
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public abstract class GzipAbstractTestBase {
 
@@ -53,7 +54,8 @@ public abstract class GzipAbstractTestBase {
     /**
      * Prepare archive for the tests
      */
-    protected static Archive<?> createWebArchive(String name, boolean addProvidersFileWithGzipInterceptors) {
+    protected static Archive<?> createWebArchive(String name, boolean addProvidersFileWithGzipInterceptors,
+            boolean allowGzipOnServer) {
         WebArchive war = TestUtil.prepareArchive(name);
         war = war.addClass(GzipInterface.class);
         war = war.addAsWebInfResource(EmptyAsset.INSTANCE, "WEB-INF/beans.xml");
@@ -63,7 +65,11 @@ public abstract class GzipAbstractTestBase {
             war.addAsManifestResource(GzipAbstractTestBase.class.getPackage(), "GzipAbstractTest-jakarta.ws.rs.ext.Providers",
                     "services/jakarta.ws.rs.ext.Providers");
         }
-        return TestUtil.finishContainerPrepare(war, null, GzipResource.class);
+        Map<String, String> context = Map.of();
+        if (allowGzipOnServer) {
+            context = Map.of(PROPERTY_NAME, "true");
+        }
+        return TestUtil.finishContainerPrepare(war, context, GzipResource.class);
     }
 
     private ResteasyClient client;
@@ -114,7 +120,7 @@ public abstract class GzipAbstractTestBase {
 
             // read data from response
             String echo = response.readEntity(String.class);
-            Assert.assertNotNull("Response doesn't have body", echo);
+            Assertions.assertNotNull("Response doesn't have body", echo);
 
             // check resteasy.allowGzip property on server
             MatcherAssert.assertThat("Server doesn't have correct value of resteasy.allowGzip property", echo,

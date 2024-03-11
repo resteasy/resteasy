@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation.cdi;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -9,7 +9,7 @@ import jakarta.ws.rs.client.Invocation;
 import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
@@ -24,11 +24,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Response
@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-1008
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class CDIValidationCoreTest {
     @Deployment
@@ -56,12 +56,12 @@ public class CDIValidationCoreTest {
 
     protected Client client;
 
-    @Before
+    @BeforeEach
     public void beforeTest() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void afterTest() {
         client.close();
         client = null;
@@ -77,7 +77,7 @@ public class CDIValidationCoreTest {
         ClientResponse response = (ClientResponse) request.get();
         int answer = response.readEntity(Integer.class);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        assertEquals("Wrong content of response", 17, answer);
+        assertEquals(17, answer, "Wrong content of response");
     }
 
     /**
@@ -94,15 +94,15 @@ public class CDIValidationCoreTest {
         TestUtil.countViolations(r, 2, 1, 1, 0);
         ResteasyConstraintViolation cv = TestUtil.getViolationByMessage(r.getPropertyViolations(),
                 "must be greater than or equal to 3");
-        Assert.assertNotNull("Expected validation error is not in response", cv);
+        Assertions.assertNotNull(cv, "Expected validation error is not in response");
         cv = TestUtil.getViolationByMessage(r.getPropertyViolations(), "must be greater than or equal to 5");
-        Assert.assertNotNull("Expected validation error is not in response", cv);
+        Assertions.assertNotNull(cv, "Expected validation error is not in response");
         cv = r.getClassViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response",
-                cv.getMessage().indexOf("org.jboss.resteasy.ejb.validation.SumConstraint") > 0);
+        Assertions.assertTrue(cv.getMessage().indexOf("org.jboss.resteasy.ejb.validation.SumConstraint") > 0,
+                "Expected validation error is not in response");
         cv = r.getParameterViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response",
-                cv.getMessage().equals("must be greater than or equal to 7"));
+        Assertions.assertTrue(cv.getMessage().equals("must be greater than or equal to 7"),
+                "Expected validation error is not in response");
     }
 
     /**
@@ -118,8 +118,8 @@ public class CDIValidationCoreTest {
         ViolationReport r = new ViolationReport(answer);
         TestUtil.countViolations(r, 0, 0, 0, 1);
         ResteasyConstraintViolation cv = r.getReturnValueViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response",
-                cv.getMessage().equals("must be greater than or equal to 11"));
+        Assertions.assertTrue(cv.getMessage().equals("must be greater than or equal to 11"),
+                "Expected validation error is not in response");
     }
 
     /**
@@ -132,7 +132,7 @@ public class CDIValidationCoreTest {
         ClientResponse response = (ClientResponse) request.get();
         int result = response.readEntity(int.class);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        assertEquals("Wrong content of response", 19, result);
+        assertEquals(19, result, "Wrong content of response");
     }
 
     /**
@@ -148,8 +148,8 @@ public class CDIValidationCoreTest {
         ViolationReport r = new ViolationReport(answer);
         TestUtil.countViolations(r, 0, 0, 1, 0);
         ResteasyConstraintViolation cv = r.getParameterViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response",
-                cv.getMessage().equals("must be greater than or equal to 13"));
+        Assertions.assertTrue(cv.getMessage().equals("must be greater than or equal to 13"),
+                "Expected validation error is not in response");
     }
 
     /**
@@ -165,8 +165,8 @@ public class CDIValidationCoreTest {
         ViolationReport r = new ViolationReport(answer);
         TestUtil.countViolations(r, 0, 0, 0, 1);
         ResteasyConstraintViolation cv = r.getReturnValueViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response",
-                cv.getMessage().equals("must be greater than or equal to 17"));
+        Assertions.assertTrue(cv.getMessage().equals("must be greater than or equal to 17"),
+                "Expected validation error is not in response");
     }
 
     /**
@@ -183,12 +183,12 @@ public class CDIValidationCoreTest {
         TestUtil.countViolations(r, 2, 1, 0, 0);
         ResteasyConstraintViolation cv = TestUtil.getViolationByMessage(r.getPropertyViolations(),
                 "must be greater than or equal to 3");
-        Assert.assertNotNull("Expected validation error is not in response", cv);
+        Assertions.assertNotNull(cv, "Expected validation error is not in response");
         cv = TestUtil.getViolationByMessage(r.getPropertyViolations(), "must be greater than or equal to 5");
-        Assert.assertNotNull("Expected validation error is not in response", cv);
+        Assertions.assertNotNull(cv, "Expected validation error is not in response");
         cv = r.getClassViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response",
-                cv.getMessage().indexOf("org.jboss.resteasy.ejb.validation.SumConstraint") > 0);
+        Assertions.assertTrue(cv.getMessage().indexOf("org.jboss.resteasy.ejb.validation.SumConstraint") > 0,
+                "Expected validation error is not in response");
     }
 
     /**
@@ -205,11 +205,11 @@ public class CDIValidationCoreTest {
         TestUtil.countViolations(r, 2, 1, 0, 0);
         ResteasyConstraintViolation cv = TestUtil.getViolationByMessage(r.getPropertyViolations(),
                 "must be greater than or equal to 3");
-        Assert.assertNotNull("Expected validation error is not in response", cv);
+        Assertions.assertNotNull(cv, "Expected validation error is not in response");
         cv = TestUtil.getViolationByMessage(r.getPropertyViolations(), "must be greater than or equal to 5");
-        Assert.assertNotNull("Expected validation error is not in response", cv);
+        Assertions.assertNotNull(cv, "Expected validation error is not in response");
         cv = r.getClassViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response",
-                cv.getMessage().indexOf("org.jboss.resteasy.ejb.validation.SumConstraint") > 0);
+        Assertions.assertTrue(cv.getMessage().indexOf("org.jboss.resteasy.ejb.validation.SumConstraint") > 0,
+                "Expected validation error is not in response");
     }
 }

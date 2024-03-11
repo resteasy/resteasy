@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
-import static org.junit.Assert.assertEquals;
 
 import java.util.Random;
 
@@ -18,19 +17,20 @@ import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestMethodOrder(MethodOrderer.Alphanumeric.class)
 public class ClientUncheckedErrorTest {
 
     private static Client client;
     private static ResteasyDeployment deployment;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         deployment = ReactorNettyContainer.start();
         final Registry registry = deployment.getRegistry();
@@ -38,7 +38,7 @@ public class ClientUncheckedErrorTest {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() {
         client.close();
         ReactorNettyContainer.stop();
@@ -48,8 +48,8 @@ public class ClientUncheckedErrorTest {
     public void testClientUncheckedException() {
         final WebTarget target = client.target(generateURL("/resource/out-of-bounds/" + new Random().nextInt()));
         final Response resp = target.request().get();
-        assertEquals(500, resp.getStatus());
-        assertEquals("Index 0 out of bounds for length 0", resp.readEntity(String.class));
+        Assertions.assertEquals(500, resp.getStatus());
+        Assertions.assertEquals("Index 0 out of bounds for length 0", resp.readEntity(String.class));
     }
 
     @Test
@@ -57,8 +57,8 @@ public class ClientUncheckedErrorTest {
         deployment.getProviderFactory().registerProviderInstance(new MyExceptionMapper());
         final WebTarget target = client.target(generateURL("/resource/out-of-bounds/" + new Random().nextInt()));
         final Response resp = target.request().get();
-        assertEquals(202, resp.getStatus());
-        assertEquals("Try again later", resp.readEntity(String.class));
+        Assertions.assertEquals(202, resp.getStatus());
+        Assertions.assertEquals("Try again later", resp.readEntity(String.class));
 
     }
 

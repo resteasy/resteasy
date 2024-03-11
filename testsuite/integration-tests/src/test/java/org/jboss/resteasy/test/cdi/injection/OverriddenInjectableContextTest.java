@@ -26,7 +26,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.client.Client;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.cdi.injection.resource.RequiredInjectableContextResource;
 import org.jboss.resteasy.test.cdi.injection.resource.RootApplication;
 import org.jboss.resteasy.test.cdi.injection.resource.TestProducer;
@@ -35,14 +35,14 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class OverriddenInjectableContextTest {
 
     @Inject
@@ -65,7 +65,7 @@ public class OverriddenInjectableContextTest {
 
     @Test
     public void overriddenClient() {
-        Assert.assertNotNull(client);
-        Assert.assertEquals("test value", client.getConfiguration().getProperty("test.client.property"));
+        Assertions.assertNotNull(client);
+        Assertions.assertEquals("test value", client.getConfiguration().getProperty("test.client.property"));
     }
 }

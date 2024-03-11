@@ -5,8 +5,8 @@ import java.util.Collections;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.internal.ClientWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -27,20 +27,22 @@ public class ClientWebTargetTest {
         ResteasyClient client = new ResteasyClientBuilderImpl().build();
         ClientWebTarget clientWebTarget = (ClientWebTarget) client.target("");
 
-        Assert.assertTrue("Client properties should not be empty", client.getConfiguration().getProperties().isEmpty());
+        Assertions.assertTrue(client.getConfiguration().getProperties().isEmpty(),
+                "Client properties should not be empty");
 
         clientWebTarget.property(property, property);
 
-        Assert.assertEquals("Add of property faild", Collections.singletonMap(property, property),
-                clientWebTarget.getConfiguration().getProperties());
+        Assertions.assertEquals(Collections.singletonMap(property, property),
+                clientWebTarget.getConfiguration().getProperties(),
+                "Add of property faild");
 
         try {
             clientWebTarget.property(property, null);
         } catch (NullPointerException ex) {
-            Assert.fail("Cannot remove property with null value.");
+            Assertions.fail("Cannot remove property with null value.");
         }
 
         Object value = clientWebTarget.getConfiguration().getProperty(property);
-        Assert.assertNull("Property from webTarget can not be removed", value);
+        Assertions.assertNull(value, "Property from webTarget can not be removed");
     }
 }

@@ -7,13 +7,13 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/test")
 public class EmptyContentTypeResource {
     @POST
     public Response postNada(@HeaderParam("Content-Type") String contentType) {
-        Assert.assertEquals(null, contentType);
+        Assertions.assertEquals(null, contentType);
         return Response.ok("NULL", "text/plain").build();
     }
 

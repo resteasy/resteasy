@@ -6,8 +6,8 @@ import org.apache.http.HttpHost;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -25,11 +25,11 @@ public class HttpProxyTest {
         ApacheHttpClient43Engine engine = (ApacheHttpClient43Engine) client.httpEngine();
         HttpHost proxy = engine.getDefaultProxy();
 
-        Assert.assertEquals(testProxyHost, proxy.getHostName());
+        Assertions.assertEquals(testProxyHost, proxy.getHostName());
         // since port was not set, it must be -1
-        Assert.assertEquals(-1, proxy.getPort());
+        Assertions.assertEquals(-1, proxy.getPort());
         // since scheme was not set, it must be http
-        Assert.assertEquals("http", proxy.getSchemeName());
+        Assertions.assertEquals("http", proxy.getSchemeName());
         client.close();
     }
 
@@ -46,9 +46,9 @@ public class HttpProxyTest {
         ApacheHttpClient43Engine engine = (ApacheHttpClient43Engine) client.httpEngine();
         HttpHost proxy = engine.getDefaultProxy();
 
-        Assert.assertEquals(testProxyHost, proxy.getHostName());
-        Assert.assertEquals(Integer.parseInt(testProxyPort), proxy.getPort());
-        Assert.assertEquals(testProxyScheme, proxy.getSchemeName());
+        Assertions.assertEquals(testProxyHost, proxy.getHostName());
+        Assertions.assertEquals(Integer.parseInt(testProxyPort), proxy.getPort());
+        Assertions.assertEquals(testProxyScheme, proxy.getSchemeName());
         client.close();
 
         //modify and re-use builder...
@@ -58,9 +58,9 @@ public class HttpProxyTest {
         engine = (ApacheHttpClient43Engine) client.httpEngine();
         proxy = engine.getDefaultProxy();
 
-        Assert.assertEquals(testProxyHost, proxy.getHostName());
-        Assert.assertEquals(8090, proxy.getPort());
-        Assert.assertEquals("http", proxy.getSchemeName());
+        Assertions.assertEquals(testProxyHost, proxy.getHostName());
+        Assertions.assertEquals(8090, proxy.getPort());
+        Assertions.assertEquals("http", proxy.getSchemeName());
         client.close();
     }
 
@@ -75,9 +75,9 @@ public class HttpProxyTest {
         ApacheHttpClient43Engine engine = (ApacheHttpClient43Engine) client.httpEngine();
         HttpHost proxy = engine.getDefaultProxy();
 
-        Assert.assertEquals("myoverrideproxy.com", proxy.getHostName());
-        Assert.assertEquals(-1, proxy.getPort());
-        Assert.assertEquals("http", proxy.getSchemeName());
+        Assertions.assertEquals("myoverrideproxy.com", proxy.getHostName());
+        Assertions.assertEquals(-1, proxy.getPort());
+        Assertions.assertEquals("http", proxy.getSchemeName());
         client.close();
 
         //modify and re-use builder...
@@ -86,9 +86,9 @@ public class HttpProxyTest {
         engine = (ApacheHttpClient43Engine) client.httpEngine();
         proxy = engine.getDefaultProxy();
 
-        Assert.assertEquals("myproxy.com", proxy.getHostName());
-        Assert.assertEquals(8080, proxy.getPort());
-        Assert.assertEquals("https", proxy.getSchemeName());
+        Assertions.assertEquals("myproxy.com", proxy.getHostName());
+        Assertions.assertEquals(8080, proxy.getPort());
+        Assertions.assertEquals("https", proxy.getSchemeName());
         client.close();
 
         //modify and re-use builder...
@@ -99,7 +99,7 @@ public class HttpProxyTest {
         engine = (ApacheHttpClient43Engine) client.httpEngine();
         proxy = engine.getDefaultProxy();
 
-        Assert.assertNull(proxy);
+        Assertions.assertNull(proxy);
         client.close();
     }
 }

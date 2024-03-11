@@ -6,7 +6,7 @@ import jakarta.ws.rs.core.UriBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -16,11 +16,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Encoding
@@ -28,7 +28,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-729
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class MatrixParamEncodingTest {
 
@@ -36,7 +36,7 @@ public class MatrixParamEncodingTest {
 
     protected static ResteasyClient client;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
@@ -51,7 +51,7 @@ public class MatrixParamEncodingTest {
         return TestUtil.finishContainerPrepare(war, null, MatrixParamEncodingResource.class);
     }
 
-    @After
+    @AfterEach
     public void shutdown() throws Exception {
         client.close();
         client = null;
@@ -65,8 +65,9 @@ public class MatrixParamEncodingTest {
     public void testMatrixParamRequestDecoded() throws Exception {
         ResteasyWebTarget target = client.target(generateURL("/decoded")).matrixParam("param", "ac/dc");
         Response response = target.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong response", "ac/dc", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("ac/dc", response.readEntity(String.class),
+                "Wrong response");
         response.close();
     }
 
@@ -79,8 +80,9 @@ public class MatrixParamEncodingTest {
         ResteasyWebTarget target = client.target(generateURL("/decodedMultipleParam")).matrixParam("param1", "")
                 .matrixParam("param2", "abc");
         Response response = target.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong response", "null abc", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("null abc", response.readEntity(String.class),
+                "Wrong response");
         response.close();
     }
 
@@ -92,8 +94,9 @@ public class MatrixParamEncodingTest {
     public void testMatrixParamRequestEncoded() throws Exception {
         ResteasyWebTarget target = client.target(generateURL("/encoded")).matrixParam("param", "ac/dc");
         Response response = target.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong response", "ac%2Fdc", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("ac%2Fdc", response.readEntity(String.class),
+                "Wrong response");
         response.close();
     }
 
@@ -109,8 +112,8 @@ public class MatrixParamEncodingTest {
         logger.info("Sending request to " + uriBuilder.build().toString());
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong response", "ac/dc", entity);
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("ac/dc", entity, "Wrong response");
         response.close();
     }
 
@@ -126,8 +129,8 @@ public class MatrixParamEncodingTest {
         logger.info("Sending request to " + uriBuilder.build().toString());
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong response", "ac%2Fdc", entity);
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("ac%2Fdc", entity, "Wrong response");
         response.close();
     }
 }

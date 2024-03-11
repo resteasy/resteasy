@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.tracing;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,8 +12,8 @@ import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.tracing.api.RESTEasyTracing;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class BasicTracingTest extends TracingTestBase {
 
@@ -28,7 +28,7 @@ public class BasicTracingTest extends TracingTestBase {
 
         try {
             Response response = base.request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
 
             Map<String, Boolean> results = new HashMap<String, Boolean>();
 
@@ -37,7 +37,7 @@ public class BasicTracingTest extends TracingTestBase {
             verifyResults(response, results);
 
             for (String k : results.keySet()) {
-                assertTrue(k + ": " + results.get(k), results.get(k));
+                assertTrue(results.get(k), k + ": " + results.get(k));
             }
 
             response.close();
@@ -57,7 +57,7 @@ public class BasicTracingTest extends TracingTestBase {
         WebTarget base = client.target(url);
         try {
             Response response = base.request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             boolean hasTracing = false;
             for (Map.Entry entry : response.getStringHeaders().entrySet()) {
                 if (entry.getKey().toString().startsWith(RESTEasyTracing.HEADER_TRACING_PREFIX)) {

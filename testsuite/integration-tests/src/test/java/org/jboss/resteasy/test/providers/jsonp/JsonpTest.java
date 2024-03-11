@@ -14,25 +14,25 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.providers.jsonp.resource.JsonpResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Json-p provider
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class JsonpTest {
 
@@ -47,12 +47,12 @@ public class JsonpTest {
         return TestUtil.finishContainerPrepare(war, null, JsonpResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
         client = null;
@@ -87,12 +87,13 @@ public class JsonpTest {
         JsonObject obj = Json.createObjectBuilder().add("name", "Bill").add("id", 10001).build();
 
         obj = target.request().post(Entity.json(obj), JsonObject.class);
-        Assert.assertTrue("JsonObject from the response doesn't contain field 'name'", obj.containsKey("name"));
-        Assert.assertEquals("JsonObject from the response doesn't contain correct value for the field 'name'",
-                obj.getJsonString("name").getString(), "Bill");
-        Assert.assertTrue("JsonObject from the response doesn't contain field 'id'", obj.containsKey("id"));
-        Assert.assertEquals("JsonObject from the response doesn't contain correct value for the field 'id'",
-                obj.getJsonNumber("id").longValue(), 10001);
+        Assertions.assertTrue(obj.containsKey("name"),
+                "JsonObject from the response doesn't contain field 'name'");
+        Assertions.assertEquals(obj.getJsonString("name").getString(), "Bill",
+                "JsonObject from the response doesn't contain correct value for the field 'name'");
+        Assertions.assertTrue(obj.containsKey("id"), "JsonObject from the response doesn't contain field 'id'");
+        Assertions.assertEquals(obj.getJsonNumber("id").longValue(), 10001,
+                "JsonObject from the response doesn't contain correct value for the field 'id'");
     }
 
     /**
@@ -120,15 +121,18 @@ public class JsonpTest {
         JsonArray array = Json.createArrayBuilder().add(Json.createObjectBuilder().add("name", "Bill").build())
                 .add(Json.createObjectBuilder().add("name", "Monica").build()).build();
         array = target.request().post(Entity.json(array), JsonArray.class);
-        Assert.assertEquals("JsonArray from the response doesn't contain two elements as it should", 2, array.size());
+        Assertions.assertEquals(2, array.size(),
+                "JsonArray from the response doesn't contain two elements as it should");
         JsonObject obj = array.getJsonObject(0);
-        Assert.assertTrue("JsonObject[0] from the response doesn't contain field 'name'", obj.containsKey("name"));
-        Assert.assertEquals("JsonObject[0] from the response doesn't contain correct value for the field 'name'",
-                obj.getJsonString("name").getString(), "Bill");
+        Assertions.assertTrue(obj.containsKey("name"),
+                "JsonObject[0] from the response doesn't contain field 'name'");
+        Assertions.assertEquals(obj.getJsonString("name").getString(), "Bill",
+                "JsonObject[0] from the response doesn't contain correct value for the field 'name'");
         obj = array.getJsonObject(1);
-        Assert.assertTrue("JsonObject[1] from the response doesn't contain field 'name'", obj.containsKey("name"));
-        Assert.assertEquals("JsonObject[1] from the response doesn't contain correct value for the field 'name'",
-                obj.getJsonString("name").getString(), "Monica");
+        Assertions.assertTrue(obj.containsKey("name"),
+                "JsonObject[1] from the response doesn't contain field 'name'");
+        Assertions.assertEquals(obj.getJsonString("name").getString(), "Monica",
+                "JsonObject[1] from the response doesn't contain correct value for the field 'name'");
 
     }
 
@@ -152,8 +156,8 @@ public class JsonpTest {
         WebTarget target = client.target(generateURL("/test/json/string"));
         JsonString jsonString = Json.createValue("Resteasy");
         JsonString result = target.request().post(Entity.json(jsonString), JsonString.class);
-        Assert.assertTrue("JsonString object with Hello Resteasy value is expected",
-                result.getString().equals("Hello Resteasy"));
+        Assertions.assertTrue(result.getString().equals("Hello Resteasy"),
+                "JsonString object with Hello Resteasy value is expected");
     }
 
     @Test
@@ -161,7 +165,8 @@ public class JsonpTest {
         WebTarget target = client.target(generateURL("/test/json/number"));
         JsonNumber jsonNumber = Json.createValue(100);
         JsonNumber result = target.request().post(Entity.json(jsonNumber), JsonNumber.class);
-        Assert.assertTrue("JsonNumber object with 200 value is expected", result.intValue() == 200);
+        Assertions.assertTrue(result.intValue() == 200,
+                "JsonNumber object with 200 value is expected");
     }
 
     private void doTestStructure(String charset) {
@@ -174,8 +179,9 @@ public class JsonpTest {
         JsonStructure str = (JsonStructure) Json.createObjectBuilder().add("name", "Bill").build();
         JsonStructure structure = target.request().post(Entity.json(str), JsonStructure.class);
         JsonObject obj = (JsonObject) structure;
-        Assert.assertTrue("JsonObject from the response doesn't contain field 'name'", obj.containsKey("name"));
-        Assert.assertEquals("JsonObject from the response doesn't contain correct value for the field 'name'",
-                obj.getJsonString("name").getString(), "Bill");
+        Assertions.assertTrue(obj.containsKey("name"),
+                "JsonObject from the response doesn't contain field 'name'");
+        Assertions.assertEquals(obj.getJsonString("name").getString(), "Bill",
+                "JsonObject from the response doesn't contain correct value for the field 'name'");
     }
 }

@@ -19,7 +19,7 @@
 
 package org.jboss.resteasy.test.client.vertx;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
@@ -33,9 +33,9 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.jaxrs.engines.vertx.VertxClientHttpEngine;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClientOptions;
@@ -51,7 +51,7 @@ public class VertxSslClientEngineTest {
     private ScheduledExecutorService executorService;
     private SelfSignedCertificate certificate;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         vertx = Vertx.vertx();
         certificate = SelfSignedCertificate.create();
@@ -82,7 +82,7 @@ public class VertxSslClientEngineTest {
         }
     }
 
-    @After
+    @AfterEach
     public void stop() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         vertx.close(ar -> latch.countDown());

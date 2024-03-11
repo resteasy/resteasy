@@ -18,7 +18,7 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ViolationReport;
@@ -36,11 +36,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Validation
@@ -48,7 +48,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test of xml validation
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ValidationXMLTest {
     static final String WRONG_ERROR_MSG = "Expected validation error is not in response";
@@ -66,12 +66,12 @@ public class ValidationXMLTest {
                 ValidationXMLResourceWithAllFivePotentialViolations.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient().register(ValidationXMLFooReaderWriter.class);
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -173,7 +173,7 @@ public class ValidationXMLTest {
             ValidationXMLFoo foo = new ValidationXMLFoo("p");
             Response response = client.target(generateURL("/a/b/c")).request().accept(mediaType)
                     .post(Entity.entity(foo, "application/foo"));
-            Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             String entity = response.readEntity(String.class);
             logger.info("report: " + entity);
             String start = "<violationReport>";
@@ -185,15 +185,15 @@ public class ValidationXMLTest {
             String parameterViolationP1 = "<parameterViolations><constraintType>PARAMETER</constraintType><path>post.";
             String parameterViolationP2 = "</path><message>s must have length: 3 &lt;= length &lt;= 5</message><value>ValidationXMLFoo[p]</value></parameterViolations>";
             String end = "</violationReport>";
-            Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(start));
-            Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(propertyViolation1));
-            Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(propertyViolation2));
-            Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(propertyViolation3));
-            Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(classViolationStart));
-            Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(classViolationEnd));
-            Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(parameterViolationP1));
-            Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(parameterViolationP2));
-            Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(end));
+            Assertions.assertTrue(entity.contains(start), WRONG_ERROR_MSG);
+            Assertions.assertTrue(entity.contains(propertyViolation1), WRONG_ERROR_MSG);
+            Assertions.assertTrue(entity.contains(propertyViolation2), WRONG_ERROR_MSG);
+            Assertions.assertTrue(entity.contains(propertyViolation3), WRONG_ERROR_MSG);
+            Assertions.assertTrue(entity.contains(classViolationStart), WRONG_ERROR_MSG);
+            Assertions.assertTrue(entity.contains(classViolationEnd), WRONG_ERROR_MSG);
+            Assertions.assertTrue(entity.contains(parameterViolationP1), WRONG_ERROR_MSG);
+            Assertions.assertTrue(entity.contains(parameterViolationP2), WRONG_ERROR_MSG);
+            Assertions.assertTrue(entity.contains(end), WRONG_ERROR_MSG);
             response.close();
         }
 
@@ -202,26 +202,28 @@ public class ValidationXMLTest {
             ValidationXMLFoo foo = new ValidationXMLFoo("p");
             Response response = client.target(generateURL("/a/b/c")).request().accept(MediaType.APPLICATION_XML)
                     .post(Entity.entity(foo, "application/foo"));
-            Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             ViolationReport report = response.readEntity(ViolationReport.class);
             logger.info("report: " + report);
             TestUtil.countViolations(report, 3, 1, 1, 0);
             ResteasyConstraintViolation cv = TestUtil.getViolationByMessageAndValue(report.getPropertyViolations(),
                     "size must be between 2 and 4", "a");
-            Assert.assertNotNull(WRONG_ERROR_MSG, cv);
+            Assertions.assertNotNull(cv, WRONG_ERROR_MSG);
             cv = TestUtil.getViolationByMessageAndValue(report.getPropertyViolations(), "size must be between 2 and 4", "b");
-            Assert.assertNotNull(WRONG_ERROR_MSG, cv);
+            Assertions.assertNotNull(cv, WRONG_ERROR_MSG);
             cv = TestUtil.getViolationByMessage(report.getPropertyViolations(), "size must be between 3 and 5");
-            Assert.assertNotNull(WRONG_ERROR_MSG, cv);
-            Assert.assertEquals(WRONG_ERROR_MSG, "c", cv.getValue());
+            Assertions.assertNotNull(cv, WRONG_ERROR_MSG);
+            Assertions.assertEquals("c", cv.getValue(), WRONG_ERROR_MSG);
             cv = report.getClassViolations().iterator().next();
-            Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and u must have length > 5", cv.getMessage());
+            Assertions.assertEquals("Concatenation of s and u must have length > 5", cv.getMessage(),
+                    WRONG_ERROR_MSG);
             logger.info("value: " + cv.getValue());
-            Assert.assertTrue(cv.getValue().startsWith(
+            Assertions.assertTrue(cv.getValue().startsWith(
                     "org.jboss.resteasy.test.validation.resource.ValidationXMLResourceWithAllFivePotentialViolations@"));
             cv = report.getParameterViolations().iterator().next();
-            Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 3 <= length <= 5", cv.getMessage());
-            Assert.assertEquals(WRONG_ERROR_MSG, "ValidationXMLFoo[p]", cv.getValue());
+            Assertions.assertEquals("s must have length: 3 <= length <= 5", cv.getMessage(),
+                    WRONG_ERROR_MSG);
+            Assertions.assertEquals("ValidationXMLFoo[p]", cv.getValue(), WRONG_ERROR_MSG);
             response.close();
         }
     }
@@ -232,11 +234,11 @@ public class ValidationXMLTest {
             ValidationXMLFoo foo = new ValidationXMLFoo("123");
             Response response = client.target(generateURL("/abc/pqr/xyz")).request().accept(mediaType)
                     .post(Entity.entity(foo, "application/foo"));
-            Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
             String entity = response.readEntity(String.class);
             logger.info("report: " + entity);
             String expected = "<violationReport><returnValueViolations><constraintType>RETURN_VALUE</constraintType><path>post.&lt;return value&gt;</path><message>s must have length: 4 &lt;= length &lt;= 5</message><value>ValidationXMLFoo[123]</value></returnValueViolations></violationReport>";
-            Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(expected));
+            Assertions.assertTrue(entity.contains(expected), WRONG_ERROR_MSG);
             response.close();
         }
 
@@ -245,13 +247,14 @@ public class ValidationXMLTest {
             ValidationXMLFoo foo = new ValidationXMLFoo("123");
             Response response = client.target(generateURL("/abc/pqr/xyz")).request().accept(MediaType.APPLICATION_XML)
                     .post(Entity.entity(foo, "application/foo"));
-            Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
             ViolationReport report = response.readEntity(ViolationReport.class);
             logger.info("report: " + report);
             TestUtil.countViolations(report, 0, 0, 0, 1);
             ResteasyConstraintViolation cv = report.getReturnValueViolations().iterator().next();
-            Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 4 <= length <= 5", cv.getMessage());
-            Assert.assertEquals(WRONG_ERROR_MSG, foo.toString(), cv.getValue());
+            Assertions.assertEquals("s must have length: 4 <= length <= 5", cv.getMessage(),
+                    WRONG_ERROR_MSG);
+            Assertions.assertEquals(foo.toString(), cv.getValue(), WRONG_ERROR_MSG);
             response.close();
         }
     }
@@ -262,13 +265,15 @@ public class ValidationXMLTest {
             ValidationXMLFoo foo = new ValidationXMLFoo("p");
             Response response = client.target(generateURL("/a/b/c")).request().accept(mediaType)
                     .post(Entity.entity(foo, "application/foo"));
-            Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             ViolationReport entity = response.readEntity(ViolationReport.class);
             logger.info("report: " + entity);
             final List<ResteasyConstraintViolation> propertyViolations = entity.getPropertyViolations();
-            MatcherAssert.assertThat(WRONG_ERROR_MSG, resolveValues(propertyViolations, ResteasyConstraintViolation::getPath),
+            MatcherAssert.assertThat(WRONG_ERROR_MSG,
+                    resolveValues(propertyViolations, ResteasyConstraintViolation::getPath),
                     Matchers.hasItems("s", "t", "u"));
-            MatcherAssert.assertThat(WRONG_ERROR_MSG, resolveValues(propertyViolations, ResteasyConstraintViolation::getValue),
+            MatcherAssert.assertThat(WRONG_ERROR_MSG,
+                    resolveValues(propertyViolations, ResteasyConstraintViolation::getValue),
                     Matchers.hasItems("a", "b", "c"));
             MatcherAssert.assertThat(WRONG_ERROR_MSG,
                     resolveValues(propertyViolations, ResteasyConstraintViolation::getMessage),
@@ -278,7 +283,8 @@ public class ValidationXMLTest {
             final List<ResteasyConstraintViolation> classViolations = entity.getClassViolations();
             MatcherAssert.assertThat(WRONG_ERROR_MSG, resolveValues(classViolations, ResteasyConstraintViolation::getPath),
                     Matchers.hasItem(""));
-            MatcherAssert.assertThat(WRONG_ERROR_MSG, resolveValues(classViolations, ResteasyConstraintViolation::getMessage),
+            MatcherAssert.assertThat(WRONG_ERROR_MSG,
+                    resolveValues(classViolations, ResteasyConstraintViolation::getMessage),
                     Matchers.hasItem("Concatenation of s and u must have length > 5"));
 
             final List<ResteasyConstraintViolation> parameterViolations = entity.getParameterViolations();
@@ -287,7 +293,8 @@ public class ValidationXMLTest {
             MatcherAssert.assertThat(WRONG_ERROR_MSG,
                     resolveValues(parameterViolations, ResteasyConstraintViolation::getMessage),
                     Matchers.hasItem("s must have length: 3 <= length <= 5"));
-            MatcherAssert.assertThat(WRONG_ERROR_MSG, resolveValues(parameterViolations, ResteasyConstraintViolation::getValue),
+            MatcherAssert.assertThat(WRONG_ERROR_MSG,
+                    resolveValues(parameterViolations, ResteasyConstraintViolation::getValue),
                     Matchers.hasItem("ValidationXMLFoo[p]"));
 
             MatcherAssert.assertThat(WRONG_ERROR_MSG, entity.getReturnValueViolations(), Matchers.hasSize(0));
@@ -299,26 +306,28 @@ public class ValidationXMLTest {
             ValidationXMLFoo foo = new ValidationXMLFoo("p");
             Response response = client.target(generateURL("/a/b/c")).request().accept(MediaType.APPLICATION_XML)
                     .post(Entity.entity(foo, "application/foo"));
-            Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             ViolationReport report = response.readEntity(ViolationReport.class);
             logger.info("report: " + report);
             TestUtil.countViolations(report, 3, 1, 1, 0);
             ResteasyConstraintViolation cv = TestUtil.getViolationByMessageAndValue(report.getPropertyViolations(),
                     "size must be between 2 and 4", "a");
-            Assert.assertNotNull(WRONG_ERROR_MSG, cv);
+            Assertions.assertNotNull(cv, WRONG_ERROR_MSG);
             cv = TestUtil.getViolationByMessageAndValue(report.getPropertyViolations(), "size must be between 2 and 4", "b");
-            Assert.assertNotNull(WRONG_ERROR_MSG, cv);
+            Assertions.assertNotNull(cv, WRONG_ERROR_MSG);
             cv = TestUtil.getViolationByMessage(report.getPropertyViolations(), "size must be between 3 and 5");
-            Assert.assertNotNull(WRONG_ERROR_MSG, cv);
-            Assert.assertEquals(WRONG_ERROR_MSG, "c", cv.getValue());
+            Assertions.assertNotNull(cv, WRONG_ERROR_MSG);
+            Assertions.assertEquals("c", cv.getValue(), WRONG_ERROR_MSG);
             cv = report.getClassViolations().iterator().next();
-            Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and u must have length > 5", cv.getMessage());
+            Assertions.assertEquals("Concatenation of s and u must have length > 5", cv.getMessage(),
+                    WRONG_ERROR_MSG);
             logger.info("value: " + cv.getValue());
-            Assert.assertTrue(WRONG_ERROR_MSG, cv.getValue().startsWith(
-                    "org.jboss.resteasy.test.validation.resource.ValidationXMLResourceWithAllFivePotentialViolations@"));
+            Assertions.assertTrue(cv.getValue().startsWith(
+                    "org.jboss.resteasy.test.validation.resource.ValidationXMLResourceWithAllFivePotentialViolations@"),
+                    WRONG_ERROR_MSG);
             cv = report.getParameterViolations().iterator().next();
-            Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 3 <= length <= 5", cv.getMessage());
-            Assert.assertEquals(WRONG_ERROR_MSG, "ValidationXMLFoo[p]", cv.getValue());
+            Assertions.assertEquals("s must have length: 3 <= length <= 5", cv.getMessage(), WRONG_ERROR_MSG);
+            Assertions.assertEquals("ValidationXMLFoo[p]", cv.getValue(), WRONG_ERROR_MSG);
             response.close();
         }
     }
@@ -329,22 +338,28 @@ public class ValidationXMLTest {
             ValidationXMLFoo foo = new ValidationXMLFoo("123");
             Response response = client.target(generateURL("/abc/pqr/xyz")).request().accept(mediaType)
                     .post(Entity.entity(foo, "application/foo"));
-            Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
             JsonObject entity = response.readEntity(JsonObject.class);
             logger.info("report: " + entity);
-            Assert.assertTrue(WRONG_ERROR_MSG, entity.getJsonArray("propertyViolations").isEmpty());
-            Assert.assertTrue(WRONG_ERROR_MSG, entity.getJsonArray("classViolations").isEmpty());
-            Assert.assertTrue(WRONG_ERROR_MSG, entity.getJsonArray("parameterViolations").isEmpty());
+            Assertions.assertTrue(entity.getJsonArray("propertyViolations").isEmpty(),
+                    WRONG_ERROR_MSG);
+            Assertions.assertTrue(entity.getJsonArray("classViolations").isEmpty(),
+                    WRONG_ERROR_MSG);
+            Assertions.assertTrue(entity.getJsonArray("parameterViolations").isEmpty(),
+                    WRONG_ERROR_MSG);
 
             final JsonArray returnValueViolations = entity.getJsonArray("returnValueViolations");
-            Assert.assertNotNull("Did not find returnValueViolations entry", returnValueViolations);
-            Assert.assertFalse("Did not find returnValueViolations entry", returnValueViolations.isEmpty());
+            Assertions.assertNotNull(returnValueViolations, "Did not find returnValueViolations entry");
+            Assertions.assertFalse(returnValueViolations.isEmpty(), "Did not find returnValueViolations entry");
             final JsonObject returnValueViolation = returnValueViolations.getJsonObject(0);
-            Assert.assertEquals(WRONG_ERROR_MSG, "RETURN_VALUE", returnValueViolation.getString("constraintType"));
-            Assert.assertEquals(WRONG_ERROR_MSG, "post.<return value>", returnValueViolation.getString("path"));
-            Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 4 <= length <= 5",
-                    returnValueViolation.getString("message"));
-            Assert.assertEquals(WRONG_ERROR_MSG, "ValidationXMLFoo[123]", returnValueViolation.getString("value"));
+            Assertions.assertEquals("RETURN_VALUE", returnValueViolation.getString("constraintType"),
+                    WRONG_ERROR_MSG);
+            Assertions.assertEquals("post.<return value>", returnValueViolation.getString("path"),
+                    WRONG_ERROR_MSG);
+            Assertions.assertEquals("s must have length: 4 <= length <= 5",
+                    returnValueViolation.getString("message"), WRONG_ERROR_MSG);
+            Assertions.assertEquals("ValidationXMLFoo[123]", returnValueViolation.getString("value"),
+                    WRONG_ERROR_MSG);
             response.close();
         }
 
@@ -353,13 +368,14 @@ public class ValidationXMLTest {
             ValidationXMLFoo foo = new ValidationXMLFoo("123");
             Response response = client.target(generateURL("/abc/pqr/xyz")).request().accept(MediaType.APPLICATION_XML)
                     .post(Entity.entity(foo, "application/foo"));
-            Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
             ViolationReport report = response.readEntity(ViolationReport.class);
             logger.info("report: " + report);
             TestUtil.countViolations(report, 0, 0, 0, 1);
             ResteasyConstraintViolation cv = report.getReturnValueViolations().iterator().next();
-            Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 4 <= length <= 5", cv.getMessage());
-            Assert.assertEquals(WRONG_ERROR_MSG, foo.toString(), cv.getValue());
+            Assertions.assertEquals("s must have length: 4 <= length <= 5", cv.getMessage(),
+                    WRONG_ERROR_MSG);
+            Assertions.assertEquals(foo.toString(), cv.getValue(), WRONG_ERROR_MSG);
             response.close();
         }
     }
@@ -368,7 +384,7 @@ public class ValidationXMLTest {
         ValidationXMLFoo foo = new ValidationXMLFoo("p");
         Response response = client.target(generateURL("/a/b/c")).request().accept(mediaType)
                 .post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.info("report:");
         logger.info(entity);
@@ -393,12 +409,12 @@ public class ValidationXMLTest {
         String parameterViolationP2 = "]\r" +
                 "[s must have length: 3 <= length <= 5]\r" +
                 "[ValidationXMLFoo[p]]";
-        Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(propertyViolation1));
-        Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(propertyViolation2));
-        Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(propertyViolation3));
-        Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(classViolation));
-        Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(parameterViolationP1));
-        Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(parameterViolationP2));
+        Assertions.assertTrue(entity.contains(propertyViolation1), WRONG_ERROR_MSG);
+        Assertions.assertTrue(entity.contains(propertyViolation2), WRONG_ERROR_MSG);
+        Assertions.assertTrue(entity.contains(propertyViolation3), WRONG_ERROR_MSG);
+        Assertions.assertTrue(entity.contains(classViolation), WRONG_ERROR_MSG);
+        Assertions.assertTrue(entity.contains(parameterViolationP1), WRONG_ERROR_MSG);
+        Assertions.assertTrue(entity.contains(parameterViolationP2), WRONG_ERROR_MSG);
         response.close();
     }
 
@@ -406,14 +422,14 @@ public class ValidationXMLTest {
         ValidationXMLFoo foo = new ValidationXMLFoo("123");
         Response response = client.target(generateURL("/abc/pqr/xyz")).request().accept(mediaType)
                 .post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         String entity = response.readEntity(String.class);
         logger.info("report: " + entity);
         String returnValueViolation = "[RETURN_VALUE]\r" +
                 "[post.<return value>]\r" +
                 "[s must have length: 4 <= length <= 5]\r" +
                 "[ValidationXMLFoo[123]]\r\r";
-        Assert.assertTrue(WRONG_ERROR_MSG, entity.equals(returnValueViolation));
+        Assertions.assertTrue(entity.equals(returnValueViolation), WRONG_ERROR_MSG);
         response.close();
     }
 

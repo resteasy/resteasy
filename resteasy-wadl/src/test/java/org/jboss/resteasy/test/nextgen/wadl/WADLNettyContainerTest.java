@@ -11,9 +11,9 @@ import org.jboss.resteasy.test.nextgen.wadl.resources.BasicResource;
 import org.jboss.resteasy.test.nextgen.wadl.resources.issues.RESTEASY1246;
 import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
 import org.jboss.resteasy.wadl.ResteasyWadlGenerator;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
@@ -23,7 +23,7 @@ public class WADLNettyContainerTest {
     private static int port = TestPortProvider.getPort();
     private static Client client = ClientBuilder.newClient();
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         ResteasyDeployment deployment = new ResteasyDeploymentImpl();
         deployment.setSecurityEnabled(true);
@@ -45,7 +45,7 @@ public class WADLNettyContainerTest {
         defaultResource.getServices().put("/", ResteasyWadlGenerator.generateServiceRegistry(deployment));
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() throws Exception {
         try {
             client.close();

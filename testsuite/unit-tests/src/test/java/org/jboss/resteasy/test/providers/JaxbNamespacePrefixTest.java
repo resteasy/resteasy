@@ -15,8 +15,8 @@ import org.jboss.resteasy.test.providers.resource.jaxbNameSpacePrefix.JaxbNameSp
 import org.jboss.resteasy.test.providers.resource.jaxbNameSpacePrefix.JaxbNameSpacePrefixItems;
 import org.jboss.resteasy.test.providers.resource.jaxbNameSpacePrefix.JaxbNameSpacePrefixPurchaseOrderType;
 import org.jboss.resteasy.test.providers.resource.jaxbNameSpacePrefix.ObjectFactory;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Providers - jaxb
@@ -47,7 +47,7 @@ public class JaxbNamespacePrefixTest {
         po.setJaxbNameSpacePrefixItems(jaxbNameSpacePrefixItems);
         Marshaller marshaller = ctx.createMarshaller();
         XmlSchema xmlSchema = JaxbNameSpacePrefixPurchaseOrderType.class.getPackage().getAnnotation(XmlSchema.class);
-        Assert.assertNotNull("Couldn't create xml schema for JaxbNameSpacePrefixPurchaseOrderType class", xmlSchema);
+        Assertions.assertNotNull(xmlSchema, "Couldn't create xml schema for JaxbNameSpacePrefixPurchaseOrderType class");
         XmlNamespacePrefixMapper mapper = new XmlNamespacePrefixMapper(xmlSchema.xmlns());
         try {
             marshaller.setProperty("org.glassfish.jaxb.namespacePrefixMapper", mapper);

@@ -1,8 +1,5 @@
 package org.jboss.resteasy.test.security;
 
-import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_PORT_OFFSET;
-import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_QUALIFIER;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,22 +18,22 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.container.test.api.TargetsContainer;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
+import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.as.arquillian.container.ManagementClient;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.setup.SnapshotServerSetupTask;
 import org.jboss.resteasy.test.security.resource.CustomTrustManager;
 import org.jboss.resteasy.test.security.resource.SslResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Security
@@ -44,9 +41,17 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Tests for SSL - server secured with correct certificate for "localhost"
  * @tpSince RESTEasy 3.7.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@ServerSetup(SslServerWithCorrectCertificateTest.SslServerSetupTask.class)
 public class SslServerWithCorrectCertificateTest extends SslTestBase {
+
+    public static class SslServerSetupTask extends SnapshotServerSetupTask {
+        @Override
+        protected void doSetup(final ManagementClient client, final String containerId) throws Exception {
+            SslTestBase.secureServer(client.getControllerClient(), SERVER_KEYSTORE_PATH);
+        }
+    }
 
     private static final Logger LOG = Logger.getLogger(SslServerWithCorrectCertificateTest.class.getName());
 
@@ -56,16 +61,15 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
     private static final String SERVER_KEYSTORE_PATH = RESOURCES + "/server.keystore";
     private static final String CLIENT_TRUSTSTORE_PATH = RESOURCES + "/client.truststore";
     private static final String DIFFERENT_CLIENT_TRUSTSTORE_PATH = RESOURCES + "/client-different-cert.truststore";
-    private static final String URL = generateHttpsURL(SSL_CONTAINER_PORT_OFFSET);
+    private static final String URL = generateHttpsURL();
 
-    @TargetsContainer(SSL_CONTAINER_QUALIFIER)
-    @Deployment(managed = false, name = DEPLOYMENT_NAME)
+    @Deployment(name = DEPLOYMENT_NAME)
     public static Archive<?> createDeployment() {
         WebArchive war = TestUtil.prepareArchive(DEPLOYMENT_NAME);
         return TestUtil.finishContainerPrepare(war, null, SslResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void prepareTruststores()
             throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
         correctTruststore = KeyStore.getInstance("jks");
@@ -76,15 +80,6 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
         differentTruststore = KeyStore.getInstance("jks");
         try (InputStream in = new FileInputStream(DIFFERENT_CLIENT_TRUSTSTORE_PATH)) {
             differentTruststore.load(in, PASSWORD.toCharArray());
-        }
-    }
-
-    @Before
-    public void startContainer() throws Exception {
-        if (!containerController.isStarted(SSL_CONTAINER_QUALIFIER)) {
-            containerController.start(SSL_CONTAINER_QUALIFIER);
-            secureServer(SERVER_KEYSTORE_PATH, SSL_CONTAINER_PORT_OFFSET);
-            deployer.deploy(DEPLOYMENT_NAME);
         }
     }
 
@@ -101,8 +96,8 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
 
         client = resteasyClientBuilder.trustStore(correctTruststore).build();
         Response response = client.target(URL).request().get();
-        Assert.assertEquals("Hello World!", response.readEntity(String.class));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("Hello World!", response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
     }
 
     /**
@@ -111,13 +106,17 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
      *                Server/endpoint is secured with different self-signed certificate so exception should be thrown.
      * @tpSince RESTEasy 3.7.0
      */
-    @Test(expected = ProcessingException.class)
+    @Test()
     public void testUntrustedServer() {
-        resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
-        resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+        ProcessingException thrown = Assertions.assertThrows(ProcessingException.class,
+                () -> {
+                    resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+                    resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
-        client = resteasyClientBuilder.trustStore(differentTruststore).build();
-        client.target(URL).request().get();
+                    client = resteasyClientBuilder.trustStore(differentTruststore).build();
+                    client.target(URL).request().get();
+                });
+        Assertions.assertTrue(thrown instanceof ProcessingException);
     }
 
     /**
@@ -126,13 +125,17 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
      *                Client has no truststore so it does not trust the server.
      * @tpSince RESTEasy 3.7.0
      */
-    @Test(expected = ProcessingException.class)
+    @Test()
     public void testClientWithoutTruststore() {
-        resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
-        resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+        ProcessingException thrown = Assertions.assertThrows(ProcessingException.class,
+                () -> {
+                    resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+                    resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
-        client = resteasyClientBuilder.build();
-        client.target(URL).request().get();
+                    client = resteasyClientBuilder.build();
+                    client.target(URL).request().get();
+                });
+        Assertions.assertTrue(thrown instanceof ProcessingException);
     }
 
     /**
@@ -151,8 +154,8 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
 
         client = resteasyClientBuilder.sslContext(sslContext).build();
         Response response = client.target(URL).request().get();
-        Assert.assertEquals("Hello World!", response.readEntity(String.class));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("Hello World!", response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
     }
 
     /**
@@ -172,8 +175,8 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
 
         client = resteasyClientBuilder.trustStore(correctTruststore).build();
         Response response = client.target(URL).request().get();
-        Assert.assertEquals("Hello World!", response.readEntity(String.class));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("Hello World!", response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
     }
 
     /**
@@ -183,15 +186,19 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
      *                HostnameVerificationPolicy is set to ANY but it doesn't matter when certificates doesn't match.
      * @tpSince RESTEasy 3.7.0
      */
-    @Test(expected = ProcessingException.class)
+    @Test()
     public void testHostnameVerificationPolicyAny() {
-        resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
-        resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
+        ProcessingException thrown = Assertions.assertThrows(ProcessingException.class,
+                () -> {
+                    resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
+                    resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
-        resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.ANY);
+                    resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.ANY);
 
-        client = resteasyClientBuilder.trustStore(differentTruststore).build();
-        client.target(URL).request().get();
+                    client = resteasyClientBuilder.trustStore(differentTruststore).build();
+                    client.target(URL).request().get();
+                });
+        Assertions.assertTrue(thrown instanceof ProcessingException);
     }
 
     /**
@@ -210,8 +217,8 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
 
         client = resteasyClientBuilder.trustStore(differentTruststore).build();
         Response response = client.target(URL).request().get();
-        Assert.assertEquals("Hello World!", response.readEntity(String.class));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("Hello World!", response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
     }
 
     /**
@@ -227,8 +234,8 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
 
         client = resteasyClientBuilder.trustStore(differentTruststore).build();
         Response response = client.target(URL).request().get();
-        Assert.assertEquals("Hello World!", response.readEntity(String.class));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("Hello World!", response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
     }
 
     /**
@@ -245,13 +252,12 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
 
         client = resteasyClientBuilder.trustStore(differentTruststore).build();
         Response response = client.target(URL).request().get();
-        Assert.assertEquals("Hello World!", response.readEntity(String.class));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("Hello World!", response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
     }
 
     @Test
-    public void testTrustedServerWithClientConfigProvider() throws IOException, InterruptedException {
-        Assume.assumeFalse("Skip on Windows due to large class path. See RESTEASY-2992.", TestUtil.isWindows());
+    public void testTrustedServerWithClientConfigProvider() throws IOException {
         String jarPath = ClientConfigProviderTestJarHelper.createClientConfigProviderTestJarWithSSL();
         File clientTruststore = new File(CLIENT_TRUSTSTORE_PATH);
         Process process = ClientConfigProviderTestJarHelper.runClientConfigProviderTestJar(
@@ -260,7 +266,7 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
                 new String[] { URL, clientTruststore.getAbsolutePath() });
         String line = ClientConfigProviderTestJarHelper.getResultOfProcess(process);
         // first request will succeed because SSLContext from ClientConfigProvider will be used. Second request will fail because user will set sslContext on RestEasyBuilder to SSLContext.getDefault()
-        Assert.assertEquals("200", line);
+        Assertions.assertEquals("200", line);
         process.destroy();
 
         process = ClientConfigProviderTestJarHelper.runClientConfigProviderTestJar(
@@ -268,12 +274,12 @@ public class SslServerWithCorrectCertificateTest extends SslTestBase {
                 jarPath,
                 new String[] { URL, clientTruststore.getAbsolutePath() });
         line = ClientConfigProviderTestJarHelper.getResultOfProcess(process);
-        Assert.assertEquals("SSLHandshakeException", line);
+        Assertions.assertEquals("SSLHandshakeException", line);
         process.destroy();
-        Assert.assertTrue(new File(jarPath).delete());
+        Assertions.assertTrue(new File(jarPath).delete());
     }
 
-    @After
+    @AfterEach
     public void after() {
         if (client != null) {
             client.close();

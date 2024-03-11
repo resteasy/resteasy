@@ -23,7 +23,7 @@ import jakarta.ws.rs.core.Variant;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.GZIP;
 import org.jboss.resteasy.util.ReadFromStream;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class GzipResource {
@@ -36,7 +36,7 @@ public class GzipResource {
     public Response getText(@Context HttpHeaders headers) {
         String acceptEncoding = headers.getRequestHeaders().getFirst(HttpHeaders.ACCEPT_ENCODING);
         logger.info(acceptEncoding);
-        Assert.assertEquals("gzip, deflate", acceptEncoding);
+        Assertions.assertEquals("gzip, deflate", acceptEncoding);
         return Response.ok("HELLO WORLD").header("Content-Encoding", "gzip").build();
     }
 
@@ -82,14 +82,14 @@ public class GzipResource {
     public void putStream(InputStream is) throws Exception {
         byte[] bytes = ReadFromStream.readFromStream(1024, is);
         String str = new String(bytes);
-        Assert.assertEquals("hello world", str);
+        Assertions.assertEquals("hello world", str);
     }
 
     @PUT
     @Consumes("text/plain")
     @Path("text")
     public void putText(String text) throws Exception {
-        Assert.assertEquals("hello world", text);
+        Assertions.assertEquals("hello world", text);
     }
 
     @POST
@@ -100,9 +100,9 @@ public class GzipResource {
         for (String key : requestHeaders.keySet()) {
             logger.info(key + ": " + requestHeaders.get(key));
         }
-        Assert.assertEquals("gzip", headers.getRequestHeaders().getFirst(HttpHeaders.CONTENT_ENCODING));
-        Assert.assertEquals("first", pair.getP1());
-        Assert.assertEquals("second", pair.getP2());
+        Assertions.assertEquals("gzip", headers.getRequestHeaders().getFirst(HttpHeaders.CONTENT_ENCODING));
+        Assertions.assertEquals("first", pair.getP1());
+        Assertions.assertEquals("second", pair.getP2());
 
         return Response.ok().type(MediaType.TEXT_PLAIN).encoding("gzip").build();
     }

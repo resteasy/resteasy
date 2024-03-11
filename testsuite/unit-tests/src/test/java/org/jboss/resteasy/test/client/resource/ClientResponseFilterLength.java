@@ -6,11 +6,12 @@ import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.client.ClientResponseContext;
 import jakarta.ws.rs.client.ClientResponseFilter;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 public class ClientResponseFilterLength implements ClientResponseFilter {
     @Override
     public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
-        Assert.assertEquals("The length of the response is not the expected one", 10, responseContext.getLength());
+        Assertions.assertEquals(10, responseContext.getLength(),
+                "The length of the response is not the expected one");
     }
 }

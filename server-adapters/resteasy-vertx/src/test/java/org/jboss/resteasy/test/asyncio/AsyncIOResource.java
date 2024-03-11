@@ -64,7 +64,7 @@ import org.jboss.resteasy.plugins.providers.sse.OutboundSseEventImpl.BuilderImpl
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.AsyncStreamingOutput;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -142,7 +142,7 @@ public class AsyncIOResource {
     @GET
     @Path("blocking-writer-on-io-thread")
     public BlockingWriterData blockingWriterOnIoThread() {
-        Assert.assertTrue(Context.isOnEventLoopThread());
+        Assertions.assertTrue(Context.isOnEventLoopThread());
         return new BlockingWriterData();
     }
 

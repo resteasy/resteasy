@@ -4,7 +4,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 
 import org.hamcrest.MatcherAssert;
 import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Requests

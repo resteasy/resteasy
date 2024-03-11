@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -25,12 +25,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Test situation where EJBs have parameter violations but no class, field, or property violations.
@@ -38,7 +37,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-2503
  * @tpSince RESTEasy 4.5
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class EJBParameterViolationsOnlyTest {
 
@@ -65,7 +64,7 @@ public class EJBParameterViolationsOnlyTest {
         return PortProviderUtil.generateURL(path, EJBParameterViolationsOnlyTest.class.getSimpleName());
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         client = (ResteasyClient) ClientBuilder.newClient();
 
@@ -80,7 +79,7 @@ public class EJBParameterViolationsOnlyTest {
         invalidDataObject.setSpeed(0);
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         client.close();
     }
@@ -91,7 +90,6 @@ public class EJBParameterViolationsOnlyTest {
      */
     @Test
     public void testStateless() throws Exception {
-        Assume.assumeFalse("Requires WFLY-14668 to be resolved for Java 16+", TestUtil.isModularJvm());
         doValidationTest(client.target(generateURL("/app/stateless")));
     }
 
@@ -110,7 +108,6 @@ public class EJBParameterViolationsOnlyTest {
      */
     @Test
     public void testSingleton() throws Exception {
-        Assume.assumeFalse("Requires WFLY-14668 to be resolved for Java 16+", TestUtil.isModularJvm());
         doValidationTest(client.target(generateURL("/app/singleton")));
     }
 
@@ -118,20 +115,20 @@ public class EJBParameterViolationsOnlyTest {
         // Invoke with valid data object.
         Invocation.Builder request = target.path("validation").request().accept(MediaType.TEXT_PLAIN);
         Response response = request.post(Entity.entity(validDataObject, MediaType.APPLICATION_JSON), Response.class);
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
 
         // Reset flag indicating method has been executed.
         boolean used = target.path("used").request().get(boolean.class);
-        Assert.assertTrue(used);
+        Assertions.assertTrue(used);
         target.path("reset").request().get();
 
         // Invoke with invalid data object.
         Response response2 = request.post(Entity.entity(invalidDataObject, MediaType.APPLICATION_JSON), Response.class);
-        Assert.assertEquals(400, response2.getStatus());
-        Assert.assertEquals("true", response2.getHeaderString(Validation.VALIDATION_HEADER));
+        Assertions.assertEquals(400, response2.getStatus());
+        Assertions.assertEquals("true", response2.getHeaderString(Validation.VALIDATION_HEADER));
         ViolationReport report = response2.readEntity(ViolationReport.class);
         TestUtil.countViolations(report, 0, 0, 1, 0);
         used = target.path("used").request().get(boolean.class);
-        Assert.assertFalse(used);
+        Assertions.assertFalse(used);
     }
 }

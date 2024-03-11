@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.asynch;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionBooleanInjector;
 import org.jboss.resteasy.test.asynch.resource.AsyncInjectionByteInjector;
@@ -34,8 +34,8 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter CDI
@@ -43,7 +43,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Async Request Filter test.
  * @tpSince RESTEasy 4.0.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class AsyncInjectionTest {
     protected static final Logger log = Logger.getLogger(AsyncInjectionTest.class.getName());
@@ -80,7 +80,7 @@ public class AsyncInjectionTest {
 
         Response response = base.request()
                 .get();
-        assertEquals("Non-200 result: " + response.readEntity(String.class), 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Non-200 result: " + response.readEntity(String.class));
 
         client.close();
     }
@@ -97,7 +97,7 @@ public class AsyncInjectionTest {
 
         Response response = base.request()
                 .get();
-        assertEquals("Non-200 result: " + response.readEntity(String.class), 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Non-200 result: " + response.readEntity(String.class));
 
         client.close();
     }
@@ -114,7 +114,7 @@ public class AsyncInjectionTest {
 
         Response response = base.request()
                 .get();
-        assertEquals("Non-200 result: " + response.readEntity(String.class), 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Non-200 result: " + response.readEntity(String.class));
 
         client.close();
     }
@@ -131,7 +131,7 @@ public class AsyncInjectionTest {
 
         Response response = base.request()
                 .get();
-        assertEquals("Non-200 result: " + response.readEntity(String.class), 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Non-200 result: " + response.readEntity(String.class));
 
         client.close();
     }
@@ -148,7 +148,7 @@ public class AsyncInjectionTest {
 
         Response response = base.request()
                 .get();
-        assertEquals("Non-202 result: " + response.readEntity(String.class), 202, response.getStatus());
+        assertEquals(202, response.getStatus(), "Non-202 result: " + response.readEntity(String.class));
 
         client.close();
     }
@@ -165,7 +165,7 @@ public class AsyncInjectionTest {
 
         Response response = base.request()
                 .get();
-        assertEquals("Non-202 result: " + response.readEntity(String.class), 202, response.getStatus());
+        assertEquals(202, response.getStatus(), "Non-202 result: " + response.readEntity(String.class));
 
         client.close();
     }
@@ -182,7 +182,7 @@ public class AsyncInjectionTest {
 
         Response response = base.request()
                 .get();
-        assertEquals("Non-200 result: " + response.readEntity(String.class), 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Non-200 result: " + response.readEntity(String.class));
 
         client.close();
     }
@@ -199,7 +199,7 @@ public class AsyncInjectionTest {
 
         Response response = base.request()
                 .get();
-        assertEquals("Non-200 result: " + response.readEntity(String.class), 200, response.getStatus());
+        assertEquals(200, response.getStatus(), "Non-200 result: " + response.readEntity(String.class));
 
         client.close();
     }

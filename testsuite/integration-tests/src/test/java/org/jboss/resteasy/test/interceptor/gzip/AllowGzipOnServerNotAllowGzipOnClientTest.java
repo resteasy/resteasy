@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.interceptor.gzip;
 import java.net.URL;
 
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Gzip

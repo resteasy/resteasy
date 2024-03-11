@@ -30,17 +30,17 @@ import jakarta.ws.rs.core.StreamingOutput;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.server.reactor.netty.ReactorNettyContainer;
 import org.jboss.resteasy.spi.AsyncStreamingOutput;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Ignore("See RESTEASY-3118")
+@Disabled("See RESTEASY-3118")
 public class StreamingOutputTest {
     private static final int LOOP_COUNT = 10;
     static String BASE_URI = generateURL("");
@@ -107,13 +107,13 @@ public class StreamingOutputTest {
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         ReactorNettyContainer.start().getRegistry().addPerRequestResource(Resteasy1029Netty4StreamingOutput.class);
         client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).connectionPoolSize(10).build();
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() throws Exception {
         client.close();
         ReactorNettyContainer.stop();
@@ -153,17 +153,17 @@ public class StreamingOutputTest {
                 .get();
 
         final String value = future.get(30, TimeUnit.SECONDS);
-        Assert.assertEquals(expectedText, value);
+        Assertions.assertEquals(expectedText, value);
 
         final Response response = futureResponse.get(30, TimeUnit.SECONDS);
-        Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
-        Assert.assertEquals(expectedText, response.readEntity(String.class));
+        Assertions.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
+        Assertions.assertEquals(expectedText, response.readEntity(String.class));
     }
 
     @Test
     public void testStreamingOutput() throws Exception {
         Response response = client.target(BASE_URI).path("org/jboss/resteasy/test").request().get();
-        Assert.assertTrue(response.readEntity(String.class).equals("0\n" +
+        Assertions.assertTrue(response.readEntity(String.class).equals("0\n" +
                 "\n1\n" +
                 "\n2\n" +
                 "\n3\n" +
@@ -174,7 +174,7 @@ public class StreamingOutputTest {
                 "\n8\n" +
                 "\n9\n" +
                 "\n"));
-        Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
+        Assertions.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
     }
 
     @Test
@@ -198,7 +198,7 @@ public class StreamingOutputTest {
                 .path(path)
                 .request()
                 .post(Entity.text(inputData));
-        Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
-        Assert.assertEquals(inputData, response.readEntity(String.class));
+        Assertions.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
+        Assertions.assertEquals(inputData, response.readEntity(String.class));
     }
 }

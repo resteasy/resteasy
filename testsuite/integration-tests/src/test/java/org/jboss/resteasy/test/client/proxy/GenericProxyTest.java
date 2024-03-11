@@ -12,7 +12,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -29,11 +29,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -41,17 +41,17 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-1047.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class GenericProxyTest {
     private static ResteasyClient client;
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -79,9 +79,9 @@ public class GenericProxyTest {
         ResteasyWebTarget target = client.target(generateBaseUrl());
         GenericProxySpecificProxy proxy = target.proxy(GenericProxySpecificProxy.class);
         String hello = proxy.sayHi("hello");
-        Assert.assertEquals("Response has wrong content", "hello", hello);
+        Assertions.assertEquals("hello", hello, "Response has wrong content");
         hello = proxy.sayHi("hello123");
-        Assert.assertEquals("Response has wrong content", "hello123", hello);
+        Assertions.assertEquals("hello123", hello, "Response has wrong content");
     }
 
     /**
@@ -94,8 +94,8 @@ public class GenericProxyTest {
         Response response = target.request().post(Entity.text("hello"));
 
         String hello = response.readEntity(String.class);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Response has wrong content", "hello", hello);
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("hello", hello, "Response has wrong content");
 
         response.close();
     }
@@ -111,16 +111,16 @@ public class GenericProxyTest {
         EntityExtendingBaseEntity entity;
 
         entity = proxy.findOne();
-        Assert.assertEquals(entity.getLastName(), LAST_NAME);
+        Assertions.assertEquals(entity.getLastName(), LAST_NAME);
 
         List<EntityExtendingBaseEntity> entities = proxy.findAll();
-        Assert.assertEquals(entities.get(0).getLastName(), LAST_NAME);
+        Assertions.assertEquals(entities.get(0).getLastName(), LAST_NAME);
 
         MultipleGenericEntitiesProxy proxy1 = client.target(generateBaseUrl()).proxy(MultipleGenericEntitiesProxy.class);
 
         HashMap<String, EntityExtendingBaseEntity> hashMap = proxy1.findHashMap();
         entity = hashMap.get(FIRST_NAME);
-        Assert.assertEquals(entity.getLastName(), LAST_NAME);
+        Assertions.assertEquals(entity.getLastName(), LAST_NAME);
     }
 
 }

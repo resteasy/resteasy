@@ -6,7 +6,7 @@ import java.util.Map;
 import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.annotations.Stream;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 public class StreamRawMediaTypes {
 
@@ -39,11 +39,11 @@ public class StreamRawMediaTypes {
                 switch (include) {
                     case "default":
                     case "false":
-                        Assert.assertEquals(StreamRawMediaTypes.applicationOctetStreamDefault, actual);
+                        Assertions.assertEquals(StreamRawMediaTypes.applicationOctetStreamDefault, actual);
                         break outer;
 
                     case "true":
-                        Assert.assertEquals(StreamRawMediaTypes.applicationOctetStreamTrue, actual);
+                        Assertions.assertEquals(StreamRawMediaTypes.applicationOctetStreamTrue, actual);
                         break outer;
                 }
 
@@ -51,11 +51,11 @@ public class StreamRawMediaTypes {
                 switch (include) {
                     case "default":
                     case "false":
-                        Assert.assertEquals(StreamRawMediaTypes.textPlainDefault, actual);
+                        Assertions.assertEquals(StreamRawMediaTypes.textPlainDefault, actual);
                         break outer;
 
                     case "true":
-                        Assert.assertEquals(StreamRawMediaTypes.textPlainTrue, actual);
+                        Assertions.assertEquals(StreamRawMediaTypes.textPlainTrue, actual);
                         break outer;
                 }
         }

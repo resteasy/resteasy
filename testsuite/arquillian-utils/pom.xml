@@ -17,24 +17,6 @@
         <version.resteasy.testsuite>${project.version}</version.resteasy.testsuite>
     </properties>
 
-    <profiles>
-        <profile>
-            <id>arquillian.managed</id>
-            <activation>
-                <property>
-                    <name>arquillian.managed</name>
-                </property>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.wildfly.arquillian</groupId>
-                    <artifactId>wildfly-arquillian-container-managed</artifactId>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -48,25 +30,6 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- arquillian general -->
-        <dependency>
-            <groupId>org.jboss.shrinkwrap.resolver</groupId>
-            <artifactId>shrinkwrap-resolver-depchain</artifactId>
-            <type>pom</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.inject</groupId>
-                    <artifactId>javax.inject</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.arquillian.junit</groupId>
-            <artifactId>arquillian-junit-container</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <!-- END OF arquillian general -->
 
         <!-- Used to create a web.xml in the TestUtil -->
         <dependency>
@@ -90,7 +53,7 @@
             <artifactId>resteasy-client</artifactId>
             <version>${version.resteasy.testsuite}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-validator-provider</artifactId>
@@ -98,9 +61,17 @@
         </dependency>
 
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.shrinkwrap</groupId>
+            <artifactId>shrinkwrap-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.arquillian</groupId>
+            <artifactId>wildfly-arquillian-common</artifactId>
         </dependency>
 
         <dependency>
@@ -163,6 +134,12 @@
         <dependency>
             <groupId>org.eclipse.aether</groupId>
             <artifactId>aether-transport-http</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.wildfly.plugins</groupId>
+            <artifactId>wildfly-plugin-tools</artifactId>
+            <version>1.0.0.Beta3</version>
         </dependency>
     </dependencies>
 

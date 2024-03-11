@@ -5,8 +5,8 @@ import java.util.Locale;
 import java.util.Properties;
 
 import org.jboss.logging.Logger;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
 /**
  *
@@ -20,12 +20,12 @@ public abstract class TestMessagesParent {
     protected static Locale savedLocale;
     protected Properties properties = new Properties();
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         savedLocale = Locale.getDefault();
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         Locale.setDefault(savedLocale);
         LOG.info("Reset default locale to: " + savedLocale);

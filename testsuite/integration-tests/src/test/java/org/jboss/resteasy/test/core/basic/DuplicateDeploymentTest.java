@@ -8,15 +8,15 @@ import java.util.List;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.core.basic.resource.DuplicateDeploymentReader;
 import org.jboss.resteasy.test.core.basic.resource.DuplicateDeploymentResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Response
@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.17
  * @tpTestCaseDetails Regression test for JBEAP-4697
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class DuplicateDeploymentTest {
     private static int initWarningCount = 0;
@@ -53,6 +53,6 @@ public class DuplicateDeploymentTest {
      */
     @Test
     public void testDeploy() throws IOException {
-        Assert.assertEquals("Wrong count of warning messages in logs", 2, getWarningCount() - initWarningCount);
+        Assertions.assertEquals(2, getWarningCount() - initWarningCount, "Wrong count of warning messages in logs");
     }
 }

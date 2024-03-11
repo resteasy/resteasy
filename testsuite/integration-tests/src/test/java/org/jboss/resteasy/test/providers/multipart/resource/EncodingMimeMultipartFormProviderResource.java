@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.providers.multipart.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Map;
@@ -39,6 +39,6 @@ public class EncodingMimeMultipartFormProviderResource {
         ContentDisposition cd = new ContentDisposition(dispositionHeader);
         String filenameFromHeader = cd.getParameter("filename");
         logger.infov("Got filename {0}", filenameFromHeader);
-        assertEquals("Filename must match", FILENAME_NON_ASCII, filenameFromHeader);
+        assertEquals(FILENAME_NON_ASCII, filenameFromHeader, "Filename must match");
     }
 }

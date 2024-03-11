@@ -22,7 +22,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.Validation;
@@ -82,11 +82,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TimeoutUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Response
@@ -94,7 +94,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Complex basic test for Resteasy Validator Provider
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class ValidationComplexTest {
 
     static final String RESPONSE_ERROR_MSG = "Response has wrong content";
@@ -108,12 +108,12 @@ public class ValidationComplexTest {
 
     ResteasyClient client;
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient().register(ValidationComplexFooReaderWriter.class);
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -291,7 +291,7 @@ public class ValidationComplexTest {
         Response response = client
                 .target(generateURL(BASIC_DEPLOYMENT, "/", ValidationComplexResourceWithValidField.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
     }
 
@@ -304,14 +304,15 @@ public class ValidationComplexTest {
         Response response = client
                 .target(generateURL(BASIC_DEPLOYMENT, "/", ValidationComplexResourceWithInvalidField.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         Object entity = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(String.class.cast(entity));
         TestUtil.countViolations(r, 1, 0, 0, 0);
         ResteasyConstraintViolation cv = r.getPropertyViolations().iterator().next();
         logger.info("cv: " + cv);
-        Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 4", cv.getMessage());
-        Assert.assertEquals(WRONG_ERROR_MSG, "abcde", cv.getValue());
+        Assertions.assertEquals("size must be between 2 and 4", cv.getMessage(),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("abcde", cv.getValue(), WRONG_ERROR_MSG);
         response.close();
     }
 
@@ -325,7 +326,7 @@ public class ValidationComplexTest {
                 .target(generateURL(BASIC_DEPLOYMENT, "/abc/unused",
                         ValidationComplexResourceWithProperty.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
     }
 
@@ -339,13 +340,14 @@ public class ValidationComplexTest {
                 .target(generateURL(BASIC_DEPLOYMENT, "/abcdef/unused",
                         ValidationComplexResourceWithProperty.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         String entity = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(entity);
         TestUtil.countViolations(r, 1, 0, 0, 0);
         ResteasyConstraintViolation cv = r.getPropertyViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 4", cv.getMessage());
-        Assert.assertEquals(WRONG_ERROR_MSG, "abcdef", cv.getValue());
+        Assertions.assertEquals("size must be between 2 and 4", cv.getMessage(),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("abcdef", cv.getValue(), WRONG_ERROR_MSG);
         response.close();
     }
 
@@ -360,7 +362,7 @@ public class ValidationComplexTest {
                 .target(generateURL(BASIC_DEPLOYMENT, "/abc/wxyz",
                         ValidationComplexResourceWithFieldAndProperty.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         // Invalid
@@ -368,17 +370,17 @@ public class ValidationComplexTest {
                 .target(generateURL(BASIC_DEPLOYMENT, "/a/uvwxyz",
                         ValidationComplexResourceWithFieldAndProperty.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         String entity = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(entity);
         TestUtil.countViolations(r, 2, 0, 0, 0);
         ResteasyConstraintViolation cv = TestUtil.getViolationByMessage(r.getPropertyViolations(),
                 "size must be between 2 and 4");
-        Assert.assertNotNull(WRONG_ERROR_MSG, cv);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "a", cv.getValue());
+        Assertions.assertNotNull(cv, WRONG_ERROR_MSG);
+        Assertions.assertEquals("a", cv.getValue(), RESPONSE_ERROR_MSG);
         cv = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
-        Assert.assertNotNull(WRONG_ERROR_MSG, cv);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "uvwxyz", cv.getValue());
+        Assertions.assertNotNull(cv, WRONG_ERROR_MSG);
+        Assertions.assertEquals("uvwxyz", cv.getValue(), RESPONSE_ERROR_MSG);
         response.close();
     }
 
@@ -393,7 +395,7 @@ public class ValidationComplexTest {
                 .target(generateURL(BASIC_DEPLOYMENT, "/abc/xyz",
                         ValidationComplexResourceWithClassConstraint.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         // Invalid
@@ -401,13 +403,15 @@ public class ValidationComplexTest {
                 .target(generateURL(BASIC_DEPLOYMENT, "/a/b",
                         ValidationComplexResourceWithClassConstraint.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         String entity = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(entity);
         TestUtil.countViolations(r, 0, 1, 0, 0);
         ResteasyConstraintViolation cv = r.getClassViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and t must have length > 5", cv.getMessage());
-        Assert.assertEquals(WRONG_ERROR_MSG, "ValidationComplexResourceWithClassConstraint(\"a\", \"b\")", cv.getValue());
+        Assertions.assertEquals("Concatenation of s and t must have length > 5", cv.getMessage(),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("ValidationComplexResourceWithClassConstraint(\"a\", \"b\")", cv.getValue(),
+                WRONG_ERROR_MSG);
         logger.info(cv.getValue());
         response.close();
     }
@@ -422,14 +426,14 @@ public class ValidationComplexTest {
         Response response = client
                 .target(generateURL(BASIC_DEPLOYMENT, "/abcd/vwxyz", ValidationComplexResourceWithGraph.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         // Invalid
         response = client
                 .target(generateURL(BASIC_DEPLOYMENT, "/abc/xyz", ValidationComplexResourceWithGraph.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         Object entity = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(String.class.cast(entity));
         TestUtil.countViolations(r, 2, 0, 0, 0);
@@ -442,10 +446,12 @@ public class ValidationComplexTest {
             cv1 = cv2;
             cv2 = tmp;
         }
-        Assert.assertTrue(WRONG_ERROR_MSG, cv1.getMessage().startsWith("size must be between 4 and"));
-        Assert.assertEquals(WRONG_ERROR_MSG, "abc", cv1.getValue());
-        Assert.assertTrue(WRONG_ERROR_MSG, cv2.getMessage().startsWith("size must be between 5 and"));
-        Assert.assertEquals(WRONG_ERROR_MSG, "xyz", cv2.getValue());
+        Assertions.assertTrue(cv1.getMessage().startsWith("size must be between 4 and"),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("abc", cv1.getValue(), WRONG_ERROR_MSG);
+        Assertions.assertTrue(cv2.getMessage().startsWith("size must be between 5 and"),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("xyz", cv2.getValue(), WRONG_ERROR_MSG);
         response.close();
     }
 
@@ -459,20 +465,21 @@ public class ValidationComplexTest {
         Response response = client
                 .target(generateURL(BASIC_DEPLOYMENT, "/abcde", ValidationComplexResourceWithArray.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         // Invalid
         response = client
                 .target(generateURL(BASIC_DEPLOYMENT, "/abc", ValidationComplexResourceWithArray.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         Object entity = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(String.class.cast(entity));
         TestUtil.countViolations(r, 1, 0, 0, 0);
         ResteasyConstraintViolation cv = r.getPropertyViolations().iterator().next();
-        Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().startsWith("size must be between 5 and"));
-        Assert.assertEquals(WRONG_ERROR_MSG, "abc", cv.getValue());
+        Assertions.assertTrue(cv.getMessage().startsWith("size must be between 5 and"),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("abc", cv.getValue(), WRONG_ERROR_MSG);
         response.close();
     }
 
@@ -486,19 +493,20 @@ public class ValidationComplexTest {
         Response response = client
                 .target(generateURL(BASIC_DEPLOYMENT, "/abcde", ValidationComplexResourceWithList.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         // Invalid
         response = client.target(generateURL(BASIC_DEPLOYMENT, "/abc", ValidationComplexResourceWithList.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         Object entity = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(String.class.cast(entity));
         TestUtil.countViolations(r, 1, 0, 0, 0);
         ResteasyConstraintViolation cv = r.getPropertyViolations().iterator().next();
-        Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().startsWith("size must be between 5 and"));
-        Assert.assertEquals(WRONG_ERROR_MSG, "abc", cv.getValue());
+        Assertions.assertTrue(cv.getMessage().startsWith("size must be between 5 and"),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("abc", cv.getValue(), WRONG_ERROR_MSG);
         response.close();
     }
 
@@ -512,19 +520,20 @@ public class ValidationComplexTest {
         Response response = client
                 .target(generateURL(BASIC_DEPLOYMENT, "/abcde", ValidationComplexResourceWithMap.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         // Invalid
         response = client.target(generateURL(BASIC_DEPLOYMENT, "/abc", ValidationComplexResourceWithMap.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         Object entity = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(String.class.cast(entity));
         TestUtil.countViolations(r, 1, 0, 0, 0);
         ResteasyConstraintViolation cv = r.getPropertyViolations().iterator().next();
-        Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().startsWith("size must be between 5 and"));
-        Assert.assertEquals(WRONG_ERROR_MSG, "abc", cv.getValue());
+        Assertions.assertTrue(cv.getMessage().startsWith("size must be between 5 and"),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("abc", cv.getValue(), WRONG_ERROR_MSG);
         response.close();
     }
 
@@ -539,7 +548,7 @@ public class ValidationComplexTest {
                 .target(generateURL(BASIC_DEPLOYMENT, "/abcde",
                         ValidationComplexResourceWithMapOfListOfArrayOfStrings.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         // Invalid
@@ -547,14 +556,15 @@ public class ValidationComplexTest {
                 .target(generateURL(BASIC_DEPLOYMENT, "/abc",
                         ValidationComplexResourceWithMapOfListOfArrayOfStrings.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         Object entity = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(String.class.cast(entity));
         logger.info("exception: " + r);
         TestUtil.countViolations(r, 1, 0, 0, 0);
         ResteasyConstraintViolation cv = r.getPropertyViolations().iterator().next();
-        Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().startsWith("size must be between 5 and"));
-        Assert.assertEquals(WRONG_ERROR_MSG, "abc", cv.getValue());
+        Assertions.assertTrue(cv.getMessage().startsWith("size must be between 5 and"),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("abc", cv.getValue(), WRONG_ERROR_MSG);
         response.close();
     }
 
@@ -569,7 +579,7 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/native",
                         ValidationComplexResourceWithParameters.class.getSimpleName()))
                 .request().post(Entity.entity(new ValidationComplexFoo("a"), "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         // Valid imposed constraint
@@ -577,7 +587,7 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/imposed",
                         ValidationComplexResourceWithParameters.class.getSimpleName()))
                 .request().post(Entity.entity(new ValidationComplexFoo("abcde"), "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         // Valid native and imposed constraints.
@@ -585,7 +595,7 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/nativeAndImposed",
                         ValidationComplexResourceWithParameters.class.getSimpleName()))
                 .request().post(Entity.entity(new ValidationComplexFoo("abc"), "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         // Invalid native constraint
@@ -594,13 +604,15 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/native",
                         ValidationComplexResourceWithParameters.class.getSimpleName()))
                 .request().post(Entity.entity(new ValidationComplexFoo("abcdef"), "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         String entity = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(entity);
         TestUtil.countViolations(r, 0, 0, 1, 0);
         ResteasyConstraintViolation cv = r.getParameterViolations().iterator().next();
-        Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("s must have length: 1 <= length <= 3"));
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[abcdef]", cv.getValue());
+        Assertions.assertTrue(cv.getMessage().equals("s must have length: 1 <= length <= 3"),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("ValidationComplexFoo[abcdef]", cv.getValue(),
+                RESPONSE_ERROR_MSG);
         response.close();
 
         // Invalid imposed constraint
@@ -608,13 +620,15 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/imposed",
                         ValidationComplexResourceWithParameters.class.getSimpleName()))
                 .request().post(Entity.entity(new ValidationComplexFoo("abcdef"), "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         entity = response.readEntity(String.class);
         r = new ViolationReport(String.class.cast(entity));
         TestUtil.countViolations(r, 0, 0, 1, 0);
         cv = r.getParameterViolations().iterator().next();
-        Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("s must have length: 3 <= length <= 5"));
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[abcdef]", cv.getValue());
+        Assertions.assertTrue(cv.getMessage().equals("s must have length: 3 <= length <= 5"),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("ValidationComplexFoo[abcdef]", cv.getValue(),
+                RESPONSE_ERROR_MSG);
         response.close();
 
         // Invalid native and imposed constraints
@@ -622,7 +636,7 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/nativeAndImposed",
                         ValidationComplexResourceWithParameters.class.getSimpleName()))
                 .request().post(Entity.entity(new ValidationComplexFoo("abcdef"), "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         entity = response.readEntity(String.class);
         r = new ViolationReport(entity);
         TestUtil.countViolations(r, 0, 0, 2, 0);
@@ -634,10 +648,14 @@ public class ValidationComplexTest {
             cv1 = cv2;
             cv2 = temp;
         }
-        Assert.assertTrue(WRONG_ERROR_MSG, cv1.getMessage().equals("s must have length: 1 <= length <= 3"));
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[abcdef]", cv1.getValue());
-        Assert.assertTrue(WRONG_ERROR_MSG, cv2.getMessage().equals("s must have length: 3 <= length <= 5"));
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[abcdef]", cv2.getValue());
+        Assertions.assertTrue(cv1.getMessage().equals("s must have length: 1 <= length <= 3"),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("ValidationComplexFoo[abcdef]", cv1.getValue(),
+                RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(cv2.getMessage().equals("s must have length: 3 <= length <= 5"),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("ValidationComplexFoo[abcdef]", cv2.getValue(),
+                RESPONSE_ERROR_MSG);
         response.close();
 
         // Valid other parameters
@@ -651,7 +669,7 @@ public class ValidationComplexTest {
                 .build();
         response = client.target(url).request().header("h", "hhh")
                 .cookie(ck1).post(Entity.form(form));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         // Invalid other parameters
@@ -665,17 +683,23 @@ public class ValidationComplexTest {
                 .build();
         response = client.target(url).request().header("h", "hhhh")
                 .cookie(ck2).post(Entity.form(form));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         entity = response.readEntity(String.class);
         r = new ViolationReport(String.class.cast(entity));
         TestUtil.countViolations(r, 0, 0, 6, 0);
         List<String> list = getMessages(r);
-        Assert.assertTrue(WRONG_ERROR_MSG, list.contains("size must be between 2 and 3; pppp"));
-        Assert.assertTrue(WRONG_ERROR_MSG, list.contains("size must be between 2 and 3; mmmm"));
-        Assert.assertTrue(WRONG_ERROR_MSG, list.contains("size must be between 2 and 3; qqqq"));
-        Assert.assertTrue(WRONG_ERROR_MSG, list.contains("size must be between 2 and 3; ffff"));
-        Assert.assertTrue(WRONG_ERROR_MSG, list.contains("size must be between 2 and 3; hhhh"));
-        Assert.assertTrue(WRONG_ERROR_MSG, list.contains("size must be between 2 and 3; cccc"));
+        Assertions.assertTrue(list.contains("size must be between 2 and 3; pppp"),
+                WRONG_ERROR_MSG);
+        Assertions.assertTrue(list.contains("size must be between 2 and 3; mmmm"),
+                WRONG_ERROR_MSG);
+        Assertions.assertTrue(list.contains("size must be between 2 and 3; qqqq"),
+                WRONG_ERROR_MSG);
+        Assertions.assertTrue(list.contains("size must be between 2 and 3; ffff"),
+                WRONG_ERROR_MSG);
+        Assertions.assertTrue(list.contains("size must be between 2 and 3; hhhh"),
+                WRONG_ERROR_MSG);
+        Assertions.assertTrue(list.contains("size must be between 2 and 3; cccc"),
+                WRONG_ERROR_MSG);
         response.close();
     }
 
@@ -691,8 +715,9 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/native",
                         ValidationComplexResourceWithReturnValues.class.getSimpleName()))
                 .request().post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(RESPONSE_ERROR_MSG, foo, response.readEntity(ValidationComplexFoo.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(foo, response.readEntity(ValidationComplexFoo.class),
+                RESPONSE_ERROR_MSG);
         response.close();
 
         // Valid imposed constraint
@@ -701,8 +726,9 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/imposed",
                         ValidationComplexResourceWithReturnValues.class.getSimpleName()))
                 .request().post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(RESPONSE_ERROR_MSG, foo, response.readEntity(ValidationComplexFoo.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(foo, response.readEntity(ValidationComplexFoo.class),
+                RESPONSE_ERROR_MSG);
         response.close();
 
         // Valid native and imposed constraints.
@@ -711,8 +737,9 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/nativeAndImposed",
                         ValidationComplexResourceWithReturnValues.class.getSimpleName()))
                 .request().post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(RESPONSE_ERROR_MSG, foo, response.readEntity(ValidationComplexFoo.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(foo, response.readEntity(ValidationComplexFoo.class),
+                RESPONSE_ERROR_MSG);
         response.close();
 
         // Invalid native constraint
@@ -720,13 +747,15 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/native",
                         ValidationComplexResourceWithReturnValues.class.getSimpleName()))
                 .request().post(Entity.entity(new ValidationComplexFoo("abcdef"), "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         Object entity = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(String.class.cast(entity));
         TestUtil.countViolations(r, 0, 0, 0, 1);
         ResteasyConstraintViolation cv = r.getReturnValueViolations().iterator().next();
-        Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("s must have length: 1 <= length <= 3"));
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[abcdef]", cv.getValue());
+        Assertions.assertTrue(cv.getMessage().equals("s must have length: 1 <= length <= 3"),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("ValidationComplexFoo[abcdef]", cv.getValue(),
+                RESPONSE_ERROR_MSG);
         response.close();
 
         // Invalid imposed constraint
@@ -734,13 +763,15 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/imposed",
                         ValidationComplexResourceWithReturnValues.class.getSimpleName()))
                 .request().post(Entity.entity(new ValidationComplexFoo("abcdef"), "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         entity = response.readEntity(String.class);
         r = new ViolationReport(String.class.cast(entity));
         TestUtil.countViolations(r, 0, 0, 0, 1);
         cv = r.getReturnValueViolations().iterator().next();
-        Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("s must have length: 3 <= length <= 5"));
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[abcdef]", cv.getValue());
+        Assertions.assertTrue(cv.getMessage().equals("s must have length: 3 <= length <= 5"),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("ValidationComplexFoo[abcdef]", cv.getValue(),
+                RESPONSE_ERROR_MSG);
         response.close();
 
         // Invalid native and imposed constraints
@@ -748,7 +779,7 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/nativeAndImposed",
                         ValidationComplexResourceWithReturnValues.class.getSimpleName()))
                 .request().post(Entity.entity(new ValidationComplexFoo("abcdef"), "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         entity = response.readEntity(String.class);
         r = new ViolationReport(String.class.cast(entity));
         TestUtil.countViolations(r, 0, 0, 0, 2);
@@ -760,10 +791,14 @@ public class ValidationComplexTest {
             cv1 = cv2;
             cv2 = temp;
         }
-        Assert.assertTrue(WRONG_ERROR_MSG, cv1.getMessage().equals("s must have length: 1 <= length <= 3"));
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[abcdef]", cv1.getValue());
-        Assert.assertTrue(WRONG_ERROR_MSG, cv2.getMessage().equals("s must have length: 3 <= length <= 5"));
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[abcdef]", cv2.getValue());
+        Assertions.assertTrue(cv1.getMessage().equals("s must have length: 1 <= length <= 3"),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("ValidationComplexFoo[abcdef]", cv1.getValue(),
+                RESPONSE_ERROR_MSG);
+        Assertions.assertTrue(cv2.getMessage().equals("s must have length: 3 <= length <= 5"),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("ValidationComplexFoo[abcdef]", cv2.getValue(),
+                RESPONSE_ERROR_MSG);
         response.close();
     }
 
@@ -779,8 +814,8 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/abc/wxyz/unused/unused",
                         ValidationComplexResourceWithAllFivePotentialViolations.class.getSimpleName()))
                 .request().post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(foo, response.readEntity(ValidationComplexFoo.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(foo, response.readEntity(ValidationComplexFoo.class));
         response.close();
 
         // Invalid: Should have 1 each of field, property, class, and parameter violations,
@@ -790,24 +825,28 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/a/z/unused/unused",
                         ValidationComplexResourceWithAllFivePotentialViolations.class.getSimpleName()))
                 .request().post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         Object entity = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(String.class.cast(entity));
         TestUtil.countViolations(r, 2, 1, 1, 0);
         ResteasyConstraintViolation cv = TestUtil.getViolationByMessage(r.getPropertyViolations(),
                 "size must be between 2 and 4");
-        Assert.assertNotNull(WRONG_ERROR_MSG, cv);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "a", cv.getValue());
+        Assertions.assertNotNull(cv, WRONG_ERROR_MSG);
+        Assertions.assertEquals("a", cv.getValue(), RESPONSE_ERROR_MSG);
         cv = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
-        Assert.assertNotNull(WRONG_ERROR_MSG, cv);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "z", cv.getValue());
+        Assertions.assertNotNull(cv, WRONG_ERROR_MSG);
+        Assertions.assertEquals("z", cv.getValue(), RESPONSE_ERROR_MSG);
         cv = r.getClassViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and t must have length > 5", cv.getMessage());
-        Assert.assertTrue(WRONG_ERROR_MSG, cv.getValue().startsWith(
-                "org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithAllFivePotentialViolations@"));
+        Assertions.assertEquals("Concatenation of s and t must have length > 5", cv.getMessage(),
+                WRONG_ERROR_MSG);
+        Assertions.assertTrue(cv.getValue().startsWith(
+                "org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithAllFivePotentialViolations@"),
+                WRONG_ERROR_MSG);
         cv = r.getParameterViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 3 <= length <= 5", cv.getMessage());
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[p]", cv.getValue());
+        Assertions.assertEquals("s must have length: 3 <= length <= 5", cv.getMessage(),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("ValidationComplexFoo[p]", cv.getValue(),
+                RESPONSE_ERROR_MSG);
         response.close();
     }
 
@@ -825,8 +864,9 @@ public class ValidationComplexTest {
             Response response = client
                     .target(generateURL(BASIC_DEPLOYMENT, "/inherit", ValidationComplexInterfaceSub.class.getSimpleName()))
                     .request().post(Entity.entity("ccc", MediaType.TEXT_PLAIN_TYPE));
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals(RESPONSE_ERROR_MSG, "ccc", response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals("ccc", response.readEntity(String.class),
+                    RESPONSE_ERROR_MSG);
             response.close();
         }
 
@@ -837,8 +877,9 @@ public class ValidationComplexTest {
             Response response = client
                     .target(generateURL(BASIC_DEPLOYMENT, "/override", ValidationComplexInterfaceSub.class.getSimpleName()))
                     .request().post(Entity.entity("ccc", MediaType.TEXT_PLAIN_TYPE));
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals(RESPONSE_ERROR_MSG, "ccc", response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals("ccc", response.readEntity(String.class),
+                    RESPONSE_ERROR_MSG);
             response.close();
         }
 
@@ -850,7 +891,7 @@ public class ValidationComplexTest {
                     .target(generateURL(BASIC_DEPLOYMENT, "/inherit", ValidationComplexInterfaceSub.class.getSimpleName()))
                     .request().post(Entity.entity("e", MediaType.TEXT_PLAIN_TYPE));
             logger.info("status: " + response.getStatus());
-            Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             Object entity = response.readEntity(String.class);
             ViolationReport r = new ViolationReport(String.class.cast(entity));
             TestUtil.countViolations(r, 0, 2, 1, 0);
@@ -865,7 +906,7 @@ public class ValidationComplexTest {
                     .target(generateURL(BASIC_DEPLOYMENT, "/override", ValidationComplexInterfaceSub.class.getSimpleName()))
                     .request().post(Entity.entity("e", MediaType.TEXT_PLAIN_TYPE));
             logger.info("status: " + response.getStatus());
-            Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             Object entity = response.readEntity(String.class);
             ViolationReport r = new ViolationReport(String.class.cast(entity));
             TestUtil.countViolations(r, 0, 2, 1, 0);
@@ -880,7 +921,7 @@ public class ValidationComplexTest {
                     .target(generateURL(BASIC_DEPLOYMENT, "/inherit", ValidationComplexInterfaceSub.class.getSimpleName()))
                     .request().post(Entity.entity("eeee", MediaType.TEXT_PLAIN_TYPE));
             logger.info("status: " + response.getStatus());
-            Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
             Object entity = response.readEntity(String.class);
             ViolationReport r = new ViolationReport(String.class.cast(entity));
             TestUtil.countViolations(r, 0, 0, 0, 1);
@@ -895,7 +936,7 @@ public class ValidationComplexTest {
                     .target(generateURL(BASIC_DEPLOYMENT, "/override", ValidationComplexInterfaceSub.class.getSimpleName()))
                     .request().post(Entity.entity("eeee", MediaType.TEXT_PLAIN_TYPE));
             logger.info("status: " + response.getStatus());
-            Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
             Object entity = response.readEntity(String.class);
             ViolationReport r = new ViolationReport(String.class.cast(entity));
             TestUtil.countViolations(r, 0, 0, 0, 2);
@@ -914,7 +955,7 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/validField",
                         ValidationComplexResourceWithSubLocators.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         // Sub-resource locator returns resource with invalid field.
@@ -922,13 +963,14 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/invalidField",
                         ValidationComplexResourceWithSubLocators.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         String entity = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(entity);
         TestUtil.countViolations(r, 1, 0, 0, 0);
         ResteasyConstraintViolation cv = r.getPropertyViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 4", cv.getMessage());
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "abcde", cv.getValue());
+        Assertions.assertEquals("size must be between 2 and 4", cv.getMessage(),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("abcde", cv.getValue(), RESPONSE_ERROR_MSG);
         response.close();
 
         // Sub-resource locator returns resource with valid property.
@@ -938,7 +980,7 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/property/abc/unused",
                         ValidationComplexResourceWithSubLocators.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         // Sub-resource locator returns resource with invalid property.
@@ -946,13 +988,14 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/property/abcdef/unused",
                         ValidationComplexResourceWithSubLocators.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         entity = response.readEntity(String.class);
         r = new ViolationReport(entity);
         TestUtil.countViolations(r, 1, 0, 0, 0);
         cv = r.getPropertyViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 4", cv.getMessage());
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "abcdef", cv.getValue());
+        Assertions.assertEquals("size must be between 2 and 4", cv.getMessage(),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("abcdef", cv.getValue(), RESPONSE_ERROR_MSG);
         response.close();
 
         // Valid
@@ -961,8 +1004,9 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/everything/abc/wxyz/unused/unused",
                         ValidationComplexResourceWithSubLocators.class.getSimpleName()))
                 .request().post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(RESPONSE_ERROR_MSG, foo, response.readEntity(ValidationComplexFoo.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(foo, response.readEntity(ValidationComplexFoo.class),
+                RESPONSE_ERROR_MSG);
         response.close();
 
         // Invalid: Should have 1 each of field, property, class, and parameter violations,and no return value violations.
@@ -973,21 +1017,23 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/everything/a/z/unused/unused",
                         ValidationComplexResourceWithSubLocators.class.getSimpleName()))
                 .request().post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         entity = response.readEntity(String.class);
         r = new ViolationReport(String.class.cast(entity));
         TestUtil.countViolations(r, 2, 1, 1, 0);
         ResteasyConstraintViolation violation = TestUtil.getViolationByMessage(r.getPropertyViolations(),
                 "size must be between 2 and 4");
-        Assert.assertNotNull(WRONG_ERROR_MSG, violation);
-        Assert.assertEquals(WRONG_ERROR_MSG, "a", violation.getValue());
+        Assertions.assertNotNull(violation, WRONG_ERROR_MSG);
+        Assertions.assertEquals("a", violation.getValue(), WRONG_ERROR_MSG);
         violation = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
-        Assert.assertNotNull(WRONG_ERROR_MSG, violation);
-        Assert.assertEquals(WRONG_ERROR_MSG, "z", violation.getValue());
+        Assertions.assertNotNull(violation, WRONG_ERROR_MSG);
+        Assertions.assertEquals("z", violation.getValue(), WRONG_ERROR_MSG);
         cv = r.getClassViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and t must have length > 5", cv.getMessage());
-        Assert.assertTrue(RESPONSE_ERROR_MSG, cv.getValue().startsWith(
-                "org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithAllFivePotentialViolations@"));
+        Assertions.assertEquals("Concatenation of s and t must have length > 5", cv.getMessage(),
+                WRONG_ERROR_MSG);
+        Assertions.assertTrue(cv.getValue().startsWith(
+                "org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithAllFivePotentialViolations@"),
+                RESPONSE_ERROR_MSG);
         response.close();
 
         // Sub-sub-resource locator returns resource with valid property.
@@ -995,7 +1041,7 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/locator/sublocator/abc",
                         ValidationComplexResourceWithSubLocators.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         // Sub-resource locator returns resource with invalid property.
@@ -1003,13 +1049,14 @@ public class ValidationComplexTest {
                 .target(generateURL(CUSTOM_OBJECT_DEPLOYMENT, "/locator/sublocator/abcdef",
                         ValidationComplexResourceWithSubLocators.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         entity = response.readEntity(String.class);
         r = new ViolationReport(String.class.cast(entity));
         TestUtil.countViolations(r, 1, 0, 0, 0);
         cv = r.getPropertyViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 3", cv.getMessage());
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "abcdef", cv.getValue());
+        Assertions.assertEquals("size must be between 2 and 3", cv.getMessage(),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("abcdef", cv.getValue(), RESPONSE_ERROR_MSG);
         response.close();
     }
 
@@ -1025,7 +1072,7 @@ public class ValidationComplexTest {
                 .target(generateURL(ASYNC_CUSTOM_OBJECT_DEPLOYMENT, "/a/z/unused/unused?asynch=true",
                         ValidationComplexResourceWithAllFivePotentialViolations.class.getSimpleName()))
                 .request().post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
         String jobUrl = response.getHeaderString(HttpHeaders.LOCATION);
         logger.info("JOB: " + jobUrl);
         response.close();
@@ -1041,29 +1088,33 @@ public class ValidationComplexTest {
                 break;
             }
         }
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         Object entity = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(String.class.cast(entity));
         TestUtil.countViolations(r, 2, 1, 1, 0);
         ResteasyConstraintViolation cv = TestUtil.getViolationByMessage(r.getPropertyViolations(),
                 "size must be between 2 and 4");
-        Assert.assertNotNull(WRONG_ERROR_MSG, cv);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "a", cv.getValue());
+        Assertions.assertNotNull(cv, WRONG_ERROR_MSG);
+        Assertions.assertEquals("a", cv.getValue(), RESPONSE_ERROR_MSG);
         cv = TestUtil.getViolationByMessage(r.getPropertyViolations(), "size must be between 3 and 5");
-        Assert.assertNotNull(WRONG_ERROR_MSG, cv);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "z", cv.getValue());
+        Assertions.assertNotNull(cv, WRONG_ERROR_MSG);
+        Assertions.assertEquals("z", cv.getValue(), RESPONSE_ERROR_MSG);
         cv = r.getClassViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and t must have length > 5", cv.getMessage());
-        Assert.assertTrue(RESPONSE_ERROR_MSG, cv.getValue().startsWith(
-                "org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithAllFivePotentialViolations@"));
+        Assertions.assertEquals("Concatenation of s and t must have length > 5", cv.getMessage(),
+                WRONG_ERROR_MSG);
+        Assertions.assertTrue(cv.getValue().startsWith(
+                "org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithAllFivePotentialViolations@"),
+                RESPONSE_ERROR_MSG);
         cv = r.getParameterViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 3 <= length <= 5", cv.getMessage());
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[p]", cv.getValue());
+        Assertions.assertEquals("s must have length: 3 <= length <= 5", cv.getMessage(),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("ValidationComplexFoo[p]", cv.getValue(),
+                RESPONSE_ERROR_MSG);
         response.close();
 
         // Delete job.
         response = client.target(jobUrl).request().delete();
-        Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         // Submit asynchronous job with violations in result of resource method.
@@ -1072,7 +1123,7 @@ public class ValidationComplexTest {
                 .target(generateURL(ASYNC_CUSTOM_OBJECT_DEPLOYMENT, "/abc/xyz/unused/unused?asynch=true",
                         ValidationComplexResourceWithAllFivePotentialViolations.class.getSimpleName()))
                 .request().post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
         jobUrl = response.getHeaderString(HttpHeaders.LOCATION);
         logger.info("JOB: " + jobUrl);
         response.close();
@@ -1088,18 +1139,20 @@ public class ValidationComplexTest {
                 break;
             }
         }
-        Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         entity = response.readEntity(String.class);
         r = new ViolationReport(String.class.cast(entity));
         TestUtil.countViolations(r, 0, 0, 0, 1);
         cv = r.getReturnValueViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 4 <= length <= 5", cv.getMessage());
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[pqr]", cv.getValue());
+        Assertions.assertEquals("s must have length: 4 <= length <= 5", cv.getMessage(),
+                WRONG_ERROR_MSG);
+        Assertions.assertEquals("ValidationComplexFoo[pqr]", cv.getValue(),
+                RESPONSE_ERROR_MSG);
         response.close();
 
         // Delete job.
         response = client.target(jobUrl).request().delete();
-        Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
         response.close();
     }
 
@@ -1114,7 +1167,7 @@ public class ValidationComplexTest {
                 .target(generateURL(BASIC_DEPLOYMENT, "/2/3",
                         ValidationComplexSubResourceWithCrossParameterConstraint.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         // Invalid
@@ -1122,19 +1175,20 @@ public class ValidationComplexTest {
                 .target(generateURL(BASIC_DEPLOYMENT, "/5/7",
                         ValidationComplexSubResourceWithCrossParameterConstraint.class.getSimpleName()))
                 .request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         String header = response.getHeaderString(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull("Missing validation header", header);
-        Assert.assertTrue("Wrong validation header", Boolean.valueOf(header));
+        Assertions.assertNotNull(header, "Missing validation header");
+        Assertions.assertTrue(Boolean.valueOf(header), "Wrong validation header");
         Object entity = response.readEntity(String.class);
         logger.info("entity: " + entity);
         ViolationReport r = new ViolationReport(String.class.cast(entity));
         TestUtil.countViolations(r, 0, 0, 1, 0);
         ResteasyConstraintViolation violation = r.getParameterViolations().iterator().next();
         logger.info("violation: " + violation);
-        Assert.assertEquals(WRONG_ERROR_MSG, "Parameters must total <= 7", violation.getMessage());
+        Assertions.assertEquals("Parameters must total <= 7", violation.getMessage(),
+                WRONG_ERROR_MSG);
         logger.info("violation value: " + violation.getValue());
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "[5, 7]", violation.getValue());
+        Assertions.assertEquals("[5, 7]", violation.getValue(), RESPONSE_ERROR_MSG);
         response.close();
     }
 
@@ -1150,7 +1204,7 @@ public class ValidationComplexTest {
                 .proxy(ValidationComplexProxyInterface.class);
         client.s("abcd");
         String result = client.g();
-        Assert.assertEquals("abcd", result);
+        Assertions.assertEquals("abcd", result);
 
         // Invalid
         client.s("abcde");
@@ -1160,16 +1214,17 @@ public class ValidationComplexTest {
             Response response = e.getResponse();
             logger.info("status: " + response.getStatus());
             String header = response.getHeaderString(Validation.VALIDATION_HEADER);
-            Assert.assertNotNull("Missing validation header", header);
-            Assert.assertTrue("Wrong validation header", Boolean.valueOf(header));
+            Assertions.assertNotNull(header, "Missing validation header");
+            Assertions.assertTrue(Boolean.valueOf(header), "Wrong validation header");
             Object entity = response.readEntity(String.class);
             logger.info("entity: " + entity);
             ViolationReport r = new ViolationReport(String.class.cast(entity));
             TestUtil.countViolations(r, 0, 0, 0, 1);
             ResteasyConstraintViolation violation = r.getReturnValueViolations().iterator().next();
             logger.info("violation: " + violation);
-            Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 2 and 4", violation.getMessage());
-            Assert.assertEquals(RESPONSE_ERROR_MSG, "abcde", violation.getValue());
+            Assertions.assertEquals("size must be between 2 and 4", violation.getMessage(),
+                    WRONG_ERROR_MSG);
+            Assertions.assertEquals("abcde", violation.getValue(), RESPONSE_ERROR_MSG);
             response.close();
         } catch (Exception e) {
             throw new RuntimeException("expected InternalServerErrorException", e);
@@ -1189,7 +1244,7 @@ public class ValidationComplexTest {
                 .request().post(Entity.text(new String()));
         String entity = response.readEntity(String.class);
         logger.info("entity: " + entity);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "z", entity);
+        Assertions.assertEquals("z", entity, RESPONSE_ERROR_MSG);
         response.close();
     }
 

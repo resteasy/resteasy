@@ -1,7 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -40,13 +39,12 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.MessageBodyWriter;
 import jakarta.ws.rs.ext.Providers;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -76,7 +74,7 @@ public class ReactorNettyClientHttpEngineTest {
     private static final String LIST_OF_STRINGS_IN_JSON = "[\"somestring1\", \"somestring2\"]";
     private static final String DELAYED_HELLO_WORLD = "Delayed Hello World!";
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         setupMockServer();
         client = setupClient(HttpClient.create());
@@ -187,7 +185,7 @@ public class ReactorNettyClientHttpEngineTest {
                                 .orElse(header + " header was not in request:(:(")));
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
         mockServer.dispose();
     }
@@ -337,8 +335,8 @@ public class ReactorNettyClientHttpEngineTest {
 
         final Throwable err = entity.get();
         assertEquals(ProcessingException.class, err.getClass());
-        assertEquals("Expected cause to be an UnknownHostException",
-                UnknownHostException.class, err.getCause().getClass());
+        assertEquals(UnknownHostException.class, err.getCause().getClass(),
+                () -> "Expected cause to be an UnknownHostException");
     }
 
     @Test
@@ -611,14 +609,19 @@ public class ReactorNettyClientHttpEngineTest {
         assertEquals(CONTENT_TYPE_WRITER_HEADER_VAL, response.readEntity(String.class));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNegativeTimeout() {
-        setupClient(HttpClient.create(), Duration.ofMillis(-1));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> setupClient(HttpClient.create(), Duration.ofMillis(-1)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testZeroTimeout() {
-        setupClient(HttpClient.create(), Duration.ofMillis(0));
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> setupClient(HttpClient.create(), Duration.ofMillis(0)));
     }
 
     @Test
@@ -627,11 +630,12 @@ public class ReactorNettyClientHttpEngineTest {
 
         try {
             timeoutClient.target(url("/sleep/500")).request().get();
-            Assert.fail("timeout exception expected");
+            Assertions.fail("timeout exception expected");
         } catch (ProcessingException ex) {
-            MatcherAssert.assertThat(ex.getMessage(),
-                    containsString(
-                            "java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 200ms"));
+            assertTrue(ex.getMessage().contains(
+                    "java.util.concurrent.TimeoutException: " +
+                            "Did not observe any item or terminal signal within 200ms"));
+
         }
     }
 
@@ -643,11 +647,10 @@ public class ReactorNettyClientHttpEngineTest {
 
         try {
             future.get();
-            Assert.fail("timeout exception expected");
+            Assertions.fail("timeout exception expected");
         } catch (ExecutionException ex) {
-            MatcherAssert.assertThat(ex.getMessage(),
-                    containsString(
-                            "java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 200ms"));
+            assertTrue(ex.getMessage().contains("java.util.concurrent.TimeoutException: " +
+                    "Did not observe any item or terminal signal within 200ms"));
         }
     }
 
@@ -660,11 +663,10 @@ public class ReactorNettyClientHttpEngineTest {
 
         try {
             completionStage.toCompletableFuture().get();
-            Assert.fail("timeout exception expected");
+            Assertions.fail("timeout exception expected");
         } catch (ExecutionException ex) {
-            MatcherAssert.assertThat(ex.getMessage(),
-                    containsString(
-                            "java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 100ms"));
+            assertTrue(ex.getMessage().contains("java.util.concurrent.TimeoutException: " +
+                    "Did not observe any item or terminal signal within 100ms"));
         }
     }
 
@@ -727,8 +729,8 @@ public class ReactorNettyClientHttpEngineTest {
                     .get()).block();
             fail("An exception should have been thrown.");
         } catch (final ProcessingException pe) {
-            assertEquals("Expected ProcessingException with cause: PrematureCloseException",
-                    pe.getCause().getClass(), PrematureCloseException.class);
+            assertEquals(pe.getCause().getClass(), PrematureCloseException.class,
+                    () -> "Expected ProcessingException with cause: PrematureCloseException");
         }
     }
 

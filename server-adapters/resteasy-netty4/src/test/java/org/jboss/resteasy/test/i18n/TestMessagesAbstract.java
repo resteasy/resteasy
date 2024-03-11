@@ -5,8 +5,8 @@ import java.util.Locale;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.test.resteasy_jaxrs.i18n.TestMessagesParent;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -28,10 +28,10 @@ public abstract class TestMessagesAbstract extends TestMessagesParent {
             return;
         }
 
-        Assert.assertEquals(getExpected(BASE + "00", "alreadyCommitted"), Messages.MESSAGES.alreadyCommitted());
-        Assert.assertEquals(getExpected(BASE + "10", "chunkSizeMustBeAtLeastOne"),
+        Assertions.assertEquals(getExpected(BASE + "00", "alreadyCommitted"), Messages.MESSAGES.alreadyCommitted());
+        Assertions.assertEquals(getExpected(BASE + "10", "chunkSizeMustBeAtLeastOne"),
                 Messages.MESSAGES.chunkSizeMustBeAtLeastOne());
-        Assert.assertEquals(getExpected(BASE + "25", "unexpected"), Messages.MESSAGES.unexpected());
+        Assertions.assertEquals(getExpected(BASE + "25", "unexpected"), Messages.MESSAGES.unexpected());
     }
 
     @Override

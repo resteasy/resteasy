@@ -14,7 +14,7 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -27,11 +27,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -43,7 +43,7 @@ import io.reactivex.Single;
  * @tpTestCaseDetails Regression test for RESTEASY-1932
  * @tpSince RESTEasy 4.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ClientResponseFilterExceptionTest {
 
@@ -65,7 +65,7 @@ public class ClientResponseFilterExceptionTest {
         return PortProviderUtil.generateURL(path, ClientResponseFilterExceptionTest.class.getSimpleName());
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectionRequestTimeout(1000)
@@ -88,7 +88,7 @@ public class ClientResponseFilterExceptionTest {
         latch = new CountDownLatch(10);
     }
 
-    @After
+    @AfterEach
     public void after() {
         client.close();
     }
@@ -107,7 +107,7 @@ public class ClientResponseFilterExceptionTest {
                 incr(e);
             }
         }
-        Assert.assertEquals(0, latch.getCount());
+        Assertions.assertEquals(0, latch.getCount());
     }
 
     /**
@@ -116,7 +116,7 @@ public class ClientResponseFilterExceptionTest {
      */
     @Test
     public void testCompletionStage() throws Exception {
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 doTest(
                         () -> service.cs(),
                         (CompletionStage<String> cs) -> {
@@ -134,7 +134,7 @@ public class ClientResponseFilterExceptionTest {
      */
     @Test
     public void testSingle() throws Exception {
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 doTest(
                         () -> service.single(),
                         (Single<String> single) -> single.subscribe(o -> {
@@ -147,7 +147,7 @@ public class ClientResponseFilterExceptionTest {
      */
     @Test
     public void testObservable() throws Exception {
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 doTest(
                         () -> service.observable(),
                         (Observable<String> observable) -> observable.subscribe(o -> {
@@ -160,7 +160,7 @@ public class ClientResponseFilterExceptionTest {
      */
     @Test
     public void testFlowable() throws Exception {
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 doTest(
                         () -> service.flowable(),
                         (Flowable<String> flowable) -> flowable.subscribe(o -> {

@@ -5,7 +5,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.PathSegment;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/")
 public class MultipleMatrixSegmentsResource {
@@ -14,20 +14,26 @@ public class MultipleMatrixSegmentsResource {
     @GET
     @Path("/{parent:.*}/children/{child:.*}")
     public String get(@PathParam("parent") PathSegment parent, @PathParam("child") PathSegment child) {
-        Assert.assertEquals(ERROR_MESSAGE, "bill", parent.getMatrixParameters().getFirst("name"));
-        Assert.assertEquals(ERROR_MESSAGE, "111", parent.getMatrixParameters().getFirst("ssn"));
-        Assert.assertEquals(ERROR_MESSAGE, "skippy", child.getMatrixParameters().getFirst("name"));
-        Assert.assertEquals(ERROR_MESSAGE, "3344", child.getMatrixParameters().getFirst("ssn"));
+        Assertions.assertEquals("bill", parent.getMatrixParameters().getFirst("name"),
+                ERROR_MESSAGE);
+        Assertions.assertEquals("111", parent.getMatrixParameters().getFirst("ssn"),
+                ERROR_MESSAGE);
+        Assertions.assertEquals("skippy", child.getMatrixParameters().getFirst("name"),
+                ERROR_MESSAGE);
+        Assertions.assertEquals("3344", child.getMatrixParameters().getFirst("ssn"),
+                ERROR_MESSAGE);
         return "content";
     }
 
     @GET
     @Path("/stuff/{segments:.*}/first")
     public String getFirst(@PathParam("segments") PathSegment[] segments) {
-        Assert.assertNotNull(ERROR_MESSAGE, segments);
-        Assert.assertEquals(ERROR_MESSAGE, segments.length, 2);
-        Assert.assertEquals(ERROR_MESSAGE, segments[0].getMatrixParameters().getFirst("name"), "first");
-        Assert.assertEquals(ERROR_MESSAGE, segments[1].getMatrixParameters().getFirst("name"), "second");
+        Assertions.assertNotNull(segments, ERROR_MESSAGE);
+        Assertions.assertEquals(segments.length, 2, ERROR_MESSAGE);
+        Assertions.assertEquals(segments[0].getMatrixParameters().getFirst("name"), "first",
+                ERROR_MESSAGE);
+        Assertions.assertEquals(segments[1].getMatrixParameters().getFirst("name"), "second",
+                ERROR_MESSAGE);
         return "stuff";
     }
 }

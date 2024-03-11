@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.Response;
 import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationEJBProxyGreeterResource;
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationEJBProxyGreeting;
@@ -20,11 +20,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter CDI
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails EJB, CDI, Validation, and RESTEasy integration test: RESTEASY-2358
  * @tpSince RESTEasy 4.5.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class EJBCDIValidationEJBProxyTest {
 
@@ -62,12 +62,12 @@ public class EJBCDIValidationEJBProxyTest {
         return PortProviderUtil.generateURL(path, EJBCDIValidationEJBProxyTest.class.getSimpleName());
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -83,7 +83,7 @@ public class EJBCDIValidationEJBProxyTest {
 
         response = greeterTarget.request().post(Entity.entity(VALID_REQUEST, MediaType.APPLICATION_JSON));
         final String helloHugo = response.readEntity(String.class);
-        Assert.assertEquals("Hello Hugo!", helloHugo);
+        Assertions.assertEquals("Hello Hugo!", helloHugo);
 
         response = greeterTarget.request().post(Entity.entity(INVALID_REQUEST, MediaType.APPLICATION_JSON));
         answer = response.readEntity(String.class);

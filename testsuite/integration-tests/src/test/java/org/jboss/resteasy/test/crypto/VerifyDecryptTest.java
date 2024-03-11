@@ -13,7 +13,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
@@ -26,11 +26,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Crypto
@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-962
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class VerifyDecryptTest {
     private static final String RESPONSE_ERROR_MSG = "Response contains wrong content";
@@ -56,12 +56,12 @@ public class VerifyDecryptTest {
         certPrivatePemPath = TestUtil.getResourcePath(VerifyDecryptTest.class, "VerifyDecryptMycertPrivate.pem");
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void close() {
         client.close();
         client = null;
@@ -104,7 +104,7 @@ public class VerifyDecryptTest {
         ResteasyWebTarget target = client.target(generateURL("/encrypt"));
         Response res = target.request().post(Entity.entity(output, "application/pkcs7-mime"));
         String result = res.readEntity(String.class);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "xanadu", result);
+        Assertions.assertEquals("xanadu", result, RESPONSE_ERROR_MSG);
     }
 
     /**
@@ -119,7 +119,7 @@ public class VerifyDecryptTest {
         ResteasyWebTarget target = client.target(generateURL("/sign"));
         Response res = target.request().post(Entity.entity(signed, "multipart/signed"));
         String result = res.readEntity(String.class);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "xanadu", result);
+        Assertions.assertEquals("xanadu", result, RESPONSE_ERROR_MSG);
     }
 
     /**
@@ -136,7 +136,7 @@ public class VerifyDecryptTest {
         ResteasyWebTarget target = client.target(generateURL("/encryptSign"));
         Response res = target.request().post(Entity.entity(signed, "multipart/signed"));
         String result = res.readEntity(String.class);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "xanadu", result);
+        Assertions.assertEquals("xanadu", result, RESPONSE_ERROR_MSG);
     }
 
     /**
@@ -153,7 +153,7 @@ public class VerifyDecryptTest {
         ResteasyWebTarget target = client.target(generateURL("/signEncrypt"));
         Response res = target.request().post(Entity.entity(output, "application/pkcs7-mime"));
         String result = res.readEntity(String.class);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "xanadu", result);
+        Assertions.assertEquals("xanadu", result, RESPONSE_ERROR_MSG);
     }
 
     /**
@@ -173,7 +173,7 @@ public class VerifyDecryptTest {
         ResteasyWebTarget target = client.target(generateURL("/encryptedEncrypted"));
         Response res = target.request().post(Entity.entity(output, "application/pkcs7-mime"));
         String result = res.readEntity(String.class);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "xanadu", result);
+        Assertions.assertEquals("xanadu", result, RESPONSE_ERROR_MSG);
     }
 
     /**
@@ -193,7 +193,7 @@ public class VerifyDecryptTest {
         ResteasyWebTarget target = client.target(generateURL("/encryptSignSign"));
         Response res = target.request().post(Entity.entity(resigned, "multipart/signed"));
         String result = res.readEntity(String.class);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "xanadu", result);
+        Assertions.assertEquals("xanadu", result, RESPONSE_ERROR_MSG);
     }
 
     /**
@@ -209,6 +209,6 @@ public class VerifyDecryptTest {
         ResteasyWebTarget target = client.target(generateURL("/multipartEncrypted"));
         Response res = target.request().post(Entity.entity(output, "application/pkcs7-mime"));
         String result = res.readEntity(String.class);
-        Assert.assertEquals(RESPONSE_ERROR_MSG, "xanadu", result);
+        Assertions.assertEquals("xanadu", result, RESPONSE_ERROR_MSG);
     }
 }

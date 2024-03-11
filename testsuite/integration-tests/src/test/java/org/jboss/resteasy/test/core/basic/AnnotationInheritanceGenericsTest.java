@@ -12,11 +12,9 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.core.basic.resource.AnnotationInheritanceGenericsAbstract;
 import org.jboss.resteasy.test.core.basic.resource.AnnotationInheritanceGenericsEntity;
 import org.jboss.resteasy.test.core.basic.resource.AnnotationInheritanceGenericsImpl;
@@ -25,11 +23,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Configuration
@@ -37,7 +35,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for JAX-RS annotation inheritance with generics.
  * @tpSince RESTEasy 4.0.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class AnnotationInheritanceGenericsTest {
 
@@ -56,12 +54,12 @@ public class AnnotationInheritanceGenericsTest {
 
     protected Client client;
 
-    @Before
+    @BeforeEach
     public void beforeTest() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void afterTest() {
         client.close();
         client = null;
@@ -77,14 +75,13 @@ public class AnnotationInheritanceGenericsTest {
                 new GenericType<Collection<AnnotationInheritanceGenericsEntity>>() {
                 });
 
-        Assert.assertNotNull("Response entity list must not be null", entityList);
-        MatcherAssert.assertThat("Response entity list must contain exactly one element", entityList, Matchers.hasSize(1));
+        Assertions.assertNotNull(entityList, "Response entity list must not be null");
+        Assertions.assertEquals(1, entityList.size(), "Response entity list must contain exactly one element");
 
         final AnnotationInheritanceGenericsEntity entity = entityList.iterator().next();
-        Assert.assertEquals(
-                "Response entity ID must match method id",
-                AnnotationInheritanceGenericsImpl.METHOD_ID_INTERFACE_GET_COLLECTION,
-                entity.getId());
+        Assertions.assertEquals(AnnotationInheritanceGenericsImpl.METHOD_ID_INTERFACE_GET_COLLECTION,
+                entity.getId(),
+                "Response entity ID must match method id");
     }
 
     @Test
@@ -97,11 +94,9 @@ public class AnnotationInheritanceGenericsTest {
                 new GenericType<AnnotationInheritanceGenericsEntity>() {
                 });
 
-        Assert.assertNotNull("Response entity must not be null", entity);
-        Assert.assertEquals(
-                "Response entity ID must match method id",
-                AnnotationInheritanceGenericsImpl.METHOD_ID_INTERFACE_GET_SINGLE,
-                entity.getId());
+        Assertions.assertNotNull(entity, "Response entity must not be null");
+        Assertions.assertEquals(AnnotationInheritanceGenericsImpl.METHOD_ID_INTERFACE_GET_SINGLE,
+                entity.getId(), "Response entity ID must match method id");
     }
 
     @Test
@@ -116,11 +111,10 @@ public class AnnotationInheritanceGenericsTest {
                 new GenericType<AnnotationInheritanceGenericsEntity>() {
                 });
 
-        Assert.assertNotNull("Response entity must not be null", entity);
-        Assert.assertEquals(
-                "Response entity ID must match method id",
-                AnnotationInheritanceGenericsImpl.METHOD_ID_INTERFACE_POST,
-                entity.getId());
+        Assertions.assertNotNull(entity, "Response entity must not be null");
+        Assertions.assertEquals(AnnotationInheritanceGenericsImpl.METHOD_ID_INTERFACE_POST,
+                entity.getId(),
+                "Response entity ID must match method id");
     }
 
     @Test
@@ -135,11 +129,10 @@ public class AnnotationInheritanceGenericsTest {
                 new GenericType<AnnotationInheritanceGenericsEntity>() {
                 });
 
-        Assert.assertNotNull("Response entity must not be null", entity);
-        Assert.assertEquals(
-                "Response entity ID must match method id",
-                AnnotationInheritanceGenericsImpl.METHOD_ID_INTERFACE_PUT,
-                entity.getId());
+        Assertions.assertNotNull(entity, "Response entity must not be null");
+        Assertions.assertEquals(AnnotationInheritanceGenericsImpl.METHOD_ID_INTERFACE_PUT,
+                entity.getId(),
+                "Response entity ID must match method id");
     }
 
     @Test
@@ -154,11 +147,10 @@ public class AnnotationInheritanceGenericsTest {
                 new GenericType<AnnotationInheritanceGenericsEntity>() {
                 });
 
-        Assert.assertNotNull("Response entity must not be null", entity);
-        Assert.assertEquals(
-                "Response entity ID must match method id",
-                AnnotationInheritanceGenericsImpl.METHOD_ID_ABSTRACT_PUT,
-                entity.getId());
+        Assertions.assertNotNull(entity, "Response entity must not be null");
+        Assertions.assertEquals(AnnotationInheritanceGenericsImpl.METHOD_ID_ABSTRACT_PUT,
+                entity.getId(),
+                "Response entity ID must match method id");
     }
 
     private <T> T invokeRequest(

@@ -11,8 +11,8 @@ import jakarta.ws.rs.core.MediaType;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartInputImpl;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class Base64EncoderMultiPartTest {
 
@@ -38,7 +38,7 @@ public class Base64EncoderMultiPartTest {
             InputStream inputStream = ((MultipartInputImpl.PartImpl) part).getBody();
             byte[] bytes = inputStream.readAllBytes();
             String base64bytes = Base64.getEncoder().encodeToString(bytes);
-            Assert.assertEquals(body, base64bytes);
+            Assertions.assertEquals(body, base64bytes);
         }
     }
 }

@@ -43,23 +43,23 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Tests the "content-type" HTTP header is correctly set for entities.
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class ContentTypeTest {
 
     @Deployment
@@ -98,12 +98,12 @@ public class ContentTypeTest {
                 .header(HttpHeaders.CONTENT_TYPE, "text/invalid")
                 .post(Entity.json("{post: \"value\"}"))) {
             final JsonObject json = checkResponse(response);
-            Assert.assertEquals("{post: \"value\"}", json.getString("entity"));
+            Assertions.assertEquals("{post: \"value\"}", json.getString("entity"));
             final JsonObject headers = json.getJsonObject("headers");
             final JsonArray contentType = headers.getJsonArray(HttpHeaders.CONTENT_TYPE);
-            Assert.assertNotNull("No content type found in: " + json, contentType);
-            Assert.assertFalse("No content type found in: " + json, contentType.isEmpty());
-            Assert.assertEquals(MediaType.APPLICATION_JSON, contentType.getString(0));
+            Assertions.assertNotNull(contentType, "No content type found in: " + json);
+            Assertions.assertFalse(contentType.isEmpty(), "No content type found in: " + json);
+            Assertions.assertEquals(MediaType.APPLICATION_JSON, contentType.getString(0));
         }
     }
 
@@ -121,19 +121,19 @@ public class ContentTypeTest {
                 .header(HttpHeaders.CONTENT_TYPE, "text/invalid")
                 .put(Entity.json("{put: \"value\"}"))) {
             final JsonObject json = checkResponse(response);
-            Assert.assertEquals("{put: \"value\"}", json.getString("entity"));
+            Assertions.assertEquals("{put: \"value\"}", json.getString("entity"));
             final JsonObject headers = json.getJsonObject("headers");
             final JsonArray contentType = headers.getJsonArray(HttpHeaders.CONTENT_TYPE);
-            Assert.assertNotNull("No content type found in: " + json, contentType);
-            Assert.assertFalse("No content type found in: " + json, contentType.isEmpty());
-            Assert.assertEquals(MediaType.APPLICATION_JSON, contentType.getString(0));
+            Assertions.assertNotNull(contentType, "No content type found in: " + json);
+            Assertions.assertFalse(contentType.isEmpty(), "No content type found in: " + json);
+            Assertions.assertEquals(MediaType.APPLICATION_JSON, contentType.getString(0));
         }
     }
 
     private static JsonObject checkResponse(final Response response) {
-        Assert.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
         final JsonObject json = response.readEntity(JsonObject.class);
-        Assert.assertNotNull(json);
+        Assertions.assertNotNull(json);
         return json;
     }
 

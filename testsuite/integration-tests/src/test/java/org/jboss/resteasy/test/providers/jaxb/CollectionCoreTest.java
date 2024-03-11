@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.Response;
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
@@ -22,11 +22,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Check jaxb requests with collection
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class CollectionCoreTest {
     private static final String WRONG_RESPONSE = "Response contains wrong data";
@@ -49,12 +49,12 @@ public class CollectionCoreTest {
         return TestUtil.finishContainerPrepare(war, null, CollectionResource.class, CollectionNamespacedResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -71,12 +71,12 @@ public class CollectionCoreTest {
     public void testArray() throws Exception {
         Invocation.Builder request = client.target(generateURL("/array")).request();
         Response response = request.get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String str = response.readEntity(String.class);
         logger.info(String.format("Response: %s", str));
         response.close();
         response = request.put(Entity.entity(str, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
     }
 
@@ -88,12 +88,12 @@ public class CollectionCoreTest {
     public void testList() throws Exception {
         Invocation.Builder request = client.target(generateURL("/list")).request();
         Response response = request.get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String str = response.readEntity(String.class);
         logger.info(String.format("Response: %s", str));
         response.close();
         response = request.put(Entity.entity(str, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
     }
 
@@ -105,7 +105,7 @@ public class CollectionCoreTest {
     public void testResponse() throws Exception {
         Invocation.Builder request = client.target(generateURL("/list/response")).request();
         Response response = request.get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         logger.info(String.format("Response: %s", response.readEntity(String.class)));
     }
 
@@ -117,12 +117,12 @@ public class CollectionCoreTest {
     public void testNamespacedArray() throws Exception {
         Invocation.Builder request = client.target(generateURL("/namespaced/array")).request();
         Response response = request.get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String str = response.readEntity(String.class);
         logger.info(String.format("Response: %s", str));
         response.close();
         response = request.put(Entity.entity(str, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
         MatcherAssert.assertThat(WRONG_RESPONSE, str, containsString("http://customer.com"));
     }
@@ -135,12 +135,12 @@ public class CollectionCoreTest {
     public void testNamespacedList() throws Exception {
         Invocation.Builder request = client.target(generateURL("/namespaced/list")).request();
         Response response = request.get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String str = response.readEntity(String.class);
         logger.info(String.format("Response: %s", str));
         response.close();
         response = request.put(Entity.entity(str, "application/xml"));
-        Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
         MatcherAssert.assertThat(WRONG_RESPONSE, str, containsString("http://customer.com"));
     }
@@ -153,7 +153,7 @@ public class CollectionCoreTest {
     public void testNamespacedResponse() throws Exception {
         Invocation.Builder request = client.target(generateURL("/namespaced/list/response")).request();
         Response response = request.get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String str = response.readEntity(String.class);
         logger.info(String.format("Response: %s", str));
         response.close();

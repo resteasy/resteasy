@@ -25,8 +25,8 @@ import java.util.Optional;
 
 import jakarta.ws.rs.SeBootstrap.Configuration;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -35,7 +35,7 @@ public class ConfigurationTest {
 
     @Test
     public void correctConfigurator() {
-        Assert.assertTrue(Configuration.builder().build() instanceof ResteasySeConfiguration);
+        Assertions.assertTrue(Configuration.builder().build() instanceof ResteasySeConfiguration);
     }
 
     @Test
@@ -53,9 +53,9 @@ public class ConfigurationTest {
                 });
 
         final Configuration configuration = builder.build();
-        Assert.assertEquals(9999, configuration.port());
-        Assert.assertEquals(":::1", configuration.host());
-        Assert.assertEquals("https", configuration.protocol());
+        Assertions.assertEquals(9999, configuration.port());
+        Assertions.assertEquals(":::1", configuration.host());
+        Assertions.assertEquals("https", configuration.protocol());
     }
 
     @Test
@@ -66,9 +66,9 @@ public class ConfigurationTest {
                         .property(ConfigurationOption.HOST.key(), ":::1"));
 
         final Configuration configuration = builder.build();
-        Assert.assertEquals(9999, configuration.port());
-        Assert.assertEquals(":::1", configuration.host());
-        Assert.assertEquals("value set", configuration.property("test.from.config"));
+        Assertions.assertEquals(9999, configuration.port());
+        Assertions.assertEquals(":::1", configuration.host());
+        Assertions.assertEquals("value set", configuration.property("test.from.config"));
     }
 
     @Test
@@ -80,9 +80,9 @@ public class ConfigurationTest {
                         .build());
 
         final Configuration configuration = builder.build();
-        Assert.assertEquals(8443, configuration.port());
-        Assert.assertEquals(":::1", configuration.host());
-        Assert.assertEquals("value set", configuration.property("test.from.config"));
+        Assertions.assertEquals(8443, configuration.port());
+        Assertions.assertEquals(":::1", configuration.host());
+        Assertions.assertEquals("value set", configuration.property("test.from.config"));
     }
 
     @Test
@@ -93,10 +93,10 @@ public class ConfigurationTest {
                         .property(ConfigurationOption.HOST.key(), ":::1"));
 
         final Configuration configuration = builder.build();
-        Assert.assertEquals(8443, configuration.port());
-        Assert.assertEquals(":::1", configuration.host());
-        Assert.assertNull("Expected test.from.config to not be defined",
-                configuration.property("test.from.config"));
+        Assertions.assertEquals(8443, configuration.port());
+        Assertions.assertEquals(":::1", configuration.host());
+        Assertions.assertNull(configuration.property("test.from.config"),
+                () -> "Expected test.from.config to not be defined");
     }
 
     private static class TestConfiguration implements Configuration {

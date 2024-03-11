@@ -9,16 +9,16 @@ import jakarta.ws.rs.client.WebTarget;
 import org.jboss.resteasy.plugins.server.vertx.VertxContainer;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class AsyncIOWriterTest {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         ResteasyDeployment deployment = VertxContainer.start();
         deployment.getProviderFactory().register(MyTypeWriter.class);
@@ -28,7 +28,7 @@ public class AsyncIOWriterTest {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() throws Exception {
         try {
             client.close();
@@ -42,6 +42,6 @@ public class AsyncIOWriterTest {
     public void testAsyncIoWriter() throws Exception {
         WebTarget target = client.target(generateURL("/async-io-writer"));
         String val = target.request().get(String.class);
-        Assert.assertEquals("OK", val);
+        Assertions.assertEquals("OK", val);
     }
 }

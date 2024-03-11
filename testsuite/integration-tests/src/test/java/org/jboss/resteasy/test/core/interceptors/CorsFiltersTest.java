@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.core.interceptors;
 
-import static org.hamcrest.core.Is.is;
-
 import java.lang.reflect.ReflectPermission;
 import java.net.SocketPermission;
 import java.util.ArrayList;
@@ -12,9 +10,8 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 import org.jboss.resteasy.spi.CorsHeaders;
@@ -26,10 +23,10 @@ import org.jboss.resteasy.utils.TestApplication;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Interceptors
@@ -37,7 +34,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test CorsFilter usage
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class CorsFiltersTest {
 
     @Deployment
@@ -62,7 +59,7 @@ public class CorsFiltersTest {
         return PortProviderUtil.generateURL(path, CorsFiltersTest.class.getSimpleName());
     }
 
-    @After
+    @AfterEach
     public void resetFilter() {
         CorsFilter corsFilter = (CorsFilter) TestApplication.singletons.iterator().next();
         corsFilter.getAllowedOrigins().remove("http://" + PortProviderUtil.getHost());
@@ -82,26 +79,26 @@ public class CorsFiltersTest {
         WebTarget target = client.target(generateURL("/test"));
         Response response = target.request().header(CorsHeaders.ORIGIN, testedURL)
                 .options();
-        Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
         response.close();
         response = target.request().header(CorsHeaders.ORIGIN, testedURL)
                 .get();
-        Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
         response.close();
 
-        MatcherAssert.assertThat("Wrong count of singletons were created", TestApplication.singletons.size(), is(1));
+        Assertions.assertEquals(1, TestApplication.singletons.size(), "Wrong count of singletons were created");
         CorsFilter corsFilter = (CorsFilter) TestApplication.singletons.iterator().next();
 
         corsFilter.getAllowedOrigins().add(testedURL);
         response = target.request().header(CorsHeaders.ORIGIN, testedURL)
                 .options();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
         response = target.request().header(CorsHeaders.ORIGIN, testedURL)
                 .get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(response.getHeaderString(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN), testedURL);
-        Assert.assertEquals("Wrong response", "hello", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(response.getHeaderString(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN), testedURL);
+        Assertions.assertEquals("hello", response.readEntity(String.class), "Wrong response");
         response.close();
 
         client.close();
@@ -118,20 +115,20 @@ public class CorsFiltersTest {
         ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
         WebTarget target = client.target(generateURL("/test"));
 
-        MatcherAssert.assertThat("Wrong count of singletons were created", TestApplication.singletons.size(), is(1));
+        Assertions.assertEquals(1, TestApplication.singletons.size(), "Wrong count of singletons were created");
         CorsFilter corsFilter = (CorsFilter) TestApplication.singletons.iterator().next();
         corsFilter.getAllowedOrigins().add(testedURL);
 
         Response response = target.request().header(CorsHeaders.ORIGIN, testedURL).get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Response doesn't contain the Vary: Origin header", CorsHeaders.ORIGIN,
-                response.getHeaderString(CorsHeaders.VARY));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(CorsHeaders.ORIGIN, response.getHeaderString(CorsHeaders.VARY),
+                "Response doesn't contain the Vary: Origin header");
         response.close();
 
         response = target.request().header(CorsHeaders.ORIGIN, testedURL).options();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Response doesn't contain the Vary: Origin header", CorsHeaders.ORIGIN,
-                response.getHeaderString(CorsHeaders.VARY));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(CorsHeaders.ORIGIN, response.getHeaderString(CorsHeaders.VARY),
+                "Response doesn't contain the Vary: Origin header");
         response.close();
 
         client.close();

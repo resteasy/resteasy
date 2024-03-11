@@ -7,16 +7,16 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.asynch.resource.AsyncGenericEntityMessageBodyWriter;
 import org.jboss.resteasy.test.asynch.resource.AsyncGenericEntityResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Asynchronous RESTEasy
@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test getting GenericType from return entity.
  * @tpSince RESTEasy 3.7.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class AsyncGenericEntityTest {
 
@@ -49,8 +49,8 @@ public class AsyncGenericEntityTest {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/test")).request();
         Response response = request.get();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("ok", response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("ok", response.readEntity(String.class));
         response.close();
         client.close();
     }

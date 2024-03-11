@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.wadl;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.lang.reflect.ReflectPermission;
 
@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.utils.PermissionUtil;
@@ -17,13 +17,13 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class DeploymentTest {
 
@@ -49,12 +49,12 @@ public class DeploymentTest {
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() {
         client.close();
     }
@@ -65,7 +65,7 @@ public class DeploymentTest {
             ResteasyWebTarget target = client.target(generateURL("/application.xml"));
             Response response = target.request().get();
             int status = response.getStatus();
-            Assert.assertEquals(200, status);
+            Assertions.assertEquals(200, status);
 
             // get Application
             org.jboss.resteasy.wadl.jaxb.Application application = response
@@ -77,7 +77,7 @@ public class DeploymentTest {
             ResteasyWebTarget target = client.target(generateURL("/wadl-extended/xsd0.xsd"));
             Response response = target.request().get();
             int status = response.getStatus();
-            Assert.assertEquals(200, status);
+            Assertions.assertEquals(200, status);
 
             assertNotNull(response.readEntity(String.class));
         }

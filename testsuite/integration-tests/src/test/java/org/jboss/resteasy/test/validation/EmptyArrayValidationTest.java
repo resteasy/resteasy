@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
@@ -21,9 +21,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter resteasy-validator-provider
@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 4.6.0
  * @tpTestCaseDetails Regression test for RESTEASY-2765
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class EmptyArrayValidationTest {
 
@@ -57,8 +57,8 @@ public class EmptyArrayValidationTest {
         Response response = client.target(generateURL("/emptyarray")).request()
                 .post(Entity.entity(foo, MediaType.APPLICATION_JSON), Response.class);
         Object header = response.getHeaderString(Validation.VALIDATION_HEADER);
-        Assert.assertTrue("Header has wrong format", header instanceof String);
-        Assert.assertTrue("Header has wrong format", Boolean.valueOf(String.class.cast(header)));
+        Assertions.assertTrue(header instanceof String, "Header has wrong format");
+        Assertions.assertTrue(Boolean.valueOf(String.class.cast(header)), "Header has wrong format");
         String answer = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(answer));

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.injection;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Type;
 import java.util.HashSet;
@@ -15,8 +15,8 @@ import org.jboss.resteasy.test.injection.resource.SessionBeanInterfaceFooLocal2;
 import org.jboss.resteasy.test.injection.resource.SessionBeanInterfaceFooLocal3;
 import org.jboss.resteasy.test.injection.resource.SessionBeanInterfaceMockBean;
 import org.jboss.resteasy.test.injection.resource.SessionBeanInterfaceMockProcessSessionBean;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Injection tests
@@ -27,7 +27,7 @@ import org.junit.Test;
 public class SessionBeanInterfaceTest {
     private ResteasyCdiExtension extension;
 
-    @Before
+    @BeforeEach
     public void prepare() {
         extension = new ResteasyCdiExtension();
     }
@@ -45,8 +45,9 @@ public class SessionBeanInterfaceTest {
         types.add(Object.class);
         Bean<Object> bean = new SessionBeanInterfaceMockBean<>(SessionBeanInterfaceFoo.class, types);
         extension.observeSessionBeans(new SessionBeanInterfaceMockProcessSessionBean<>(bean));
-        assertTrue("Wrong interface was return by ResteasyCdiExtension", extension.getSessionBeanInterface()
-                .get(SessionBeanInterfaceFoo.class).equals(SessionBeanInterfaceFooLocal3.class));
+        assertTrue(extension.getSessionBeanInterface()
+                .get(SessionBeanInterfaceFoo.class).equals(SessionBeanInterfaceFooLocal3.class),
+                "Wrong interface was return by ResteasyCdiExtension");
     }
 
     /**
@@ -60,7 +61,7 @@ public class SessionBeanInterfaceTest {
         types.add(Object.class);
         Bean<Object> bean = new SessionBeanInterfaceMockBean<>(SessionBeanInterfaceFoo.class, types);
         extension.observeSessionBeans(new SessionBeanInterfaceMockProcessSessionBean<>(bean));
-        assertTrue("Any interface should not be returned by ResteasyCdiExtension",
-                extension.getSessionBeanInterface().isEmpty());
+        assertTrue(extension.getSessionBeanInterface().isEmpty(),
+                "Any interface should not be returned by ResteasyCdiExtension");
     }
 }

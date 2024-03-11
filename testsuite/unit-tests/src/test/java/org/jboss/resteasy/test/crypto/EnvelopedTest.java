@@ -39,9 +39,9 @@ import org.bouncycastle.operator.OutputEncryptor;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.utils.TestUtil;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Crypto
@@ -65,7 +65,7 @@ public class EnvelopedTest {
     static final String certPemPath = TestUtil.getResourcePath(EnvelopedTest.class, "SignedMycert.pem");
     static final String certPrivatePemPath = TestUtil.getResourcePath(EnvelopedTest.class, "MycertPrivate.pem");
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         Security.addProvider(new BouncyCastleProvider());
 
@@ -110,10 +110,12 @@ public class EnvelopedTest {
 
         newMimeBodyPart = decode2Mime(newMimeBodyPart);
 
-        Assert.assertEquals("Wrong type of mimeBodyPart content", "application/xml", newMimeBodyPart.getContentType());
+        Assertions.assertEquals("application/xml", newMimeBodyPart.getContentType(),
+                "Wrong type of mimeBodyPart content");
 
         String body = toString(newMimeBodyPart.getInputStream());
-        Assert.assertEquals("Wrong decoded content", "<customer name=\"bill\"/>", body.trim());
+        Assertions.assertEquals("<customer name=\"bill\"/>", body.trim(),
+                "Wrong decoded content");
     }
 
     /**
@@ -166,19 +168,23 @@ public class EnvelopedTest {
             logger.info("------------");
             mp = decode2Mime(mp);
 
-            Assert.assertEquals("Wrong media type of content", "application/xml", mp.getContentType());
+            Assertions.assertEquals("application/xml", mp.getContentType(),
+                    "Wrong media type of content");
 
             String body = toString(mp.getInputStream());
-            Assert.assertEquals("Wrong decoded content", "<customer name=\"bill\"/>", body.trim());
+            Assertions.assertEquals("<customer name=\"bill\"/>", body.trim(),
+                    "Wrong decoded content");
         }
         {
             ByteArrayInputStream is = new ByteArrayInputStream(python_smime.getBytes(StandardCharsets.UTF_8));
             MimeBodyPart mp = decode2Mime(is);
 
-            Assert.assertEquals("Wrong media type of content", "application/xml", mp.getContentType());
+            Assertions.assertEquals("application/xml", mp.getContentType(),
+                    "Wrong media type of content");
 
             String body = toString(mp.getInputStream());
-            Assert.assertEquals("Wrong decoded content", "<customer name=\"bill\"/>", body.trim());
+            Assertions.assertEquals("<customer name=\"bill\"/>", body.trim(),
+                    "Wrong decoded content");
         }
     }
 

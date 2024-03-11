@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultContentTypeWildcardOverwriteContainerBean;
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultContentTypeWildcardOverwriteNewInterceptor;
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultContentTypeWildcardOverwriteService;
@@ -18,11 +18,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Multipart provider
@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
  *                    interceptor.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class InputPartDefaultContentTypeWildcardOverwriteNewInterceptorTest {
 
@@ -49,12 +49,12 @@ public class InputPartDefaultContentTypeWildcardOverwriteNewInterceptorTest {
                 InputPartDefaultContentTypeWildcardOverwriteService.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -77,8 +77,8 @@ public class InputPartDefaultContentTypeWildcardOverwriteNewInterceptorTest {
         Entity entity = Entity.entity(message, "multipart/form-data; boundary=boo");
         Response response = target.request().post(entity);
 
-        Assert.assertEquals("MultiPart provider is unable to process xml, if media type is set in interceptor",
-                20, response.getStatus() / 10);
-        Assert.assertEquals("Response text is wrong", "27", response.readEntity(String.class));
+        Assertions.assertEquals(20, response.getStatus() / 10,
+                "MultiPart provider is unable to process xml, if media type is set in interceptor");
+        Assertions.assertEquals("27", response.readEntity(String.class), "Response text is wrong");
     }
 }

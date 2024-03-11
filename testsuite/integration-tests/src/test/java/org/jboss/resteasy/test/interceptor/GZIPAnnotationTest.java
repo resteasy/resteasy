@@ -5,7 +5,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
@@ -16,11 +16,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Interceptor
@@ -28,13 +28,13 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Tests @GZIP annotation on client (RESTEASY-1265)
  * @tpSince RESTEasy 3.0.20
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class GZIPAnnotationTest {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient()
                 .register(AcceptEncodingGZIPFilter.class)
@@ -42,7 +42,7 @@ public class GZIPAnnotationTest {
                 .register(GZIPDecodingInterceptor.class);
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -71,7 +71,7 @@ public class GZIPAnnotationTest {
         ResteasyWebTarget target = (ResteasyWebTarget) client.target(generateURL(""));
         GZIPAnnotationInterface resource = target.proxy(GZIPAnnotationInterface.class);
         String s = resource.getFoo("test");
-        Assert.assertTrue(s.contains("gzip"));
-        Assert.assertTrue(s.substring(s.indexOf("gzip") + 4).contains("gzip"));
+        Assertions.assertTrue(s.contains("gzip"));
+        Assertions.assertTrue(s.substring(s.indexOf("gzip") + 4).contains("gzip"));
     }
 }

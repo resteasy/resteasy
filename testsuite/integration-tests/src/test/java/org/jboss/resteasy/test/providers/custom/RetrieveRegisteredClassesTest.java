@@ -16,16 +16,16 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class RetrieveRegisteredClassesTest {
 
@@ -72,8 +72,8 @@ public class RetrieveRegisteredClassesTest {
             Configuration firstWebTargetConfiguration = firstWebTarget.getConfiguration();
             Set<Class<?>> classes = firstWebTargetConfiguration.getClasses();
             Set<Object> instances = firstWebTargetConfiguration.getInstances();
-            Assert.assertFalse(classes.contains(MyFilter.class));
-            Assert.assertTrue(instances.contains(myFilter));
+            Assertions.assertFalse(classes.contains(MyFilter.class));
+            Assertions.assertTrue(instances.contains(myFilter));
 
             WebTarget secondWebTarget = client.target(uri);
             Configuration secondWebTargetConfiguration = secondWebTarget.getConfiguration();
@@ -90,9 +90,9 @@ public class RetrieveRegisteredClassesTest {
             String secondeResult = secondWebTarget.request(MediaType.APPLICATION_XML).get(String.class);
             classes = secondWebTargetConfiguration.getClasses();
             instances = secondWebTargetConfiguration.getInstances();
-            Assert.assertFalse(classes.contains(MyFilter.class));
-            Assert.assertTrue(instances.contains(myFilter));
-            Assert.assertEquals(firstResult, secondeResult);
+            Assertions.assertFalse(classes.contains(MyFilter.class));
+            Assertions.assertTrue(instances.contains(myFilter));
+            Assertions.assertEquals(firstResult, secondeResult);
         } finally {
             client.close();
         }

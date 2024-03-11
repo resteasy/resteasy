@@ -7,10 +7,10 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.ext.Provider;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -23,12 +23,12 @@ public class ClientConfigurationImmutableSetsTest {
 
     private static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         client.close();
     }
@@ -51,7 +51,7 @@ public class ClientConfigurationImmutableSetsTest {
             // when adding to this immutable set
             // or it can be a new hard copied set
         }
-        Assert.assertEquals(size, classes.size());
+        Assertions.assertEquals(size, classes.size());
     }
 
     @Test
@@ -65,7 +65,7 @@ public class ClientConfigurationImmutableSetsTest {
             // when adding to this immutable set
             // or it can be a new hard copied set
         }
-        Assert.assertEquals(size, instances.size());
+        Assertions.assertEquals(size, instances.size());
     }
 
     @Test
@@ -79,6 +79,6 @@ public class ClientConfigurationImmutableSetsTest {
             // when adding to this immutable set
             // or it can be a new hard copied set
         }
-        Assert.assertEquals(size, properties.size());
+        Assertions.assertEquals(size, properties.size());
     }
 }

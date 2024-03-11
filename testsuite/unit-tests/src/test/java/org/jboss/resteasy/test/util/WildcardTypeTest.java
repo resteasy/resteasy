@@ -9,8 +9,8 @@ import jakarta.ws.rs.core.GenericType;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.util.Types;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Util tests
@@ -33,7 +33,7 @@ public class WildcardTypeTest {
         Type t = pt.getActualTypeArguments()[0];
         printTypes(t);
         Class<?> rawType = Types.getRawType(t);
-        Assert.assertEquals(String.class, rawType);
+        Assertions.assertEquals(String.class, rawType);
     }
 
     /**
@@ -48,7 +48,7 @@ public class WildcardTypeTest {
         Type t = pt.getActualTypeArguments()[0];
         printTypes(t);
         Class<?> rawType = Types.getRawType(t);
-        Assert.assertEquals(Object.class, rawType);
+        Assertions.assertEquals(Object.class, rawType);
     }
 
     /**
@@ -63,7 +63,7 @@ public class WildcardTypeTest {
         Type t = pt.getActualTypeArguments()[0];
         printTypes(t);
         Class<?> rawType = Types.getRawType(t);
-        Assert.assertEquals(Object.class, rawType);
+        Assertions.assertEquals(Object.class, rawType);
     }
 
     /**
@@ -78,7 +78,7 @@ public class WildcardTypeTest {
         Type t = pt.getActualTypeArguments()[0];
         printTypes(t);
         Class<?> rawType = Types.getRawType(t);
-        Assert.assertEquals(Object.class, rawType);
+        Assertions.assertEquals(Object.class, rawType);
     }
 
     void printTypes(Type t) {

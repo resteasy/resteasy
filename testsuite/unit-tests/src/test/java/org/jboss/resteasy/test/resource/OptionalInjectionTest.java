@@ -10,9 +10,9 @@ import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.resource.resource.NotSupportedOpitionalPathParamResource;
 import org.jboss.resteasy.test.resource.resource.OptionalResource;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resource tests
@@ -24,7 +24,7 @@ public class OptionalInjectionTest {
     ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory.getInstance());
     MockHttpResponse resp = new MockHttpResponse();
 
-    @Before
+    @BeforeEach
     public void setup() {
         registry.addPerRequestResource(OptionalResource.class);
     }
@@ -32,28 +32,28 @@ public class OptionalInjectionTest {
     @Test
     public void testOptionalStringAbsent() throws Exception {
         MockHttpRequest req = createMockHttpRequest("/optional/string");
-        Assert.assertEquals("none", registry.getResourceInvoker(req).invoke(req, resp)
+        Assertions.assertEquals("none", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
     }
 
     @Test
     public void testOptionalStringPresent() throws Exception {
         MockHttpRequest req = createMockHttpRequest("/optional/string?valueQ1=88");
-        Assert.assertEquals("88", registry.getResourceInvoker(req).invoke(req, resp)
+        Assertions.assertEquals("88", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
     }
 
     @Test
     public void testOptionalHolderAbsent() throws Exception {
         MockHttpRequest req = createMockHttpRequest("/optional/holder");
-        Assert.assertEquals("none", registry.getResourceInvoker(req).invoke(req, resp)
+        Assertions.assertEquals("none", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
     }
 
     @Test
     public void testOptionalHolderPresent() throws Exception {
         MockHttpRequest req = createMockHttpRequest("/optional/holder?valueQ2=88");
-        Assert.assertEquals("88", registry.getResourceInvoker(req).invoke(req, resp)
+        Assertions.assertEquals("88", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
     }
 
@@ -63,14 +63,14 @@ public class OptionalInjectionTest {
         req.addFormHeader("notvalue", "badness");
         req.setInputStream(new ByteArrayInputStream(new byte[0]));
 
-        Assert.assertEquals("42", registry.getResourceInvoker(req).invoke(req, resp)
+        Assertions.assertEquals("42", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
     }
 
     @Test
     public void testMatrixParamAbsent() throws Exception {
         MockHttpRequest httpRequest = createMockHttpRequest("/optional/matrix", false);
-        Assert.assertEquals("42", registry
+        Assertions.assertEquals("42", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
                 .getEntity());
@@ -79,29 +79,37 @@ public class OptionalInjectionTest {
     @Test
     public void testMatrixParamPresent() throws Exception {
         MockHttpRequest httpRequest = createMockHttpRequest("/optional/matrix;valueM=24", false);
-        Assert.assertEquals("24", registry
+        Assertions.assertEquals("24", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
                 .getEntity());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testPathParamNotSupportedAndBehavedSameAsBeforeAsDiscussedInEAP7_1248() throws Exception {
-        registry.addPerRequestResource(NotSupportedOpitionalPathParamResource.class);
+        RuntimeException thrown = Assertions.assertThrows(RuntimeException.class,
+                () -> {
+                    registry.addPerRequestResource(NotSupportedOpitionalPathParamResource.class);
+                });
+        Assertions.assertTrue(thrown instanceof RuntimeException);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testPathParamNeverAbsentThrowsException() throws Exception {
-        MockHttpRequest httpRequest = createMockHttpRequest("/optional/path/");
-        registry.getResourceInvoker(httpRequest)
-                .invoke(httpRequest, resp)
-                .getEntity();
+        NotFoundException thrown = Assertions.assertThrows(NotFoundException.class,
+                () -> {
+                    MockHttpRequest httpRequest = createMockHttpRequest("/optional/path/");
+                    registry.getResourceInvoker(httpRequest)
+                            .invoke(httpRequest, resp)
+                            .getEntity();
+                });
+        Assertions.assertTrue(thrown instanceof NotFoundException);
     }
 
     @Test
     public void testHeaderParamAbsent() throws Exception {
         MockHttpRequest httpRequest = createMockHttpRequest("/optional/header");
-        Assert.assertEquals("42", registry
+        Assertions.assertEquals("42", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
                 .getEntity());
@@ -111,7 +119,7 @@ public class OptionalInjectionTest {
     public void testHeaderParamPresent() throws Exception {
         MockHttpRequest httpRequest = createMockHttpRequest("/optional/header");
         httpRequest.header("valueH", "24");
-        Assert.assertEquals("24", registry
+        Assertions.assertEquals("24", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
                 .getEntity());
@@ -120,7 +128,7 @@ public class OptionalInjectionTest {
     @Test
     public void testCookieParamAbsent() throws Exception {
         MockHttpRequest httpRequest = createMockHttpRequest("/optional/cookie");
-        Assert.assertEquals("42", registry
+        Assertions.assertEquals("42", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
                 .getEntity());
@@ -130,7 +138,7 @@ public class OptionalInjectionTest {
     public void testCookieParamPresent() throws Exception {
         MockHttpRequest httpRequest = createMockHttpRequest("/optional/cookie");
         httpRequest.cookie("valueC", "24");
-        Assert.assertEquals("24", registry
+        Assertions.assertEquals("24", registry
                 .getResourceInvoker(httpRequest)
                 .invoke(httpRequest, resp)
                 .getEntity());
@@ -141,7 +149,7 @@ public class OptionalInjectionTest {
         MockHttpRequest req = createMockHttpRequest("/optional/long", false);
         req.addFormHeader("valueF", "88");
 
-        Assert.assertEquals("88", registry.getResourceInvoker(req).invoke(req, resp)
+        Assertions.assertEquals("88", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
     }
 
@@ -149,7 +157,7 @@ public class OptionalInjectionTest {
     public void testOptionalIntAbsent() throws Exception {
         MockHttpRequest req = createMockHttpRequest("/optional/int");
 
-        Assert.assertEquals("424242", registry.getResourceInvoker(req).invoke(req, resp)
+        Assertions.assertEquals("424242", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
     }
 
@@ -157,7 +165,7 @@ public class OptionalInjectionTest {
     public void testOptionalIntPresent() throws Exception {
         MockHttpRequest req = createMockHttpRequest("/optional/int?valueQ4=88");
 
-        Assert.assertEquals("88", registry.getResourceInvoker(req).invoke(req, resp)
+        Assertions.assertEquals("88", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
     }
 
@@ -165,7 +173,7 @@ public class OptionalInjectionTest {
     public void testOptionalDoubleAbsent() throws Exception {
         MockHttpRequest req = createMockHttpRequest("/optional/double");
 
-        Assert.assertEquals("4242.0", registry.getResourceInvoker(req).invoke(req, resp)
+        Assertions.assertEquals("4242.0", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
     }
 
@@ -173,7 +181,7 @@ public class OptionalInjectionTest {
     public void testOptionalDoublePresent() throws Exception {
         MockHttpRequest req = createMockHttpRequest("/optional/double?valueQ3=88.88");
 
-        Assert.assertEquals("88.88", registry.getResourceInvoker(req).invoke(req, resp)
+        Assertions.assertEquals("88.88", registry.getResourceInvoker(req).invoke(req, resp)
                 .getEntity());
     }
 

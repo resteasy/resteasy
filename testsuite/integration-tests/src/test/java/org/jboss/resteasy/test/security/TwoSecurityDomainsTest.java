@@ -15,9 +15,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.arquillian.api.ServerSetup;
-import org.jboss.resteasy.category.ExpectedFailingOnWildFly18;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
@@ -28,12 +27,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Security
@@ -42,9 +40,8 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.21
  */
 @ServerSetup(TwoSecurityDomainsTest.SecurityDomainSetup.class)
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@Category({ ExpectedFailingOnWildFly18.class }) //WFLY-12655
 public class TwoSecurityDomainsTest {
 
     private static ResteasyClient authorizedClient;
@@ -78,7 +75,7 @@ public class TwoSecurityDomainsTest {
         return TestUtil.finishContainerPrepare(war, contextParams, BasicAuthBaseResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         // authorizedClient
         {
@@ -91,7 +88,7 @@ public class TwoSecurityDomainsTest {
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         authorizedClient.close();
     }
@@ -104,13 +101,13 @@ public class TwoSecurityDomainsTest {
     public void testOneClientTwoDeploymentsTwoSecurityDomains() throws Exception {
         Response response = authorizedClient.target(PortProviderUtil.generateURL("/secured",
                 TwoSecurityDomainsTest.class.getSimpleName() + SECURITY_DOMAIN_DEPLOYMENT_1)).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(WRONG_RESPONSE, "hello", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("hello", response.readEntity(String.class), WRONG_RESPONSE);
 
         response = authorizedClient.target(PortProviderUtil.generateURL("/secured",
                 TwoSecurityDomainsTest.class.getSimpleName() + SECURITY_DOMAIN_DEPLOYMENT_2)).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(WRONG_RESPONSE, "hello", response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("hello", response.readEntity(String.class), WRONG_RESPONSE);
     }
 
     static class SecurityDomainSetup extends AbstractUsersRolesSecurityDomainSetup {

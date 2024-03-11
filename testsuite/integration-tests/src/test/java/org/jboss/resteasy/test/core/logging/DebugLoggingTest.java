@@ -15,7 +15,7 @@ import jakarta.ws.rs.core.Response;
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -30,11 +30,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Interceptors
@@ -43,7 +43,7 @@ import org.junit.runner.RunWith;
  *                    Regression test for RESTEASY-1415 and RESTEASY-1558.
  * @tpSince RESTEasy 3.1.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup(DebugLoggingTest.DebugLoggingSetupTask.class)
 public class DebugLoggingTest {
@@ -74,12 +74,12 @@ public class DebugLoggingTest {
                 DebugLoggingWriterInterceptorCustom.class, DebugLoggingCustomReaderAndWriter.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -105,9 +105,9 @@ public class DebugLoggingTest {
         // perform request
         WebTarget base = client.target(PortProviderUtil.generateURL("/build/in", BUILD_IN));
         Response response = base.request().post(Entity.text("data"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String strResponse = response.readEntity(String.class);
-        Assert.assertEquals("Wrong response", "data", strResponse);
+        Assertions.assertEquals("data", strResponse, "Wrong response");
 
         // assert log messages after request
         MatcherAssert.assertThat("Correct body reader was not used/logged", bodyReaderStringLog.count(), greaterThan(0));
@@ -149,15 +149,17 @@ public class DebugLoggingTest {
                 DEFAULT_CONTAINER_QUALIFIER);
         WebTarget base = client.target(PortProviderUtil.generateURL("/custom", CUSTOM));
         Response response = base.request().post(Entity.entity("data", "aaa/bbb"));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String strResponse = response.readEntity(String.class);
-        Assert.assertEquals("Wrong response", "wi_datadata", strResponse);
+        Assertions.assertEquals("wi_datadata", strResponse, "Wrong response");
 
         // assert log messages after request
         MatcherAssert.assertThat("Incorrect body reader was used/logged", bodyReaderStringLog.count(), is(0));
         MatcherAssert.assertThat("Incorrect body writer was used/logged", bodyWriterStringLog.count(), is(0));
-        MatcherAssert.assertThat("Correct readerInterceptor was not used/logged", readerInterceptorLog.count(), greaterThan(0));
-        MatcherAssert.assertThat("Correct writerInterceptor was not used/logged", writerInterceptorLog.count(), greaterThan(0));
+        MatcherAssert.assertThat("Correct readerInterceptor was not used/logged", readerInterceptorLog.count(),
+                greaterThan(0));
+        MatcherAssert.assertThat("Correct writerInterceptor was not used/logged", writerInterceptorLog.count(),
+                greaterThan(0));
         MatcherAssert.assertThat("Correct body reader was not used/logged", bodyReaderCustomLog.count(), greaterThan(0));
         MatcherAssert.assertThat("Correct body writer was not used/logged", bodyWriterCustomLog.count(), greaterThan(0));
     }

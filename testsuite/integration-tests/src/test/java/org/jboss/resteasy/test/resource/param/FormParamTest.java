@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.resource.param.resource.FormParamBasicResource;
 import org.jboss.resteasy.test.resource.param.resource.FormParamEntityPrototype;
@@ -20,11 +20,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Parameters
@@ -32,14 +32,14 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for form parameters
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class FormParamTest {
     static Client client;
 
     private static final String ERROR_CODE = "Wrong response";
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();
     }
@@ -59,7 +59,7 @@ public class FormParamTest {
         return PortProviderUtil.generateURL(path, FormParamTest.class.getSimpleName());
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
         client.close();
     }
@@ -75,8 +75,8 @@ public class FormParamTest {
     public void postTest() {
         Entity entity = Entity.entity("param=" + ENCODED, MediaType.APPLICATION_FORM_URLENCODED_TYPE);
         Response response = client.target(generateURL("/form")).request().post(entity);
-        Assert.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
-        Assert.assertEquals(ERROR_CODE, response.readEntity(String.class), ENCODED);
+        Assertions.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
+        Assertions.assertEquals(response.readEntity(String.class), ENCODED, ERROR_CODE);
         response.close();
     }
 
@@ -88,8 +88,9 @@ public class FormParamTest {
     public void nonDefaultFormParamFromStringTest() {
         Entity entity = Entity.entity("default_argument=" + SENT, MediaType.APPLICATION_FORM_URLENCODED_TYPE);
         Response response = client.target(generateURL("/FormParamTest/ParamEntityWithFromString")).request().post(entity);
-        Assert.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
-        Assert.assertEquals(ERROR_CODE, "CTS_FORMPARAM:" + ENCODED, response.readEntity(String.class));
+        Assertions.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
+        Assertions.assertEquals("CTS_FORMPARAM:" + ENCODED, response.readEntity(String.class),
+                ERROR_CODE);
         response.close();
     }
 
@@ -101,8 +102,9 @@ public class FormParamTest {
     public void string() {
         Entity entity = Entity.entity("default_argument=" + SENT, MediaType.APPLICATION_FORM_URLENCODED_TYPE);
         Response response = client.target(generateURL("/FormParamTest/string")).request().post(entity);
-        Assert.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
-        Assert.assertEquals(ERROR_CODE, response.readEntity(String.class), "CTS_FORMPARAM:" + ENCODED);
+        Assertions.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
+        Assertions.assertEquals(response.readEntity(String.class), "CTS_FORMPARAM:" + ENCODED,
+                ERROR_CODE);
         response.close();
     }
 
@@ -114,8 +116,9 @@ public class FormParamTest {
     public void defaultFormParamFromSortedSetFromStringTest() {
         Response response = client.target(generateURL("/FormParamTest/SortedSetFromString")).request()
                 .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED).post(null);
-        Assert.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
-        Assert.assertEquals(ERROR_CODE, "CTS_FORMPARAM:SortedSetFromString", response.readEntity(String.class));
+        Assertions.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
+        Assertions.assertEquals("CTS_FORMPARAM:SortedSetFromString", response.readEntity(String.class),
+                ERROR_CODE);
         response.close();
     }
 
@@ -127,8 +130,8 @@ public class FormParamTest {
     public void defaultListConstructor() {
         Response response = client.target(generateURL("/FormParamTest/ListConstructor")).request()
                 .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED).post(null);
-        Assert.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
-        Assert.assertEquals(ERROR_CODE, "CTS_FORMPARAM:ListConstructor", response.readEntity(String.class));
+        Assertions.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
+        Assertions.assertEquals("CTS_FORMPARAM:ListConstructor", response.readEntity(String.class), ERROR_CODE);
         response.close();
     }
 
@@ -140,8 +143,8 @@ public class FormParamTest {
     public void testIllegalArgumentException() {
         Response response = client.target(generateURL("/FormParamTest/IllegalArgumentException")).request()
                 .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED).post(null);
-        Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
-        Assert.assertTrue(ERROR_CODE, response.readEntity(String.class).isEmpty());
+        Assertions.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
+        Assertions.assertTrue(response.readEntity(String.class).isEmpty(), ERROR_CODE);
         response.close();
     }
 

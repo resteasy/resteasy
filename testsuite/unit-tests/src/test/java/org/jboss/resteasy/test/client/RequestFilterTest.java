@@ -20,10 +20,10 @@ import org.jboss.resteasy.test.client.resource.RequestFilterAnnotation;
 import org.jboss.resteasy.test.client.resource.RequestFilterGetEntity;
 import org.jboss.resteasy.test.client.resource.RequestFilterSetEntity;
 import org.jboss.resteasy.test.client.resource.RequestFilterThrowCustomException;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -37,13 +37,13 @@ public class RequestFilterTest {
     static Client client;
     String dummyUrl = "dummyUrl";
 
-    @BeforeClass
+    @BeforeAll
     public static void setupClient() {
         client = ClientBuilder.newClient();
 
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -59,7 +59,8 @@ public class RequestFilterTest {
     public void AbortWithTest() {
         Response response = client.target(dummyUrl).register(RequestFilterAbortWith.class).request().get();
         String str = response.readEntity(String.class);
-        Assert.assertEquals("String returned from ClientRequest filter doesn't contain the expected value", "42", str);
+        Assertions.assertEquals("42", str,
+                "String returned from ClientRequest filter doesn't contain the expected value");
     }
 
     /**
@@ -79,8 +80,8 @@ public class RequestFilterTest {
         String str = response.readEntity(String.class);
         logger.info("The locale from the response: " + str);
         logger.info("The expected locale: " + Locale.CANADA_FRENCH.toString());
-        Assert.assertTrue("String returned from ClientRequest filter doesn't contain accepted locale",
-                str.contains(Locale.CANADA_FRENCH.toString()));
+        Assertions.assertTrue(str.contains(Locale.CANADA_FRENCH.toString()),
+                "String returned from ClientRequest filter doesn't contain accepted locale");
 
     }
 
@@ -99,7 +100,7 @@ public class RequestFilterTest {
                 "test".getBytes()), MediaType.WILDCARD_TYPE);
         Response response = client.target(dummyUrl).register(RequestFilterSetEntity.class)
                 .register(RequestFilterGetEntity.class).request().post(entity);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
     }
 
     /**
@@ -114,8 +115,8 @@ public class RequestFilterTest {
         Entity<String> post = Entity.entity("test", MediaType.WILDCARD_TYPE,
                 RequestFilterAnnotation.class.getAnnotations());
         Response response = client.target(dummyUrl).register(RequestFilterAnnotation.class).request().post(post);
-        Assert.assertEquals("The response doesn't contain the expexted provider name",
-                Provider.class.getName(), response.readEntity(String.class));
+        Assertions.assertEquals(Provider.class.getName(), response.readEntity(String.class),
+                "The response doesn't contain the expexted provider name");
     }
 
     /**
@@ -129,9 +130,9 @@ public class RequestFilterTest {
     public void ThrowCustomExceptionFilterTest() {
         try {
             client.target(dummyUrl).register(RequestFilterThrowCustomException.class).request().get();
-            Assert.fail();
+            Assertions.fail();
         } catch (ProcessingException pe) {
-            Assert.assertEquals(ClientCustomException.class, pe.getCause().getClass());
+            Assertions.assertEquals(ClientCustomException.class, pe.getCause().getClass());
         }
     }
 }

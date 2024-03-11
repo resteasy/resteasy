@@ -12,7 +12,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultCharsetOverwriteContentTypeCharsetUTF16;
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultCharsetOverwriteContentTypeCharsetUTF8;
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF16;
@@ -26,11 +26,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Multipart provider
@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-723
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class InputPartDefaultCharsetOverwriteTest {
     private static final org.jboss.logging.Logger logger = org.jboss.logging.Logger
@@ -68,12 +68,12 @@ public class InputPartDefaultCharsetOverwriteTest {
     public static final byte[] abc_utf16_bytes = abc_utf16.getBytes(Charset.forName("utf-16"));
     public static final String TEXT_PLAIN_WITH_CHARSET_UTF_8 = normalize("text/plain; charset=UTF-8");
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
         client = null;
@@ -367,13 +367,15 @@ public class InputPartDefaultCharsetOverwriteTest {
         String responseStr = response.readEntity(String.class);
         logger.info("status: " + response.getStatus());
         logger.info("client response: " + responseStr);
-        Assert.assertEquals("Status code is wrong.", 20, response.getStatus() / 10);
+        Assertions.assertEquals(20, response.getStatus() / 10,
+                "Status code is wrong.");
         String[] answer = responseStr.split(":");
-        Assert.assertEquals("Wrong size of response", 3, answer.length);
+        Assertions.assertEquals(3, answer.length, "Wrong size of response");
         logger.info("response charset: " + answer[0]);
-        Assert.assertEquals("Response has wrong encoding", normalize(expectedContentType), normalize(answer[0]));
-        Assert.assertEquals("Wrong content of response", expectedBody, answer[1]);
-        Assert.assertEquals("Wrong content of response", expectedBody, answer[2]);
+        Assertions.assertEquals(normalize(expectedContentType), normalize(answer[0]),
+                "Response has wrong encoding");
+        Assertions.assertEquals(expectedBody, answer[1], "Wrong content of response");
+        Assertions.assertEquals(expectedBody, answer[2], "Wrong content of response");
         response.close();
     }
 
@@ -396,13 +398,14 @@ public class InputPartDefaultCharsetOverwriteTest {
         String responseStr = response.readEntity(String.class);
         logger.info("status: " + response.getStatus());
         logger.info("client response: " + responseStr);
-        Assert.assertEquals("Status code is wrong.", 20, response.getStatus() / 10);
+        Assertions.assertEquals(20, response.getStatus() / 10, "Status code is wrong.");
         String[] answer = responseStr.split(":");
-        Assert.assertEquals("Wrong size of response", 3, answer.length);
+        Assertions.assertEquals(3, answer.length, "Wrong size of response");
         logger.info("response charset: " + answer[0]);
-        Assert.assertEquals("Response has wrong encoding", normalize(expectedContentType), normalize(answer[0]));
-        Assert.assertEquals("Wrong content of response", expectedBody, answer[1]);
-        Assert.assertEquals("Wrong content of response", expectedBody, answer[2]);
+        Assertions.assertEquals(normalize(expectedContentType), normalize(answer[0]),
+                "Response has wrong encoding");
+        Assertions.assertEquals(expectedBody, answer[1], "Wrong content of response");
+        Assertions.assertEquals(expectedBody, answer[2], "Wrong content of response");
     }
 
     private static void doTestNoContentTypeInMessageContentTypeInQuery(
@@ -426,13 +429,14 @@ public class InputPartDefaultCharsetOverwriteTest {
         String responseStr = response.readEntity(String.class);
         logger.info("status: " + response.getStatus());
         logger.info("client response: " + responseStr);
-        Assert.assertEquals("Status code is wrong.", 20, response.getStatus() / 10);
+        Assertions.assertEquals(20, response.getStatus() / 10, "Status code is wrong.");
         String[] answer = responseStr.split(":");
-        Assert.assertEquals("Wrong size of response", 3, answer.length);
+        Assertions.assertEquals(3, answer.length, "Wrong size of response");
         logger.info("response charset: " + answer[0]);
-        Assert.assertEquals("Response has wrong encoding", normalize(expectedContentType), normalize(answer[0]));
-        Assert.assertEquals("Wrong content of response", expectedBody, answer[1]);
-        Assert.assertEquals("Wrong content of response", expectedBody, answer[2]);
+        Assertions.assertEquals(normalize(expectedContentType), normalize(answer[0]),
+                "Response has wrong encoding");
+        Assertions.assertEquals(expectedBody, answer[1], "Wrong content of response");
+        Assertions.assertEquals(expectedBody, answer[2], "Wrong content of response");
     }
 
     private static void doTestWithContentTypeInMessageContentTypeInQuery(
@@ -458,13 +462,14 @@ public class InputPartDefaultCharsetOverwriteTest {
         String responseStr = response.readEntity(String.class);
         logger.info("status: " + response.getStatus());
         logger.info("client response: " + responseStr);
-        Assert.assertEquals("Status code is wrong.", 20, response.getStatus() / 10);
+        Assertions.assertEquals(20, response.getStatus() / 10, "Status code is wrong.");
         String[] answer = responseStr.split(":");
-        Assert.assertEquals("Wrong size of response", 3, answer.length);
+        Assertions.assertEquals(3, answer.length, "Wrong size of response");
         logger.info("response charset: " + answer[0]);
-        Assert.assertEquals("Response has wrong encoding", normalize(expectedContentType), normalize(answer[0]));
-        Assert.assertEquals("Wrong content of response", expectedBody, answer[1]);
-        Assert.assertEquals("Wrong content of response", expectedBody, answer[2]);
+        Assertions.assertEquals(normalize(expectedContentType), normalize(answer[0]),
+                "Response has wrong encoding");
+        Assertions.assertEquals(expectedBody, answer[1], "Wrong content of response");
+        Assertions.assertEquals(expectedBody, answer[2], "Wrong content of response");
     }
 
     private static void doTestByteArray(byte[] body, String contentType, Class<?> deployment) throws Exception {
@@ -481,13 +486,13 @@ public class InputPartDefaultCharsetOverwriteTest {
         Response response = client.target(PortProviderUtil.generateURL("/bytes/", deployment.getSimpleName())).request()
                 .post(Entity.entity(buf, "multipart/form-data; boundary=boo"));
         logger.info("status: " + response.getStatus());
-        Assert.assertEquals("Status code is wrong.", 20, response.getStatus() / 10);
+        Assertions.assertEquals(20, response.getStatus() / 10, "Status code is wrong.");
         byte[] b = response.readEntity(byte[].class);
         for (int i = 0; i < body.length; i++) {
             StringBuilder errorMessage = new StringBuilder();
             errorMessage.append("Wrong content of response: ").append(i).append(": ").append(body[i]).append(" != ")
                     .append(b[i]);
-            Assert.assertEquals(errorMessage.toString(), body[i], b[i]);
+            Assertions.assertEquals(body[i], b[i], errorMessage.toString());
         }
     }
 

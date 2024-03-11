@@ -9,10 +9,10 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:kanovotn@redhat.com">Katerina Novotna</a>
@@ -27,14 +27,14 @@ public class WebTargetUnitTest {
     static WebTarget base;
     static WebTarget created;
 
-    @BeforeClass
+    @BeforeAll
     public static void setupClient() {
         client = ClientBuilder.newClient();
         base = client.target(generateURL("/") + "users/{username}");
         created = base.path("{id}");
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -55,8 +55,8 @@ public class WebTargetUnitTest {
         // The asserted string "a%2520%253F%2F*%2F/%2Fb%2F" is made from "a%20%3F/*//b// as:
         // % stands for %25 in hex ASCII
         // / stands for %2F in hex ASCII
-        Assert.assertEquals("The parameters were not treated as decoded correctly",
-                generateURL("/") + "users/a%2520%253F%2F*%2F/%2Fb%2F", result);
+        Assertions.assertEquals(generateURL("/") + "users/a%2520%253F%2F*%2F/%2Fb%2F", result,
+                "The parameters were not treated as decoded correctly");
     }
 
     /**
@@ -72,8 +72,8 @@ public class WebTargetUnitTest {
 
         String result = created.resolveTemplateFromEncoded("username", usernameEncoded)
                 .resolveTemplateFromEncoded("id", idEncoded).getUri().toString();
-        Assert.assertEquals("The parameters were not treated as encoded correctly",
-                generateURL("/") + "users/a%20%3F%2F*%2F/%2Fb%2F", result);
+        Assertions.assertEquals(generateURL("/") + "users/a%20%3F%2F*%2F/%2Fb%2F", result,
+                "The parameters were not treated as encoded correctly");
     }
 
     /**
@@ -89,7 +89,7 @@ public class WebTargetUnitTest {
         Map<String, Object> values = new HashMap<String, Object>();
 
         WebTarget result = created.resolveTemplates(values);
-        Assert.assertEquals(result, created);
+        Assertions.assertEquals(result, created);
     }
 
     /**
@@ -98,9 +98,13 @@ public class WebTargetUnitTest {
      * @tpPassCrit NullPointerException is raised
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testResolveTemplateNull() {
-        created.resolveTemplate(null, null);
+        NullPointerException thrown = Assertions.assertThrows(NullPointerException.class,
+                () -> {
+                    created.resolveTemplate(null, null);
+                });
+        Assertions.assertTrue(thrown instanceof NullPointerException);
     }
 
     /**
@@ -109,11 +113,15 @@ public class WebTargetUnitTest {
      * @tpPassCrit NullPointerException is raised
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testQueryParamNullPointer() {
-        WebTarget created = base.path("param/{id}");
+        NullPointerException thrown = Assertions.assertThrows(NullPointerException.class,
+                () -> {
+                    WebTarget created = base.path("param/{id}");
 
-        created.queryParam("q", "a", null, "b", null);
+                    created.queryParam("q", "a", null, "b", null);
+                });
+        Assertions.assertTrue(thrown instanceof NullPointerException);
     }
 
     /**
@@ -121,10 +129,14 @@ public class WebTargetUnitTest {
      * @tpPassCrit NullPointerException is raised
      * @tpSince RESTEasy 3.0.16
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testMatrixParamNullPointer() {
-        WebTarget created = base.path("matrix/{id}");
+        NullPointerException thrown = Assertions.assertThrows(NullPointerException.class,
+                () -> {
+                    WebTarget created = base.path("matrix/{id}");
 
-        created.matrixParam("m1", "a", null, "b", null);
+                    created.matrixParam("m1", "a", null, "b", null);
+                });
+        Assertions.assertTrue(thrown instanceof NullPointerException);
     }
 }

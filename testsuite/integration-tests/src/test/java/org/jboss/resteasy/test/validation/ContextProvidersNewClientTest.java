@@ -12,7 +12,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.validation.resource.ContextProvidersCustomer;
@@ -26,10 +26,10 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Multipart provider
@@ -37,7 +37,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-1119. Test for new client.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ContextProvidersNewClientTest extends ContextProvidersTestBase {
     @Deployment
@@ -58,12 +58,12 @@ public class ContextProvidersNewClientTest extends ContextProvidersTestBase {
 
     protected Client client;
 
-    @Before
+    @BeforeEach
     public void beforeTest() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void afterTest() {
         client.close();
     }
@@ -72,7 +72,7 @@ public class ContextProvidersNewClientTest extends ContextProvidersTestBase {
     <T> T get(String path, Class<T> clazz, Annotation[] annotations) throws Exception {
         WebTarget target = client.target(generateURL(path));
         ClientResponse response = (ClientResponse) target.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         T entity = response.readEntity(clazz, null, annotations);
         return entity;
     }
@@ -83,7 +83,7 @@ public class ContextProvidersNewClientTest extends ContextProvidersTestBase {
         WebTarget target = client.target(generateURL(path));
         Entity<S> entity = Entity.entity(payload, mediaType, annotations);
         ClientResponse response = (ClientResponse) target.request().post(entity);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         T result;
         if (genericReturnType != null) {
             result = response.readEntity(returnType, genericReturnType, null);

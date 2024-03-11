@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.security.testjar;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
@@ -10,7 +10,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.BasicAuthentication;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * Main class used in jar that is meant to test ClientConfigProvider functionality regarding Bearer token.
@@ -29,7 +29,7 @@ public class ClientConfigBearerTokenTestMainClass {
             Response response = client.target(dummyUrl)
                     .register(ClientConfigProviderBearerTokenAbortFilter.class).request().get();
             // ClientConfigProviderBearerTokenAbortFilter will succeed since bearer token was used from ClientConfigProvider
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             result = String.valueOf(response.getStatus());
         }
 
@@ -41,7 +41,7 @@ public class ClientConfigBearerTokenTestMainClass {
                 fail("ClientConfigProviderBearerTokenAbortFilter should fail since we have set different credentials");
             } catch (Exception e) {
                 // bearer token was not added because Basic auth was used, therefore assertion failed with the below message
-                String assertionErrorMessage = "The request authorization header is not correct expected:<B[earer myTestToken]> but was:<B[asic YmlsbDpwYXNzd29yZDE=]>";
+                String assertionErrorMessage = "The request authorization header is not correct ==> expected: <Bearer myTestToken> but was: <Basic YmlsbDpwYXNzd29yZDE=>";
                 assertTrue(e.getMessage().contains(assertionErrorMessage));
                 client.close();
                 result = "Credentials set by user had precedence";

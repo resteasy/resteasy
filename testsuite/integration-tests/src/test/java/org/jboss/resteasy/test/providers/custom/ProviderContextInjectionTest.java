@@ -6,7 +6,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.providers.custom.resource.ProviderContextInjectionAnyExceptionExceptionMapper;
 import org.jboss.resteasy.test.providers.custom.resource.ProviderContextInjectionEnumContextResolver;
 import org.jboss.resteasy.test.providers.custom.resource.ProviderContextInjectionEnumProvider;
@@ -17,24 +17,24 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ProviderContextInjectionTest {
 
     static Client client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();
     }
@@ -53,7 +53,7 @@ public class ProviderContextInjectionTest {
         return PortProviderUtil.generateURL(path, ProviderContextInjectionTest.class.getSimpleName());
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -68,7 +68,7 @@ public class ProviderContextInjectionTest {
     @Test
     public void isRegisteredWildCardContextResolverTest() {
         Response response = client.target(generateURL("/resource/isRegisteredContextResolver")).request().get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
     }
 
@@ -81,7 +81,7 @@ public class ProviderContextInjectionTest {
     @Test
     public void testExceptionMapped() {
         Response response = client.target(generateURL("/resource/isRegisteredRuntimeExceptionMapper")).request().get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         response.close();
     }
 

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.api.validation.ViolationReport;
@@ -25,11 +25,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Response
@@ -37,7 +37,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-945
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class PathSuppressionTest {
 
@@ -54,12 +54,12 @@ public class PathSuppressionTest {
         return TestUtil.finishContainerPrepare(war, contextParam, PathSuppressionResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -138,22 +138,23 @@ public class PathSuppressionTest {
         Response response = client.target(PortProviderUtil.generateURL("/all/a/b/c", "RESTEASY-945-" + suppress)).request()
                 .get();
         Object header = response.getHeaderString(Validation.VALIDATION_HEADER);
-        Assert.assertTrue("Header has wrong format", header instanceof String);
-        Assert.assertTrue("Header has wrong format", Boolean.valueOf(String.class.cast(header)));
+        Assertions.assertTrue(header instanceof String, "Header has wrong format");
+        Assertions.assertTrue(Boolean.valueOf(String.class.cast(header)), "Header has wrong format");
         String answer = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         ViolationReport report = new ViolationReport(new ResteasyViolationExceptionImpl(String.class.cast(answer)));
         TestUtil.countViolations(report, 2, 1, 1, 0);
         ResteasyConstraintViolation violation = TestUtil.getViolationByPath(report.getPropertyViolations(), fieldPath);
-        Assert.assertNotNull("Expected validation error is not in response", violation);
+        Assertions.assertNotNull(violation, "Expected validation error is not in response");
         violation = TestUtil.getViolationByPath(report.getPropertyViolations(), propertyPath);
-        Assert.assertNotNull("Expected validation error is not in response", violation);
+        Assertions.assertNotNull(violation, "Expected validation error is not in response");
         violation = report.getClassViolations().iterator().next();
-        Assert.assertEquals("Expected validation error is not in response", classPath, violation.getPath());
+        Assertions.assertEquals(classPath, violation.getPath(),
+                "Expected validation error is not in response");
 
         violation = report.getParameterViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response: " + parameterPaths,
-                Arrays.asList(parameterPaths).contains(violation.getPath()));
+        Assertions.assertTrue(Arrays.asList(parameterPaths).contains(violation.getPath()),
+                "Expected validation error is not in response: " + parameterPaths);
         response.close();
     }
 
@@ -161,14 +162,14 @@ public class PathSuppressionTest {
         Response response = client.target(PortProviderUtil.generateURL("/all/aa/bbb/cccc", "RESTEASY-945-" + suppress))
                 .request().get();
         Object header = response.getHeaderString(Validation.VALIDATION_HEADER);
-        Assert.assertTrue("Header has wrong format", header instanceof String);
-        Assert.assertTrue("Header has wrong format", Boolean.valueOf(String.class.cast(header)));
+        Assertions.assertTrue(header instanceof String, "Header has wrong format");
+        Assertions.assertTrue(Boolean.valueOf(String.class.cast(header)), "Header has wrong format");
         String answer = response.readEntity(String.class);
         assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         ViolationReport report = new ViolationReport(new ResteasyViolationExceptionImpl(String.class.cast(answer)));
         TestUtil.countViolations(report, 0, 0, 0, 1);
         ResteasyConstraintViolation violation = report.getReturnValueViolations().iterator().next();
-        Assert.assertEquals("Expected validation error is not in response", returnValuePath, violation.getPath());
+        Assertions.assertEquals(returnValuePath, violation.getPath(), "Expected validation error is not in response");
         response.close();
     }
 }

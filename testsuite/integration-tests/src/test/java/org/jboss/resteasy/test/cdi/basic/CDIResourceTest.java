@@ -14,7 +14,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.ContainerConstants;
@@ -28,10 +28,10 @@ import org.jboss.resteasy.utils.TimeoutUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter CDI
@@ -42,7 +42,7 @@ import org.junit.runner.RunWith;
  *          Jul 27, 2018 Test rewritten to generated the needed archive and write it to disk.
  */
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class CDIResourceTest {
 
@@ -60,7 +60,7 @@ public class CDIResourceTest {
         exportFile = new File(FileSystems.getDefault().getPath("target").toFile(), WAR_NAME);
     }
 
-    @Before
+    @BeforeEach
     public void createArchive() {
         WebArchive war = ShrinkWrap.create(WebArchive.class, WAR_NAME);
         war.addClasses(FooResource.class,
@@ -111,10 +111,10 @@ public class CDIResourceTest {
                 }
                 Thread.sleep(TimeoutUtil.adjust(500));
             }
-            Assert.assertTrue("Deployment was not deployed", succesInDeploy);
+            Assertions.assertTrue(succesInDeploy, "Deployment was not deployed");
             logger.info("status: " + response.getStatusLine().getStatusCode());
             printResponse(response);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatusLine().getStatusCode());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatusLine().getStatusCode());
             get.releaseConnection();
 
             // Redeploy RESTEASY-1082.war
@@ -134,11 +134,11 @@ public class CDIResourceTest {
                 }
                 Thread.sleep(TimeoutUtil.adjust(500));
             }
-            Assert.assertTrue("Deployment was not deployed", succesInDeploy);
+            Assertions.assertTrue(succesInDeploy, "Deployment was not deployed");
 
             logger.info("status: " + response.getStatusLine().getStatusCode());
             printResponse(response);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatusLine().getStatusCode());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatusLine().getStatusCode());
         } finally {
             Files.delete(to);
         }

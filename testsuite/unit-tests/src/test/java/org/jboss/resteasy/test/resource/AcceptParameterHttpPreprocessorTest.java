@@ -11,8 +11,8 @@ import org.jboss.resteasy.core.AcceptParameterHttpPreprocessor;
 import org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resource tests
@@ -43,8 +43,8 @@ public class AcceptParameterHttpPreprocessorTest {
 
         List<MediaType> list = request.getHttpHeaders().getAcceptableMediaTypes();
 
-        Assert.assertEquals("Incorrect acceptable list size", 1, list.size());
-        Assert.assertEquals("Incorrect media type extracted", mediaType, list.get(0));
+        Assertions.assertEquals(1, list.size(), "Incorrect acceptable list size");
+        Assertions.assertEquals(mediaType, list.get(0), "Incorrect media type extracted");
     }
 
     /**
@@ -71,7 +71,7 @@ public class AcceptParameterHttpPreprocessorTest {
         List<MediaType> actual = request.getHttpHeaders().getAcceptableMediaTypes();
 
         for (MediaType expect : expected) {
-            Assert.assertTrue(actual.contains(expect));
+            Assertions.assertTrue(actual.contains(expect));
         }
 
     }
@@ -98,7 +98,7 @@ public class AcceptParameterHttpPreprocessorTest {
         List<MediaType> actual = request.getHttpHeaders().getAcceptableMediaTypes();
 
         for (MediaType expect : expected) {
-            Assert.assertTrue(actual.contains(expect));
+            Assertions.assertTrue(actual.contains(expect));
         }
     }
 
@@ -130,6 +130,6 @@ public class AcceptParameterHttpPreprocessorTest {
 
         List<MediaType> actual = request.getHttpHeaders().getAcceptableMediaTypes();
 
-        Assert.assertEquals("Incorrect acceptable media type extracted", expected, actual);
+        Assertions.assertEquals(expected, actual, "Incorrect acceptable media type extracted");
     }
 }

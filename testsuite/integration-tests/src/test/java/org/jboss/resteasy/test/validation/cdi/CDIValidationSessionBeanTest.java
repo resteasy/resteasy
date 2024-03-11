@@ -1,13 +1,13 @@
 package org.jboss.resteasy.test.validation.cdi;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Invocation;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -21,9 +21,9 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Response
@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-1008
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class CDIValidationSessionBeanTest {
     @Deployment
@@ -60,8 +60,8 @@ public class CDIValidationSessionBeanTest {
         ResteasyViolationException e = new ResteasyViolationExceptionImpl(String.class.cast(answer));
         TestUtil.countViolations(e, 1, 0, 0, 1, 0);
         ResteasyConstraintViolation cv = e.getParameterViolations().iterator().next();
-        Assert.assertTrue("Expected validation error is not in response",
-                cv.getMessage().equals("must be greater than or equal to 7"));
+        Assertions.assertTrue(cv.getMessage().equals("must be greater than or equal to 7"),
+                "Expected validation error is not in response");
         client.close();
     }
 }

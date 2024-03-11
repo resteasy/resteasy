@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.util;
 
 import org.jboss.resteasy.util.CaseInsensitiveMap;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Util tests
@@ -20,6 +20,7 @@ public class CaseInsentiveMapTest {
     public void testMap() {
         CaseInsensitiveMap<String> map = new CaseInsensitiveMap<>();
         map.add("Cache-Control", "nocache");
-        Assert.assertEquals("key of map should be case insensitive", "nocache", map.getFirst("caChe-CONTROL"));
+        Assertions.assertEquals("nocache", map.getFirst("caChe-CONTROL"),
+                "key of map should be case insensitive");
     }
 }

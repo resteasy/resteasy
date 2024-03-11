@@ -18,17 +18,17 @@ import jakarta.ws.rs.client.WebTarget;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.client.resource.ClientProviderStringEntityProviderReader;
 import org.jboss.resteasy.test.client.resource.ClientProviderStringEntityProviderWriter;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @author <a href="mailto:kanovotn@redhat.com">Katerina Novotna</a>
@@ -40,13 +40,13 @@ import org.junit.runner.RunWith;
  *                    its own pre-packaged providers when either could handle the same request."
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ClientProviderTest extends ClientTestBase {
 
     static Client client;
 
-    @Before
+    @BeforeEach
     public void before() {
         client = ClientBuilder.newClient();
     }
@@ -58,7 +58,7 @@ public class ClientProviderTest extends ClientTestBase {
         return TestUtil.finishContainerPrepare(war, null, ClientProviderResource.class);
     }
 
-    @After
+    @AfterEach
     public void close() {
         client.close();
     }
@@ -102,11 +102,11 @@ public class ClientProviderTest extends ClientTestBase {
     public void applicationDefinedMessageBodyReaderTest() {
         WebTarget base = client.target(generateURL("/") + "get");
         String result = base.register(ClientProviderStringEntityProviderReader.class).request().get(String.class);
-        Assert.assertEquals("Application defined provider reader: OK", result);
+        Assertions.assertEquals("Application defined provider reader: OK", result);
 
         base = client.target(generateURL("/") + "get");
         result = base.request().get(String.class);
-        Assert.assertEquals("OK", result);
+        Assertions.assertEquals("OK", result);
     }
 
     /**
@@ -120,11 +120,11 @@ public class ClientProviderTest extends ClientTestBase {
         WebTarget base = client.target(generateURL("/") + "post");
         String result = base.register(ClientProviderStringEntityProviderWriter.class).request().post(Entity.text("test"),
                 String.class);
-        Assert.assertEquals("Application defined provider writer: text/plain[Content-Type=text/plain]", result);
+        Assertions.assertEquals("Application defined provider writer: text/plain[Content-Type=text/plain]", result);
 
         base = client.target(generateURL("/") + "post");
         result = base.request().post(Entity.text("test"), String.class);
-        Assert.assertEquals("test", result);
+        Assertions.assertEquals("test", result);
     }
 
 }

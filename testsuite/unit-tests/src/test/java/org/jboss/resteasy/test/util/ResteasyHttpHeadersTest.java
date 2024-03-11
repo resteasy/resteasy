@@ -10,8 +10,8 @@ import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Util tests
@@ -30,12 +30,12 @@ public class ResteasyHttpHeadersTest {
         ResteasyHttpHeaders httpHeaders = new ResteasyHttpHeaders(modifiableMultivaluedMap);
         try {
             httpHeaders.getRequestHeader("Hello").add("Interdit");
-            Assert.fail("getRequestHeader() must return a read-only List");
+            Assertions.fail("getRequestHeader() must return a read-only List");
         } catch (UnsupportedOperationException e) {
         }
         try {
             httpHeaders.getRequestHeaders().clear();
-            Assert.fail("getRequestHeaders() must return a read-only Map");
+            Assertions.fail("getRequestHeaders() must return a read-only Map");
         } catch (UnsupportedOperationException e) {
         }
     }

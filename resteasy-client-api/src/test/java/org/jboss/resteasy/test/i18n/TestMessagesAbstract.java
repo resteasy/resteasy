@@ -7,8 +7,8 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -35,13 +35,13 @@ public abstract class TestMessagesAbstract extends TestMessagesParent {
             return;
         }
 
-        Assert.assertEquals(getExpected(BASE + "00", "canOnlySetOneLinkHeaderParam", "abc", "xyz"),
+        Assertions.assertEquals(getExpected(BASE + "00", "canOnlySetOneLinkHeaderParam", "abc", "xyz"),
                 Messages.MESSAGES.canOnlySetOneLinkHeaderParam("abc", "xyz"));
-        Assert.assertEquals(getExpected(BASE + "20", "couldNotCreateURL", "xx", "yy", "zz"),
+        Assertions.assertEquals(getExpected(BASE + "20", "couldNotCreateURL", "xx", "yy", "zz"),
                 Messages.MESSAGES.couldNotCreateURL("xx", "yy", "zz"));
-        Assert.assertEquals(getExpected(BASE + "40", "doesNotSpecifyTypeParameter", var),
+        Assertions.assertEquals(getExpected(BASE + "40", "doesNotSpecifyTypeParameter", var),
                 Messages.MESSAGES.doesNotSpecifyTypeParameter(var));
-        Assert.assertEquals(getExpected(BASE + "60", "failedToBufferAbortedResponseNoWriter", mediaType, "class"),
+        Assertions.assertEquals(getExpected(BASE + "60", "failedToBufferAbortedResponseNoWriter", mediaType, "class"),
                 Messages.MESSAGES.failedToBufferAbortedResponseNoWriter(mediaType, "class"));
     }
 

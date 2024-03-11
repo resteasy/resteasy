@@ -18,12 +18,13 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.CompletionStageRxInvokerProvider;
 import org.jboss.resteasy.test.rx.resource.RxScheduledExecutorService;
 import org.jboss.resteasy.test.rx.resource.SimpleResourceImpl;
+import org.jboss.resteasy.test.rx.resource.TRACE;
 import org.jboss.resteasy.test.rx.resource.TestException;
 import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
 import org.jboss.resteasy.test.rx.resource.Thing;
@@ -31,12 +32,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Reactive classes
@@ -47,7 +47,7 @@ import org.junit.runner.RunWith;
  *          The server creates and returns objects synchronously.
  *          The client uses an AsyncClientHttpEngine
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class RxCompletionStageAsyncClientAsyncTest {
 
@@ -74,6 +74,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         war.addClass(Thing.class);
         war.addClass(RxScheduledExecutorService.class);
         war.addClass(TestException.class);
+        war.addClass(TRACE.class);
         return TestUtil.finishContainerPrepare(war, null, SimpleResourceImpl.class, TestExceptionMapper.class);
     }
 
@@ -82,12 +83,12 @@ public class RxCompletionStageAsyncClientAsyncTest {
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         client = ((ResteasyClientBuilder) (ClientBuilder.newBuilder())).useAsyncHttpEngine().build();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
     }
@@ -98,7 +99,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/get/string")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<Response> completionStage = invoker.get();
-        Assert.assertEquals("x", completionStage.toCompletableFuture().get().readEntity(String.class));
+        Assertions.assertEquals("x", completionStage.toCompletableFuture().get().readEntity(String.class));
     }
 
     @Test
@@ -106,7 +107,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/get/string")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<String> completionStage = invoker.get(String.class);
-        Assert.assertEquals("x", completionStage.toCompletableFuture().get());
+        Assertions.assertEquals("x", completionStage.toCompletableFuture().get());
     }
 
     @Test
@@ -114,7 +115,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/get/thing")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<Thing> completionStage = invoker.get(Thing.class);
-        Assert.assertEquals(new Thing("x"), completionStage.toCompletableFuture().get());
+        Assertions.assertEquals(new Thing("x"), completionStage.toCompletableFuture().get());
     }
 
     @Test
@@ -122,7 +123,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/get/thing/list")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<List<Thing>> completionStage = invoker.get(LIST_OF_THING);
-        Assert.assertEquals(xThingList, completionStage.toCompletableFuture().get());
+        Assertions.assertEquals(xThingList, completionStage.toCompletableFuture().get());
     }
 
     @Test
@@ -130,7 +131,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/put/string")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<Response> completionStage = invoker.put(aEntity);
-        Assert.assertEquals("a", completionStage.toCompletableFuture().get().readEntity(String.class));
+        Assertions.assertEquals("a", completionStage.toCompletableFuture().get().readEntity(String.class));
     }
 
     @Test
@@ -138,7 +139,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/put/thing")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<Thing> completionStage = invoker.put(aEntity, Thing.class);
-        Assert.assertEquals(new Thing("a"), completionStage.toCompletableFuture().get());
+        Assertions.assertEquals(new Thing("a"), completionStage.toCompletableFuture().get());
     }
 
     @Test
@@ -146,7 +147,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/put/thing/list")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<List<Thing>> completionStage = invoker.put(aEntity, LIST_OF_THING);
-        Assert.assertEquals(aThingList, completionStage.toCompletableFuture().get());
+        Assertions.assertEquals(aThingList, completionStage.toCompletableFuture().get());
     }
 
     @Test
@@ -154,7 +155,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/post/string")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<Response> completionStage = invoker.post(aEntity);
-        Assert.assertEquals("a", completionStage.toCompletableFuture().get().readEntity(String.class));
+        Assertions.assertEquals("a", completionStage.toCompletableFuture().get().readEntity(String.class));
     }
 
     @Test
@@ -162,7 +163,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/post/thing")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<Thing> completionStage = invoker.post(aEntity, Thing.class);
-        Assert.assertEquals(new Thing("a"), completionStage.toCompletableFuture().get());
+        Assertions.assertEquals(new Thing("a"), completionStage.toCompletableFuture().get());
     }
 
     @Test
@@ -170,7 +171,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/post/thing/list")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<List<Thing>> completionStage = invoker.post(aEntity, LIST_OF_THING);
-        Assert.assertEquals(aThingList, completionStage.toCompletableFuture().get());
+        Assertions.assertEquals(aThingList, completionStage.toCompletableFuture().get());
     }
 
     @Test
@@ -178,7 +179,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/delete/string")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<Response> completionStage = invoker.delete();
-        Assert.assertEquals("x", completionStage.toCompletableFuture().get().readEntity(String.class));
+        Assertions.assertEquals("x", completionStage.toCompletableFuture().get().readEntity(String.class));
     }
 
     @Test
@@ -186,7 +187,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/delete/thing")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<Thing> completionStage = invoker.delete(Thing.class);
-        Assert.assertEquals(new Thing("x"), completionStage.toCompletableFuture().get());
+        Assertions.assertEquals(new Thing("x"), completionStage.toCompletableFuture().get());
     }
 
     @Test
@@ -194,7 +195,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/delete/thing/list")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<List<Thing>> completionStage = invoker.delete(LIST_OF_THING);
-        Assert.assertEquals(xThingList, completionStage.toCompletableFuture().get());
+        Assertions.assertEquals(xThingList, completionStage.toCompletableFuture().get());
     }
 
     @Test
@@ -203,7 +204,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<Response> completionStage = invoker.head();
         Response response = completionStage.toCompletableFuture().get();
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -211,7 +212,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/options/string")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<Response> completionStage = invoker.options();
-        Assert.assertEquals("x", completionStage.toCompletableFuture().get().readEntity(String.class));
+        Assertions.assertEquals("x", completionStage.toCompletableFuture().get().readEntity(String.class));
     }
 
     @Test
@@ -219,7 +220,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/options/thing")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<Thing> completionStage = invoker.options(Thing.class);
-        Assert.assertEquals(new Thing("x"), completionStage.toCompletableFuture().get());
+        Assertions.assertEquals(new Thing("x"), completionStage.toCompletableFuture().get());
     }
 
     @Test
@@ -227,34 +228,31 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/options/thing/list")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<List<Thing>> completionStage = invoker.options(LIST_OF_THING);
-        Assert.assertEquals(xThingList, completionStage.toCompletableFuture().get());
+        Assertions.assertEquals(xThingList, completionStage.toCompletableFuture().get());
     }
 
     @Test
-    @Ignore // TRACE is disabled by default in Wildfly
     public void testTrace() throws Exception {
         CompletionStageRxInvoker invoker = client.target(generateURL("/trace/string")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<Response> completionStage = invoker.trace();
-        Assert.assertEquals("x", completionStage.toCompletableFuture().get().readEntity(String.class));
+        Assertions.assertEquals("x", completionStage.toCompletableFuture().get().readEntity(String.class));
     }
 
     @Test
-    @Ignore // TRACE is disabled by default in Wildfly
     public void testTraceThing() throws Exception {
         CompletionStageRxInvoker invoker = client.target(generateURL("/trace/thing")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<Thing> completionStage = invoker.trace(Thing.class);
-        Assert.assertEquals(new Thing("x"), completionStage.toCompletableFuture().get());
+        Assertions.assertEquals(new Thing("x"), completionStage.toCompletableFuture().get());
     }
 
     @Test
-    @Ignore // TRACE is disabled by default in Wildfly
     public void testTraceThingList() throws Exception {
         CompletionStageRxInvoker invoker = client.target(generateURL("/trace/thing/list")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<List<Thing>> completionStage = invoker.trace(LIST_OF_THING);
-        Assert.assertEquals(xThingList, completionStage.toCompletableFuture().get());
+        Assertions.assertEquals(xThingList, completionStage.toCompletableFuture().get());
     }
 
     @Test
@@ -262,7 +260,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/get/string")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<Response> completionStage = invoker.method("GET");
-        Assert.assertEquals("x", completionStage.toCompletableFuture().get().readEntity(String.class));
+        Assertions.assertEquals("x", completionStage.toCompletableFuture().get().readEntity(String.class));
     }
 
     @Test
@@ -270,7 +268,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/get/thing")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<Thing> completionStage = invoker.method("GET", Thing.class);
-        Assert.assertEquals(new Thing("x"), completionStage.toCompletableFuture().get());
+        Assertions.assertEquals(new Thing("x"), completionStage.toCompletableFuture().get());
     }
 
     @Test
@@ -278,7 +276,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/get/thing/list")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<List<Thing>> completionStage = invoker.method("GET", LIST_OF_THING);
-        Assert.assertEquals(xThingList, completionStage.toCompletableFuture().get());
+        Assertions.assertEquals(xThingList, completionStage.toCompletableFuture().get());
     }
 
     @Test
@@ -286,7 +284,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/post/string")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<Response> completionStage = invoker.method("POST", aEntity);
-        Assert.assertEquals("a", completionStage.toCompletableFuture().get().readEntity(String.class));
+        Assertions.assertEquals("a", completionStage.toCompletableFuture().get().readEntity(String.class));
     }
 
     @Test
@@ -294,7 +292,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/post/thing")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<Thing> completionStage = invoker.method("POST", aEntity, Thing.class);
-        Assert.assertEquals(new Thing("a"), completionStage.toCompletableFuture().get());
+        Assertions.assertEquals(new Thing("a"), completionStage.toCompletableFuture().get());
     }
 
     @Test
@@ -302,7 +300,7 @@ public class RxCompletionStageAsyncClientAsyncTest {
         CompletionStageRxInvoker invoker = client.target(generateURL("/post/thing/list")).request()
                 .rx(CompletionStageRxInvoker.class);
         CompletionStage<List<Thing>> completionStage = invoker.method("POST", aEntity, LIST_OF_THING);
-        Assert.assertEquals(aThingList, completionStage.toCompletableFuture().get());
+        Assertions.assertEquals(aThingList, completionStage.toCompletableFuture().get());
     }
 
     @Test
@@ -312,8 +310,8 @@ public class RxCompletionStageAsyncClientAsyncTest {
             CompletionStageRxInvoker invoker = client.target(generateURL("/get/string")).request()
                     .rx(CompletionStageRxInvoker.class);
             CompletionStage<Response> completionStage = invoker.get();
-            Assert.assertFalse(RxScheduledExecutorService.used);
-            Assert.assertEquals("x", completionStage.toCompletableFuture().get().readEntity(String.class));
+            Assertions.assertFalse(RxScheduledExecutorService.used);
+            Assertions.assertEquals("x", completionStage.toCompletableFuture().get().readEntity(String.class));
         }
 
         {
@@ -324,8 +322,8 @@ public class RxCompletionStageAsyncClientAsyncTest {
             CompletionStageRxInvoker invoker = client.target(generateURL("/get/string")).request()
                     .rx(CompletionStageRxInvoker.class);
             CompletionStage<Response> completionStage = invoker.get();
-            Assert.assertTrue(RxScheduledExecutorService.used);
-            Assert.assertEquals("x", completionStage.toCompletableFuture().get().readEntity(String.class));
+            Assertions.assertTrue(RxScheduledExecutorService.used);
+            Assertions.assertEquals("x", completionStage.toCompletableFuture().get().readEntity(String.class));
             client.close();
         }
     }
@@ -342,8 +340,8 @@ public class RxCompletionStageAsyncClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertTrue(value.get().getMessage().contains("500"));
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertTrue(value.get().getMessage().contains("500"));
     }
 
     @Test
@@ -358,8 +356,8 @@ public class RxCompletionStageAsyncClientAsyncTest {
             latch.countDown();
         });
         boolean waitResult = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
-        Assert.assertTrue(value.get().getMessage().contains("444"));
+        Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
+        Assertions.assertTrue(value.get().getMessage().contains("444"));
     }
 
     @Test
@@ -381,9 +379,9 @@ public class RxCompletionStageAsyncClientAsyncTest {
         list.add(completionStage1.toCompletableFuture().get().readEntity(String.class));
         list.add(completionStage2.toCompletableFuture().get().readEntity(String.class));
 
-        Assert.assertEquals(2, list.size());
+        Assertions.assertEquals(2, list.size());
         for (int i = 0; i < 2; i++) {
-            Assert.assertEquals("x", list.get(i));
+            Assertions.assertEquals("x", list.get(i));
         }
         client1.close();
         client2.close();
@@ -404,9 +402,9 @@ public class RxCompletionStageAsyncClientAsyncTest {
         list.add(completionStage1.toCompletableFuture().get().readEntity(String.class));
         list.add(completionStage2.toCompletableFuture().get().readEntity(String.class));
 
-        Assert.assertEquals(2, list.size());
+        Assertions.assertEquals(2, list.size());
         for (int i = 0; i < 2; i++) {
-            Assert.assertEquals("x", list.get(i));
+            Assertions.assertEquals("x", list.get(i));
         }
     }
 
@@ -422,9 +420,9 @@ public class RxCompletionStageAsyncClientAsyncTest {
         list.add(completionStage1.toCompletableFuture().get().readEntity(String.class));
         list.add(completionStage2.toCompletableFuture().get().readEntity(String.class));
 
-        Assert.assertEquals(2, list.size());
+        Assertions.assertEquals(2, list.size());
         for (int i = 0; i < 2; i++) {
-            Assert.assertEquals("x", list.get(i));
+            Assertions.assertEquals("x", list.get(i));
         }
     }
 }

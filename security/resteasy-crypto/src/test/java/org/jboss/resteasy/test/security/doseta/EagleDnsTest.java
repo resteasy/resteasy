@@ -8,8 +8,8 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 
 import org.jboss.logging.Logger;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import se.unlogic.eagledns.EagleDNS;
 
@@ -47,8 +47,8 @@ public class EagleDnsTest {
         log.info("Check domain: " + domain);
         Attributes attrs1 = dnsContext.getAttributes(domain, new String[] { "TXT" });
         log.info("Attributes size: " + attrs1.size());
-        Assert.assertTrue(attrs1 != null);
-        Assert.assertTrue(attrs1.size() > 0);
+        Assertions.assertTrue(attrs1 != null);
+        Assertions.assertTrue(attrs1.size() > 0);
         javax.naming.directory.Attribute txtrecord = attrs1.get("txt");
         log.info("TEXT RECORD: " + txtrecord.get());
     }

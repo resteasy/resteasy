@@ -13,7 +13,7 @@ import jakarta.ws.rs.core.Response;
 import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.logging.Logger;
@@ -44,12 +44,12 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter CDI
@@ -58,7 +58,7 @@ import org.junit.runner.RunWith;
  *                    JAX-RS resource into an MDB.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup(JmsTestQueueSetupTask.class)
 public class MDBInjectionTest {
@@ -97,17 +97,17 @@ public class MDBInjectionTest {
     @ArquillianResource
     URI baseUri;
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
 
-    @Before
+    @BeforeEach
     public void preparePersistenceTest() throws Exception {
         log.trace("Dumping old records.");
         WebTarget base = client.target(baseUri.resolve("empty/"));
@@ -130,15 +130,15 @@ public class MDBInjectionTest {
         Response response = base.request().post(Entity.entity(book, Constants.MEDIA_TYPE_TEST_XML));
         log.trace("status: " + response.getStatus());
         log.trace(response.readEntity(String.class));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
 
         // Verify that the received book title is the one that was sent.
         base = client.target(baseUri.resolve("mdb/consumeMessage/"));
         response = base.request().get();
         log.trace("status: " + response.getStatus());
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong response", title, response.readEntity(String.class));
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(title, response.readEntity(String.class), "Wrong response");
         response.close();
     }
 }

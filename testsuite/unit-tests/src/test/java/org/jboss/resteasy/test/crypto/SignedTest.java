@@ -28,9 +28,9 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.security.DerUtils;
 import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.utils.TestUtil;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Crypto
@@ -57,7 +57,7 @@ public class SignedTest {
         pythonPath = new StringBuilder().append(base).append("SignedPython.txt").toString();
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         Security.addProvider(new BouncyCastleProvider());
         InputStream certIs = new FileInputStream(certPemPath);
@@ -142,10 +142,11 @@ public class SignedTest {
         SMIMESigned signed = new SMIMESigned(mm);
 
         SignerInformationStore signers = signed.getSignerInfos();
-        Assert.assertEquals("Wrong count of signers", 1, signers.size());
+        Assertions.assertEquals(1, signers.size(), "Wrong count of signers");
         SignerInformation signer = signers.getSigners().iterator().next();
-        Assert.assertTrue("Unsuccessful verification of signer",
-                signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider("BC").build(cert.getPublicKey())));
+        Assertions.assertTrue(
+                signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider("BC").build(cert.getPublicKey())),
+                "Unsuccessful verification of signer");
     }
 
     /**

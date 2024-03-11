@@ -22,9 +22,10 @@ import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
@@ -50,9 +51,9 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Multipart provider
@@ -62,7 +63,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.16
  */
 @SuppressWarnings("deprecation")
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ContextProvidersTest {
 
@@ -117,9 +118,9 @@ public class ContextProvidersTest {
 
             // Get parts by name.
             ContextProvidersCustomer c = entity.getFormDataPart("bill", ContextProvidersCustomer.class, null);
-            Assert.assertEquals("Wrong response", "Bill", c.getName());
+            Assertions.assertEquals("Bill", c.getName(), "Wrong response");
             String s = entity.getFormDataPart("bob", String.class, null);
-            Assert.assertEquals("Wrong response", "Bob", s);
+            Assertions.assertEquals("Bob", s, "Wrong response");
 
             // Iterate over list of parts.
             for (Map.Entry<String, List<InputPart>> formDataEntry : entity.getFormDataMap().entrySet()) {
@@ -127,15 +128,15 @@ public class ContextProvidersTest {
                 for (InputPart inputPart : formDataEntry.getValue()) {
                     if (MediaType.APPLICATION_XML_TYPE.equals(inputPart.getMediaType())) {
                         c = inputPart.getBody(ContextProvidersCustomer.class, null);
-                        Assert.assertEquals("Wrong response", "Bill", c.getName());
+                        Assertions.assertEquals("Bill", c.getName(), "Wrong response");
                     } else {
                         s = inputPart.getBody(String.class, null);
-                        Assert.assertEquals("Wrong response", "Bob", s);
+                        Assertions.assertEquals("Bob", s, "Wrong response");
                     }
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+            Assertions.fail(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119", e));
         }
     }
 
@@ -159,14 +160,14 @@ public class ContextProvidersTest {
                 InputPart inputPart = it.next();
                 if (MediaType.APPLICATION_XML_TYPE.equals(inputPart.getMediaType())) {
                     ContextProvidersCustomer c = inputPart.getBody(ContextProvidersCustomer.class, null);
-                    Assert.assertEquals("Wrong response", "Bill", c.getName());
+                    Assertions.assertEquals("Bill", c.getName(), "Wrong response");
                 } else {
                     String s = inputPart.getBody(String.class, null);
-                    Assert.assertEquals("Wrong response", "Bob", s);
+                    Assertions.assertEquals("Bob", s, "Wrong response");
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+            Assertions.fail(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119", e));
         }
     }
 
@@ -191,11 +192,11 @@ public class ContextProvidersTest {
                 InputPart inputPart = it.next();
                 customers.add(inputPart.getBody(ContextProvidersCustomer.class, null).getName());
             }
-            Assert.assertEquals("Wrong count of customers from response", 2, customers.size());
-            Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
-            Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
+            Assertions.assertEquals(2, customers.size(), "Wrong count of customers from response");
+            MatcherAssert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
+            MatcherAssert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
         } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+            Assertions.fail(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119", e));
         }
     }
 
@@ -215,9 +216,9 @@ public class ContextProvidersTest {
 
             // Get parts by name.
             ContextProvidersCustomer c = entity.getFormDataPart("bill", ContextProvidersCustomer.class, null);
-            Assert.assertEquals("Wrong response", "Bill", c.getName());
+            Assertions.assertEquals("Bill", c.getName(), "Wrong response");
             c = entity.getFormDataPart("bob", ContextProvidersCustomer.class, null);
-            Assert.assertEquals("Wrong response", "Bob", c.getName());
+            Assertions.assertEquals("Bob", c.getName(), "Wrong response");
 
             // Iterate over map of parts.
             Set<String> customers = new HashSet<>();
@@ -226,11 +227,11 @@ public class ContextProvidersTest {
                     customers.add(inputPart.getBody(ContextProvidersCustomer.class, null).getName());
                 }
             }
-            Assert.assertEquals("Wrong count of customers from response", 2, customers.size());
-            Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
-            Assert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
+            Assertions.assertEquals(2, customers.size(), "Wrong count of customers from response");
+            MatcherAssert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
+            MatcherAssert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
         } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+            Assertions.fail(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119", e));
         }
     }
 
@@ -251,20 +252,20 @@ public class ContextProvidersTest {
             // Iterate over map of parts.
             Map<String, InputPart> map = entity.getRelatedMap();
             Set<String> keys = map.keySet();
-            Assert.assertEquals(2, keys.size());
-            Assert.assertEquals("Wrong count of keys from response", 2, keys.size());
-            Assert.assertTrue(keys.contains("bill"));
-            Assert.assertTrue(keys.contains("bob"));
-            Assert.assertThat("Missing key from response", keys, hasItems("bill"));
-            Assert.assertThat("Missing key from response", keys, hasItems("bob"));
+            Assertions.assertEquals(2, keys.size());
+            Assertions.assertEquals(2, keys.size(), "Wrong count of keys from response");
+            Assertions.assertTrue(keys.contains("bill"));
+            Assertions.assertTrue(keys.contains("bob"));
+            MatcherAssert.assertThat("Missing key from response", keys, hasItems("bill"));
+            MatcherAssert.assertThat("Missing key from response", keys, hasItems("bob"));
             Set<String> parts = new HashSet<>();
             for (InputPart inputPart : map.values()) {
                 parts.add(inputPart.getBody(String.class, null));
             }
-            Assert.assertThat("Received customers list do not contain all items", parts, hasItems("Bill"));
-            Assert.assertThat("Received customers list do not contain all items", parts, hasItems("Bob"));
+            MatcherAssert.assertThat("Received customers list do not contain all items", parts, hasItems("Bill"));
+            MatcherAssert.assertThat("Received customers list do not contain all items", parts, hasItems("Bob"));
         } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+            Assertions.fail(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119", e));
         }
     }
 
@@ -283,17 +284,17 @@ public class ContextProvidersTest {
         annotations[0] = MULTIPART_FORM;
         ContextProvidersCustomerForm form = get("/get/multipartform", ContextProvidersCustomerForm.class, annotations);
         ContextProvidersCustomer customer = form.getCustomer();
-        Assert.assertEquals("Wrong response", "Bill", customer.getName());
+        Assertions.assertEquals("Bill", customer.getName(), "Wrong response");
 
         ContextProvidersCustomerFormNewAnnotationOnField form2 = get("/get/multipartform2",
                 ContextProvidersCustomerFormNewAnnotationOnField.class, annotations);
         customer = form.getCustomer();
-        Assert.assertEquals("Wrong response", "Bill", customer.getName());
+        Assertions.assertEquals("Bill", customer.getName(), "Wrong response");
 
         ContextProvidersCustomerFormNewAnnotationOnSetter form3 = get("/get/multipartform3",
                 ContextProvidersCustomerFormNewAnnotationOnSetter.class, annotations);
         customer = form.getCustomer();
-        Assert.assertEquals("Wrong response", "Bill", customer.getName());
+        Assertions.assertEquals("Bill", customer.getName(), "Wrong response");
     }
 
     /**
@@ -310,7 +311,7 @@ public class ContextProvidersTest {
         Annotation[] annotations = new Annotation[1];
         annotations[0] = XOP_WITH_MULTIPART_RELATED;
         ContextProvidersXop xop = get("/get/xop", ContextProvidersXop.class, annotations);
-        Assert.assertEquals("Wrong response", "goodbye world", new String(xop.getBytes()));
+        Assertions.assertEquals("goodbye world", new String(xop.getBytes()), "Wrong response");
     }
 
     /**
@@ -332,9 +333,9 @@ public class ContextProvidersTest {
         annotations[0] = PART_TYPE_APPLICATION_XML;
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
         names = post("/post/mixed", output, MULTIPART_MIXED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-        Assert.assertEquals(2, names.size());
-        Assert.assertTrue(names.contains(new ContextProvidersName("Bill")));
-        Assert.assertTrue(names.contains(new ContextProvidersName("Bob")));
+        Assertions.assertEquals(2, names.size());
+        Assertions.assertTrue(names.contains(new ContextProvidersName("Bill")));
+        Assertions.assertTrue(names.contains(new ContextProvidersName("Bob")));
     }
 
     /**
@@ -357,10 +358,11 @@ public class ContextProvidersTest {
         annotations[0] = PART_TYPE_APPLICATION_XML;
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
         names = post("/post/form", output, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-        Assert.assertEquals("Wrong count of customers from response", 2, names.size());
-        Assert.assertThat("Received customers list do not contain all items", names,
+        Assertions.assertEquals(2, names.size(), "Wrong count of customers from response");
+        MatcherAssert.assertThat("Received customers list do not contain all items", names,
                 hasItems(new ContextProvidersName("Bill")));
-        Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
+        MatcherAssert.assertThat("Received customers list do not contain all items", names,
+                hasItems(new ContextProvidersName("Bob")));
     }
 
     /**
@@ -382,10 +384,11 @@ public class ContextProvidersTest {
         annotations[0] = PART_TYPE_APPLICATION_XML;
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
         names = post("/post/list", customers, MULTIPART_MIXED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-        Assert.assertEquals("Wrong count of customers from response", 2, names.size());
-        Assert.assertThat("Received customers list do not contain all items", names,
+        Assertions.assertEquals(2, names.size(), "Wrong count of customers from response");
+        MatcherAssert.assertThat("Received customers list do not contain all items", names,
                 hasItems(new ContextProvidersName("Bill")));
-        Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
+        MatcherAssert.assertThat("Received customers list do not contain all items", names,
+                hasItems(new ContextProvidersName("Bob")));
     }
 
     /**
@@ -407,10 +410,10 @@ public class ContextProvidersTest {
         annotations[0] = PART_TYPE_APPLICATION_XML;
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
         names = post("/post/map", customers, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-        Assert.assertEquals("Wrong count of customers from response", 2, names.size());
-        Assert.assertThat("Received customers list do not contain all items", names,
+        Assertions.assertEquals(2, names.size(), "Wrong count of customers from response");
+        MatcherAssert.assertThat("Received customers list do not contain all items", names,
                 hasItems(new ContextProvidersName("bill:Bill")));
-        Assert.assertThat("Received customers list do not contain all items", names,
+        MatcherAssert.assertThat("Received customers list do not contain all items", names,
                 hasItems(new ContextProvidersName("bob:Bob")));
     }
 
@@ -434,10 +437,11 @@ public class ContextProvidersTest {
         annotations[0] = PART_TYPE_APPLICATION_XML;
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
         names = post("/post/related", output, MULTIPART_RELATED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
-        Assert.assertEquals("Wrong count of customers from response", 2, names.size());
-        Assert.assertThat("Received customers list do not contain all items", names,
+        Assertions.assertEquals(2, names.size(), "Wrong count of customers from response");
+        MatcherAssert.assertThat("Received customers list do not contain all items", names,
                 hasItems(new ContextProvidersName("Bill")));
-        Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
+        MatcherAssert.assertThat("Received customers list do not contain all items", names,
+                hasItems(new ContextProvidersName("Bob")));
     }
 
     /**
@@ -457,17 +461,17 @@ public class ContextProvidersTest {
         ContextProvidersCustomerForm form = new ContextProvidersCustomerForm();
         form.setCustomer(new ContextProvidersCustomer("Bill"));
         String name = post("/post/multipartform", form, MULTIPART_FORM_DATA, String.class, null, annotations);
-        Assert.assertEquals("Wrong response", "Bill", name);
+        Assertions.assertEquals("Bill", name, "Wrong response");
 
         ContextProvidersCustomerFormNewAnnotationOnField form2 = new ContextProvidersCustomerFormNewAnnotationOnField();
         form2.setCustomer(new ContextProvidersCustomer("Bill"));
         name = post("/post/multipartform2", form2, MULTIPART_FORM_DATA, String.class, null, annotations);
-        Assert.assertEquals("Wrong response", "Bill", name);
+        Assertions.assertEquals("Bill", name, "Wrong response");
 
         ContextProvidersCustomerFormNewAnnotationOnSetter form3 = new ContextProvidersCustomerFormNewAnnotationOnSetter();
         form3.setCustomer(new ContextProvidersCustomer("Bill"));
         name = post("/post/multipartform3", form3, MULTIPART_FORM_DATA, String.class, null, annotations);
-        Assert.assertEquals("Wrong response", "Bill", name);
+        Assertions.assertEquals("Bill", name, "Wrong response");
     }
 
     /**
@@ -485,7 +489,7 @@ public class ContextProvidersTest {
         Annotation[] annotations = new Annotation[1];
         annotations[0] = XOP_WITH_MULTIPART_RELATED;
         String s = post("/post/xop", xop, MULTIPART_RELATED, String.class, null, annotations);
-        Assert.assertEquals("Wrong response", "hello world", s);
+        Assertions.assertEquals("hello world", s, "Wrong response");
     }
 
     <T> T get(String path, Class<T> clazz) throws Exception {
@@ -497,13 +501,15 @@ public class ContextProvidersTest {
             Client client = ClientBuilder.newClient();
             WebTarget target = client.target(PortProviderUtil.generateURL(path, ContextProvidersTest.class.getSimpleName()));
             Response response = target.request().get();
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             T entity = response.readEntity(clazz, annotations);
             client.close();
             return entity;
         } catch (Exception e) {
-            throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
+            Assertions.fail(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119", e));
         }
+        // Shouldn't happen with the failure assertion above
+        return null;
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -513,7 +519,7 @@ public class ContextProvidersTest {
         WebTarget target = client.target(PortProviderUtil.generateURL(path, ContextProvidersTest.class.getSimpleName()));
         Entity<S> entity = Entity.entity(payload, mediaType, annotations);
         Response response = target.request().post(entity);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         T result = null;
         if (genericReturnType != null) {
             result = response.readEntity(new GenericType<T>(genericReturnType));

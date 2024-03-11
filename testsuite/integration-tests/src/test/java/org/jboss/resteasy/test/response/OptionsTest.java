@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.response.resource.OptionParamsResource;
@@ -18,11 +18,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Response
@@ -30,7 +30,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for RESTEASY-363
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class OptionsTest {
 
@@ -42,12 +42,12 @@ public class OptionsTest {
         return TestUtil.finishContainerPrepare(war, null, OptionParamsResource.class, OptionUsersResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -64,7 +64,7 @@ public class OptionsTest {
     public void testOptions() throws Exception {
         WebTarget base = client.target(generateURL("/params/customers/333/phonenumbers"));
         Response response = base.request().options();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
     }
 
@@ -76,42 +76,42 @@ public class OptionsTest {
     public void testMethodNotAllowed() throws Exception {
         WebTarget base = client.target(generateURL("/params/customers/333/phonenumbers"));
         Response response = base.request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
         response.close();
 
         base = client.target(generateURL("/users"));
         response = base.request().delete();
-        Assert.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
         response.close();
 
         base = client.target(generateURL("/users/53"));
         response = base.request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
         response.close();
 
         base = client.target(generateURL("/users/53/contacts"));
         response = base.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
 
         base = client.target(generateURL("/users/53/contacts"));
         response = base.request().options();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
 
         base = client.target(generateURL("/users/53/contacts"));
         response = base.request().delete();
-        Assert.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
         response.close();
 
         base = client.target(generateURL("/users/53/contacts/carl"));
         response = base.request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
 
         base = client.target(generateURL("/users/53/contacts/carl"));
         response = base.request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
         response.close();
     }
 
@@ -123,7 +123,7 @@ public class OptionsTest {
     public void testAllowHeaderOK() {
         WebTarget base = client.target(generateURL("/users/53/contacts"));
         Response response = base.request().options();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         checkOptions(response, "GET", "POST", "HEAD", "OPTIONS");
         response.close();
     }
@@ -136,21 +136,21 @@ public class OptionsTest {
     public void testAllowHeaderMethodNotAllowed() {
         WebTarget base = client.target(generateURL("/params/customers/333/phonenumbers"));
         Response response = base.request().post(Entity.text(new String()));
-        Assert.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
         checkOptions(response, "GET", "HEAD", "OPTIONS");
         response.close();
     }
 
     private void checkOptions(Response response, String... verbs) {
         String allowed = response.getHeaderString("Allow");
-        Assert.assertNotNull(allowed);
+        Assertions.assertNotNull(allowed);
         HashSet<String> vals = new HashSet<String>();
         for (String v : allowed.split(",")) {
             vals.add(v.trim());
         }
-        Assert.assertEquals(verbs.length, vals.size());
+        Assertions.assertEquals(verbs.length, vals.size());
         for (String verb : verbs) {
-            Assert.assertTrue(vals.contains(verb));
+            Assertions.assertTrue(vals.contains(verb));
         }
     }
 }

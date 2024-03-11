@@ -20,18 +20,18 @@ import jakarta.ws.rs.ext.MessageBodyWriter;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class MediaTypeNegotiationClientQualityTest {
 
@@ -73,12 +73,12 @@ public class MediaTypeNegotiationClientQualityTest {
                 NotFoundExceptionMapper.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
         client.close();
     }
@@ -93,10 +93,10 @@ public class MediaTypeNegotiationClientQualityTest {
                 "application/y;q=0.9");
         Response response = request.get();
         try {
-            Assert.assertEquals(Status.NOT_FOUND.getStatusCode(), response.getStatus());
+            Assertions.assertEquals(Status.NOT_FOUND.getStatusCode(), response.getStatus());
             MediaType mediaType = response.getMediaType();
-            Assert.assertEquals("application", mediaType.getType());
-            Assert.assertEquals("y", mediaType.getSubtype());
+            Assertions.assertEquals("application", mediaType.getType());
+            Assertions.assertEquals("y", mediaType.getSubtype());
         } finally {
             response.close();
         }

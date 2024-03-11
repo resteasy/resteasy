@@ -4,9 +4,9 @@ import java.net.URL;
 
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Gzip
@@ -16,12 +16,12 @@ import org.junit.Test;
  */
 public class NotAllowGzipOnServerAllowGzipOnClientTest extends NotAllowGzipOnServerAbstractTestBase {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         System.setProperty(PROPERTY_NAME, Boolean.TRUE.toString());
     }
 
-    @AfterClass
+    @AfterAll
     public static void clean() {
         System.clearProperty(PROPERTY_NAME);
     }

@@ -8,8 +8,8 @@ import jakarta.ws.rs.core.Response.Status;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -30,49 +30,51 @@ public abstract class TestMessagesAbstract extends TestMessagesParent {
             LOG.info(getClass() + ": " + filename + " not found.");
             return;
         }
-        Assert.assertEquals(getExpected(BASE + "000", "alwaysMarkedAtIndex0"), Messages.MESSAGES.alwaysMarkedAtIndex0());
-        Assert.assertEquals(getExpected(BASE + "005", "ambiguousInheritedAnnotations", getClass().getMethod("testLocale")),
+        Assertions.assertEquals(getExpected(BASE + "000", "alwaysMarkedAtIndex0"), Messages.MESSAGES.alwaysMarkedAtIndex0());
+        Assertions.assertEquals(getExpected(BASE + "005", "ambiguousInheritedAnnotations", getClass().getMethod("testLocale")),
                 Messages.MESSAGES.ambiguousInheritedAnnotations(getClass().getMethod("testLocale")));
-        Assert.assertEquals(getExpected(BASE + "025", "badBase64Character", 17, 29),
+        Assertions.assertEquals(getExpected(BASE + "025", "badBase64Character", 17, 29),
                 Messages.MESSAGES.badBase64Character(17, 29));
-        Assert.assertEquals(getExpected(BASE + "045", "cacheControlMaxAgeHeader", "header"),
+        Assertions.assertEquals(getExpected(BASE + "045", "cacheControlMaxAgeHeader", "header"),
                 Messages.MESSAGES.cacheControlMaxAgeHeader("header"));
-        Assert.assertEquals(getExpected(BASE + "085", "cannotHaveOffset", 17, 29, 37),
+        Assertions.assertEquals(getExpected(BASE + "085", "cannotHaveOffset", 17, 29, 37),
                 Messages.MESSAGES.cannotHaveOffset(17, 29, 37));
-        Assert.assertEquals(getExpected(BASE + "135", "classMustBeAnnotatedWithPath"),
+        Assertions.assertEquals(getExpected(BASE + "135", "classMustBeAnnotatedWithPath"),
                 Messages.MESSAGES.classMustBeAnnotatedWithPath());
-        Assert.assertEquals(getExpected(BASE + "145", "clientResponseFailureMediaType", new MediaType("xx", "yy"), getClass()),
+        Assertions.assertEquals(
+                getExpected(BASE + "145", "clientResponseFailureMediaType", new MediaType("xx", "yy"), getClass()),
                 Messages.MESSAGES.clientResponseFailureMediaType(new MediaType("xx", "yy"), getClass()));
-        Assert.assertEquals(getExpected(BASE + "150", "clientResponseFailureStatus", Status.GONE.getStatusCode(), Status.GONE),
+        Assertions.assertEquals(
+                getExpected(BASE + "150", "clientResponseFailureStatus", Status.GONE.getStatusCode(), Status.GONE),
                 Messages.MESSAGES.clientResponseFailureStatus(Status.GONE.getStatusCode(), Status.GONE));
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 getExpected(BASE + "200", "couldNotFindMessageBodyReader", getClass().getGenericSuperclass(),
                         new MediaType("xx", "yy")),
                 Messages.MESSAGES.couldNotFindMessageBodyReader(getClass().getGenericSuperclass(), new MediaType("xx", "yy")));
-        Assert.assertEquals(getExpected(BASE + "210", "couldNotFindResourceForFullPath", new URI("http://localhost")),
+        Assertions.assertEquals(getExpected(BASE + "210", "couldNotFindResourceForFullPath", new URI("http://localhost")),
                 Messages.MESSAGES.couldNotFindResourceForFullPath(new URI("http://localhost")));
-        Assert.assertEquals(getExpected(BASE + "285", "entityAlreadyRead", getClass()),
+        Assertions.assertEquals(getExpected(BASE + "285", "entityAlreadyRead", getClass()),
                 Messages.MESSAGES.entityAlreadyRead(getClass()));
-        Assert.assertEquals(getExpected(BASE + "345", "fileTooBig", 345), Messages.MESSAGES.fileTooBig(345));
-        Assert.assertEquals(getExpected(BASE + "365", "illegalHexadecimalCharacter", 'x', 3),
+        Assertions.assertEquals(getExpected(BASE + "345", "fileTooBig", 345), Messages.MESSAGES.fileTooBig(345));
+        Assertions.assertEquals(getExpected(BASE + "365", "illegalHexadecimalCharacter", 'x', 3),
                 Messages.MESSAGES.illegalHexadecimalCharacter('x', 3));
-        Assert.assertEquals(getExpected(BASE + "395", "illegalToInjectMessageBody", getClass().getMethod("testLocale")),
+        Assertions.assertEquals(getExpected(BASE + "395", "illegalToInjectMessageBody", getClass().getMethod("testLocale")),
                 Messages.MESSAGES.illegalToInjectMessageBody(getClass().getMethod("testLocale")));
-        Assert.assertEquals(getExpected(BASE + "450", "interceptorClassMustBeAnnotatedWithClass", getClass()),
+        Assertions.assertEquals(getExpected(BASE + "450", "interceptorClassMustBeAnnotatedWithClass", getClass()),
                 Messages.MESSAGES.interceptorClassMustBeAnnotatedWithClass(getClass()));
-        Assert.assertEquals(getExpected(BASE + "560", "methodNotAnnotatedWithPath"),
+        Assertions.assertEquals(getExpected(BASE + "560", "methodNotAnnotatedWithPath"),
                 Messages.MESSAGES.methodNotAnnotatedWithPath());
-        Assert.assertEquals(getExpected(BASE + "580", "mustSetLinkHeaderRelOrTitle", "class", "method"),
+        Assertions.assertEquals(getExpected(BASE + "580", "mustSetLinkHeaderRelOrTitle", "class", "method"),
                 Messages.MESSAGES.mustSetLinkHeaderRelOrTitle("class", "method"));
-        Assert.assertEquals(getExpected(BASE + "730", "qValueCannotBeGreaterThan1", "x/y;q=1.1"),
+        Assertions.assertEquals(getExpected(BASE + "730", "qValueCannotBeGreaterThan1", "x/y;q=1.1"),
                 Messages.MESSAGES.qValueCannotBeGreaterThan1("x/y;q=1.1"));
-        Assert.assertEquals(getExpected(BASE + "750", "requestMediaTypeNotUrlencoded"),
+        Assertions.assertEquals(getExpected(BASE + "750", "requestMediaTypeNotUrlencoded"),
                 Messages.MESSAGES.requestMediaTypeNotUrlencoded());
-        Assert.assertEquals(getExpected(BASE + "975", "unableToUnmarshalResponse", "abc", new Exception("unable")),
+        Assertions.assertEquals(getExpected(BASE + "975", "unableToUnmarshalResponse", "abc", new Exception("unable")),
                 Messages.MESSAGES.unableToUnmarshalResponse("abc"));
-        Assert.assertEquals(getExpected("004000", "unsupportedCollectionType", getClass()),
+        Assertions.assertEquals(getExpected("004000", "unsupportedCollectionType", getClass()),
                 Messages.MESSAGES.unsupportedCollectionType(getClass()));
-        Assert.assertEquals(getExpected("004070", "wrongPassword", "user"), Messages.MESSAGES.wrongPassword("user"));
+        Assertions.assertEquals(getExpected("004070", "wrongPassword", "user"), Messages.MESSAGES.wrongPassword("user"));
     }
 
     @Override

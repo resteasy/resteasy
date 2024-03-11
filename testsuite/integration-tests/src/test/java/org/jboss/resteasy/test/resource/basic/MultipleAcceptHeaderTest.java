@@ -8,19 +8,19 @@ import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class MultipleAcceptHeaderTest {
 
@@ -81,14 +81,14 @@ public class MultipleAcceptHeaderTest {
         String getXmlPlainMultiple();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         client = ClientBuilder.newClient();
         ResteasyWebTarget target = (ResteasyWebTarget) client.target(generateBaseUrl());
         service = target.proxy(TestInterfaceClient.class);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         client.close();
         client = null;
@@ -97,24 +97,24 @@ public class MultipleAcceptHeaderTest {
     @Test
     public void testSingleAcceptHeader() throws Exception {
         String result = service.getJson();
-        Assert.assertEquals(APPLICATION_JSON, result);
+        Assertions.assertEquals(APPLICATION_JSON, result);
     }
 
     @Test
     public void testSingleAcceptHeader2() throws Exception {
         String result = service.getXml();
-        Assert.assertEquals(APPLICATION_XML, result);
+        Assertions.assertEquals(APPLICATION_XML, result);
     }
 
     @Test
     public void testMultipleAcceptHeader() throws Exception {
         String result = service.getXmlMultiple();
-        Assert.assertEquals(APPLICATION_XML, result);
+        Assertions.assertEquals(APPLICATION_XML, result);
     }
 
     @Test
     public void testMultipleAcceptHeaderSecondHeader() throws Exception {
         String result = service.getXmlPlainMultiple();
-        Assert.assertEquals(APPLICATION_XML, result);
+        Assertions.assertEquals(APPLICATION_XML, result);
     }
 }

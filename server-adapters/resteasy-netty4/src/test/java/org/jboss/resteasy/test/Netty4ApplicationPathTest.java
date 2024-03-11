@@ -1,8 +1,5 @@
 package org.jboss.resteasy.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,7 +17,8 @@ import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Fetching root path from ApplicationPath annotation related tests.
@@ -72,9 +70,9 @@ public class Netty4ApplicationPathTest {
             client = ClientBuilder.newClient();
             String url = String.format("http://%s:%d%s", server.getHostname(), server.getPort(), path);
             Response response = client.target(url).queryParam("text", ECHO).request().get();
-            assertTrue(response.getStatus() == HttpResponseCodes.SC_OK);
+            Assertions.assertTrue(response.getStatus() == HttpResponseCodes.SC_OK);
             String msg = response.readEntity(String.class);
-            assertEquals(ECHO, msg);
+            Assertions.assertEquals(ECHO, msg);
         } finally {
             if (client != null) {
                 client.close();
@@ -104,9 +102,9 @@ public class Netty4ApplicationPathTest {
             client = ClientBuilder.newClient();
             String url = String.format("http://%s:%d%s", server.getHostname(), server.getPort(), path);
             Response response = client.target(url).queryParam("text", ECHO).request().get();
-            assertTrue(response.getStatus() == HttpResponseCodes.SC_OK);
+            Assertions.assertTrue(response.getStatus() == HttpResponseCodes.SC_OK);
             String msg = response.readEntity(String.class);
-            assertEquals(ECHO, msg);
+            Assertions.assertEquals(ECHO, msg);
         } finally {
             if (client != null) {
                 client.close();
@@ -137,9 +135,9 @@ public class Netty4ApplicationPathTest {
             client = ClientBuilder.newClient();
             String url = String.format("http://%s:%d%s", server.getHostname(), server.getPort(), path);
             Response response = client.target(url).queryParam("text", ECHO).request().get();
-            assertTrue(response.getStatus() == HttpResponseCodes.SC_OK);
+            Assertions.assertTrue(response.getStatus() == HttpResponseCodes.SC_OK);
             String msg = response.readEntity(String.class);
-            assertEquals(ECHO, msg);
+            Assertions.assertEquals(ECHO, msg);
         } finally {
             if (client != null) {
                 client.close();

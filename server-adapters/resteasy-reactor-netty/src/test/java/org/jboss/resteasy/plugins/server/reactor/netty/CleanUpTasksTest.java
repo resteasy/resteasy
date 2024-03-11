@@ -1,7 +1,5 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 
@@ -15,10 +13,10 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.util.SSLCerts;
 import org.jboss.resteasy.util.PortProvider;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 
@@ -39,7 +37,7 @@ public class CleanUpTasksTest {
      */
     private static final CountDownLatch TEST_LATCH = new CountDownLatch(1);
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         Runnable runnable = () -> TEST_LATCH.countDown();
         final SSLContext clientContext = SSLCerts.DEFAULT_TRUSTSTORE.getSslContext();
@@ -76,13 +74,13 @@ public class CleanUpTasksTest {
     public void testCleanUpTasks() {
         WebTarget target = client.target(BasicTest.generateURL("/basic"));
         String val = target.request().get(String.class);
-        assertEquals("Hello world!", val);
-        assertEquals(0, TEST_LATCH.getCount());
+        Assertions.assertEquals("Hello world!", val);
+        Assertions.assertEquals(0, TEST_LATCH.getCount());
     }
 
-    @AfterClass
+    @AfterAll
     public static void end() {
-        Assert.assertEquals(0, TEST_LATCH.getCount());
+        Assertions.assertEquals(0, TEST_LATCH.getCount());
         client.close();
         ReactorNettyContainer.stop();
     }

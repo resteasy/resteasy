@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.Response;
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.providers.atom.resource.LinkProduct;
 import org.jboss.resteasy.test.providers.atom.resource.LinkProductService;
@@ -16,11 +16,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Atom provider
@@ -28,7 +28,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Test for org.jboss.resteasy.plugins.providers.atom.Link class
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class LinkTest {
 
@@ -41,12 +41,12 @@ public class LinkTest {
         return TestUtil.finishContainerPrepare(war, null, LinkProductService.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -63,8 +63,8 @@ public class LinkTest {
     public void testRelativeLinkProductOutput() throws Exception {
         Response response = client.target(generateURL("/products/333")).request().get();
         LinkProduct product = response.readEntity(LinkProduct.class);
-        Assert.assertEquals("/LinkTest/products/333/self", product.getLinks().get(0).getHref().getPath());
-        Assert.assertEquals("/LinkTest/products", product.getLinks().get(1).getHref().getPath());
+        Assertions.assertEquals("/LinkTest/products/333/self", product.getLinks().get(0).getHref().getPath());
+        Assertions.assertEquals("/LinkTest/products", product.getLinks().get(1).getHref().getPath());
         response.close();
     }
 

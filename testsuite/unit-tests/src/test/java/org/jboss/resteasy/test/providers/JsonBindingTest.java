@@ -1,13 +1,13 @@
 package org.jboss.resteasy.test.providers;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.plugins.providers.jsonb.JsonBindingProvider;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Check when ResteasyConfiguration.class is null in JsonBindingProvider

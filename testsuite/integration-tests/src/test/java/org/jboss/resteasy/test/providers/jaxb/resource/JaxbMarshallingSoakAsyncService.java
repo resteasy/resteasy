@@ -9,7 +9,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 
 import org.jboss.resteasy.test.providers.jaxb.JaxbMarshallingSoakTest;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @Path("/mpac")
 public class JaxbMarshallingSoakAsyncService {
@@ -21,7 +21,7 @@ public class JaxbMarshallingSoakAsyncService {
 
     public void addSchedule(JaxbMarshallingSoakItem item) {
         try {
-            Assert.assertNotNull(item);
+            Assertions.assertNotNull(item);
             item.toString();
             JaxbMarshallingSoakTest.counter.incrementAndGet();
         } finally {

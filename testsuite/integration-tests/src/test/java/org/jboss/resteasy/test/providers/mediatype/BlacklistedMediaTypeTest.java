@@ -20,7 +20,7 @@ import jakarta.ws.rs.core.Response;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.security.KeyTools;
 import org.jboss.resteasy.security.smime.EnvelopedInput;
 import org.jboss.resteasy.test.crypto.resource.CryptoCertResource;
@@ -30,18 +30,18 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Blacklisted media types - RESTEASY-2198
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class BlacklistedMediaTypeTest {
 
@@ -61,7 +61,7 @@ public class BlacklistedMediaTypeTest {
         return entity;
     };
 
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception {
         client = ClientBuilder.newClient();
     }
@@ -95,7 +95,7 @@ public class BlacklistedMediaTypeTest {
         return PortProviderUtil.generateURL(path, BlacklistedMediaTypeTest.class.getSimpleName());
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         client.close();
     }
@@ -190,17 +190,18 @@ public class BlacklistedMediaTypeTest {
             Builder request = client.target(generateURL(path)).request();
             request.header("Accept", APPLICATION_SIGNED_EXCHANGE);
             Response response = request.get();
-            Assert.assertEquals(500, response.getStatus());
+            Assertions.assertEquals(500, response.getStatus());
             String entity = f1.apply(response);
-            Assert.assertTrue("got: " + entity, entity.startsWith(COULD_NOT_FIND_MESSAGE_BODY_WRITER));
+            Assertions.assertTrue(entity.startsWith(COULD_NOT_FIND_MESSAGE_BODY_WRITER),
+                    "got: " + entity);
         }
         {
             Builder request = client.target(generateURL(path)).request();
             request.header("Accept", APPLICATION_SIGNED_EXCHANGE_TEXT_PLAIN);
             Response response = request.get();
-            Assert.assertEquals(200, response.getStatus());
+            Assertions.assertEquals(200, response.getStatus());
             String entity = f2.apply(response);
-            Assert.assertEquals("hello", entity);
+            Assertions.assertEquals("hello", entity);
         }
     }
 

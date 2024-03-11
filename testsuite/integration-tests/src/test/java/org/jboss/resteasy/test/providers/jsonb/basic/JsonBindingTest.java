@@ -20,7 +20,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.Cat;
@@ -30,11 +30,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Json-binding provider.JAX-RS 2.1 spec (JSR-370), section 11.2.7 states,
@@ -46,7 +46,7 @@ import org.junit.runner.RunWith;
  * @tpChapter Integration test
  * @tpSince RESTEasy 4.0.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class JsonBindingTest {
 
@@ -85,12 +85,12 @@ public class JsonBindingTest {
         return TestUtil.finishContainerPrepare(war, null, JsonBindingResource.class, JsonBindingCustomRepeaterProvider.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         client = ClientBuilder.newClient();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception {
         client.close();
         client = null;
@@ -116,13 +116,14 @@ public class JsonBindingTest {
                 new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
         Cat json = target.request().post(entity, Cat.class);
         logger.info("Request entity: " + entity);
-        Assert.assertTrue("Failed to return the correct name", "Alfred".equals(json.getName()));
+        Assertions.assertTrue("Alfred".equals(json.getName()), "Failed to return the correct name");
         MatcherAssert.assertThat("Variable with JsonbTransient annotation should be transient, if JSON-B is used",
                 json.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
 
         String jsonbResponse = target.request().post(entity).readEntity(String.class);
-        Assert.assertEquals("JsonBindingProvider is not enabled",
-                "{\"color\":\"ginger\",\"sort\":\"semi-british\",\"name\":\"Alfred\",\"domesticated\":true}", jsonbResponse);
+        Assertions.assertEquals("{\"color\":\"ginger\",\"sort\":\"semi-british\",\"name\":\"Alfred\",\"domesticated\":true}",
+                jsonbResponse,
+                "JsonBindingProvider is not enabled");
     }
 
     /**
@@ -240,7 +241,7 @@ public class JsonBindingTest {
             Cat wrongObject = response.readEntity(Cat.class);
             logger.info("JSON-B parse server toString method, although JSON-B should not do that. Received object:");
             logger.info(wrongObject.toString());
-            Assert.fail("Client should throw exception because JSON-B should not be able to parse wrong data");
+            Assertions.fail("Client should throw exception because JSON-B should not be able to parse wrong data");
         } catch (Throwable e) {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));

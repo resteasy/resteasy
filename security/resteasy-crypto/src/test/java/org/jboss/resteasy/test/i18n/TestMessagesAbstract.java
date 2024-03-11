@@ -5,8 +5,8 @@ import java.util.Locale;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.security.doseta.DKIMSignature;
 import org.jboss.resteasy.security.doseta.i18n.Messages;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -28,12 +28,12 @@ public abstract class TestMessagesAbstract extends TestMessagesParent {
             return;
         }
 
-        Assert.assertEquals(getExpected(BASE + "500", "bodyHashesDoNotMatch"), Messages.MESSAGES.bodyHashesDoNotMatch());
-        Assert.assertEquals(getExpected(BASE + "525", "couldNotFindPublicKey", new DKIMSignature()),
+        Assertions.assertEquals(getExpected(BASE + "500", "bodyHashesDoNotMatch"), Messages.MESSAGES.bodyHashesDoNotMatch());
+        Assertions.assertEquals(getExpected(BASE + "525", "couldNotFindPublicKey", new DKIMSignature()),
                 Messages.MESSAGES.couldNotFindPublicKey(new DKIMSignature()));
-        Assert.assertEquals(getExpected(BASE + "540", "expectedValue", "x", "y", "z"),
+        Assertions.assertEquals(getExpected(BASE + "540", "expectedValue", "x", "y", "z"),
                 Messages.MESSAGES.expectedValue("x", "y", "z"));
-        Assert.assertEquals(getExpected(BASE + "650", "unsupportedKeyType", "xyz"),
+        Assertions.assertEquals(getExpected(BASE + "650", "unsupportedKeyType", "xyz"),
                 Messages.MESSAGES.unsupportedKeyType("xyz"));
     }
 

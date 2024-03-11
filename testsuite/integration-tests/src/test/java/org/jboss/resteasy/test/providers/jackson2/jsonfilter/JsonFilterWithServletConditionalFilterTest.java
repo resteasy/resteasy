@@ -6,7 +6,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.Jackson2Product;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.Jackson2Resource;
@@ -17,11 +17,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Jackson2 provider
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
  *                    out and not returned in the response. See http://www.baeldung.com/jackson-serialize-field-custom-criteria
  * @tpSince RESTEasy 3.1.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class JsonFilterWithServletConditionalFilterTest {
 
@@ -56,12 +56,12 @@ public class JsonFilterWithServletConditionalFilterTest {
         return PortProviderUtil.generateURL(path, JsonFilterWithServletConditionalFilterTest.class.getSimpleName());
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -75,8 +75,9 @@ public class JsonFilterWithServletConditionalFilterTest {
         WebTarget target = client.target(generateURL("/products/-1"));
         Response response = target.request().get();
         response.bufferEntity();
-        Assert.assertTrue("Conditional filter doesn't work", !response.readEntity(String.class).contains("id") &&
-                response.readEntity(String.class).contains("name"));
+        Assertions.assertTrue(!response.readEntity(String.class).contains("id") &&
+                response.readEntity(String.class).contains("name"),
+                "Conditional filter doesn't work");
     }
 
     /**
@@ -88,7 +89,8 @@ public class JsonFilterWithServletConditionalFilterTest {
         WebTarget target = client.target(generateURL("/products/333"));
         Response response = target.request().get();
         response.bufferEntity();
-        Assert.assertTrue("Conditional filter doesn't work", response.readEntity(String.class).contains("id") &&
-                response.readEntity(String.class).contains("name"));
+        Assertions.assertTrue(response.readEntity(String.class).contains("id") &&
+                response.readEntity(String.class).contains("name"),
+                "Conditional filter doesn't work");
     }
 }

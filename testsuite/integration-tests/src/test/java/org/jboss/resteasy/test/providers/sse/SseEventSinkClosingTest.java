@@ -11,17 +11,17 @@ import jakarta.ws.rs.core.Response.Status;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class SseEventSinkClosingTest {
 
@@ -38,7 +38,7 @@ public class SseEventSinkClosingTest {
         return PortProviderUtil.generateBaseUrl(SseEventSinkClosingTest.class.getSimpleName());
     }
 
-    @After
+    @AfterEach
     public void reset() throws Exception {
         Client client = ClientBuilder.newClient();
         try {
@@ -60,14 +60,14 @@ public class SseEventSinkClosingTest {
 
             try (Response response = baseTarget.path(SseEventSinkClosingTestResource.SEND_AND_CLOSE_PATH)
                     .request(MediaType.SERVER_SENT_EVENTS_TYPE).get()) {
-                Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
+                Assertions.assertEquals(Status.OK.getStatusCode(), response.getStatus());
             }
 
             try (Response response = baseTarget
                     .path(SseEventSinkClosingTestResource.GET_RESPONSE_FILTER_INVOCATION_COUNT_PATH)
                     .request(MediaType.TEXT_PLAIN_TYPE).get()) {
-                Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
-                Assert.assertEquals(Integer.valueOf(1), response.readEntity(Integer.class));
+                Assertions.assertEquals(Status.OK.getStatusCode(), response.getStatus());
+                Assertions.assertEquals(Integer.valueOf(1), response.readEntity(Integer.class));
             }
 
         } finally {
@@ -86,14 +86,14 @@ public class SseEventSinkClosingTest {
 
             try (Response response = baseTarget.path(SseEventSinkClosingTestResource.CLOSE_WITHOUT_SENDING_PATH)
                     .request(MediaType.SERVER_SENT_EVENTS_TYPE).get()) {
-                Assert.assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
+                Assertions.assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
             }
 
             try (Response response = baseTarget
                     .path(SseEventSinkClosingTestResource.GET_RESPONSE_FILTER_INVOCATION_COUNT_PATH)
                     .request(MediaType.TEXT_PLAIN_TYPE).get()) {
-                Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
-                Assert.assertEquals(Integer.valueOf(1), response.readEntity(Integer.class));
+                Assertions.assertEquals(Status.OK.getStatusCode(), response.getStatus());
+                Assertions.assertEquals(Integer.valueOf(1), response.readEntity(Integer.class));
             }
 
         } finally {

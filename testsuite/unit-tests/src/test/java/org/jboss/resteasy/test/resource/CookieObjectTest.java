@@ -16,8 +16,8 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.utils.CookieUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Resource tests
@@ -103,7 +103,7 @@ public class CookieObjectTest {
                 "", -1, null, false, false);
 
         // check round-tripping
-        Assert.assertEquals(nck26, CookieUtil.valueOf(NewCookie.class,
+        Assertions.assertEquals(nck26, CookieUtil.valueOf(NewCookie.class,
                 CookieUtil.toString(NewCookie.class, nck26)));
     }
 
@@ -128,7 +128,7 @@ public class CookieObjectTest {
                 "", -1, null, false, false);
 
         // check round-tripping
-        Assert.assertEquals(nck27, CookieUtil.valueOf(NewCookie.class,
+        Assertions.assertEquals(nck27, CookieUtil.valueOf(NewCookie.class,
                 CookieUtil.toString(NewCookie.class, nck27)));
     }
 
@@ -175,7 +175,7 @@ public class CookieObjectTest {
                 comment, maxAge, expiry, secure, httpOnly);
 
         // check round-tripping
-        Assert.assertEquals(nck28, CookieUtil.valueOf(NewCookie.class,
+        Assertions.assertEquals(nck28, CookieUtil.valueOf(NewCookie.class,
                 CookieUtil.toString(NewCookie.class, nck28)));
     }
 

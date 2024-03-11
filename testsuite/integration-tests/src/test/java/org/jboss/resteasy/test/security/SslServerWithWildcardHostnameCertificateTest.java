@@ -1,8 +1,5 @@
 package org.jboss.resteasy.test.security;
 
-import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_PORT_OFFSET_WILDCARD;
-import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_QUALIFIER_WILDCARD;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,20 +16,21 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.container.test.api.TargetsContainer;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
+import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.as.arquillian.container.ManagementClient;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.setup.SnapshotServerSetupTask;
 import org.jboss.resteasy.test.security.resource.SslResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Security
@@ -40,9 +38,22 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Tests for SSL - server secured with certificate with wildcard hostname "*host"
  * @tpSince RESTEasy 3.7.0
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@ServerSetup(SslServerWithWildcardHostnameCertificateTest.SslServerSetupTask.class)
 public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
+
+    public static class SslServerSetupTask extends SnapshotServerSetupTask {
+        @Override
+        protected void doSetup(final ManagementClient client, final String containerId) throws Exception {
+            SslTestBase.secureServer(client.getControllerClient(), SERVER_KEYSTORE_PATH);
+        }
+
+        @Override
+        protected void nonManagementCleanUp() throws Exception {
+            super.nonManagementCleanUp();
+        }
+    }
 
     private static final Logger LOG = Logger.getLogger(SslServerWithWildcardHostnameCertificateTest.class.getName());
 
@@ -50,30 +61,20 @@ public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
 
     private static final String SERVER_KEYSTORE_PATH = RESOURCES + "/server-wildcard-hostname.keystore";
     private static final String CLIENT_TRUSTSTORE_PATH = RESOURCES + "/client-wildcard-hostname.truststore";
-    private static final String URL = generateHttpsURL(SSL_CONTAINER_PORT_OFFSET_WILDCARD);
+    private static final String URL = generateHttpsURL();
 
-    @TargetsContainer(SSL_CONTAINER_QUALIFIER_WILDCARD)
-    @Deployment(managed = false, name = DEPLOYMENT_NAME)
+    @Deployment(name = DEPLOYMENT_NAME)
     public static Archive<?> createDeployment() {
         WebArchive war = TestUtil.prepareArchive(DEPLOYMENT_NAME);
         return TestUtil.finishContainerPrepare(war, null, SslResource.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void prepareTruststore()
             throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
         truststore = KeyStore.getInstance("jks");
         try (InputStream in = new FileInputStream(CLIENT_TRUSTSTORE_PATH)) {
             truststore.load(in, PASSWORD.toCharArray());
-        }
-    }
-
-    @Before
-    public void startContainer() throws Exception {
-        if (!containerController.isStarted(SSL_CONTAINER_QUALIFIER_WILDCARD)) {
-            containerController.start(SSL_CONTAINER_QUALIFIER_WILDCARD);
-            secureServer(SERVER_KEYSTORE_PATH, SSL_CONTAINER_PORT_OFFSET_WILDCARD);
-            deployer.deploy(DEPLOYMENT_NAME);
         }
     }
 
@@ -94,8 +95,8 @@ public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
 
         client = resteasyClientBuilder.trustStore(truststore).build();
         Response response = client.target(URL).request().get();
-        Assert.assertEquals("Hello World!", response.readEntity(String.class));
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("Hello World!", response.readEntity(String.class));
+        Assertions.assertEquals(200, response.getStatus());
     }
 
     /**
@@ -119,7 +120,7 @@ public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
                 String anotherURL = URL.replace("localhost", "localhost.localdomain");
                 try {
                     client.target(anotherURL).request().get();
-                    Assert.fail("ProcessingException ie expected");
+                    Assertions.fail("ProcessingException ie expected");
                 } catch (ProcessingException e) {
                     //expected
                 }
@@ -130,7 +131,7 @@ public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
                     String anotherURL = URL.replace("localhost", "localhost.localhost");
                     try {
                         client.target(anotherURL).request().get();
-                        Assert.fail("ProcessingException ie expected");
+                        Assertions.fail("ProcessingException ie expected");
                     } catch (ProcessingException e1) {
                         //expected
                     }
@@ -142,7 +143,7 @@ public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
         }
     }
 
-    @After
+    @AfterEach
     public void after() {
         client.close();
     }

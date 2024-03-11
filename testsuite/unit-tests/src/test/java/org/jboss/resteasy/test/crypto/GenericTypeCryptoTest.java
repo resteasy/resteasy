@@ -8,8 +8,8 @@ import jakarta.ws.rs.core.GenericType;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Crypto
@@ -39,6 +39,6 @@ public class GenericTypeCryptoTest {
         field.set(input, list);
         List<String> list2 = input.getEntity(stringListType, null);
         logger.info("list2: " + list2);
-        Assert.assertEquals("Wrong decryption and encryption of list", list, list2);
+        Assertions.assertEquals(list, list2, "Wrong decryption and encryption of list");
     }
 }

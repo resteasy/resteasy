@@ -17,7 +17,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.form.resource.FormResource;
@@ -31,9 +31,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Form tests
@@ -41,7 +41,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Form test with resource
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class FormResourceTest {
     private static final String SHORT_VALUE_FIELD = "shortValue";
@@ -80,13 +80,13 @@ public class FormResourceTest {
         ResteasyWebTarget target = client.target(generateURL("/myform/server"));
         Response response = target.request().get();
         int status = response.getStatus();
-        Assert.assertEquals(200, status);
+        Assertions.assertEquals(200, status);
         boolean sv1 = false;
         boolean sv2 = false;
         MultivaluedMap<String, String> form = response
                 .readEntity(new jakarta.ws.rs.core.GenericType<MultivaluedMap<String, String>>() {
                 });
-        Assert.assertEquals(2, form.get("servername").size());
+        Assertions.assertEquals(2, form.get("servername").size());
         for (String str : form.get("servername")) {
             if (str.equals("srv1")) {
                 sv1 = true;
@@ -94,8 +94,8 @@ public class FormResourceTest {
                 sv2 = true;
             }
         }
-        Assert.assertTrue(sv1);
-        Assert.assertTrue(sv2);
+        Assertions.assertTrue(sv1);
+        Assertions.assertTrue(sv2);
         client.close();
     }
 
@@ -132,12 +132,12 @@ public class FormResourceTest {
         form.setQueryParam(42);
         form.setId(42);
         MultivaluedMap<String, String> rtn = proxy.post(form);
-        Assert.assertEquals(rtn.getFirst(BOOLEAN_VALUE_FIELD), "true");
-        Assert.assertEquals(rtn.getFirst(NAME_FIELD), "This is My Name");
-        Assert.assertEquals(rtn.getFirst(DOUBLE_VALUE_FIELD), "123.45");
-        Assert.assertEquals(rtn.getFirst(LONG_VALUE_FIELD), "566780");
-        Assert.assertEquals(rtn.getFirst(INTEGER_VALUE_FIELD), "3");
-        Assert.assertEquals(rtn.getFirst(SHORT_VALUE_FIELD), "12345");
+        Assertions.assertEquals(rtn.getFirst(BOOLEAN_VALUE_FIELD), "true");
+        Assertions.assertEquals(rtn.getFirst(NAME_FIELD), "This is My Name");
+        Assertions.assertEquals(rtn.getFirst(DOUBLE_VALUE_FIELD), "123.45");
+        Assertions.assertEquals(rtn.getFirst(LONG_VALUE_FIELD), "566780");
+        Assertions.assertEquals(rtn.getFirst(INTEGER_VALUE_FIELD), "3");
+        Assertions.assertEquals(rtn.getFirst(SHORT_VALUE_FIELD), "12345");
         String str = proxy.postString(form);
         String[] params = str.split("&");
         Map<String, String> map = new HashMap<String, String>();
@@ -147,12 +147,12 @@ public class FormResourceTest {
             String value = params[i].substring(index + 1).trim().replace('+', ' ');
             map.put(key, value);
         }
-        Assert.assertEquals(map.get(BOOLEAN_VALUE_FIELD), "true");
-        Assert.assertEquals(map.get(NAME_FIELD), "This is My Name");
-        Assert.assertEquals(map.get(DOUBLE_VALUE_FIELD), "123.45");
-        Assert.assertEquals(map.get(LONG_VALUE_FIELD), "566780");
-        Assert.assertEquals(map.get(INTEGER_VALUE_FIELD), "3");
-        Assert.assertEquals(map.get(SHORT_VALUE_FIELD), "12345");
+        Assertions.assertEquals(map.get(BOOLEAN_VALUE_FIELD), "true");
+        Assertions.assertEquals(map.get(NAME_FIELD), "This is My Name");
+        Assertions.assertEquals(map.get(DOUBLE_VALUE_FIELD), "123.45");
+        Assertions.assertEquals(map.get(LONG_VALUE_FIELD), "566780");
+        Assertions.assertEquals(map.get(INTEGER_VALUE_FIELD), "3");
+        Assertions.assertEquals(map.get(SHORT_VALUE_FIELD), "12345");
         client.close();
     }
 
@@ -175,9 +175,9 @@ public class FormResourceTest {
                     .param(INTEGER_VALUE_FIELD, "3")
                     .param(SHORT_VALUE_FIELD, "12345");
             Response response = request.post(Entity.form(form));
-            Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
             String contentType = response.getHeaderString("content-type");
-            Assert.assertEquals("application/x-www-form-urlencoded", contentType);
+            Assertions.assertEquals("application/x-www-form-urlencoded", contentType);
             InputStream responseStream = response.readEntity(InputStream.class);
             in = new BufferedInputStream(responseStream);
             String formData = TestUtil.readString(in);
@@ -193,11 +193,11 @@ public class FormResourceTest {
                                     .substring(index + 1), StandardCharsets.UTF_8.name()));
                 }
             }
-            Assert.assertEquals(values.get(BOOLEAN_VALUE_FIELD), "true");
-            Assert.assertEquals(values.get(NAME_FIELD), "This is My Name");
-            Assert.assertEquals(values.get(DOUBLE_VALUE_FIELD), "123.45");
-            Assert.assertEquals(values.get(LONG_VALUE_FIELD), "566780");
-            Assert.assertEquals(values.get(INTEGER_VALUE_FIELD), "3");
+            Assertions.assertEquals(values.get(BOOLEAN_VALUE_FIELD), "true");
+            Assertions.assertEquals(values.get(NAME_FIELD), "This is My Name");
+            Assertions.assertEquals(values.get(DOUBLE_VALUE_FIELD), "123.45");
+            Assertions.assertEquals(values.get(LONG_VALUE_FIELD), "566780");
+            Assertions.assertEquals(values.get(INTEGER_VALUE_FIELD), "3");
         } finally {
             if (in != null) {
                 in.close();

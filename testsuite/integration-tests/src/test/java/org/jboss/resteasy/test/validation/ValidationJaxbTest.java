@@ -21,7 +21,7 @@ import org.hamcrest.Matchers;
 import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.api.validation.ViolationReport;
@@ -42,11 +42,11 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Validation
@@ -54,7 +54,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails Regression test for JBEAP-3280
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class ValidationJaxbTest {
     ResteasyClient client;
@@ -78,12 +78,12 @@ public class ValidationJaxbTest {
         return deploy(WAR_WITH_JACKSON2, true);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient().register(ValidationCoreFooReaderWriter.class);
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
     }
@@ -169,31 +169,32 @@ public class ValidationJaxbTest {
     public void doTest(MediaType mediaType, WebTarget target) throws Exception {
         ValidationCoreFoo foo = new ValidationCoreFoo("p");
         Response response = target.request().accept(mediaType).post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         String header = response.getHeaderString(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull("Validation header is missing", header);
-        Assert.assertTrue("Wrong value of validation header", Boolean.valueOf(header));
+        Assertions.assertNotNull(header, "Validation header is missing");
+        Assertions.assertTrue(Boolean.valueOf(header), "Wrong value of validation header");
         ViolationReport r = response.readEntity(ViolationReport.class);
         TestUtil.countViolations(r, 2, 1, 1, 0);
         ResteasyConstraintViolation violation = TestUtil.getViolationByPath(r.getPropertyViolations(), "s");
-        Assert.assertNotNull(UNEXPECTED_VALIDATION_ERROR_MSG, violation);
+        Assertions.assertNotNull(violation, UNEXPECTED_VALIDATION_ERROR_MSG);
         violation = TestUtil.getViolationByPath(r.getPropertyViolations(), "t");
-        Assert.assertNotNull(UNEXPECTED_VALIDATION_ERROR_MSG, violation);
+        Assertions.assertNotNull(violation, UNEXPECTED_VALIDATION_ERROR_MSG);
         violation = r.getClassViolations().iterator().next();
-        Assert.assertEquals(UNEXPECTED_VALIDATION_ERROR_MSG, "", violation.getPath());
+        Assertions.assertEquals("", violation.getPath(), UNEXPECTED_VALIDATION_ERROR_MSG);
         violation = r.getParameterViolations().iterator().next();
         String[] paths = new String[] { "post.arg0", "post.foo" };
-        Assert.assertTrue(UNEXPECTED_VALIDATION_ERROR_MSG + paths, Arrays.asList(paths).contains(violation.getPath()));
+        Assertions.assertTrue(Arrays.asList(paths).contains(violation.getPath()),
+                UNEXPECTED_VALIDATION_ERROR_MSG + paths);
         response.close();
     }
 
     public void doRawXMLTest(MediaType mediaType, String expected, String targetURL) throws Exception {
         ValidationCoreFoo foo = new ValidationCoreFoo("p");
         Response response = client.target(targetURL).request().accept(mediaType).post(Entity.entity(foo, "application/foo"));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         String header = response.getHeaderString(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull("Validation header is missing", header);
-        Assert.assertTrue("Wrong value of validation header", Boolean.valueOf(header));
+        Assertions.assertNotNull(header, "Validation header is missing");
+        Assertions.assertTrue(Boolean.valueOf(header), "Wrong value of validation header");
         String report = response.readEntity(String.class);
         MatcherAssert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, report, containsString(expected));
         response.close();

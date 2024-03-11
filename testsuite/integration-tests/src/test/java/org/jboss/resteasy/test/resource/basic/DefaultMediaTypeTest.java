@@ -10,9 +10,8 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.resource.basic.resource.DefaultMediaTypeCustomObject;
@@ -21,12 +20,12 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resources
@@ -35,7 +34,7 @@ import org.junit.runner.RunWith;
  *                    used in end-point.
  * @tpSince RESTEasy 3.0.16
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class DefaultMediaTypeTest {
 
@@ -50,12 +49,12 @@ public class DefaultMediaTypeTest {
         return TestUtil.finishContainerPrepare(war, null, DefaultMediaTypeResource.class);
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         client = (ResteasyClient) ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         client.close();
         client = null;
@@ -77,7 +76,7 @@ public class DefaultMediaTypeTest {
             baos.write(i);
         }
         Response response = target.request().post(Entity.entity(baos.toByteArray(), MediaType.APPLICATION_OCTET_STREAM));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String responseContent = response.readEntity(String.class);
         logger.info(String.format("Response: %s", responseContent));
     }
@@ -88,7 +87,7 @@ public class DefaultMediaTypeTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    @Category({ ExpectedFailing.class })
+    @Disabled("Test will not pass until RESTEASY-1403 is resolved")
     public void postDate() throws Exception {
         WebTarget target = client.target(generateURL("/postDate"));
         ByteArrayOutputStream baos = new ByteArrayOutputStream(5000);
@@ -96,7 +95,9 @@ public class DefaultMediaTypeTest {
             baos.write(i);
         }
         Response response = target.request().post(Entity.entity(baos.toByteArray(), MediaType.APPLICATION_OCTET_STREAM));
-        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-4725"), HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK,
+                response.getStatus(),
+                TestUtil.getErrorMessageForKnownIssue("JBEAP-4725"));
         String responseContent = response.readEntity(String.class);
         logger.info(String.format("Response: %s", responseContent));
     }
@@ -113,7 +114,7 @@ public class DefaultMediaTypeTest {
             baos.write(i);
         }
         Response response = target.request().post(Entity.entity(baos.toByteArray(), MediaType.APPLICATION_OCTET_STREAM));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String responseContent = response.readEntity(String.class);
         logger.info(String.format("Response: %s", responseContent));
     }
@@ -124,7 +125,7 @@ public class DefaultMediaTypeTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    @Category({ ExpectedFailing.class })
+    @Disabled("Test will not pass until RESTEASY-1403 is resolved")
     public void postFoo() throws Exception {
         WebTarget target = client.target(generateURL("/postFoo"));
         ByteArrayOutputStream baos = new ByteArrayOutputStream(5000);
@@ -132,7 +133,9 @@ public class DefaultMediaTypeTest {
             baos.write(i);
         }
         Response response = target.request().post(Entity.entity(baos.toByteArray(), MediaType.APPLICATION_OCTET_STREAM));
-        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-4725"), HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK,
+                response.getStatus(),
+                TestUtil.getErrorMessageForKnownIssue("JBEAP-4725"));
         String responseContent = response.readEntity(String.class);
         logger.info(String.format("Response: %s", responseContent));
     }
@@ -149,7 +152,7 @@ public class DefaultMediaTypeTest {
             baos.write(i);
         }
         Response response = target.request().post(Entity.entity(baos.toByteArray(), MediaType.APPLICATION_OCTET_STREAM));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String responseContent = response.readEntity(String.class);
         logger.info(String.format("Response: %s", responseContent));
     }
@@ -166,7 +169,9 @@ public class DefaultMediaTypeTest {
             baos.write(i);
         }
         Response response = target.request().post(Entity.entity(baos.toByteArray(), MediaType.APPLICATION_OCTET_STREAM));
-        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-2847"), HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK,
+                response.getStatus(),
+                TestUtil.getErrorMessageForKnownIssue("JBEAP-2847"));
         String responseContent = response.readEntity(String.class);
         logger.info(String.format("Response: %s", responseContent));
     }
@@ -183,7 +188,7 @@ public class DefaultMediaTypeTest {
             baos.write(i);
         }
         Response response = target.request().post(Entity.entity(baos.toByteArray(), MediaType.APPLICATION_OCTET_STREAM));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String responseContent = response.readEntity(String.class);
         logger.info(String.format("Response: %s", responseContent));
     }
@@ -200,7 +205,9 @@ public class DefaultMediaTypeTest {
             baos.write(i);
         }
         Response response = target.request().post(Entity.entity(baos.toByteArray(), MediaType.APPLICATION_OCTET_STREAM));
-        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-2847"), HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK,
+                response.getStatus(),
+                TestUtil.getErrorMessageForKnownIssue("JBEAP-2847"));
         String responseContent = response.readEntity(String.class);
         logger.info(String.format("Response: %s", responseContent));
     }

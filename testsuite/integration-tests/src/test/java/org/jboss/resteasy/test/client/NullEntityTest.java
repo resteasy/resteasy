@@ -7,16 +7,16 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.resource.NullEntityResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
  * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Regression for RESTEASY-1057
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class NullEntityTest extends ClientTestBase {
 
@@ -43,7 +43,7 @@ public class NullEntityTest extends ClientTestBase {
         ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL("/null"));
         String response = target.request().post(null, String.class);
-        Assert.assertEquals("Wrong response", "", response);
+        Assertions.assertEquals("", response, "Wrong response");
         client.close();
     }
 
@@ -56,7 +56,7 @@ public class NullEntityTest extends ClientTestBase {
         ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL("/entity"));
         String response = target.request().post(Entity.entity(null, MediaType.WILDCARD), String.class);
-        Assert.assertEquals("Wrong response", "", response);
+        Assertions.assertEquals("", response, "Wrong response");
         client.close();
     }
 
@@ -69,7 +69,7 @@ public class NullEntityTest extends ClientTestBase {
         ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL("/form"));
         String response = target.request().post(Entity.form((Form) null), String.class);
-        Assert.assertEquals("Wrong response", null, response);
+        Assertions.assertEquals(null, response, "Wrong response");
         client.close();
     }
 
@@ -82,7 +82,7 @@ public class NullEntityTest extends ClientTestBase {
         ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL("/html"));
         String response = target.request().post(Entity.html(null), String.class);
-        Assert.assertEquals("Wrong response", "", response);
+        Assertions.assertEquals("", response, "Wrong response");
         client.close();
     }
 
@@ -95,7 +95,7 @@ public class NullEntityTest extends ClientTestBase {
         ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL("/xhtml"));
         String response = target.request().post(Entity.xhtml(null), String.class);
-        Assert.assertEquals("Wrong response", "", response);
+        Assertions.assertEquals("", response, "Wrong response");
         client.close();
     }
 
@@ -108,7 +108,7 @@ public class NullEntityTest extends ClientTestBase {
         ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
         ResteasyWebTarget target = client.target(generateURL("/xml"));
         String response = target.request().post(Entity.xml(null), String.class);
-        Assert.assertEquals("Wrong response", "", response);
+        Assertions.assertEquals("", response, "Wrong response");
         client.close();
     }
 }

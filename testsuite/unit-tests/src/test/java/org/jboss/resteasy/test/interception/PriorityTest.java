@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.interception;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -38,6 +38,7 @@ import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistryImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.test.common.FakeHttpServer;
+import org.jboss.resteasy.test.common.TestServer;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter1;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter2;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter3;
@@ -47,9 +48,8 @@ import org.jboss.resteasy.test.interception.resource.PriorityClientResponseFilte
 import org.jboss.resteasy.test.interception.resource.PriorityContainerResponseFilter1;
 import org.jboss.resteasy.test.interception.resource.PriorityContainerResponseFilter2;
 import org.jboss.resteasy.test.interception.resource.PriorityContainerResponseFilter3;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Interception tests
@@ -62,8 +62,8 @@ public class PriorityTest {
 
     private static final String ERROR_MESSAGE = "RESTEasy uses filter in wrong older";
 
-    @Rule
-    public FakeHttpServer fakeHttpServer = new FakeHttpServer(FakeHttpServer::dummyMethods);
+    @TestServer
+    public FakeHttpServer fakeHttpServer;
 
     /**
      * @tpTestDetails Test for classes implements ContainerResponseFilter.
@@ -83,27 +83,27 @@ public class PriorityTest {
         containerResponseFilterRegistry.registerClass(PriorityContainerResponseFilter3.class);
 
         ContainerResponseFilter[] containerResponseFilters = containerResponseFilterRegistry.postMatch(null, null);
-        assertTrue(ERROR_MESSAGE, containerResponseFilters[0] instanceof PriorityContainerResponseFilter3);
-        assertTrue(ERROR_MESSAGE, containerResponseFilters[1] instanceof PriorityContainerResponseFilter2);
-        assertTrue(ERROR_MESSAGE, containerResponseFilters[2] instanceof PriorityContainerResponseFilter1);
+        assertTrue(containerResponseFilters[0] instanceof PriorityContainerResponseFilter3, ERROR_MESSAGE);
+        assertTrue(containerResponseFilters[1] instanceof PriorityContainerResponseFilter2, ERROR_MESSAGE);
+        assertTrue(containerResponseFilters[2] instanceof PriorityContainerResponseFilter1, ERROR_MESSAGE);
 
         clientResponseFilterRegistry.registerClass(PriorityClientResponseFilter3.class);
         clientResponseFilterRegistry.registerClass(PriorityClientResponseFilter1.class);
         clientResponseFilterRegistry.registerClass(PriorityClientResponseFilter2.class);
 
         ClientResponseFilter[] clientResponseFilters = clientResponseFilterRegistry.postMatch(null, null);
-        assertTrue(ERROR_MESSAGE, clientResponseFilters[0] instanceof PriorityClientResponseFilter3);
-        assertTrue(ERROR_MESSAGE, clientResponseFilters[1] instanceof PriorityClientResponseFilter2);
-        assertTrue(ERROR_MESSAGE, clientResponseFilters[2] instanceof PriorityClientResponseFilter1);
+        assertTrue(clientResponseFilters[0] instanceof PriorityClientResponseFilter3, ERROR_MESSAGE);
+        assertTrue(clientResponseFilters[1] instanceof PriorityClientResponseFilter2, ERROR_MESSAGE);
+        assertTrue(clientResponseFilters[2] instanceof PriorityClientResponseFilter1, ERROR_MESSAGE);
 
         clientRequestFilterRegistry.registerClass(PriorityClientRequestFilter3.class);
         clientRequestFilterRegistry.registerClass(PriorityClientRequestFilter1.class);
         clientRequestFilterRegistry.registerClass(PriorityClientRequestFilter2.class);
 
         ClientRequestFilter[] clientRequestFilters = clientRequestFilterRegistry.postMatch(null, null);
-        assertTrue(ERROR_MESSAGE, clientRequestFilters[0] instanceof PriorityClientRequestFilter1);
-        assertTrue(ERROR_MESSAGE, clientRequestFilters[1] instanceof PriorityClientRequestFilter2);
-        assertTrue(ERROR_MESSAGE, clientRequestFilters[2] instanceof PriorityClientRequestFilter3);
+        assertTrue(clientRequestFilters[0] instanceof PriorityClientRequestFilter1, ERROR_MESSAGE);
+        assertTrue(clientRequestFilters[1] instanceof PriorityClientRequestFilter2, ERROR_MESSAGE);
+        assertTrue(clientRequestFilters[2] instanceof PriorityClientRequestFilter3, ERROR_MESSAGE);
 
     }
 
@@ -121,9 +121,9 @@ public class PriorityTest {
         clientRequestFilterRegistry.registerClass(PriorityClientRequestFilter2.class, 300);
 
         ClientRequestFilter[] clientRequestFilters = clientRequestFilterRegistry.postMatch(null, null);
-        assertTrue(ERROR_MESSAGE, clientRequestFilters[0] instanceof PriorityClientRequestFilter3);
-        assertTrue(ERROR_MESSAGE, clientRequestFilters[1] instanceof PriorityClientRequestFilter1);
-        assertTrue(ERROR_MESSAGE, clientRequestFilters[2] instanceof PriorityClientRequestFilter2);
+        assertTrue(clientRequestFilters[0] instanceof PriorityClientRequestFilter3, ERROR_MESSAGE);
+        assertTrue(clientRequestFilters[1] instanceof PriorityClientRequestFilter1, ERROR_MESSAGE);
+        assertTrue(clientRequestFilters[2] instanceof PriorityClientRequestFilter2, ERROR_MESSAGE);
     }
 
     @Test
@@ -147,7 +147,7 @@ public class PriorityTest {
                 }
             }, 0);
             webTarget.request().get().close();
-            Assert.assertEquals("OK", result.toString());
+            Assertions.assertEquals("OK", result.toString());
         } finally {
             client.close();
         }
@@ -176,7 +176,7 @@ public class PriorityTest {
                 }
             }, 0);
             webTarget.request().get().close();
-            Assert.assertEquals("OK", result.toString());
+            Assertions.assertEquals("OK", result.toString());
         } finally {
             client.close();
         }
@@ -210,7 +210,7 @@ public class PriorityTest {
                 }
             }, 0);
             webTarget.request().get().readEntity(String.class);
-            Assert.assertEquals("OK", result.toString());
+            Assertions.assertEquals("OK", result.toString());
         } finally {
             client.close();
         }
@@ -239,7 +239,7 @@ public class PriorityTest {
                 }
             }, 0);
             webTarget.request().post(Entity.text("Hello")).close();
-            Assert.assertEquals("OK", result.toString());
+            Assertions.assertEquals("OK", result.toString());
         } finally {
             client.close();
         }
@@ -286,7 +286,7 @@ public class PriorityTest {
                 }
             }, 0);
             webTarget.request().get().readEntity(String.class);
-            Assert.assertEquals("OK", result.toString());
+            Assertions.assertEquals("OK", result.toString());
         } finally {
             client.close();
         }
@@ -327,7 +327,7 @@ public class PriorityTest {
                 }
             }, 0);
             webTarget.request().post(Entity.text("Hello")).close();
-            Assert.assertEquals("OK", result.toString());
+            Assertions.assertEquals("OK", result.toString());
         } finally {
             client.close();
         }
@@ -365,7 +365,7 @@ public class PriorityTest {
                 }
             }, 1);
             webTarget.request().get().close();
-            Assert.assertEquals("OK", result.toString());
+            Assertions.assertEquals("OK", result.toString());
         } finally {
             client.close();
         }
@@ -403,7 +403,7 @@ public class PriorityTest {
                 }
             }, 0);
             webTarget.request().get().close();
-            Assert.assertEquals("OK", result.toString());
+            Assertions.assertEquals("OK", result.toString());
         } finally {
             client.close();
         }

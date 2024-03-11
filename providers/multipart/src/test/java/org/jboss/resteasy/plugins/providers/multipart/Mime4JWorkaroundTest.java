@@ -1,20 +1,20 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class Mime4JWorkaroundTest {
 
     private static final Map<String, String> preTestProperties = new HashMap<>();
 
-    @BeforeClass
+    @BeforeAll
     public static void saveCurrentStateOfMemThresholdProperty() {
         if (System.getProperties().containsKey(Mime4JWorkaround.MEM_THRESHOLD_PROPERTY)) {
             String value = System.getProperty(Mime4JWorkaround.MEM_THRESHOLD_PROPERTY);
@@ -22,7 +22,7 @@ public class Mime4JWorkaroundTest {
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void resetPropertiesToPreTestValues() {
         if (!preTestProperties.containsKey(Mime4JWorkaround.MEM_THRESHOLD_PROPERTY)) {
             System.clearProperty(Mime4JWorkaround.MEM_THRESHOLD_PROPERTY);
@@ -31,7 +31,7 @@ public class Mime4JWorkaroundTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void unsetMemThresholdProperty() {
         System.clearProperty(Mime4JWorkaround.MEM_THRESHOLD_PROPERTY);
     }

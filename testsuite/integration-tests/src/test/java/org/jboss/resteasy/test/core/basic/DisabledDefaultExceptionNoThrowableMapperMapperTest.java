@@ -27,23 +27,23 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.core.basic.resource.ExceptionResource;
 import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Tests that the default {@link ExceptionMapper} is disabled.
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 @RequestScoped
 public class DisabledDefaultExceptionNoThrowableMapperMapperTest extends DisabledDefaultExceptionMapperTest {
 
@@ -72,8 +72,8 @@ public class DisabledDefaultExceptionNoThrowableMapperMapperTest extends Disable
      */
     @Test
     public void defaultExceptionMapper() {
-        Assert.assertNull("Expected not to have a default exception mapper",
-                providers.getExceptionMapper(RuntimeException.class));
+        Assertions.assertNull(providers.getExceptionMapper(RuntimeException.class),
+                "Expected not to have a default exception mapper");
     }
 
     /**
@@ -86,13 +86,13 @@ public class DisabledDefaultExceptionNoThrowableMapperMapperTest extends Disable
         final Response response = client.target(TestUtil.generateUri(url, "exception"))
                 .request()
                 .get();
-        Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
+        Assertions.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
         // We should end up with a stack trace in the response by default. There should be an UnhandledException and the
         // exception thrown.
         final String value = response.readEntity(String.class);
-        Assert.assertTrue(String.format("Expected %s to be in the result: %s", ExceptionResource.EXCEPTION_MESSAGE, value),
-                value.contains(ExceptionResource.EXCEPTION_MESSAGE));
-        Assert.assertTrue(String.format("Expected UnhandledException to be in the result: %s", value),
-                value.contains("UnhandledException"));
+        Assertions.assertTrue(value.contains(ExceptionResource.EXCEPTION_MESSAGE),
+                String.format("Expected %s to be in the result: %s", ExceptionResource.EXCEPTION_MESSAGE, value));
+        Assertions.assertTrue(value.contains("UnhandledException"),
+                String.format("Expected UnhandledException to be in the result: %s", value));
     }
 }
