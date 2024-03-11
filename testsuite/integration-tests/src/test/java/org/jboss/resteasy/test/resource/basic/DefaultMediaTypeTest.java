@@ -34,7 +34,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *                    used in end-point.
  * @tpSince RESTEasy 3.0.16
  */
-@Disabled("RESTEASY-3451")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class DefaultMediaTypeTest {
@@ -88,6 +87,7 @@ public class DefaultMediaTypeTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
+    @Disabled("Test will not pass until RESTEASY-1403 is resolved")
     public void postDate() throws Exception {
         WebTarget target = client.target(generateURL("/postDate"));
         ByteArrayOutputStream baos = new ByteArrayOutputStream(5000);
@@ -125,6 +125,7 @@ public class DefaultMediaTypeTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
+    @Disabled("Test will not pass until RESTEASY-1403 is resolved")
     public void postFoo() throws Exception {
         WebTarget target = client.target(generateURL("/postFoo"));
         ByteArrayOutputStream baos = new ByteArrayOutputStream(5000);

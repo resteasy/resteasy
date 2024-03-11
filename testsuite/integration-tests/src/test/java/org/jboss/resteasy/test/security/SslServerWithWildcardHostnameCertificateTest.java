@@ -1,8 +1,5 @@
 package org.jboss.resteasy.test.security;
 
-import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_PORT_OFFSET_WILDCARD;
-import static org.jboss.resteasy.test.ContainerConstants.SSL_CONTAINER_QUALIFIER_WILDCARD;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,10 +16,12 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit5.ArquillianExtension;
+import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.as.arquillian.container.ManagementClient;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.setup.SnapshotServerSetupTask;
 import org.jboss.resteasy.test.security.resource.SslResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -30,8 +29,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -41,10 +38,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpTestCaseDetails Tests for SSL - server secured with certificate with wildcard hostname "*host"
  * @tpSince RESTEasy 3.7.0
  */
-@Disabled("RESTEASY-3451")
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@ServerSetup(SslServerWithWildcardHostnameCertificateTest.SslServerSetupTask.class)
 public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
+
+    public static class SslServerSetupTask extends SnapshotServerSetupTask {
+        @Override
+        protected void doSetup(final ManagementClient client, final String containerId) throws Exception {
+            SslTestBase.secureServer(client.getControllerClient(), SERVER_KEYSTORE_PATH);
+        }
+
+        @Override
+        protected void nonManagementCleanUp() throws Exception {
+            super.nonManagementCleanUp();
+        }
+    }
 
     private static final Logger LOG = Logger.getLogger(SslServerWithWildcardHostnameCertificateTest.class.getName());
 
@@ -52,10 +61,9 @@ public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
 
     private static final String SERVER_KEYSTORE_PATH = RESOURCES + "/server-wildcard-hostname.keystore";
     private static final String CLIENT_TRUSTSTORE_PATH = RESOURCES + "/client-wildcard-hostname.truststore";
-    private static final String URL = generateHttpsURL(SSL_CONTAINER_PORT_OFFSET_WILDCARD);
+    private static final String URL = generateHttpsURL();
 
-    @TargetsContainer(SSL_CONTAINER_QUALIFIER_WILDCARD)
-    @Deployment(managed = false, name = DEPLOYMENT_NAME)
+    @Deployment(name = DEPLOYMENT_NAME)
     public static Archive<?> createDeployment() {
         WebArchive war = TestUtil.prepareArchive(DEPLOYMENT_NAME);
         return TestUtil.finishContainerPrepare(war, null, SslResource.class);
@@ -67,15 +75,6 @@ public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
         truststore = KeyStore.getInstance("jks");
         try (InputStream in = new FileInputStream(CLIENT_TRUSTSTORE_PATH)) {
             truststore.load(in, PASSWORD.toCharArray());
-        }
-    }
-
-    @BeforeEach
-    public void startContainer() throws Exception {
-        if (!containerController.isStarted(SSL_CONTAINER_QUALIFIER_WILDCARD)) {
-            containerController.start(SSL_CONTAINER_QUALIFIER_WILDCARD);
-            secureServer(SERVER_KEYSTORE_PATH, SSL_CONTAINER_PORT_OFFSET_WILDCARD);
-            deployer.deploy(DEPLOYMENT_NAME);
         }
     }
 

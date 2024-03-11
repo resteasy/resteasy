@@ -5,7 +5,6 @@ import java.net.URL;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.Test;
  * @tpTestCaseDetails Regression test for RESTEASY-1735
  * @tpSince RESTEasy 3.6
  */
-@Disabled("RESTEASY-3451")
 public class AllowGzipOnServerAllowGzipOnClientTest extends AllowGzipOnServerAbstractTestBase {
 
     @BeforeAll
