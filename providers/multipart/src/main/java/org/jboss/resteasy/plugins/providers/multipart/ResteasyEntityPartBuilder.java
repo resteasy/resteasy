@@ -25,6 +25,7 @@ import java.io.UncheckedIOException;
 import java.lang.annotation.Annotation;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.EntityPart;
@@ -141,6 +142,7 @@ public class ResteasyEntityPartBuilder implements EntityPart.Builder {
     }
 
     private static class EntityPartImpl implements EntityPart {
+        private final AtomicBoolean contentRetrieved = new AtomicBoolean(false);
         private final String name;
         private final MultivaluedMap<String, String> headers;
         private final MediaType mediaType;
@@ -168,11 +170,8 @@ public class ResteasyEntityPartBuilder implements EntityPart.Builder {
 
         @Override
         public InputStream getContent() {
-            try {
-                return content.getInputStream(mediaType, headers);
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
+            contentRetrieved.set(true);
+            return getInputStream();
         }
 
         @Override
@@ -185,6 +184,7 @@ public class ResteasyEntityPartBuilder implements EntityPart.Builder {
         @SuppressWarnings("unchecked")
         public <T> T getContent(final GenericType<T> type)
                 throws IllegalArgumentException, IllegalStateException, IOException, WebApplicationException {
+            checkContentRetrieved();
             final Providers providers = ResteasyContext.getRequiredContextData(Providers.class);
             final MessageBodyReader<T> reader = (MessageBodyReader<T>) providers.getMessageBodyReader(type.getRawType(),
                     type.getType(), ANNOTATIONS, mediaType);
@@ -194,7 +194,9 @@ public class ResteasyEntityPartBuilder implements EntityPart.Builder {
             }
             LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
 
-            return reader.readFrom((Class<T>) type.getRawType(), type.getType(), ANNOTATIONS, mediaType, headers, getContent());
+            try (InputStream in = getInputStream()) {
+                return reader.readFrom((Class<T>) type.getRawType(), type.getType(), ANNOTATIONS, mediaType, headers, in);
+            }
         }
 
         @Override
@@ -211,6 +213,20 @@ public class ResteasyEntityPartBuilder implements EntityPart.Builder {
         public String toString() {
             return String.format("EntityPart[name=%s, fileName=%s, mediaType=%s, headers=%s, content=%s]", name, fileName,
                     mediaType, headers, content);
+        }
+
+        private InputStream getInputStream() {
+            try {
+                return content.getInputStream(mediaType, headers);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+
+        private void checkContentRetrieved() {
+            if (!contentRetrieved.compareAndSet(false, true)) {
+                throw Messages.MESSAGES.getContentAlreadyInvoked();
+            }
         }
     }
 

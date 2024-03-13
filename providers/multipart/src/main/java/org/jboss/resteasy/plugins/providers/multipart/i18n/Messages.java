@@ -71,4 +71,7 @@ public interface Messages {
 
     @Message(id = BASE + 65, value = "Parameter %s is a required parameter and cannot be set to null.")
     String nullParameter(String name);
+
+    @Message(id = BASE + 66, value = "Cannot invoke EntityPart.getContent more than once.")
+    IllegalStateException getContentAlreadyInvoked();
 }

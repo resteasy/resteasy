@@ -22,6 +22,7 @@ package org.jboss.resteasy.test.resource.param;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -111,11 +112,11 @@ public class EntityPartFormParamTestCase {
                     Assertions.fail(msg);
                 }
                 EntityPart part = find(entityParts, "received-content");
-                Assertions.assertNotNull(part, getMessage(entityParts));
+                Assertions.assertNotNull(part, () -> getMessage(entityParts));
                 Assertions.assertEquals("test content", part.getContent(String.class));
 
                 part = find(entityParts, "added-content");
-                Assertions.assertNotNull(part, getMessage(entityParts));
+                Assertions.assertNotNull(part, () -> getMessage(entityParts));
                 Assertions.assertEquals("test added content", part.getContent(String.class));
             }
         }
@@ -218,11 +219,11 @@ public class EntityPartFormParamTestCase {
             throws IOException {
         final EntityPart part = find(entityParts, name);
         Assertions.assertNotNull(part,
-                String.format("Failed to find entity part %s in: %s", name, getMessage(entityParts)));
+                () -> String.format("Failed to find entity part %s in: %s", name, getMessage(entityParts)));
         Assertions.assertEquals(expectedText, part.getContent(String.class));
     }
 
-    private static String getMessage(final List<EntityPart> parts) throws IOException {
+    private static String getMessage(final List<EntityPart> parts) {
         final StringBuilder msg = new StringBuilder();
         final Iterator<EntityPart> iter = parts.iterator();
         while (iter.hasNext()) {
@@ -246,19 +247,23 @@ public class EntityPartFormParamTestCase {
         return msg.toString();
     }
 
-    private static String toString(final InputStream in) throws IOException {
+    private static String toString(final InputStream in) {
         // try-with-resources fails here due to a bug in the
         //noinspection TryFinallyCanBeTryWithResources
         try {
-            final ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] buffer = new byte[32];
-            int len;
-            while ((len = in.read(buffer)) > 0) {
-                out.write(buffer, 0, len);
+            try {
+                final ByteArrayOutputStream out = new ByteArrayOutputStream();
+                byte[] buffer = new byte[32];
+                int len;
+                while ((len = in.read(buffer)) > 0) {
+                    out.write(buffer, 0, len);
+                }
+                return out.toString(StandardCharsets.UTF_8);
+            } finally {
+                in.close();
             }
-            return out.toString(StandardCharsets.UTF_8);
-        } finally {
-            in.close();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
