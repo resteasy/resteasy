@@ -29,7 +29,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>galleon-feature-pack</artifactId>
-    <name>RESEasy: Galleon Feature Pack</name>
+    <name>RESTEasy: Galleon Feature Pack</name>
 
     <properties>
         <common.resources.directory>${basedir}/../common/src/main/resources</common.resources.directory>
