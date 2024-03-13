@@ -19,6 +19,7 @@
 
 package org.jboss.resteasy.plugins.providers.multipart;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -79,6 +81,185 @@ public class MultipartEntityPartProviderTest {
         final SeBootstrap.Instance instance = INSTANCE;
         if (instance != null) {
             instance.stop().toCompletableFuture().get(10, TimeUnit.SECONDS);
+        }
+    }
+
+    @Test
+    public void checkGetContent() throws Exception {
+        final EntityPart part = EntityPart.withName("content")
+                .content("test content".getBytes(StandardCharsets.UTF_8))
+                .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                .build();
+        Assertions.assertEquals("test content", toString(part.getContent()));
+        Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(String.class));
+        Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(new GenericType<>(String.class)));
+        // Should be able to invoke this twice
+        Assertions.assertEquals("test content", toString(part.getContent()));
+    }
+
+    @Test
+    public void checkGetContentClass() throws Exception {
+        final EntityPart part = EntityPart.withName("content")
+                .content("test content".getBytes(StandardCharsets.UTF_8))
+                .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                .build();
+        Assertions.assertEquals("test content", part.getContent(String.class));
+        Assertions.assertEquals("test content", toString(part.getContent()));
+        Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(String.class));
+        Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(new GenericType<>(String.class)));
+    }
+
+    @Test
+    public void checkGetContentGenericType() throws Exception {
+        final EntityPart part = EntityPart.withName("content")
+                .content("test content".getBytes(StandardCharsets.UTF_8))
+                .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                .build();
+        Assertions.assertEquals("test content", part.getContent(new GenericType<>(String.class)));
+        Assertions.assertEquals("test content", toString(part.getContent()));
+        Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(new GenericType<>(String.class)));
+        Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(String.class));
+    }
+
+    @Test
+    public void checkClosed() throws Exception {
+        try (Client client = ClientBuilder.newClient()) {
+            final CloseTrackingInputStream inputStream = new CloseTrackingInputStream("test content");
+            final List<EntityPart> multipart = List.of(
+                    EntityPart.withName("content")
+                            .content(inputStream)
+                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                            .build());
+            try (
+                    Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("test/form"))
+                            .request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                            .post(Entity.entity(new GenericEntity<>(multipart) {
+                            }, MediaType.MULTIPART_FORM_DATA))) {
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+                Assertions.assertTrue(inputStream.isClose(), "Expected the input stream to be closed on a send.");
+                final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
+                });
+                if (entityParts.size() != 2) {
+                    final String msg = "Expected 2 entries got " +
+                            entityParts.size() +
+                            '.' +
+                            System.lineSeparator() +
+                            getMessage(entityParts);
+                    Assertions.fail(msg);
+                }
+                EntityPart part = find(entityParts, "received-content");
+                Assertions.assertEquals("test content", part.getContent(String.class));
+            }
+        }
+    }
+
+    @Test
+    public void checkGetContentResponse() throws Exception {
+        try (Client client = ClientBuilder.newClient()) {
+            final CloseTrackingInputStream inputStream = new CloseTrackingInputStream("test content");
+            final List<EntityPart> multipart = List.of(
+                    EntityPart.withName("content")
+                            .content(inputStream)
+                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                            .build());
+            try (
+                    Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("test/form"))
+                            .request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                            .post(Entity.entity(new GenericEntity<>(multipart) {
+                            }, MediaType.MULTIPART_FORM_DATA))) {
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+                Assertions.assertTrue(inputStream.isClose(), "Expected the input stream to be closed on a send.");
+                final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
+                });
+                if (entityParts.size() != 2) {
+                    final String msg = "Expected 2 entries got " +
+                            entityParts.size() +
+                            '.' +
+                            System.lineSeparator() +
+                            getMessage(entityParts);
+                    Assertions.fail(msg);
+                }
+                EntityPart part = find(entityParts, "received-content");
+
+                Assertions.assertEquals("test content", part.getContent(String.class));
+                Assertions.assertEquals("test content", toString(part.getContent()));
+                Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(String.class));
+                Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(new GenericType<>(String.class)));
+                // Should be able to invoke this twice
+                Assertions.assertEquals("test content", toString(part.getContent()));
+            }
+        }
+    }
+
+    @Test
+    public void checkGetContentClassResponse() throws Exception {
+        try (Client client = ClientBuilder.newClient()) {
+            final CloseTrackingInputStream inputStream = new CloseTrackingInputStream("test content");
+            final List<EntityPart> multipart = List.of(
+                    EntityPart.withName("content")
+                            .content(inputStream)
+                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                            .build());
+            try (
+                    Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("test/form"))
+                            .request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                            .post(Entity.entity(new GenericEntity<>(multipart) {
+                            }, MediaType.MULTIPART_FORM_DATA))) {
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+                Assertions.assertTrue(inputStream.isClose(), "Expected the input stream to be closed on a send.");
+                final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
+                });
+                if (entityParts.size() != 2) {
+                    final String msg = "Expected 2 entries got " +
+                            entityParts.size() +
+                            '.' +
+                            System.lineSeparator() +
+                            getMessage(entityParts);
+                    Assertions.fail(msg);
+                }
+                EntityPart part = find(entityParts, "received-content");
+
+                Assertions.assertEquals("test content", part.getContent(String.class));
+                Assertions.assertEquals("test content", toString(part.getContent()));
+                Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(String.class));
+                Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(new GenericType<>(String.class)));
+            }
+        }
+    }
+
+    @Test
+    public void checkGetContentGenericTypeResponse() throws Exception {
+        try (Client client = ClientBuilder.newClient()) {
+            final CloseTrackingInputStream inputStream = new CloseTrackingInputStream("test content");
+            final List<EntityPart> multipart = List.of(
+                    EntityPart.withName("content")
+                            .content(inputStream)
+                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                            .build());
+            try (
+                    Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("test/form"))
+                            .request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                            .post(Entity.entity(new GenericEntity<>(multipart) {
+                            }, MediaType.MULTIPART_FORM_DATA))) {
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+                Assertions.assertTrue(inputStream.isClose(), "Expected the input stream to be closed on a send.");
+                final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
+                });
+                if (entityParts.size() != 2) {
+                    final String msg = "Expected 2 entries got " +
+                            entityParts.size() +
+                            '.' +
+                            System.lineSeparator() +
+                            getMessage(entityParts);
+                    Assertions.fail(msg);
+                }
+                EntityPart part = find(entityParts, "received-content");
+
+                Assertions.assertEquals("test content", part.getContent(new GenericType<>(String.class)));
+                Assertions.assertEquals("test content", toString(part.getContent()));
+                Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(new GenericType<>(String.class)));
+                Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(String.class));
+            }
         }
     }
 
@@ -635,6 +816,24 @@ public class MultipartEntityPartProviderTest {
                 }
             }
             return filtered;
+        }
+    }
+
+    private static class CloseTrackingInputStream extends ByteArrayInputStream {
+        private final AtomicBoolean closed = new AtomicBoolean(false);
+
+        CloseTrackingInputStream(final String text) {
+            super(text.getBytes(StandardCharsets.UTF_8));
+        }
+
+        boolean isClose() {
+            return closed.get();
+        }
+
+        @Override
+        public void close() throws IOException {
+            closed.set(true);
+            super.close();
         }
     }
 }
