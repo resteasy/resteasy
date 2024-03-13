@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.EntityPart;
@@ -111,6 +112,7 @@ public class MultipartFormDataInputImpl extends MultipartInputImpl implements
     }
 
     private static class InputPartEntityPart implements EntityPart {
+        private final AtomicBoolean contentRetrieved = new AtomicBoolean(false);
         private final String name;
         private final InputPart inputPart;
 
@@ -131,6 +133,7 @@ public class MultipartFormDataInputImpl extends MultipartInputImpl implements
 
         @Override
         public InputStream getContent() {
+            contentRetrieved.set(true);
             try {
                 return inputPart.getBody();
             } catch (IOException e) {
@@ -141,12 +144,14 @@ public class MultipartFormDataInputImpl extends MultipartInputImpl implements
         @Override
         public <T> T getContent(final Class<T> type)
                 throws IllegalArgumentException, IllegalStateException, IOException, WebApplicationException {
+            checkContentRetrieved();
             return inputPart.getBody(new GenericType<>(type));
         }
 
         @Override
         public <T> T getContent(final GenericType<T> type)
                 throws IllegalArgumentException, IllegalStateException, IOException, WebApplicationException {
+            checkContentRetrieved();
             return inputPart.getBody(type);
         }
 
@@ -158,6 +163,12 @@ public class MultipartFormDataInputImpl extends MultipartInputImpl implements
         @Override
         public MediaType getMediaType() {
             return inputPart.getMediaType();
+        }
+
+        private void checkContentRetrieved() {
+            if (!contentRetrieved.compareAndSet(false, true)) {
+                throw Messages.MESSAGES.getContentAlreadyInvoked();
+            }
         }
     }
 }
