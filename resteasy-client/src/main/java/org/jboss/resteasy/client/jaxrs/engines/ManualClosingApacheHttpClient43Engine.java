@@ -185,6 +185,7 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
 
     private ManualClosingApacheHttpClient43Engine(final HttpClient httpClient,
             final HttpContextProvider httpContextProvider, final boolean closeHttpClient, final HttpHost defaultProxy) {
+        this.defaultProxy = defaultProxy;
         this.httpClient = httpClient != null ? httpClient : createDefaultHttpClient();
         if (closeHttpClient && !(this.httpClient instanceof CloseableHttpClient)) {
             throw new IllegalArgumentException(
@@ -195,7 +196,6 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
         closed = new AtomicBoolean(false);
         autoClosed = new AtomicBoolean(true);
         this.cleanable = createCleanable(this, closeHttpClient, closed, autoClosed, this.httpClient);
-        this.defaultProxy = defaultProxy;
 
         try {
             int threshold = getProperty(FILE_UPLOAD_IN_MEMORY_THRESHOLD_PROPERTY, Integer.class, () -> 1);
