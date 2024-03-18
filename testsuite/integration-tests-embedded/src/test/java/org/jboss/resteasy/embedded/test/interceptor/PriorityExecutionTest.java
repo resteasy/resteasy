@@ -34,9 +34,9 @@ import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionCo
 import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionContainerResponseFilterMin;
 import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter
@@ -49,7 +49,7 @@ public class PriorityExecutionTest extends AbstractBootstrapTest {
     public static Logger logger = Logger.getLogger(PriorityExecutionTest.class);
     private static final String WRONG_ORDER_ERROR_MSG = "Wrong order of interceptor execution";
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         Set<Class<?>> actualProviderClassList = new LinkedHashSet<>();
         actualProviderClassList.add(PriorityExecutionResource.class);
@@ -93,33 +93,33 @@ public class PriorityExecutionTest extends AbstractBootstrapTest {
         Response response = client.target(generateURL("/test")).request().get();
         response.bufferEntity();
         logger.info(response.readEntity(String.class));
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response", "test", response.getEntity());
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("test", response.getEntity(), "Wrong content of response");
 
         // client filters
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionClientRequestFilterMin", interceptors.poll());
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionClientRequestFilter1", interceptors.poll());
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionClientRequestFilter2", interceptors.poll());
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionClientRequestFilter3", interceptors.poll());
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionClientRequestFilterMax", interceptors.poll());
+        Assertions.assertEquals("PriorityExecutionClientRequestFilterMin", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
+        Assertions.assertEquals("PriorityExecutionClientRequestFilter1", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
+        Assertions.assertEquals("PriorityExecutionClientRequestFilter2", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
+        Assertions.assertEquals("PriorityExecutionClientRequestFilter3", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
+        Assertions.assertEquals("PriorityExecutionClientRequestFilterMax", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
 
         // server filters
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionContainerRequestFilterMin", interceptors.poll());
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionContainerRequestFilter1", interceptors.poll());
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionContainerRequestFilter2", interceptors.poll());
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionContainerRequestFilter3", interceptors.poll());
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionContainerRequestFilterMax", interceptors.poll());
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionContainerResponseFilterMax", interceptors.poll());
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionContainerResponseFilter3", interceptors.poll());
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionContainerResponseFilter2", interceptors.poll());
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionContainerResponseFilter1", interceptors.poll());
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionContainerResponseFilterMin", interceptors.poll());
+        Assertions.assertEquals("PriorityExecutionContainerRequestFilterMin", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
+        Assertions.assertEquals("PriorityExecutionContainerRequestFilter1", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
+        Assertions.assertEquals("PriorityExecutionContainerRequestFilter2", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
+        Assertions.assertEquals("PriorityExecutionContainerRequestFilter3", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
+        Assertions.assertEquals("PriorityExecutionContainerRequestFilterMax", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
+        Assertions.assertEquals("PriorityExecutionContainerResponseFilterMax", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
+        Assertions.assertEquals("PriorityExecutionContainerResponseFilter3", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
+        Assertions.assertEquals("PriorityExecutionContainerResponseFilter2", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
+        Assertions.assertEquals("PriorityExecutionContainerResponseFilter1", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
+        Assertions.assertEquals("PriorityExecutionContainerResponseFilterMin", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
 
         // client filters
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionClientResponseFilterMax", interceptors.poll());
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionClientResponseFilter3", interceptors.poll());
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionClientResponseFilter2", interceptors.poll());
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionClientResponseFilter1", interceptors.poll());
-        Assert.assertEquals(WRONG_ORDER_ERROR_MSG, "PriorityExecutionClientResponseFilterMin", interceptors.poll());
+        Assertions.assertEquals("PriorityExecutionClientResponseFilterMax", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
+        Assertions.assertEquals("PriorityExecutionClientResponseFilter3", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
+        Assertions.assertEquals("PriorityExecutionClientResponseFilter2", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
+        Assertions.assertEquals("PriorityExecutionClientResponseFilter1", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
+        Assertions.assertEquals("PriorityExecutionClientResponseFilterMin", interceptors.poll(), WRONG_ORDER_ERROR_MSG);
     }
 }

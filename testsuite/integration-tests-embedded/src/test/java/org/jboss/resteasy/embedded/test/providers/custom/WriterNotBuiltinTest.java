@@ -11,9 +11,9 @@ import org.jboss.resteasy.embedded.test.TestApplication;
 import org.jboss.resteasy.embedded.test.providers.custom.resource.ReaderWriterResource;
 import org.jboss.resteasy.embedded.test.providers.custom.resource.WriterNotBuiltinTestWriter;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter
@@ -23,7 +23,7 @@ import org.junit.Test;
  */
 public class WriterNotBuiltinTest extends AbstractBootstrapTest {
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         start(new TestApplication(ReaderWriterResource.class, WriterNotBuiltinTestWriter.class),
                 SeBootstrap.Configuration.builder()
@@ -41,9 +41,9 @@ public class WriterNotBuiltinTest extends AbstractBootstrapTest {
     @Test
     public void test1New() throws Exception {
         Response response = client.target(generateURL("/string")).request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("text/plain;charset=UTF-8", response.getStringHeaders().getFirst("content-type"));
-        Assert.assertEquals("Response contains wrong content", "hello world", response.readEntity(String.class));
-        Assert.assertTrue("Wrong MessageBodyWriter was used", WriterNotBuiltinTestWriter.used);
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assertions.assertEquals("text/plain;charset=UTF-8", response.getStringHeaders().getFirst("content-type"));
+        Assertions.assertEquals("hello world", response.readEntity(String.class), "Response contains wrong content");
+        Assertions.assertTrue(WriterNotBuiltinTestWriter.used, "Wrong MessageBodyWriter was used");
     }
 }

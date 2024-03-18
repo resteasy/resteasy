@@ -18,9 +18,9 @@ import org.jboss.resteasy.embedded.test.core.basic.resource.ApplicationTestScann
 import org.jboss.resteasy.embedded.test.core.basic.resource.ApplicationTestSingletonA;
 import org.jboss.resteasy.embedded.test.core.basic.resource.ApplicationTestSingletonB;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpChapter Embedded Containers
@@ -32,7 +32,7 @@ public class ApplicationTest extends AbstractBootstrapTest {
     private static final String CONTENT_ERROR_MESSAGE = "Wrong content of response";
     private static Index INDEX;
 
-    @BeforeClass
+    @BeforeAll
     public static void configureIndex() throws Exception {
         INDEX = Index.of(ApplicationTestResourceA.class,
                 ApplicationTestResourceB.class,
@@ -52,16 +52,16 @@ public class ApplicationTest extends AbstractBootstrapTest {
         WebTarget base = client.target(generateURL("/a/explicit"));
 
         String value = base.path("resources/a").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        Assertions.assertEquals("a", value, CONTENT_ERROR_MESSAGE);
 
         Response response = base.path("resources/b").request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
 
         value = base.path("singletons/a").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        Assertions.assertEquals("a", value, CONTENT_ERROR_MESSAGE);
 
         response = base.path("singletons/b").request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
         client.close();
     }
 
@@ -77,16 +77,16 @@ public class ApplicationTest extends AbstractBootstrapTest {
         WebTarget base = client.target(generateURL("/b/explicit"));
 
         String value = base.path("resources/b").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        Assertions.assertEquals("b", value, CONTENT_ERROR_MESSAGE);
 
         Response response = base.path("resources/a").request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
 
         value = base.path("singletons/b").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        Assertions.assertEquals("b", value, CONTENT_ERROR_MESSAGE);
 
         response = base.path("singletons/a").request().get();
-        Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
         client.close();
     }
 
@@ -104,16 +104,16 @@ public class ApplicationTest extends AbstractBootstrapTest {
         WebTarget base = client.target(generateURL("/scanned"));
 
         String value = base.path("resources/a").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        Assertions.assertEquals("a", value, CONTENT_ERROR_MESSAGE);
 
         value = base.path("resources/b").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        Assertions.assertEquals("b", value, CONTENT_ERROR_MESSAGE);
 
         value = base.path("singletons/a").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        Assertions.assertEquals("a", value, CONTENT_ERROR_MESSAGE);
 
         value = base.path("singletons/b").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        Assertions.assertEquals("b", value, CONTENT_ERROR_MESSAGE);
         client.close();
     }
 
@@ -135,16 +135,16 @@ public class ApplicationTest extends AbstractBootstrapTest {
         WebTarget base = client.target(generateURL("/mapped"));
 
         String value = base.path("resources/a").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        Assertions.assertEquals("a", value, CONTENT_ERROR_MESSAGE);
 
         value = base.path("resources/b").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        Assertions.assertEquals("b", value, CONTENT_ERROR_MESSAGE);
 
         value = base.path("singletons/a").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "a", value);
+        Assertions.assertEquals("a", value, CONTENT_ERROR_MESSAGE);
 
         value = base.path("singletons/b").request().get(String.class);
-        Assert.assertEquals(CONTENT_ERROR_MESSAGE, "b", value);
+        Assertions.assertEquals("b", value, CONTENT_ERROR_MESSAGE);
         client.close();
     }
 }
