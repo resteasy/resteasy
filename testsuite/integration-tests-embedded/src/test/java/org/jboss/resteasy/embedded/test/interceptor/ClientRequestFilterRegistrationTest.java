@@ -9,9 +9,9 @@ import org.jboss.resteasy.embedded.test.AbstractBootstrapTest;
 import org.jboss.resteasy.embedded.test.TestApplication;
 import org.jboss.resteasy.embedded.test.interceptor.resource.ClientRequestFilterImpl;
 import org.jboss.resteasy.embedded.test.interceptor.resource.ClientResource;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter
@@ -21,7 +21,7 @@ import org.junit.Test;
  */
 public class ClientRequestFilterRegistrationTest extends AbstractBootstrapTest {
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         start(new TestApplication(ClientResource.class, ClientRequestFilterImpl.class));
     }
@@ -30,7 +30,7 @@ public class ClientRequestFilterRegistrationTest extends AbstractBootstrapTest {
     public void filterRegisteredTest() throws Exception {
         WebTarget base = client.target(generateURL("/") + "testIt");
         Response response = base.request().get();
-        Assert.assertEquals(456, response.getStatus());
+        Assertions.assertEquals(456, response.getStatus());
     }
 
 }
