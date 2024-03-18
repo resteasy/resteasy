@@ -651,6 +651,70 @@ public class ReactorNettyClientHttpEngineTest {
         }
     }
 
+    /**
+     * Request level timeout should over-ride and make the execution successful
+     *
+     * @throws Exception Runtime exception
+     */
+    @Test
+    public void testRequestLevelTimeoutAsyncInvocationSuccess() throws Exception {
+        final Client timeoutClient = setupClient(HttpClient.create(), Duration.ofMillis(200));
+
+        final Future<Response> future = timeoutClient.target(url("/sleep/300"))
+                .property(ReactorNettyClientHttpEngine.REQUEST_TIMEOUT_MS, Duration.ofMillis(400))
+                .request()
+                .async()
+                .get();
+
+        final Response response = future.get();
+        assertEquals(200, response.getStatus());
+        assertEquals("Delayed Hello World!", response.readEntity(String.class));
+    }
+
+    /**
+     * Request level timeout should over-ride and make the execution successful
+     *
+     * @throws Exception Runtime exception
+     */
+    @Test
+    public void testRequestLevelTimeoutAsyncInvocationSuccessWhenInvalidTimeout() throws Exception {
+        final Client timeoutClient = setupClient(HttpClient.create(), Duration.ofMillis(200));
+
+        final Future<Response> future = timeoutClient.target(url("/sleep/100"))
+                .property(ReactorNettyClientHttpEngine.REQUEST_TIMEOUT_MS, Duration.ofMillis(0))
+                .request()
+                .async()
+                .get();
+
+        final Response response = future.get();
+        assertEquals(200, response.getStatus());
+        assertEquals("Delayed Hello World!", response.readEntity(String.class));
+    }
+
+    /**
+     * Request level timeout should over-ride and make the execution failure
+     *
+     * @throws Exception Runtime exception
+     */
+    @Test
+    public void testRequestLevelTimeoutAsyncInvocationFailure() throws Exception {
+        final Client timeoutClient = setupClient(HttpClient.create(), Duration.ofMillis(200));
+
+        final Future<Response> future = timeoutClient.target(url("/sleep/100"))
+                .property(ReactorNettyClientHttpEngine.REQUEST_TIMEOUT_MS, Duration.ofMillis(50))
+                .request()
+                .async()
+                .get();
+        try {
+            future.get();
+            Assert.fail("timeout exception expected");
+        } catch (ExecutionException ex) {
+            MatcherAssert.assertThat(ex.getMessage(),
+                    containsString("java.util.concurrent.TimeoutException: "
+                            + "Did not observe any item or terminal signal within 50ms"));
+        }
+    }
+
     @Test
     public void testTimeoutRxInvocation() throws ExecutionException, InterruptedException {
         final Client timeoutClient = setupClient(HttpClient.create(), Duration.ofMillis(100));
@@ -665,6 +729,70 @@ public class ReactorNettyClientHttpEngineTest {
             MatcherAssert.assertThat(ex.getMessage(),
                     containsString(
                             "java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 100ms"));
+        }
+    }
+
+    /**
+     * Request level timeout should over-ride and make the execution successful
+     *
+     * @throws Exception Runtime exception
+     */
+    @Test
+    public void testRequestTimeoutRxInvocationSuccess() throws Exception {
+        final Client timeoutClient = setupClient(HttpClient.create(), Duration.ofMillis(200));
+
+        final CompletionStage<Response> future = timeoutClient.target(url("/sleep/300"))
+                .property(ReactorNettyClientHttpEngine.REQUEST_TIMEOUT_MS, Duration.ofMillis(400))
+                .request()
+                .rx()
+                .get();
+
+        final Response response = future.toCompletableFuture().get();
+        assertEquals(200, response.getStatus());
+        assertEquals("Delayed Hello World!", response.readEntity(String.class));
+    }
+
+    /**
+     * Request level timeout should over-ride and make the execution successful
+     *
+     * @throws Exception Runtime exception
+     */
+    @Test
+    public void testRequestTimeoutAsyncInvocationSuccessWhenInvalidTimeout() throws Exception {
+        final Client timeoutClient = setupClient(HttpClient.create(), Duration.ofMillis(400));
+
+        final CompletionStage<Response> future = timeoutClient.target(url("/sleep/300"))
+                .property(ReactorNettyClientHttpEngine.REQUEST_TIMEOUT_MS, Duration.ofMillis(0))
+                .request()
+                .rx()
+                .get();
+
+        final Response response = future.toCompletableFuture().get();
+        assertEquals(200, response.getStatus());
+        assertEquals("Delayed Hello World!", response.readEntity(String.class));
+    }
+
+    /**
+     * Request level timeout should over-ride and make the execution failure
+     *
+     * @throws Exception Runtime exception
+     */
+    @Test
+    public void testRequestTimeoutAsyncInvocationFailure() throws Exception {
+        final Client timeoutClient = setupClient(HttpClient.create(), Duration.ofMillis(200));
+
+        final CompletionStage<Response> future = timeoutClient.target(url("/sleep/100"))
+                .property(ReactorNettyClientHttpEngine.REQUEST_TIMEOUT_MS, Duration.ofMillis(50))
+                .request()
+                .rx()
+                .get();
+        try {
+            future.toCompletableFuture().get();
+            Assert.fail("timeout exception expected");
+        } catch (ExecutionException ex) {
+            MatcherAssert.assertThat(ex.getMessage(),
+                    containsString("java.util.concurrent.TimeoutException: "
+                            + "Did not observe any item or terminal signal within 50ms"));
         }
     }
 
