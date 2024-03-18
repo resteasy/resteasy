@@ -31,8 +31,8 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Application;
 
 import org.jboss.resteasy.core.se.ConfigurationOption;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -42,12 +42,12 @@ public abstract class AbstractBootstrapTest {
     protected Client client;
     protected SeBootstrap.Instance instance;
 
-    @Before
+    @BeforeEach
     public void createClient() {
         client = ClientBuilder.newClient();
     }
 
-    @After
+    @AfterEach
     public void shutdown() throws Exception {
         if (client != null) {
             client.close();
