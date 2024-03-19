@@ -16,9 +16,9 @@ import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.embedded.test.AbstractBootstrapTest;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.utils.TestUtil;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter Verify ValidatorFactory is found in absence of CDI
@@ -49,7 +49,7 @@ public class NonCDIValidatorFactoryTest extends AbstractBootstrapTest {
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         start(new TestApp());
     }
@@ -60,10 +60,10 @@ public class NonCDIValidatorFactoryTest extends AbstractBootstrapTest {
     public void testValidate() throws Exception {
         Invocation.Builder request = client.target("http://localhost:8081/test/validate/x").request();
         Response response = request.get();
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         String header = response.getHeaderString(Validation.VALIDATION_HEADER);
-        Assert.assertNotNull("Validation header is missing", header);
-        Assert.assertTrue("Wrong validation header", Boolean.valueOf(header));
+        Assertions.assertNotNull(header, "Validation header is missing");
+        Assertions.assertTrue(Boolean.valueOf(header), "Wrong validation header");
         String entity = response.readEntity(String.class);
         ViolationReport r = new ViolationReport(entity);
         TestUtil.countViolations(r, 0, 0, 1, 0);

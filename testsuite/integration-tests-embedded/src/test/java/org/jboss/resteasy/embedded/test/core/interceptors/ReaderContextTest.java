@@ -18,9 +18,9 @@ import org.jboss.resteasy.embedded.test.core.interceptors.resource.ReaderContext
 import org.jboss.resteasy.embedded.test.core.interceptors.resource.ReaderContextLinkedListEntityProvider;
 import org.jboss.resteasy.embedded.test.core.interceptors.resource.ReaderContextResource;
 import org.jboss.resteasy.embedded.test.core.interceptors.resource.ReaderContextSecondReaderInterceptor;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @tpSubChapter
@@ -30,7 +30,7 @@ import org.junit.Test;
  */
 public class ReaderContextTest extends AbstractBootstrapTest {
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         start(new TestApplication(ReaderContextResource.class,
                 ReaderContextArrayListEntityProvider.class,
@@ -59,13 +59,12 @@ public class ReaderContextTest extends AbstractBootstrapTest {
                 ReaderContextFirstReaderInterceptor.class.getName());
         @SuppressWarnings("unchecked")
         List<String> list = response.readEntity(List.class);
-        Assert.assertTrue("Returned list in not instance of ArrayList", ArrayList.class.isInstance(list));
+        Assertions.assertTrue(ArrayList.class.isInstance(list), "Returned list in not instance of ArrayList");
         String entity = list.get(0);
-        Assert.assertTrue("Wrong interceptor type in response",
-                entity.contains(ReaderContextSecondReaderInterceptor.class.getName()));
-        Assert.assertTrue("Wrong interceptor annotation in response",
-                entity.contains(ReaderContextSecondReaderInterceptor.class.getAnnotations()[0]
-                        .annotationType().getName()));
+        Assertions.assertTrue(entity.contains(ReaderContextSecondReaderInterceptor.class.getName()),
+                "Wrong interceptor type in response");
+        Assertions.assertTrue(entity.contains(ReaderContextSecondReaderInterceptor.class.getAnnotations()[0]
+                .annotationType().getName()), "Wrong interceptor annotation in response");
 
         client.close();
     }
