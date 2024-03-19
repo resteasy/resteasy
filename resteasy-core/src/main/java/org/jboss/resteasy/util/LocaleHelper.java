@@ -22,6 +22,16 @@ public class LocaleHelper {
      * @return converted language format string
      */
     public static String toLanguageString(Locale value) {
-        return value.toLanguageTag();
+        // This is somewhat of a hack to fix an issue in the TCK, see https://github.com/jakartaee/rest/issues/1239.
+        // However, if the Locale was created incorrectly, we should likely continue to return the string value of the
+        // locale.
+        String languageTag = value.toLanguageTag();
+        if ("und".equals(languageTag)) {
+            languageTag = value.getLanguage().toLowerCase(Locale.ROOT);
+            if (value.getCountry() != null && !value.getCountry().isBlank()) {
+                languageTag += "-" + value.getCountry().toLowerCase(Locale.ROOT);
+            }
+        }
+        return languageTag;
     }
 }
