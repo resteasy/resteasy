@@ -20,6 +20,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HeaderHelper;
+import org.jboss.resteasy.util.LocaleHelper;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.WeightedLanguage;
 
@@ -59,7 +60,7 @@ public class ClientRequestHeaders {
     }
 
     public void setLanguage(String language) {
-        setLanguage(new Locale(language));
+        setLanguage(LocaleHelper.extractLocale(language));
     }
 
     public void setMediaType(MediaType mediaType) {
@@ -199,7 +200,7 @@ public class ClientRequestHeaders {
             return null;
         if (obj instanceof Locale)
             return (Locale) obj;
-        return new Locale(obj.toString());
+        return LocaleHelper.extractLocale(obj.toString());
     }
 
     public int getLength() {

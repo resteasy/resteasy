@@ -11,6 +11,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.util.LocaleHelper;
 
 /**
  * @author Pascal S. de Kloe
@@ -94,16 +95,11 @@ public class AcceptHeaders {
             String value = entry.getKey();
             if (value != null) {
                 int length = value.length();
-                if (length == 2) {
-                    locale = new Locale(value);
-                } else if (length == 5 && value.charAt(2) == '-') {
-                    String language = value.substring(0, 2);
-                    String country = value.substring(3, 5);
-                    locale = new Locale(language, country);
-                } else {
+                if (length > 5 || (length > 2 && value.charAt(2) != '-')) {
                     LogMessages.LOGGER.ignoringUnsupportedLocale(value);
                     continue;
                 }
+                locale = LocaleHelper.extractLocale(value);
             }
             result.put(locale, quality);
         }
