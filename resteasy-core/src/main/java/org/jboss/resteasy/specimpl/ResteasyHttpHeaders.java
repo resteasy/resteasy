@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.jboss.resteasy.util.CookieParser;
 import org.jboss.resteasy.util.DateUtil;
+import org.jboss.resteasy.util.LocaleHelper;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.WeightedLanguage;
 
@@ -153,7 +154,7 @@ public class ResteasyHttpHeaders implements HttpHeaders {
         String obj = requestHeaders.getFirst(HttpHeaders.CONTENT_LANGUAGE);
         if (obj == null)
             return null;
-        return new Locale(obj);
+        return LocaleHelper.extractLocale(obj);
     }
 
     @Override
