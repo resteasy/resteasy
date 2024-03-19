@@ -74,6 +74,18 @@ public final class ResteasyContext {
         return (T) getContextDataMap().computeIfAbsent(type, (value) -> newValue.get());
     }
 
+    /**
+     * Checks the current context for the given type.
+     *
+     * @param type the type to check the context data
+     *
+     * @return {@code true} if the type exists in the current contexts data, otherwise {@code false}
+     */
+    public static boolean hasContextData(final Class<?> type) {
+        final Map<Class<?>, Object> context = getContextDataMap(false);
+        return context != null && context.containsKey(type);
+    }
+
     public static <T> T popContextData(Class<T> type) {
         return (T) getContextDataMap().remove(type);
     }
