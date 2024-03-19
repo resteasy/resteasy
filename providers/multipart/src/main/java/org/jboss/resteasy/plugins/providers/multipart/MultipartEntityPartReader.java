@@ -37,6 +37,7 @@ import jakarta.ws.rs.ext.Providers;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
+import org.jboss.resteasy.spi.multipart.MultipartContent;
 import org.jboss.resteasy.spi.util.Types;
 
 /**
@@ -68,6 +69,13 @@ public class MultipartEntityPartReader implements MessageBodyReader<List<EntityP
         final String boundary = mediaType.getParameters().get("boundary");
         if (boundary == null)
             throw new IOException(Messages.MESSAGES.unableToGetBoundary());
+
+        // Check if we've already parsed the entity parts
+        final MultipartContent multipartContent = ResteasyContext.getContextData(MultipartContent.class);
+        if (multipartContent != null) {
+            return multipartContent.entityParts();
+        }
+
         // On the returned EntityPart an injected (@Context Providers) doesn't work as it can't be found when
         // constructing this type. Therefore, the lookup here is required.
         final Providers providers = ResteasyContext.getRequiredContextData(Providers.class);
