@@ -1,9 +1,7 @@
 package org.jboss.resteasy.test.core.spi;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -62,8 +60,8 @@ public class ResourceClassProcessorErrorTest {
             deployer.deploy(DEPLOYMENT_NAME);
             Assertions.fail("Exception from ResourceClassProcessor was not thrown");
         } catch (Exception e) {
-            MatcherAssert.assertThat("Error message was not printed to server log",
-                    errorLogCounter.count(), greaterThanOrEqualTo(1));
+            Assertions.assertTrue(errorLogCounter.count() >= 1,
+                    "Error message was not printed to server log");
             return;
         }
     }

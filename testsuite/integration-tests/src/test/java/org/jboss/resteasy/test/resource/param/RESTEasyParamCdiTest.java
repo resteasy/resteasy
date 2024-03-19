@@ -1,13 +1,10 @@
 package org.jboss.resteasy.test.resource.param;
 
-import static org.hamcrest.CoreMatchers.is;
-
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.Form;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -20,6 +17,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -92,10 +90,11 @@ public class RESTEasyParamCdiTest {
                             .param("formParam1", defaultValue)
                             .param("formParam2", defaultValue)
                             .param("formParam3", defaultValue)));
-            MatcherAssert.assertThat("expected response code is 200, get: " + response.getStatus(),
-                    response.getStatus(), is(200));
+            Assertions.assertEquals(response.getStatus(), 200,
+                    "expected response code is 200, get: " + response.getStatus());
             String message = response.readEntity(String.class);
-            MatcherAssert.assertThat("expected value: " + defaultValue + ", get: " + message, message, is(defaultValue));
+            Assertions.assertEquals(message, defaultValue,
+                    "expected value: " + defaultValue + ", get: " + message);
         }
     }
 
@@ -132,10 +131,11 @@ public class RESTEasyParamCdiTest {
                             .param("formParam1", defaultValue)
                             .param("formParam2", defaultValue)
                             .param("formParam3", defaultValue)));
-            MatcherAssert.assertThat("expected response code is 200, get: " + response.getStatus(),
-                    response.getStatus(), is(200));
+            Assertions.assertEquals(response.getStatus(), 200,
+                    "expected response code is 200, get: " + response.getStatus());
             String message = response.readEntity(String.class);
-            MatcherAssert.assertThat("expected value: " + defaultValue + ", get: " + message, message, is(defaultValue));
+            Assertions.assertEquals(message, defaultValue,
+                    "expected value: " + defaultValue + ", get: " + message);
         }
     }
 }
