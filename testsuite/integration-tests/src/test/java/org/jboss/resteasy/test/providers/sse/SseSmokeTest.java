@@ -10,8 +10,6 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.sse.SseEventSource;
 
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -80,7 +78,7 @@ public class SseSmokeTest {
             Assertions.assertTrue(result, "Waiting for event to be delivered has timed out.");
         }
         Assertions.assertEquals(1, results.size(), "One message was expected.");
-        MatcherAssert.assertThat("The message doesn't have expected content.", "Zeytin;zeytin@resteasy.org",
-                CoreMatchers.is(CoreMatchers.equalTo(results.get(0))));
+        Assertions.assertEquals(results.get(0), "Zeytin;zeytin@resteasy.org",
+                "The message doesn't have expected content.");
     }
 }

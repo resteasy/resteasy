@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.providers.jackson2;
 
-import static org.hamcrest.CoreMatchers.containsString;
-
 import java.lang.reflect.ReflectPermission;
 import java.util.PropertyPermission;
 
@@ -10,7 +8,6 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -94,9 +91,10 @@ public class CustomJackson2ProviderTest {
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        MatcherAssert.assertThat("Jackson2Provider jar was loaded from unexpected source",
-                entity, containsString(
-                        CustomJackson2ProviderTest.class.getSimpleName() + ".war/WEB-INF/lib/resteasy-jackson2-provider"));
+        Assertions.assertTrue(
+                entity.contains(
+                        CustomJackson2ProviderTest.class.getSimpleName() + ".war/WEB-INF/lib/resteasy-jackson2-provider"),
+                "Jackson2Provider jar was loaded from unexpected source");
     }
 
 }

@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.crypto;
 
-import static org.hamcrest.CoreMatchers.containsString;
-
 import java.lang.reflect.ReflectPermission;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -20,7 +18,6 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -322,9 +319,10 @@ public class SigningTest {
             Assertions.fail("Validation error excepted.");
         } catch (ProcessingException pe) {
             UnauthorizedSignatureException e = (UnauthorizedSignatureException) pe.getCause();
-            MatcherAssert.assertThat("Unexcepted error", e.getMessage(),
-                    containsString("Failed to verify signatures:\r\n"));
-            MatcherAssert.assertThat("Unexcepted error", e.getMessage(), containsString("Signature is stale"));
+            Assertions.assertTrue(e.getMessage().contains("Failed to verify signatures:\r\n"),
+                    "Unexcepted error");
+            Assertions.assertTrue(e.getMessage().contains("Signature is stale"),
+                    "Unexcepted error");
         }
         response.close();
     }
@@ -445,9 +443,10 @@ public class SigningTest {
             throw new Exception("Signing error excepted");
         } catch (ProcessingException pe) {
             UnauthorizedSignatureException e = (UnauthorizedSignatureException) pe.getCause();
-            MatcherAssert.assertThat("Unexcepted error", e.getMessage(),
-                    containsString("Failed to verify signatures:\r\n"));
-            MatcherAssert.assertThat("Unexcepted error", e.getMessage(), containsString("Signature expired"));
+            Assertions.assertTrue(e.getMessage().contains("Failed to verify signatures:\r\n"),
+                    "Unexcepted error");
+            Assertions.assertTrue(e.getMessage().contains("Signature expired"),
+                    "Unexcepted error");
         }
         response.close();
     }
@@ -479,9 +478,10 @@ public class SigningTest {
         } catch (ProcessingException pe) {
             UnauthorizedSignatureException e = (UnauthorizedSignatureException) pe.getCause();
             logger.info("UnauthorizedSignatureException message: " + e.getMessage());
-            MatcherAssert.assertThat("Unexcepted error", e.getMessage(),
-                    containsString("Failed to verify signatures:\r\n"));
-            MatcherAssert.assertThat("Unexcepted error", e.getMessage(), containsString("Failed to verify signature."));
+            Assertions.assertTrue(e.getMessage().contains("Failed to verify signatures:\r\n"),
+                    "Unexcepted error");
+            Assertions.assertTrue(e.getMessage().contains("Failed to verify signature."),
+                    "Unexcepted error");
         }
         response.close();
     }

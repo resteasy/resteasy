@@ -1,11 +1,8 @@
 package org.jboss.resteasy.test.providers.atom;
 
-import static org.hamcrest.CoreMatchers.containsString;
-
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -76,8 +73,8 @@ public class LinkTest {
     public void testRelativeLinkStringOutput() throws Exception {
         Response response = client.target(generateURL("/products/333")).request().get();
         String stringResponse = response.readEntity(String.class);
-        MatcherAssert.assertThat("Wrong link in response", stringResponse, containsString("/LinkTest/products/333/self\""));
-        MatcherAssert.assertThat("Wrong link in response", stringResponse, containsString("/LinkTest/products\""));
+        Assertions.assertTrue(stringResponse.contains("/LinkTest/products/333/self\""), "Wrong link in response");
+        Assertions.assertTrue(stringResponse.contains("/LinkTest/products\""), "Wrong link in response");
         response.close();
     }
 }

@@ -1,8 +1,5 @@
 package org.jboss.resteasy.reactor;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 import java.time.Duration;
@@ -165,8 +162,8 @@ public class ReactorTest {
                                         .subscriberContext(Context.of(ctxKey, 24))))
                 .subscriberContext(ctx -> ctx.put(ctxKey, 42));
 
-        assertThat(mono.block(), equalTo("got it-got it-got it"));
-        assertThat(secrets, equalTo(Arrays.asList(42, 42, 24)));
+        Assertions.assertEquals(mono.block(), "got it-got it-got it");
+        Assertions.assertTrue(equalTo(secrets, Arrays.asList(42, 42, 24)));
     }
 
     @Test
@@ -261,7 +258,7 @@ public class ReactorTest {
                             },
                             t -> {
                                 if (!(t instanceof TimeoutException)) {
-                                    assertThat(t.getMessage(), containsString("signal within 500ms")); // crappy assertion:(
+                                    Assertions.assertTrue(t.getMessage().contains("signal within 500ms")); // crappy assertion:(
                                 }
                                 latch.countDown();
                             },
@@ -286,4 +283,16 @@ public class ReactorTest {
         Assertions.assertEquals((Integer) 42, data);
     }
 
+    // the order of the values in the 2 lists must be the same
+    private boolean equalTo(List<Integer> src, List<Integer> control) {
+        if (src.size() == control.size()) {
+            for (int i = 0; i < src.size(); i++) {
+                if (src.get(i).intValue() != control.get(i).intValue()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
 }
