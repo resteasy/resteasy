@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.providers.multipart;
 
-import static org.hamcrest.CoreMatchers.hasItems;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ReflectPermission;
 import java.lang.reflect.Type;
@@ -22,7 +20,6 @@ import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -193,8 +190,8 @@ public class ContextProvidersTest {
                 customers.add(inputPart.getBody(ContextProvidersCustomer.class, null).getName());
             }
             Assertions.assertEquals(2, customers.size(), "Wrong count of customers from response");
-            MatcherAssert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
-            MatcherAssert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
+            Assertions.assertTrue(hasItem(customers, "Bill"), "Received customers list do not contain all items");
+            Assertions.assertTrue(hasItem(customers, "Bob"), "Received customers list do not contain all items");
         } catch (Exception e) {
             Assertions.fail(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119", e));
         }
@@ -228,8 +225,8 @@ public class ContextProvidersTest {
                 }
             }
             Assertions.assertEquals(2, customers.size(), "Wrong count of customers from response");
-            MatcherAssert.assertThat("Received customers list do not contain all items", customers, hasItems("Bill"));
-            MatcherAssert.assertThat("Received customers list do not contain all items", customers, hasItems("Bob"));
+            Assertions.assertTrue(hasItem(customers, "Bill"), "Received customers list do not contain all items");
+            Assertions.assertTrue(hasItem(customers, "Bob"), "Received customers list do not contain all items");
         } catch (Exception e) {
             Assertions.fail(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119", e));
         }
@@ -256,14 +253,16 @@ public class ContextProvidersTest {
             Assertions.assertEquals(2, keys.size(), "Wrong count of keys from response");
             Assertions.assertTrue(keys.contains("bill"));
             Assertions.assertTrue(keys.contains("bob"));
-            MatcherAssert.assertThat("Missing key from response", keys, hasItems("bill"));
-            MatcherAssert.assertThat("Missing key from response", keys, hasItems("bob"));
+            Assertions.assertTrue(hasItem(keys, "bill"), "Missing key from response");
+            Assertions.assertTrue(hasItem(keys, "bob"), "Missing key from response");
             Set<String> parts = new HashSet<>();
             for (InputPart inputPart : map.values()) {
                 parts.add(inputPart.getBody(String.class, null));
             }
-            MatcherAssert.assertThat("Received customers list do not contain all items", parts, hasItems("Bill"));
-            MatcherAssert.assertThat("Received customers list do not contain all items", parts, hasItems("Bob"));
+            Assertions.assertTrue(hasItem(parts, "Bill"),
+                    "Received customers list do not contain all items");
+            Assertions.assertTrue(hasItem(parts, "Bob"),
+                    "Received customers list do not contain all items");
         } catch (Exception e) {
             Assertions.fail(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119", e));
         }
@@ -359,10 +358,10 @@ public class ContextProvidersTest {
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
         names = post("/post/form", output, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
         Assertions.assertEquals(2, names.size(), "Wrong count of customers from response");
-        MatcherAssert.assertThat("Received customers list do not contain all items", names,
-                hasItems(new ContextProvidersName("Bill")));
-        MatcherAssert.assertThat("Received customers list do not contain all items", names,
-                hasItems(new ContextProvidersName("Bob")));
+        Assertions.assertTrue(hasItem(names, new ContextProvidersName("Bill")),
+                "Received customers list do not contain all items");
+        Assertions.assertTrue(hasItem(names, new ContextProvidersName("Bob")),
+                "Received customers list do not contain all items");
     }
 
     /**
@@ -385,10 +384,10 @@ public class ContextProvidersTest {
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
         names = post("/post/list", customers, MULTIPART_MIXED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
         Assertions.assertEquals(2, names.size(), "Wrong count of customers from response");
-        MatcherAssert.assertThat("Received customers list do not contain all items", names,
-                hasItems(new ContextProvidersName("Bill")));
-        MatcherAssert.assertThat("Received customers list do not contain all items", names,
-                hasItems(new ContextProvidersName("Bob")));
+        Assertions.assertTrue(hasItem(names, new ContextProvidersName("Bill")),
+                "Received customers list do not contain all items");
+        Assertions.assertTrue(hasItem(names, new ContextProvidersName("Bob")),
+                "Received customers list do not contain all items");
     }
 
     /**
@@ -411,10 +410,10 @@ public class ContextProvidersTest {
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
         names = post("/post/map", customers, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
         Assertions.assertEquals(2, names.size(), "Wrong count of customers from response");
-        MatcherAssert.assertThat("Received customers list do not contain all items", names,
-                hasItems(new ContextProvidersName("bill:Bill")));
-        MatcherAssert.assertThat("Received customers list do not contain all items", names,
-                hasItems(new ContextProvidersName("bob:Bob")));
+        Assertions.assertTrue(hasItem(names, new ContextProvidersName("bill:Bill")),
+                "Received customers list do not contain all items");
+        Assertions.assertTrue(hasItem(names, new ContextProvidersName("bob:Bob")),
+                "Received customers list do not contain all items");
     }
 
     /**
@@ -438,10 +437,10 @@ public class ContextProvidersTest {
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
         names = post("/post/related", output, MULTIPART_RELATED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
         Assertions.assertEquals(2, names.size(), "Wrong count of customers from response");
-        MatcherAssert.assertThat("Received customers list do not contain all items", names,
-                hasItems(new ContextProvidersName("Bill")));
-        MatcherAssert.assertThat("Received customers list do not contain all items", names,
-                hasItems(new ContextProvidersName("Bob")));
+        Assertions.assertTrue(hasItem(names, new ContextProvidersName("Bill")),
+                "Received customers list do not contain all items");
+        Assertions.assertTrue(hasItem(names, new ContextProvidersName("Bob")),
+                "Received customers list do not contain all items");
     }
 
     /**
@@ -540,5 +539,21 @@ public class ContextProvidersTest {
 
     public abstract static class S3 extends AnnotationLiteral<XopWithMultipartRelated> implements XopWithMultipartRelated {
         private static final long serialVersionUID = 1L;
+    }
+
+    private static boolean hasItem(Set<String> l, String s) {
+        for (String str : l) {
+            if (str.equals(s))
+                return true;
+        }
+        return false;
+    }
+
+    private static boolean hasItem(List<ContextProvidersName> names, ContextProvidersName cpn) {
+        for (ContextProvidersName n : names) {
+            if (n.equals(cpn))
+                return true;
+        }
+        return false;
     }
 }

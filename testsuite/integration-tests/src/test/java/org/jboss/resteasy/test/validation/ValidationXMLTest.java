@@ -14,8 +14,6 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -269,35 +267,31 @@ public class ValidationXMLTest {
             ViolationReport entity = response.readEntity(ViolationReport.class);
             logger.info("report: " + entity);
             final List<ResteasyConstraintViolation> propertyViolations = entity.getPropertyViolations();
-            MatcherAssert.assertThat(WRONG_ERROR_MSG,
-                    resolveValues(propertyViolations, ResteasyConstraintViolation::getPath),
-                    Matchers.hasItems("s", "t", "u"));
-            MatcherAssert.assertThat(WRONG_ERROR_MSG,
-                    resolveValues(propertyViolations, ResteasyConstraintViolation::getValue),
-                    Matchers.hasItems("a", "b", "c"));
-            MatcherAssert.assertThat(WRONG_ERROR_MSG,
-                    resolveValues(propertyViolations, ResteasyConstraintViolation::getMessage),
-                    Matchers.hasItems("size must be between 2 and 4", "size must be between 2 and 4",
-                            "size must be between 3 and 5"));
+            Assertions.assertTrue(hasItems(resolveValues(propertyViolations, ResteasyConstraintViolation::getPath),
+                    "s", "t", "u"), WRONG_ERROR_MSG);
+            Assertions.assertTrue(hasItems(resolveValues(propertyViolations, ResteasyConstraintViolation::getValue),
+                    "a", "b", "c"), WRONG_ERROR_MSG);
+            Assertions.assertTrue(hasItems(resolveValues(propertyViolations, ResteasyConstraintViolation::getMessage),
+                    "size must be between 2 and 4", "size must be between 2 and 4",
+                    "size must be between 3 and 5"), WRONG_ERROR_MSG);
 
             final List<ResteasyConstraintViolation> classViolations = entity.getClassViolations();
-            MatcherAssert.assertThat(WRONG_ERROR_MSG, resolveValues(classViolations, ResteasyConstraintViolation::getPath),
-                    Matchers.hasItem(""));
-            MatcherAssert.assertThat(WRONG_ERROR_MSG,
-                    resolveValues(classViolations, ResteasyConstraintViolation::getMessage),
-                    Matchers.hasItem("Concatenation of s and u must have length > 5"));
+            Assertions.assertTrue(hasItems(resolveValues(classViolations, ResteasyConstraintViolation::getPath), ""),
+                    WRONG_ERROR_MSG);
+            Assertions.assertTrue(hasItems(resolveValues(classViolations, ResteasyConstraintViolation::getMessage),
+                    "Concatenation of s and u must have length > 5"),
+                    WRONG_ERROR_MSG);
 
             final List<ResteasyConstraintViolation> parameterViolations = entity.getParameterViolations();
-            MatcherAssert.assertThat(WRONG_ERROR_MSG, parameterViolations, Matchers.hasSize(1));
-            MatcherAssert.assertThat(WRONG_ERROR_MSG, parameterViolations.get(0).getPath(), Matchers.startsWith("post."));
-            MatcherAssert.assertThat(WRONG_ERROR_MSG,
-                    resolveValues(parameterViolations, ResteasyConstraintViolation::getMessage),
-                    Matchers.hasItem("s must have length: 3 <= length <= 5"));
-            MatcherAssert.assertThat(WRONG_ERROR_MSG,
-                    resolveValues(parameterViolations, ResteasyConstraintViolation::getValue),
-                    Matchers.hasItem("ValidationXMLFoo[p]"));
-
-            MatcherAssert.assertThat(WRONG_ERROR_MSG, entity.getReturnValueViolations(), Matchers.hasSize(0));
+            Assertions.assertEquals(parameterViolations.size(), 1, WRONG_ERROR_MSG);
+            Assertions.assertTrue(parameterViolations.get(0).getPath().startsWith("post."),
+                    WRONG_ERROR_MSG);
+            Assertions.assertTrue(hasItems(resolveValues(parameterViolations, ResteasyConstraintViolation::getMessage),
+                    "s must have length: 3 <= length <= 5"), WRONG_ERROR_MSG);
+            Assertions.assertTrue(hasItems(resolveValues(parameterViolations, ResteasyConstraintViolation::getValue),
+                    "ValidationXMLFoo[p]"), WRONG_ERROR_MSG);
+            Assertions.assertEquals(entity.getReturnValueViolations().size(), 0,
+                    WRONG_ERROR_MSG);
             response.close();
         }
 
@@ -437,5 +431,9 @@ public class ValidationXMLTest {
         return c.stream()
                 .map(mapper)
                 .collect(Collectors.toList());
+    }
+
+    private static boolean hasItems(Collection<String> items, String... controlList) {
+        return items.containsAll(List.of(controlList));
     }
 }

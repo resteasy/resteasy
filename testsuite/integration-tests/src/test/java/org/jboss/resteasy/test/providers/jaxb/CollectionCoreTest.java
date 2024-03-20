@@ -1,13 +1,10 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
-import static org.hamcrest.CoreMatchers.containsString;
-
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -124,7 +121,7 @@ public class CollectionCoreTest {
         response = request.put(Entity.entity(str, "application/xml"));
         Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
-        MatcherAssert.assertThat(WRONG_RESPONSE, str, containsString("http://customer.com"));
+        Assertions.assertTrue(str.contains("http://customer.com"), WRONG_RESPONSE);
     }
 
     /**
@@ -142,7 +139,7 @@ public class CollectionCoreTest {
         response = request.put(Entity.entity(str, "application/xml"));
         Assertions.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
-        MatcherAssert.assertThat(WRONG_RESPONSE, str, containsString("http://customer.com"));
+        Assertions.assertTrue(str.contains("http://customer.com"), WRONG_RESPONSE);
     }
 
     /**
@@ -157,7 +154,7 @@ public class CollectionCoreTest {
         String str = response.readEntity(String.class);
         logger.info(String.format("Response: %s", str));
         response.close();
-        MatcherAssert.assertThat(WRONG_RESPONSE, str, containsString("http://customer.com"));
+        Assertions.assertTrue(str.contains("http://customer.com"), WRONG_RESPONSE);
     }
 
 }

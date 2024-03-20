@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.jose;
 
-import static org.hamcrest.CoreMatchers.containsString;
-
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
@@ -14,8 +12,6 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemWriter;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.jose.jws.Algorithm;
 import org.jboss.resteasy.jose.jws.JWSBuilder;
@@ -58,13 +54,13 @@ public class JWSTest {
         JWSHeader header = new JWSHeader(Algorithm.HS256, null, null);
         String val = header.toString();
         logger.info(val);
-        MatcherAssert.assertThat(HEADER_ERROR_MSG, val, containsString("alg"));
-        MatcherAssert.assertThat(HEADER_ERROR_MSG, val, containsString("HS256"));
+        Assertions.assertTrue(val.contains("alg"), HEADER_ERROR_MSG);
+        Assertions.assertTrue(val.contains("HS256"), HEADER_ERROR_MSG);
         header = mapper.readValue(val, JWSHeader.class);
         val = mapper.writeValueAsString(header);
         logger.info(val);
-        MatcherAssert.assertThat(HEADER_ERROR_MSG, val, containsString("alg"));
-        MatcherAssert.assertThat(HEADER_ERROR_MSG, val, containsString("HS256"));
+        Assertions.assertTrue(val.contains("alg"), HEADER_ERROR_MSG);
+        Assertions.assertTrue(val.contains("HS256"), HEADER_ERROR_MSG);
     }
 
     /**
@@ -152,7 +148,7 @@ public class JWSTest {
                 .rsa256(keyPair.getPrivate());
 
         logger.info(encoded);
-        MatcherAssert.assertThat(encoded, CoreMatchers.not(CoreMatchers.containsString("=")));
+        Assertions.assertFalse(encoded.contains("="));
 
         JWSInput input = new JWSInput(encoded, ResteasyProviderFactory.getInstance());
         String msg = (String) input.readContent(String.class, null, null, MediaType.TEXT_PLAIN_TYPE);

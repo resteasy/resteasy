@@ -124,7 +124,7 @@ class ClientConfigProviderTestJarHelper {
 
     static Process runClientConfigProviderTestJar(String jarPath, String[] args) throws IOException {
         final Pattern pattern = Pattern.compile(
-                ".*(maven|plexus|sisu|xnio|jsoup|compress|shrinkwrap|IntelliJ|mockito|arquillian|aether|wildfly|glassfish|hibernate|netty|xerces|xalan|hamcrest|io7m|slf4j|objenesis|sshd|marshalling|remoting|bytebuddy).*");
+                ".*(maven|plexus|sisu|xnio|jsoup|compress|shrinkwrap|IntelliJ|mockito|arquillian|aether|wildfly|glassfish|hibernate|netty|xerces|xalan|io7m|slf4j|objenesis|sshd|marshalling|remoting|bytebuddy).*");
 
         final String cp = jarPath + File.pathSeparator + System.getProperty("java.class.path");
         final String[] paths = cp.split(Pattern.quote(File.pathSeparator));

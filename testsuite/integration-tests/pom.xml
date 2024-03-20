@@ -440,10 +440,6 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpasyncclient</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>io.reactivex.rxjava2</groupId>

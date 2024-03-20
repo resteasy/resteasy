@@ -1,12 +1,9 @@
 package org.jboss.resteasy.test.jose;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.core.Is.is;
-
-import org.hamcrest.MatcherAssert;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.jwt.JsonSerialization;
 import org.jboss.resteasy.jwt.JsonWebToken;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -29,10 +26,10 @@ public class JWTTest {
         String json = JsonSerialization.toString(token, true);
         logger.info(String.format("JSON: %s", json));
 
-        MatcherAssert.assertThat(ERROR_MSG, json, containsString("jti"));
-        MatcherAssert.assertThat(ERROR_MSG, json, containsString("123"));
+        Assertions.assertTrue(json.contains("jti"), ERROR_MSG);
+        Assertions.assertTrue(json.contains("123"), ERROR_MSG);
         token = JsonSerialization.fromString(JsonWebToken.class, json);
         logger.info(String.format("id: %s", token.getId()));
-        MatcherAssert.assertThat(ERROR_MSG, token.getId(), is("123"));
+        Assertions.assertEquals(token.getId(), "123", ERROR_MSG);
     }
 }

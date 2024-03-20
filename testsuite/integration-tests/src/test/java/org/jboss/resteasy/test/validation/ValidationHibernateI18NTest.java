@@ -1,12 +1,9 @@
 package org.jboss.resteasy.test.validation;
 
-import static org.hamcrest.core.StringStartsWith.startsWith;
-
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -20,6 +17,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -73,7 +71,7 @@ public class ValidationHibernateI18NTest {
         ViolationReport report = response.readEntity(ViolationReport.class);
         String message = report.getReturnValueViolations().iterator().next().getMessage();
         TestUtil.countViolations(report, 0, 0, 0, 1);
-        MatcherAssert.assertThat(WRONG_ERROR_MSG, message, startsWith(expectedMessage));
+        Assertions.assertTrue(message.startsWith(expectedMessage), WRONG_ERROR_MSG);
         response.close();
     }
 }
