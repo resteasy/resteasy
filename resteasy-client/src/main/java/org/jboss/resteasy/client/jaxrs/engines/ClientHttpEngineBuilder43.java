@@ -199,9 +199,15 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
             final SSLContext theContext) {
         final HttpClient httpClient;
         rcBuilder.setProxy(defaultProxy);
+        // This is somewhat an arbitrary number of seconds to run the eviction thread at. However, this is the default
+        // in WildFly so we will use it. We are not exposing this as a property as other clients may not require a
+        // a setting like this.
+        final long maxIdleTime = 60L;
         if (System.getSecurityManager() == null) {
             HttpClientBuilder httpClientBuilder = HttpClientBuilder.create()
                     .setConnectionManager(cm)
+                    .evictExpiredConnections()
+                    .evictIdleConnections(maxIdleTime, TimeUnit.SECONDS)
                     .setDefaultRequestConfig(rcBuilder.build())
                     .disableContentCompression();
             if (!that.isCookieManagementEnabled()) {
@@ -217,6 +223,8 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                 public HttpClient run() {
                     HttpClientBuilder httpClientBuilder = HttpClientBuilder.create()
                             .setConnectionManager(cm)
+                            .evictExpiredConnections()
+                            .evictIdleConnections(maxIdleTime, TimeUnit.SECONDS)
                             .setDefaultRequestConfig(rcBuilder.build())
                             .disableContentCompression();
                     if (!that.isCookieManagementEnabled()) {
