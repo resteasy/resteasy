@@ -56,7 +56,11 @@ import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 /**
  * An Apache HTTP engine for use with the new Builder Config style.
+ *
+ * @deprecated This will be removed in a future release as the underlying default implementation of the
+ *             {@link org.jboss.resteasy.client.jaxrs.ClientHttpEngine} will be replaced.
  */
+@Deprecated(forRemoval = true, since = "6.2")
 public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEngine {
     private static class CleanupAction implements Runnable {
         private final AtomicBoolean closed;
