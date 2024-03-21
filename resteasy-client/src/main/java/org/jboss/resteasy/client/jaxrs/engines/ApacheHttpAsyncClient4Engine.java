@@ -90,7 +90,11 @@ import org.jboss.resteasy.util.CaseInsensitiveMap;
  * </ul>
  *
  * @author Markus Kull
+ *
+ * @deprecated This will be removed in a future release as the underlying default implementation of the
+ *             {@link org.jboss.resteasy.client.jaxrs.ClientHttpEngine} will be replaced.
  */
+@Deprecated(forRemoval = true, since = "6.2")
 public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Closeable {
     protected final CloseableHttpAsyncClient client;
     protected final boolean closeHttpClient;

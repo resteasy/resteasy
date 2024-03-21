@@ -5,6 +5,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.spi.config.SizeUnit;
 
+/**
+ *
+ * @deprecated This will be removed in a future release as the underlying default implementation of the
+ *             {@link org.jboss.resteasy.client.jaxrs.ClientHttpEngine} will be replaced.
+ */
+@Deprecated(forRemoval = true, since = "6.2")
 public interface ApacheHttpClientEngine extends ClientHttpEngine {
     /**
      * Enumeration to represent memory units.
