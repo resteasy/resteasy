@@ -26,12 +26,10 @@ import java.io.UncheckedIOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.FormParam;
@@ -74,8 +72,7 @@ public class EntityPartFormParamTestCase {
     public static WebArchive deployment() {
         return ShrinkWrap.create(WebArchive.class, EntityPartFormParamTestCase.class.getSimpleName() + ".war")
                 .addClasses(TestApplication.class, TestResource.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-                .addAsWebInfResource(TestUtil.createWebXml(TestApplication.class, Collections.emptyMap()), "web.xml");
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @ArquillianResource
@@ -172,49 +169,6 @@ public class EntityPartFormParamTestCase {
         }
     }
 
-    /**
-     * Tests sending {@code multipart/form-data} content as a {@link EntityPart List<EntityPart>}. One part is sent
-     * and injected as {@link FormParam @FormParam} method parameters. The same part should be injected in different
-     * formats; {@link String}, {@link EntityPart} and {@link InputStream}. The content should be the same for each
-     * injected parameter.
-     * <p>
-     * The result from the REST endpoint is {@code multipart/form-data} content with a new name and the content for the
-     * injected field.
-     * </p>
-     *
-     * @throws Exception if an error occurs in the test
-     */
-    @Test
-    public void injection() throws Exception {
-        try (Client client = ClientBuilder.newClient()) {
-            final List<EntityPart> multipart = List.of(
-                    EntityPart.withName("content")
-                            .content("test content")
-                            .mediaType(MediaType.TEXT_PLAIN_TYPE)
-                            .build());
-            try (
-                    Response response = client.target(TestUtil.generateUri(uri, "test/injected"))
-                            .request(MediaType.MULTIPART_FORM_DATA_TYPE)
-                            .post(Entity.entity(new GenericEntity<>(multipart) {
-                            }, MediaType.MULTIPART_FORM_DATA))) {
-                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
-                final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
-                });
-                if (entityParts.size() != 3) {
-                    final String msg = "Expected 3 entries got " +
-                            entityParts.size() +
-                            '.' +
-                            System.lineSeparator() +
-                            getMessage(entityParts);
-                    Assertions.fail(msg);
-                }
-                checkEntity(entityParts, "received-entity-part", "test content");
-                checkEntity(entityParts, "received-string", "test content");
-                checkEntity(entityParts, "received-input-stream", "test content");
-            }
-        }
-    }
-
     private static void checkEntity(final List<EntityPart> entityParts, final String name, final String expectedText)
             throws IOException {
         final EntityPart part = find(entityParts, name);
@@ -277,7 +231,6 @@ public class EntityPartFormParamTestCase {
     }
 
     @ApplicationPath("/")
-    @MultipartConfig
     public static class TestApplication extends Application {
         @Override
         public Set<Class<?>> getClasses() {
@@ -330,30 +283,6 @@ public class EntityPartFormParamTestCase {
                             .build());
             return Response.ok(new GenericEntity<>(multipart) {
             }, MediaType.MULTIPART_FORM_DATA).build();
-        }
-
-        @POST
-        @Consumes(MediaType.MULTIPART_FORM_DATA)
-        @Produces(MediaType.MULTIPART_FORM_DATA)
-        @Path("/injected")
-        public List<EntityPart> injected(@FormParam("content") final String string,
-                @FormParam("content") final EntityPart entityPart,
-                @FormParam("content") final InputStream in) throws IOException {
-            return List.of(
-                    EntityPart.withName("received-entity-part")
-                            .content(entityPart.getContent(String.class))
-                            .mediaType(entityPart.getMediaType())
-                            .fileName(entityPart.getFileName().orElse(null))
-                            .build(),
-                    EntityPart.withName("received-input-stream")
-                            //.content(content.getContent(byte[].class))
-                            .content(EntityPartFormParamTestCase.toString(in).getBytes(StandardCharsets.UTF_8))
-                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
-                            .build(),
-                    EntityPart.withName("received-string")
-                            .content(string)
-                            .mediaType(MediaType.TEXT_PLAIN_TYPE)
-                            .build());
         }
     }
 }

@@ -15,3 +15,4 @@ org.jboss.resteasy.plugins.providers.multipart.MultipartFormAnnotationWriter
 org.jboss.resteasy.plugins.providers.multipart.MimeMultipartProvider
 org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedReader
 org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedWriter
+org.jboss.resteasy.plugins.providers.multipart.EntityPartFilter

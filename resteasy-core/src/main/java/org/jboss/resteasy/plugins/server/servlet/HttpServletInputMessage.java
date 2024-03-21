@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.servlet.ServletContext;
@@ -21,6 +22,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
@@ -31,6 +33,7 @@ import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
+import org.jboss.resteasy.spi.multipart.MultipartContent;
 import org.jboss.resteasy.util.Encode;
 
 /**
@@ -137,7 +140,24 @@ public class HttpServletInputMessage extends BaseHttpRequest {
     }
 
     @Override
+    public Optional<EntityPart> getFormEntityPart(final String name) {
+        // First attempt to see if we have the MultipartParts API in the context
+        final MultipartContent multipartContent = ResteasyContext.getContextData(MultipartContent.class);
+        if (multipartContent != null) {
+            return multipartContent.entityPart(name);
+        }
+        return super.getFormEntityPart(name);
+    }
+
+    @Override
     public List<EntityPart> getFormEntityParts() {
+        // First attempt to see if we have the MultipartParts API in the context
+        final MultipartContent multipartContent = ResteasyContext.getContextData(MultipartContent.class);
+        if (multipartContent != null) {
+            return multipartContent.entityParts();
+        }
+        // Default back to the HttpServletRequest.getParts(). Note this may throw an exception if the servlet was not
+        // setup with a multipart-config.
         try {
             final Collection<Part> parts = request.getParts();
             return parts.stream().map((p) -> {
