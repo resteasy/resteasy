@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.validation;
 
-import static org.hamcrest.CoreMatchers.containsString;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,8 +14,6 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -196,22 +192,30 @@ public class ValidationJaxbTest {
         Assertions.assertNotNull(header, "Validation header is missing");
         Assertions.assertTrue(Boolean.valueOf(header), "Wrong value of validation header");
         String report = response.readEntity(String.class);
-        MatcherAssert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG, report, containsString(expected));
+        Assertions.assertTrue(report.contains(expected), UNEXPECTED_VALIDATION_ERROR_MSG);
         response.close();
     }
 
     private void assertValidationReport(Response response) {
         ViolationReport report = response.readEntity(ViolationReport.class);
         final List<ResteasyConstraintViolation> propertyViolations = report.getPropertyViolations();
-        MatcherAssert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG,
-                resolveValues(propertyViolations, (r) -> r.getConstraintType().name()), Matchers.hasItem("PROPERTY"));
-        MatcherAssert.assertThat(UNEXPECTED_VALIDATION_ERROR_MSG,
-                resolveValues(propertyViolations, ResteasyConstraintViolation::getPath), Matchers.hasItem("s"));
+        Assertions.assertTrue(hasItem(resolveValues(propertyViolations, (r) -> r.getConstraintType().name()), "PROPERTY"),
+                UNEXPECTED_VALIDATION_ERROR_MSG);
+        Assertions.assertTrue(hasItem(resolveValues(propertyViolations, ResteasyConstraintViolation::getPath), "s"),
+                UNEXPECTED_VALIDATION_ERROR_MSG);
     }
 
     private static <T> Collection<String> resolveValues(final Collection<T> c, final Function<T, String> mapper) {
         return c.stream()
                 .map(mapper)
                 .collect(Collectors.toList());
+    }
+
+    private static boolean hasItem(Collection<String> l, String s) {
+        for (String str : l) {
+            if (str.equals(s))
+                return true;
+        }
+        return false;
     }
 }

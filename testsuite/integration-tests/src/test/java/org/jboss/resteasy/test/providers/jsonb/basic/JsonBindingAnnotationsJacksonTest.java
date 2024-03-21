@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.providers.jsonb.basic;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
 
 import jakarta.ws.rs.client.Client;
@@ -10,7 +9,6 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -103,8 +101,8 @@ public class JsonBindingAnnotationsJacksonTest {
                 new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
         Cat json = target.request().post(entity, Cat.class);
         logger.info("Request entity: " + entity);
-        MatcherAssert.assertThat("Variable with JsonbTransient annotation should be transient, if JSON-B is used",
-                json.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
+        Assertions.assertEquals(json.getTransientVar(), Cat.DEFAULT_TRANSIENT_VAR_VALUE,
+                "Variable with JsonbTransient annotation should be transient, if JSON-B is used");
     }
 
     /**
@@ -124,8 +122,8 @@ public class JsonBindingAnnotationsJacksonTest {
                 new Cat("Rosa", "semi-british", "tabby", true, JsonBindingResource.CLIENT_TRANSIENT_VALUE), mediaType);
         Cat json = target.request().post(entity, Cat.class);
         logger.info("Request entity: " + entity);
-        MatcherAssert.assertThat("Variable with JsonbTransient annotation should not be transient, if JSON-B is not used",
-                json.getTransientVar(), is(JsonBindingResource.RETURNED_TRANSIENT_VALUE));
+        Assertions.assertEquals(json.getTransientVar(), JsonBindingResource.RETURNED_TRANSIENT_VALUE,
+                "Variable with JsonbTransient annotation should not be transient, if JSON-B is not used");
     }
 
     /**
@@ -149,12 +147,11 @@ public class JsonBindingAnnotationsJacksonTest {
             logger.info("Request entity: " + entity);
             Response response = target.request().post(entity);
             // check server logs
-            MatcherAssert.assertThat("Server printed more than one error message during the request",
-                    errorLogCounter.count(),
-                    is(1));
+            Assertions.assertEquals(errorLogCounter.count(), 1,
+                    "Server printed more than one error message during the request");
             // check response
             int responseCode = response.getStatus();
-            MatcherAssert.assertThat("Wrong response code", responseCode, is(500));
+            Assertions.assertEquals(responseCode, 500, "Wrong response code");
             String responseBody = response.readEntity(String.class);
             Assertions.assertTrue(responseBody.matches(".*RESTEASY008200:.*jakarta.json.bind.JsonbException.*"),
                     "Wrong response error message: " + responseBody);

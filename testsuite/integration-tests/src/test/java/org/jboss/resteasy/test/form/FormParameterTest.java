@@ -1,14 +1,11 @@
 package org.jboss.resteasy.test.form;
 
-import static org.hamcrest.core.IsNull.notNullValue;
-
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.Form;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -70,7 +67,7 @@ public class FormParameterTest {
         Response response = client.target(generateURL("/put/noquery/")).request()
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .put(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
-        MatcherAssert.assertThat("Wrong response", response, notNullValue());
+        Assertions.assertTrue(response != null, "Wrong response");
 
         response.bufferEntity();
         Assertions.assertEquals("abc xyz", response.readEntity(String.class),
@@ -90,7 +87,7 @@ public class FormParameterTest {
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .put(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-        MatcherAssert.assertThat("Wrong response", response, notNullValue());
+        Assertions.assertTrue(response != null, "Wrong response");
         response.bufferEntity();
         Assertions.assertEquals("abc+xyz", response.readEntity(String.class),
                 "Wrong response");
@@ -109,7 +106,7 @@ public class FormParameterTest {
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-        MatcherAssert.assertThat("Wrong response", response, notNullValue());
+        Assertions.assertTrue(response != null, "Wrong response");
         response.bufferEntity();
         Assertions.assertEquals("abc xyz", response.readEntity(String.class),
                 "Wrong response");
@@ -128,7 +125,7 @@ public class FormParameterTest {
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-        MatcherAssert.assertThat("Wrong response", response, notNullValue());
+        Assertions.assertTrue(response != null, "Wrong response");
         response.bufferEntity();
         Assertions.assertEquals("abc+xyz", response.readEntity(String.class),
                 "Wrong response");
@@ -148,7 +145,7 @@ public class FormParameterTest {
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .put(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-        MatcherAssert.assertThat("Wrong response", response, notNullValue());
+        Assertions.assertTrue(response != null, "Wrong response");
         response.bufferEntity();
         Assertions.assertEquals("abc xyz", response.readEntity(String.class),
                 "Wrong response");
@@ -168,7 +165,7 @@ public class FormParameterTest {
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .put(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-        MatcherAssert.assertThat("Wrong response", response, notNullValue());
+        Assertions.assertTrue(response != null, "Wrong response");
         response.bufferEntity();
         Assertions.assertEquals("abc+xyz", response.readEntity(String.class),
                 "Wrong response");
@@ -187,7 +184,7 @@ public class FormParameterTest {
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-        MatcherAssert.assertThat("Wrong response", response, notNullValue());
+        Assertions.assertTrue(response != null, "Wrong response");
         response.bufferEntity();
         Assertions.assertEquals("abc xyz", response.readEntity(String.class),
                 "Wrong response");
@@ -206,7 +203,7 @@ public class FormParameterTest {
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-        MatcherAssert.assertThat("Wrong response", response, notNullValue());
+        Assertions.assertTrue(response != null, "Wrong response");
         response.bufferEntity();
         Assertions.assertEquals("abc+xyz", response.readEntity(String.class),
                 "Wrong response");

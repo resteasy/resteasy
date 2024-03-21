@@ -1,9 +1,5 @@
 package org.jboss.resteasy.test.providers.jsonb.basic;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
@@ -15,7 +11,6 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -117,8 +112,8 @@ public class JsonBindingTest {
         Cat json = target.request().post(entity, Cat.class);
         logger.info("Request entity: " + entity);
         Assertions.assertTrue("Alfred".equals(json.getName()), "Failed to return the correct name");
-        MatcherAssert.assertThat("Variable with JsonbTransient annotation should be transient, if JSON-B is used",
-                json.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
+        Assertions.assertEquals(json.getTransientVar(), Cat.DEFAULT_TRANSIENT_VAR_VALUE,
+                "Variable with JsonbTransient annotation should be transient, if JSON-B is used");
 
         String jsonbResponse = target.request().post(entity).readEntity(String.class);
         Assertions.assertEquals("{\"color\":\"ginger\",\"sort\":\"semi-british\",\"name\":\"Alfred\",\"domesticated\":true}",
@@ -147,9 +142,10 @@ public class JsonBindingTest {
                         JsonBindingResource.CLIENT_TRANSIENT_VALUE),
                 mediaType);
         Cat response = target.request().post(entity, Cat.class);
-        MatcherAssert.assertThat("Failed to return the correct name", response.getName(), is("Rosa"));
-        MatcherAssert.assertThat("Variable with JsonbTransient annotation should be transient, if JSON-B is used",
-                response.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
+        Assertions.assertEquals(response.getName(), "Rosa",
+                "Failed to return the correct name");
+        Assertions.assertEquals(response.getTransientVar(), Cat.DEFAULT_TRANSIENT_VAR_VALUE,
+                "Variable with JsonbTransient annotation should be transient, if JSON-B is used");
     }
 
     /**
@@ -178,9 +174,9 @@ public class JsonBindingTest {
                 mediaType);
         Cat response = target.request().post(entity, Cat.class);
 
-        MatcherAssert.assertThat("Failed to return the correct name", response.getName(), is("Graça"));
-        MatcherAssert.assertThat("Variable with JsonbTransient annotation should be transient, if JSON-B is used",
-                response.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
+        Assertions.assertEquals(response.getName(), "Graça", "Failed to return the correct name");
+        Assertions.assertEquals(response.getTransientVar(), Cat.DEFAULT_TRANSIENT_VAR_VALUE,
+                "Variable with JsonbTransient annotation should be transient, if JSON-B is used");
     }
 
     /**
@@ -209,9 +205,9 @@ public class JsonBindingTest {
                 mediaType);
         Cat response = target.request().post(entity, Cat.class);
 
-        MatcherAssert.assertThat("Failed to return the correct name", response.getName(), is("Graça"));
-        MatcherAssert.assertThat("Variable with JsonbTransient annotation should be transient, if JSON-B is used",
-                response.getTransientVar(), is(Cat.DEFAULT_TRANSIENT_VAR_VALUE));
+        Assertions.assertEquals(response.getName(), "Graça", "Failed to return the correct name");
+        Assertions.assertEquals(response.getTransientVar(), Cat.DEFAULT_TRANSIENT_VAR_VALUE,
+                "Variable with JsonbTransient annotation should be transient, if JSON-B is used");
     }
 
     /**
@@ -230,8 +226,8 @@ public class JsonBindingTest {
         WebTarget target = client.target(PortProviderUtil.generateURL("/test/jsonBinding/get/cat", CUSTOM_JSON_PROVIDER));
         Response response = target.request().get();
         String responseAsString = response.readEntity(String.class);
-        MatcherAssert.assertThat("Server should use custom JSON provider", responseAsString,
-                containsString(Cat.CUSTOM_TO_STRING_FORMAT));
+        Assertions.assertTrue(responseAsString.contains(Cat.CUSTOM_TO_STRING_FORMAT),
+                "Server should use custom JSON provider");
         logger.info("Response as a String: " + responseAsString);
         response.close();
 
@@ -249,8 +245,8 @@ public class JsonBindingTest {
             logger.info("StackTrace of exception:");
             logger.info(stackTraceString);
             for (String stackTraceLine : stackTraceString.split(System.lineSeparator())) {
-                MatcherAssert.assertThat("User-unfriendly error message in JSON-B", stackTraceLine,
-                        not(containsString("Messages (implementation not found)")));
+                Assertions.assertFalse(stackTraceLine.contains("Messages (implementation not found)"),
+                        "User-unfriendly error message in JSON-B");
             }
         }
     }

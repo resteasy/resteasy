@@ -1,13 +1,10 @@
 package org.jboss.resteasy.test.resource.basic;
 
-import static org.hamcrest.CoreMatchers.is;
-
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -64,14 +61,14 @@ public class MatchedResourceTest {
     public void testEmpty() throws Exception {
         WebTarget base = client.target(generateURL("/start"));
         Response response = base.request().post(Entity.text(""));
-        MatcherAssert.assertThat(response.getStatus(), is(HttpResponseCodes.SC_OK));
+        Assertions.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
         String rtn = response.readEntity(String.class);
         Assertions.assertEquals("started", rtn);
         response.close();
 
         base = client.target(generateURL("/start"));
         response = base.request().post(Entity.entity("<xml/>", "application/xml"));
-        MatcherAssert.assertThat(response.getStatus(), is(HttpResponseCodes.SC_OK));
+        Assertions.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
         rtn = response.readEntity(String.class);
         Assertions.assertEquals(rtn, "<xml/>", "Wrong response content");
         response.close();

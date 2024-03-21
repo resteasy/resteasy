@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.core.logging;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.core.Is.is;
 import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
 
 import java.util.Map;
@@ -12,7 +10,6 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -110,12 +107,14 @@ public class DebugLoggingTest {
         Assertions.assertEquals("data", strResponse, "Wrong response");
 
         // assert log messages after request
-        MatcherAssert.assertThat("Correct body reader was not used/logged", bodyReaderStringLog.count(), greaterThan(0));
-        MatcherAssert.assertThat("Correct body writer was not used/logged", bodyWriterStringLog.count(), greaterThan(0));
-        MatcherAssert.assertThat("Correct reader interceptor was not used/logged", readerInterceptorLog.count(),
-                greaterThan(0));
-        MatcherAssert.assertThat("Correct writer interceptor was not used/logged", writerInterceptorLog.count(),
-                greaterThan(0));
+        Assertions.assertTrue(bodyReaderStringLog.count() > 0,
+                "Correct body reader was not used/logged");
+        Assertions.assertTrue(bodyWriterStringLog.count() > 0,
+                "Correct body writer was not used/logged");
+        Assertions.assertTrue(readerInterceptorLog.count() > 0,
+                "Correct reader interceptor was not used/logged");
+        Assertions.assertTrue(writerInterceptorLog.count() > 0,
+                "Correct writer interceptor was not used/logged");
     }
 
     /**
@@ -154,14 +153,18 @@ public class DebugLoggingTest {
         Assertions.assertEquals("wi_datadata", strResponse, "Wrong response");
 
         // assert log messages after request
-        MatcherAssert.assertThat("Incorrect body reader was used/logged", bodyReaderStringLog.count(), is(0));
-        MatcherAssert.assertThat("Incorrect body writer was used/logged", bodyWriterStringLog.count(), is(0));
-        MatcherAssert.assertThat("Correct readerInterceptor was not used/logged", readerInterceptorLog.count(),
-                greaterThan(0));
-        MatcherAssert.assertThat("Correct writerInterceptor was not used/logged", writerInterceptorLog.count(),
-                greaterThan(0));
-        MatcherAssert.assertThat("Correct body reader was not used/logged", bodyReaderCustomLog.count(), greaterThan(0));
-        MatcherAssert.assertThat("Correct body writer was not used/logged", bodyWriterCustomLog.count(), greaterThan(0));
+        Assertions.assertEquals(bodyReaderStringLog.count(), 0,
+                "Incorrect body reader was used/logged");
+        Assertions.assertEquals(bodyWriterStringLog.count(), 0,
+                "Incorrect body writer was used/logged");
+        Assertions.assertTrue(readerInterceptorLog.count() > 0,
+                "Correct readerInterceptor was not used/logged");
+        Assertions.assertTrue(writerInterceptorLog.count() > 0,
+                "Correct writerInterceptor was not used/logged");
+        Assertions.assertTrue(bodyReaderCustomLog.count() > 0,
+                "Correct body reader was not used/logged");
+        Assertions.assertTrue(bodyWriterCustomLog.count() > 0,
+                "Correct body writer was not used/logged");
     }
 
 }

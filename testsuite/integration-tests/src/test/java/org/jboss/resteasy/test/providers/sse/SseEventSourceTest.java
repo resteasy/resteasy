@@ -12,8 +12,6 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.sse.InboundSseEvent;
 import jakarta.ws.rs.sse.SseEventSource;
 
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -65,9 +63,10 @@ public class SseEventSourceTest {
                 boolean waitResult = latch.await(30, TimeUnit.SECONDS);
                 Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
             }
+
             Assertions.assertEquals(1, results.size(), "One message was expected.");
-            MatcherAssert.assertThat("The message doesn't have expected content.", "data",
-                    CoreMatchers.is(CoreMatchers.equalTo(results.get(0).readData(String.class))));
+            Assertions.assertEquals("data", results.get(0).readData(String.class),
+                    "The message doesn't have expected content.");
         } finally {
             client.close();
         }
@@ -102,8 +101,8 @@ public class SseEventSourceTest {
                 Assertions.assertTrue(waitResult, "Waiting for event to be delivered has timed out.");
             }
             Assertions.assertEquals(1, results.size(), "One message was expected.");
-            MatcherAssert.assertThat("The message doesn't have expected content.", "data",
-                    CoreMatchers.is(CoreMatchers.equalTo(results.get(0).readData(String.class))));
+            Assertions.assertEquals("data", results.get(0).readData(String.class),
+                    "The message doesn't have expected content.");
         } finally {
             client.close();
         }
@@ -143,8 +142,8 @@ public class SseEventSourceTest {
             }
             Assertions.assertEquals(0, errors.get());
             Assertions.assertEquals(1, results.size(), "One message was expected.");
-            MatcherAssert.assertThat("The message doesn't have expected content.", "data",
-                    CoreMatchers.is(CoreMatchers.equalTo(results.get(0).readData(String.class))));
+            Assertions.assertEquals("data", results.get(0).readData(String.class),
+                    "The message doesn't have expected content.");
             Assertions.assertEquals(1, completed.get(), "On complete callback should be called one time");
         } finally {
             client.close();
@@ -183,8 +182,8 @@ public class SseEventSourceTest {
             Assertions.assertTrue(completed.get() > 0, "Waiting for onComplete has timed out.");
             Assertions.assertEquals(0, errors.get());
             Assertions.assertEquals(1, results.size(), "One message was expected.");
-            MatcherAssert.assertThat("The message doesn't have expected content.", "data",
-                    CoreMatchers.is(CoreMatchers.equalTo(results.get(0).readData(String.class))));
+            Assertions.assertEquals("data", results.get(0).readData(String.class),
+                    "The message doesn't have expected content.");
             Assertions.assertEquals(1, completed.get(), "On complete callback should be called one time");
         } finally {
             client.close();
