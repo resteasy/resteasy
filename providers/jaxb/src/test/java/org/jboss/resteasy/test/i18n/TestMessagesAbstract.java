@@ -6,8 +6,8 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -29,11 +29,11 @@ public abstract class TestMessagesAbstract extends TestMessagesParent {
             return;
         }
 
-        Assert.assertEquals(getExpected(BASE + "05", "collectionWrappingFailedNamespace", "xyz", "http://localhost"),
+        Assertions.assertEquals(getExpected(BASE + "05", "collectionWrappingFailedNamespace", "xyz", "http://localhost"),
                 Messages.MESSAGES.collectionWrappingFailedNamespace("xyz", "http://localhost"));
-        Assert.assertEquals(getExpected(BASE + "10", "couldNotFindJAXBContextFinder", "xx/yy"),
+        Assertions.assertEquals(getExpected(BASE + "10", "couldNotFindJAXBContextFinder", "xx/yy"),
                 Messages.MESSAGES.couldNotFindJAXBContextFinder(new MediaType("xx", "yy")));
-        Assert.assertEquals(getExpected(BASE + "55", "validXmlRegistryCouldNotBeLocated", getClass()),
+        Assertions.assertEquals(getExpected(BASE + "55", "validXmlRegistryCouldNotBeLocated", getClass()),
                 Messages.MESSAGES.validXmlRegistryCouldNotBeLocated());
     }
 
