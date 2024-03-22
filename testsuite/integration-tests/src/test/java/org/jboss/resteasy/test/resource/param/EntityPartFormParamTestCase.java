@@ -59,6 +59,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -66,6 +67,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup(LoggingSetupTask.class)
+@RequiresModule(value = "org.jboss.resteasy.resteasy-multipart-provider", minVersion = "6.2.8.Final")
 public class EntityPartFormParamTestCase {
 
     @Deployment
