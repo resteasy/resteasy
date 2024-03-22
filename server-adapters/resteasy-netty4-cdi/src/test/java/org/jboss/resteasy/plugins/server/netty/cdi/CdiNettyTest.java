@@ -6,7 +6,7 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.jandex.Index;
 import org.jboss.resteasy.cdi.CdiInjectorFactory;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
@@ -15,20 +15,20 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Created by John.Ament on 2/23/14.
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class CdiNettyTest {
 
-    private CdiNettyJaxrsServer server;
-    private int port;
+    private static CdiNettyJaxrsServer server;
+    private static int port;
 
     @Deployment
     public static JavaArchive createArchive() {
@@ -46,10 +46,10 @@ public class CdiNettyTest {
                 .addAsManifestResource(new StringAsset(beans), "beans.xml");
     }
 
-    @Before
-    public void init() throws Exception {
+    @BeforeAll
+    public static void init() throws Exception {
         while (port < 8000)
-            this.port = (int) ((new Random().nextDouble() * 8000) + 1000);
+            port = (int) ((new Random().nextDouble() * 8000) + 1000);
         CdiNettyJaxrsServer netty = new CdiNettyJaxrsServer();
         ResteasyDeployment rd = new ResteasyDeploymentImpl();
         final ResourceScanner scanner = ResourceScanner.of(Index.of(EchoResource.class, DefaultExceptionMapper.class));
@@ -60,25 +60,25 @@ public class CdiNettyTest {
         netty.setPort(port);
         netty.setRootResourcePath("/api");
         netty.start();
-        this.server = netty;
+        server = netty;
     }
 
-    @After
-    public void shutdown() {
-        this.server.stop();
+    @AfterAll
+    public static void shutdown() {
+        server.stop();
     }
 
     @Test
     public void testLoadSuccess() {
         String value = ClientBuilder.newClient().target("http://localhost:" + port)
                 .path("/api/echo").queryParam("name", "Bob").request().buildGet().invoke(String.class);
-        Assert.assertEquals("Hello, Bob!", value);
+        Assertions.assertEquals("Hello, Bob!", value);
     }
 
     @Test
     public void testLoadFailure() {
         Response response = ClientBuilder.newClient().target("http://localhost:" + port)
                 .path("/api/echo").queryParam("name", "null").request().buildGet().invoke();
-        Assert.assertEquals(406, response.getStatus());
+        Assertions.assertEquals(406, response.getStatus());
     }
 }

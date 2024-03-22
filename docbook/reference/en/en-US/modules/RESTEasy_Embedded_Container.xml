@@ -18,10 +18,10 @@
 import io.undertow.servlet.api.DeploymentInfo;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.GET;
@@ -30,7 +30,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Application;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -58,19 +57,17 @@ public class UndertowTest
       @Override
       public Set<Class<?>> getClasses()
       {
-         HashSet<Class<?>> classes = new HashSet<Class<?>>();
-         classes.add(Resource.class);
-         return classes;
+         return Set.of(Resource.class);
       }
    }
 
-   @BeforeClass
+   @BeforeAll
    public static void init() throws Exception
    {
       server = new UndertowJaxrsServer().start();
    }
 
-   @AfterClass
+   @AfterAll
    public static void stop() throws Exception
    {
       server.stop();
@@ -83,7 +80,7 @@ public class UndertowTest
       Client client = ClientBuilder.newClient();
       String val = client.target(TestPortProvider.generateURL("/base/test"))
                          .request().get(String.class);
-      Assert.assertEquals("hello world", val);
+      Assertions.assertEquals("hello world", val);
       client.close();
    }
 
@@ -94,7 +91,7 @@ public class UndertowTest
       Client client = ClientBuilder.newClient();
       String val = client.target(TestPortProvider.generateURL("/root/test"))
                          .request().get(String.class);
-      Assert.assertEquals("hello world", val);
+      Assertions.assertEquals("hello world", val);
       client.close();
    }
 
@@ -108,7 +105,7 @@ public class UndertowTest
       Client client = ClientBuilder.newClient();
       String val = client.target(TestPortProvider.generateURL("/di/base/test"))
                          .request().get(String.class);
-      Assert.assertEquals("hello world", val);
+      Assertions.assertEquals("hello world", val);
       client.close();
    }
 }
