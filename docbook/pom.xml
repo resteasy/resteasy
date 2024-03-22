@@ -12,7 +12,7 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-reference-guide</artifactId>
-    <version>6.2.8.Final-SNAPSHOT</version>
+    <version>6.2.8.Final</version>
     <packaging>jdocbook</packaging>
     <name>RESTEasy Reference Guide</name>
     <description/>
