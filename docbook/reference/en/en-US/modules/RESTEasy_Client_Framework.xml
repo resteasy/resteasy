@@ -136,7 +136,7 @@ public interface SimpleClient
     </para>
     <para>
 
-        RESTEasy has a simple API based on Apache HttpClient. Generate a proxy, then invoke methods on the
+        RESTEasy has a simple API to generate a proxy, then invoke methods on the
         proxy. The invoked method gets translated to an HTTP request based on how the method was annotated
         and posted to the server. Here's how to set this up:
     </para>
@@ -511,6 +511,13 @@ name: b
    
    <section id="transport_layer">
      <title>Apache HTTP Client 4.x and other backends</title>
+       <warning>
+           <para>
+               <emphasis role="bold">Note: </emphasis> The Apache HTTP Client support is deprecated in RESTEasy. The exposed
+               API's will eventually be removed. However, it's still the default client implementation as we prepare for
+               a replacement backing HTTP client.
+           </para>
+       </warning>
 
        <para>
            Network communication between the client and server is handled by default in RESTEasy.
@@ -556,11 +563,11 @@ name: b
                </thead>
                <tbody>
                    <row>
-                       <entry>ApacheHttpClient43Engine</entry>
+                       <entry>ApacheHttpClient43Engine (deprecated)</entry>
                        <entry>Uses HttpComponents HttpClient 4.3+</entry>
                    </row>
                    <row>
-                       <entry>ApacheHttpAsyncClient4Engine</entry>
+                       <entry>ApacheHttpAsyncClient4Engine (deprecated)</entry>
                        <entry>Uses HttpComponents HttpAsyncClient</entry>
                    </row>
                    <row>

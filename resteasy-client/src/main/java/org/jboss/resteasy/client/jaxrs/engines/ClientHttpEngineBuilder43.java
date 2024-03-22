@@ -44,6 +44,12 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.spi.ClientConfigProvider;
 import org.jboss.resteasy.spi.PriorityServiceLoader;
 
+/**
+ *
+ * @deprecated This will be removed in a future release as the underlying default implementation of the
+ *             {@link org.jboss.resteasy.client.jaxrs.ClientHttpEngineBuilder} will be replaced.
+ */
+@Deprecated(forRemoval = true, since = "6.2")
 public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
 
     private ResteasyClientBuilder that;
