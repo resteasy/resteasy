@@ -6,8 +6,8 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.resteasy_atom.i18n.Messages;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -30,12 +30,12 @@ public abstract class TestMessagesAbstract extends TestMessagesParent {
             return;
         }
 
-        Assert.assertEquals(getExpected(BASE + "00", "consructorMustBeCalled"), Messages.MESSAGES.consructorMustBeCalled());
-        Assert.assertEquals(getExpected(BASE + "05", "unableToFindJAXBContext", "xx/yy"),
+        Assertions.assertEquals(getExpected(BASE + "00", "consructorMustBeCalled"), Messages.MESSAGES.consructorMustBeCalled());
+        Assertions.assertEquals(getExpected(BASE + "05", "unableToFindJAXBContext", "xx/yy"),
                 Messages.MESSAGES.unableToFindJAXBContext(new MediaType("xx", "yy")));
-        Assert.assertEquals(getExpected(BASE + "10", "unableToMarshal", "xx/yy"),
+        Assertions.assertEquals(getExpected(BASE + "10", "unableToMarshal", "xx/yy"),
                 Messages.MESSAGES.unableToMarshal(new MediaType("xx", "yy")));
-        Assert.assertEquals(getExpected(BASE + "15", "unableToUnmarshal", "xx/yy"),
+        Assertions.assertEquals(getExpected(BASE + "15", "unableToUnmarshal", "xx/yy"),
                 Messages.MESSAGES.unableToUnmarshal(new MediaType("xx", "yy")));
     }
 
