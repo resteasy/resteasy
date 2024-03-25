@@ -53,7 +53,7 @@
 					<tr>
 						<td>org.jboss.resteasy</td>
 						<td>resteasy-links</td>
-						<td>6.2.4.Final</td>
+						<td>6.2.4.Final--bootable-jar</td>
 					</tr>
 				</tbody>
 			</table>

@@ -10,7 +10,7 @@
 <dependency>
    <groupId>org.jboss.resteasy</groupId>
    <artifactId>resteasy-json-p-provider</artifactId>
-   <version>6.2.4.Final</version>
+   <version>6.2.4.Final--bootable-jar</version>
 </dependency>
 ]]></programlisting>
 </chapter>
