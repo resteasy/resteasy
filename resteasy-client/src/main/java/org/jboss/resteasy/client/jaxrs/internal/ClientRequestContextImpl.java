@@ -22,6 +22,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 
+import org.jboss.resteasy.util.HeaderHelper;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -201,15 +203,13 @@ public class ClientRequestContextImpl implements ClientRequestContext {
 
     @Override
     public boolean containsHeaderString(final String name, final Predicate<String> valuePredicate) {
-        // TODO (jrp) implement
-        throw new UnsupportedOperationException("Not yet implemented");
+        return containsHeaderString(name, ",", valuePredicate);
     }
 
     @Override
     public boolean containsHeaderString(final String name, final String valueSeparatorRegex,
             final Predicate<String> valuePredicate) {
-        // TODO (jrp) implement
-        throw new UnsupportedOperationException("Not yet implemented");
+        return HeaderHelper.containsHeaderString(invocation.getHeaders().getHeader(name), valueSeparatorRegex, valuePredicate);
     }
 
     /**

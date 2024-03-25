@@ -201,15 +201,13 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
 
     @Override
     public boolean containsHeaderString(final String name, final Predicate<String> valuePredicate) {
-        // TODO (jrp) implement
-        throw new UnsupportedOperationException("Not yet implemented");
+        return httpRequest.getHttpHeaders().containsHeaderString(name, valuePredicate);
     }
 
     @Override
     public boolean containsHeaderString(final String name, final String valueSeparatorRegex,
             final Predicate<String> valuePredicate) {
-        // TODO (jrp) implement
-        throw new UnsupportedOperationException("Not yet implemented");
+        return httpRequest.getHttpHeaders().containsHeaderString(name, valueSeparatorRegex, valuePredicate);
     }
 
     @Override

@@ -17,6 +17,7 @@ import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.jboss.resteasy.util.CookieParser;
 import org.jboss.resteasy.util.DateUtil;
+import org.jboss.resteasy.util.HeaderHelper;
 import org.jboss.resteasy.util.LocaleHelper;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.WeightedLanguage;
@@ -152,15 +153,13 @@ public class ResteasyHttpHeaders implements HttpHeaders {
 
     @Override
     public boolean containsHeaderString(final String name, final Predicate<String> valuePredicate) {
-        // TODO (jrp) implement
-        throw new UnsupportedOperationException("Not yet implemented");
+        return containsHeaderString(name, ",", valuePredicate);
     }
 
     @Override
     public boolean containsHeaderString(final String name, final String valueSeparatorRegex,
             final Predicate<String> valuePredicate) {
-        // TODO (jrp) implement
-        throw new UnsupportedOperationException("Not yet implemented");
+        return HeaderHelper.containsHeaderString(getHeaderString(name), valueSeparatorRegex, valuePredicate);
     }
 
     @Override

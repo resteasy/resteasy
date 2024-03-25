@@ -33,6 +33,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
+import org.jboss.resteasy.util.HeaderHelper;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -260,15 +261,13 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
 
     @Override
     public boolean containsHeaderString(final String name, final Predicate<String> valuePredicate) {
-        // TODO (jrp) implement
-        throw new UnsupportedOperationException("Not yet implemented");
+        return containsHeaderString(name, ",", valuePredicate);
     }
 
     @Override
     public boolean containsHeaderString(final String name, final String valueSeparatorRegex,
             final Predicate<String> valuePredicate) {
-        // TODO (jrp) implement
-        throw new UnsupportedOperationException("Not yet implemented");
+        return HeaderHelper.containsHeaderString(getHeaderString(name), valueSeparatorRegex, valuePredicate);
     }
 
     @Override
