@@ -50,6 +50,9 @@ public class InvalidMediaTypeTest {
         ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
         Invocation.Builder request = client.target(generateURL("/test")).request();
 
+        // Missing slash
+        doTest(request, "invalid");
+
         // Missing type or subtype
         doTest(request, "/");
         doTest(request, "/*");
