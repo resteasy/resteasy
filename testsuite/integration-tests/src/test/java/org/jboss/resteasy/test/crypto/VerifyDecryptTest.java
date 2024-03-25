@@ -28,6 +28,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
@@ -40,6 +41,7 @@ import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@Tag("NotForBootableJar")
 public class VerifyDecryptTest {
     private static final String RESPONSE_ERROR_MSG = "Response contains wrong content";
 

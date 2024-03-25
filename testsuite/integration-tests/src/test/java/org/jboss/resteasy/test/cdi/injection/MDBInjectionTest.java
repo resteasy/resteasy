@@ -47,6 +47,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
@@ -61,6 +62,7 @@ import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup(JmsTestQueueSetupTask.class)
+@Tag("NotForBootableJar")
 public class MDBInjectionTest {
     protected static final Logger log = Logger.getLogger(MDBInjectionTest.class.getName());
 

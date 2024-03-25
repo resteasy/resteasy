@@ -25,6 +25,11 @@
         <module.jar.path>${jboss.home}${file.separator}modules${file.separator}system${file.separator}layers${file.separator}base</module.jar.path>
 
         <version.org.jboss.shrinkwrap.resolver>3.3.0</version.org.jboss.shrinkwrap.resolver>
+
+        <!-- Channel Manifest for Bootable Jar -->
+        <channel-manifest.groupId>org.jboss.eap.channels</channel-manifest.groupId>
+        <channel-manifest.artifactId>eap-8.0-plus-eap-xp-5.0</channel-manifest.artifactId>
+        <channel-manifest.version>1.0.1.GA-redhat-20240229</channel-manifest.version>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
@@ -171,6 +176,180 @@
                                         <!-- The CustomJackson2Provider doesn't work with this if the full project is not built. -->
                                         <exclude>**/CustomJackson2ProviderTest.java</exclude>
                                     </excludes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>bootablejar.profile.channel</id>
+            <activation>
+                <property>
+                    <name>ts.bootable.channel</name>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.wildfly.plugins</groupId>
+                            <artifactId>wildfly-jar-maven-plugin</artifactId>
+                            <configuration>
+                                <channels>
+                                    <channel>
+                                        <manifest>
+                                            <groupId>${channel-manifest.groupId}</groupId>
+                                            <artifactId>${channel-manifest.artifactId}</artifactId>
+                                            <version>${channel-manifest.version}</version>
+                                        </manifest>
+                                    </channel>
+                                </channels>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <profile>
+            <id>bootablejar.profile</id>
+            <activation>
+                <property>
+                    <name>ts.bootable</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- Disable the standard copy-based provisioning -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>initialize-basedirs</id>
+                                <phase>none</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-jar-maven-plugin</artifactId>
+                        <executions>
+                            <!-- Package a jaxrs-server layer with a few other layers -->
+                            <execution>
+                                <id>bootable-jar-observability-packaging</id>
+                                <goals>
+                                    <goal>package</goal>
+                                </goals>
+                                <phase>process-test-resources</phase>
+                                <configuration>
+                                    <output-file-name>jaxrs-server.jar</output-file-name>
+                                    <hollowJar>true</hollowJar>
+                                    <record-state>false</record-state>
+                                    <log-time>true</log-time>
+                                    <plugin-options>
+                                        <jboss-fork-embedded>true</jboss-fork-embedded>
+                                    </plugin-options>
+                                    <feature-packs>
+                                        <feature-pack>
+                                            <groupId>${testsuite.wildfly.galleon.pack.group.id}</groupId>
+                                            <artifactId>wildfly-galleon-pack</artifactId>
+                                            <version>${server.version}</version>
+                                            <!-- Required for rxjava -->
+                                            <includedPackages>
+                                                <package>org.jboss.resteasy.resteasy-rxjava2</package>
+                                            </includedPackages>
+                                        </feature-pack>
+                                    </feature-packs>
+                                    <layers>
+                                        <layer>jaxrs-server</layer>
+                                        <layer>microprofile-config</layer>
+                                        <layer>datasources</layer>
+                                        <layer>h2-default-datasource</layer>
+                                        <layer>undertow-https</layer>
+                                        <layer>ejb</layer>
+                                    </layers>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <install.dir>${project.build.directory}/wildfly</install.dir>
+                                <bootable.jar>${project.build.directory}/jaxrs-server.jar</bootable.jar>
+                                <arquillian.xml>arquillian-bootable.xml</arquillian.xml>
+                                <container.management.port.managed>${container.management.port.managed}</container.management.port.managed>
+                                <securityManagerArg>${securityManagerArg}</securityManagerArg>
+                                <additionalJvmArgs>${additionalJvmArgs}</additionalJvmArgs>
+                                <ipv6>false</ipv6>
+                                <ipv6ArquillianSettings></ipv6ArquillianSettings>
+                                <node>127.0.0.1</node>
+                                <project.version>${project.version}</project.version>
+                                <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
+                                <security.provider>${security.provider}</security.provider>
+                                <modular.jdk.args>${modular.jdk.args}</modular.jdk.args>
+                                <container.base.dir.managed>${container.base.dir.managed}</container.base.dir.managed>
+                                <container.offset.managed>0</container.offset.managed>
+                                <container.qualifier.managed>${container.qualifier.managed}</container.qualifier.managed>
+                                <container.qualifier.managed.encoding>${container.qualifier.managed.encoding}</container.qualifier.managed.encoding>
+                                <container.offset.managed.encoding>${container.offset.managed.encoding}</container.offset.managed.encoding>
+                                <container.management.port.managed.encoding>${container.management.port.managed.encoding}</container.management.port.managed.encoding>
+                                <resteasy.microprofile.sseclient.buffersize>5</resteasy.microprofile.sseclient.buffersize>
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>default-test</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>disable-jsonb-client</id>
+                                <phase>none</phase>
+                            </execution>
+
+                            <execution>
+                                <id>default-test-bootable-jar</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <excludes>
+                                        <!-- Tests requires excluding JsonBindingProvider-->
+                                        <exclude>**/JsonBindingAnnotationsJacksonTest.java</exclude>
+                                        <exclude>**/SseJsonEventTest</exclude>
+                                        <!-- Tests without proper arquillian container in arquillian-bootable.xml -->
+                                        <exclude>**/*Gzip*</exclude>
+                                        <exclude>**/SslServerWithCorrectCertificateTest.java</exclude>
+                                        <exclude>**/SslServerWithWildcardHostnameCertificateTest.java</exclude>
+                                        <exclude>**/SslServerWithWrongHostnameCertificateTest.java</exclude>
+                                        <exclude>**/SslSniHostNamesTest.java</exclude>
+                                    </excludes>
+                                </configuration>
+                            </execution>
+
+                            <!-- execution with excluded JSON-B -->
+                            <execution>
+                                <id>disable-jsonb-client-bootable-jar</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <includes>
+                                        <!-- TODO JsonBindingAnnotationsJacksonTest may be included here as well with additional changes-->
+                                        <include>**/SseJsonEventTest.java</include>
+                                    </includes>
+                                    <classpathDependencyExcludes>
+                                        <classpathDependencyExclude>org.jboss.resteasy:resteasy-json-binding-provider</classpathDependencyExclude>
+                                    </classpathDependencyExcludes>
                                 </configuration>
                             </execution>
                         </executions>

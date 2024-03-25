@@ -480,6 +480,22 @@
                 <wildfly.skip>true</wildfly.skip>
             </properties>
         </profile>
+        <profile>
+            <id>bootablejar.profile</id>
+            <activation>
+                <property>
+                    <name>ts.bootable</name>
+                </property>
+            </activation>
+            <properties>
+                <additional.surefire.excluded.groups>NotForBootableJar</additional.surefire.excluded.groups>
+                <testsuite.wildfly.galleon.pack.group.id>org.wildfly</testsuite.wildfly.galleon.pack.group.id>
+            </properties>
+            <modules>
+                <module>arquillian-utils</module>
+                <module>integration-tests</module>
+            </modules>
+        </profile>
     </profiles>
 
 </project>
