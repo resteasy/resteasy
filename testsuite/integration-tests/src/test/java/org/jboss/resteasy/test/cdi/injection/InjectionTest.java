@@ -54,6 +54,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -68,6 +69,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup(JmsTestQueueSetupTask.class)
+@Tag("NotForBootableJar")
 public class InjectionTest {
     protected static final Logger log = Logger.getLogger(InjectionTest.class.getName());
 

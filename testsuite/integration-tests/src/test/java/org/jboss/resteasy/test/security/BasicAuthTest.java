@@ -35,6 +35,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.wildfly.arquillian.junit.annotations.RequiresModule;
@@ -48,6 +49,7 @@ import org.wildfly.arquillian.junit.annotations.RequiresModule;
 @ServerSetup({ BasicAuthTest.SecurityDomainSetup.class })
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@Tag("NotForBootableJar")
 public class BasicAuthTest {
 
     private static final String WRONG_RESPONSE = "Wrong response content.";
