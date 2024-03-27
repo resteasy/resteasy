@@ -49,6 +49,7 @@
         <!-- Provisioning settings -->
         <galleon.fork.embedded>true</galleon.fork.embedded>
         <galleon.offline>false</galleon.offline>
+        <channel.version>7.0</channel.version>
 
         <!-- Plugins versions -->
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
@@ -155,7 +156,8 @@
                 <module>server-adapters</module>
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
-                <module>resteasy-feature-pack</module>
+                <module>wildfly/resteasy-feature-pack</module>
+                <module>wildfly/resteasy-manifest</module>
                 <module>profiling-tests</module>
                 <module>testsuite</module>
                 <!-- Build this last -->
