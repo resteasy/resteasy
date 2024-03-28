@@ -188,6 +188,17 @@
             </modules>
         </profile>
         <profile>
+            <id>coverage</id>
+            <activation>
+                <property>
+                    <name>coverage</name>
+                </property>
+            </activation>
+            <modules>
+                <module>coverage-reports</module>
+            </modules>
+        </profile>
+        <profile>
             <id>cloud-tests</id>
             <activation>
                 <property>

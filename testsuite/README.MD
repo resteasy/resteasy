@@ -84,7 +84,14 @@ To redirect to standard output (console) use ``-Dmaven.test.redirectTestOutputTo
 
 > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dmaven.test.redirectTestOutputToFile=false
 
-## Jacoco test coverage
+## Jacoco test coverage (updated)
+You can generate a Jacoco test coverage report for the entire project by running the following in the main directory:
+
+> mvn verify -Pcoverage
+
+You can see the html report at testsuite/coverage-reports/target/site/jacoco-aggregate/index.html
+
+## Jacoco test coverage (original)
 You can generate Jacoco test coverage report with the following steps.
 
 ### Generate Jacoco test coverage data
