@@ -71,9 +71,10 @@ public class SegmentNode {
     }
 
     public MatchCache match(HttpRequest request, int start) {
-        String path = ((ResteasyUriInfo) request.getUri()).getMatchingPath();
+        final ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
+        String path = uriInfo.getMatchingPath();
         RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
-        logger.log("MATCH_PATH_FIND", ((ResteasyUriInfo) request.getUri()).getMatchingPath());
+        logger.log("MATCH_PATH_FIND", path);
 
         if (start < path.length() && path.charAt(start) == '/')
             start++;
@@ -98,9 +99,8 @@ public class SegmentNode {
                 expressionMatched = true;
                 ResourceInvoker invoker = expression.getInvoker();
                 if (invoker instanceof ResourceLocatorInvoker) {
-                    MatchCache ctx = new MatchCache();
+                    MatchCache ctx = new MatchCache(expression.getPathExpression());
                     ctx.invoker = invoker;
-                    ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
                     int length = matcher.start(expression.getNumGroups() + 1);
                     if (length == -1) {
                         uriInfo.pushMatchedPath(path);
@@ -128,6 +128,8 @@ public class SegmentNode {
                     }
                     expression.populatePathParams(request, matcher, path);
                     logger.log("MATCH_LOCATOR", invoker.getMethod());
+                    // Add the current matched path expression template
+                    uriInfo.addMatchedResourceTemplate(expression.getPathExpression());
                     return ctx;
                 } else {
 
@@ -143,6 +145,8 @@ public class SegmentNode {
         MatchCache match = match(matches, request.getHttpMethod(), request);
         if (match.match != null) {
             match.match.expression.populatePathParams(request, match.match.matcher, path);
+            // Add the current matched path expression template
+            uriInfo.addMatchedResourceTemplate(match.match.expression.getPathExpression());
             logger.log("MATCH_PATH_SELECTED", match.match.expression.getRegex());
         }
         return match;
@@ -431,7 +435,7 @@ public class SegmentNode {
                         throw new DefaultOptionsMethodException(Messages.MESSAGES.noResourceMethodFoundForOptions(),
                                 resBuilder.build());
                     }
-                    MatchCache cache = new MatchCache();
+                    MatchCache cache = new MatchCache("/");
                     cache.chosen = acceptType;
                     cache.match = null;
                     cache.invoker = new ConstantResourceInvoker(resBuilder.build());
@@ -497,7 +501,7 @@ public class SegmentNode {
         }
         MediaType acceptType = sortEntry.getAcceptType();
         request.setAttribute(RESTEASY_CHOSEN_ACCEPT, acceptType);
-        MatchCache ctx = new MatchCache();
+        MatchCache ctx = new MatchCache(sortEntry.match.expression.getPathExpression());
         ctx.chosen = acceptType;
         ctx.match = sortEntry.match;
         ctx.invoker = sortEntry.match.expression.invoker;

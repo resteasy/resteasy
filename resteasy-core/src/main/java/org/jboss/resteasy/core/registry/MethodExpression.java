@@ -50,6 +50,10 @@ public class MethodExpression extends Expression {
         ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
         for (Group group : groups) {
             String value = matcher.group(group.group);
+            // null groups are allowed, but we'll treat them as empty strings
+            if (value == null) {
+                value = "";
+            }
             uriInfo.addEncodedPathParameter(group.name, value);
             int index = matcher.start(group.group);
 

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.PathSegment;
@@ -15,7 +16,10 @@ import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.RuntimeDelegate;
 
+import org.jboss.resteasy.core.ApplicationDescription;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.spi.ResteasyUriBuilder;
+import org.jboss.resteasy.spi.util.Functions;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.PathHelper;
 
@@ -49,6 +53,53 @@ public class ResteasyUriInfo implements UriInfo {
     private String contextPath;
     private int queryIdx;
     private int pathStart;
+
+    private final List<String> matchedResourceTemplates = new ArrayList<>();
+
+    // Lazily load a string for cases when this getMatchedResourceTemplate() is never invoked
+    private final Supplier<String> matchedResourceTemplate = Functions.singleton(() -> {
+        final List<String> copy = List.copyOf(matchedResourceTemplates);
+        matchedResourceTemplates.clear();
+        final ApplicationDescription description = ResteasyContext.getContextData(ApplicationDescription.class);
+        // If we have no additional templates, just return the value from the Application
+        if (copy.isEmpty()) {
+            if (description == null) {
+                return "/";
+            }
+            return description.path();
+        }
+        // Concatenate the template based on the application path and each template resource path
+        final StringBuilder template = new StringBuilder();
+        if (description == null) {
+            template.append('/');
+        } else {
+            final String appPath = description.path();
+            if (appPath.isEmpty() || appPath.charAt(0) != '/') {
+                template.append('/');
+            }
+            template.append(appPath);
+        }
+        for (String resourceTemplate : copy) {
+            if (resourceTemplate.isBlank()) {
+                continue;
+            }
+            final int lastIndex = template.length() - 1;
+            if (template.charAt(lastIndex) == '/') {
+                if (resourceTemplate.charAt(0) == '/') {
+                    template.append(resourceTemplate.substring(1));
+                } else {
+                    template.append(resourceTemplate);
+                }
+            } else {
+                if (resourceTemplate.charAt(0) == '/') {
+                    template.append(resourceTemplate);
+                } else {
+                    template.append('/').append(resourceTemplate);
+                }
+            }
+        }
+        return template.toString();
+    });
 
     public ResteasyUriInfo(final String absoluteUri, final String contextPath) {
         this(absoluteUri, contextPath, null);
@@ -477,9 +528,23 @@ public class ResteasyUriInfo implements UriInfo {
         return ResteasyUriBuilderImpl.relativize(from, to);
     }
 
+    /**
+     * Adds a matched resource template to the collection of matched resources. This is used to generate the result for
+     * {@link #getMatchedResourceTemplate()}.
+     * <p>
+     * <strong>NOTE:</strong> When the {@link #getMatchedResourceTemplate()} is invoked, adding new matched templates
+     * as no affect.
+     * </p>
+     *
+     * @param matchedResourceTemplate the expression template to add for the resource
+     */
+    public void addMatchedResourceTemplate(final String matchedResourceTemplate) {
+        matchedResourceTemplates.add(matchedResourceTemplate);
+    }
+
     @Override
     public String getMatchedResourceTemplate() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return matchedResourceTemplate.get();
     }
 
     /**

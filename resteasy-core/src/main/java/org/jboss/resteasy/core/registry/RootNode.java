@@ -14,6 +14,7 @@ import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResourceInvoker;
 
@@ -64,6 +65,8 @@ public class RootNode {
         if (match != null) {
             //System.out.println("*** cache hit: " + key.method + " " + key.path);
             request.setAttribute(RESTEASY_CHOSEN_ACCEPT, match.chosen);
+            // We need to add the matched request template
+            ((ResteasyUriInfo) request.getUri()).addMatchedResourceTemplate(match.pathExpression());
         } else {
             match = root.match(request, start);
             if (match.match != null && match.match.expression.getNumGroups() == 0
