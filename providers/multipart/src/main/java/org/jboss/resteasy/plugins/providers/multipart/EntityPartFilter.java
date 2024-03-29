@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import jakarta.ws.rs.FormParam;
@@ -71,8 +73,7 @@ public class EntityPartFilter implements ContainerRequestFilter {
             if (boundary != null) {
                 // Get the methods and check that we need to get the entity parts
                 final Method method = resourceInfo.getResourceMethod();
-                final Parameter[] parameters = method.getParameters();
-                if (hasEntityPartParameter(parameters)) {
+                if (hasEntityPartParameter(findAllParameters(resourceInfo.getResourceClass(), method))) {
                     final MultipartFormDataInputImpl input = new MultipartFormDataInputImpl(requestContext.getMediaType(),
                             providers);
                     // Copy the input stream as it's being parsed. This will allow us to reset the entity stream for
@@ -93,7 +94,7 @@ public class EntityPartFilter implements ContainerRequestFilter {
         }
     }
 
-    private static boolean hasEntityPartParameter(final Parameter[] parameters) {
+    private static boolean hasEntityPartParameter(final List<Parameter> parameters) {
         for (Parameter parameter : parameters) {
             if (parameter.isAnnotationPresent(FormParam.class)
                     || parameter.isAnnotationPresent(org.jboss.resteasy.annotations.jaxrs.FormParam.class)) {
@@ -106,6 +107,36 @@ public class EntityPartFilter implements ContainerRequestFilter {
             }
         }
         return false;
+    }
+
+    private static List<Parameter> findAllParameters(final Class<?> resourceClass, final Method method) {
+        final List<Parameter> parameters = new ArrayList<>();
+        // First get the annotations from the method parameters
+        Collections.addAll(parameters, method.getParameters());
+        // Check the interfaces
+        for (Class<?> intf : resourceClass.getInterfaces()) {
+            addAnnotations(intf, method, parameters);
+        }
+        // If there is a super type, get the parameters from there as well
+        if (resourceClass.getSuperclass() != null) {
+            final Class<?> superType = resourceClass.getSuperclass();
+            addAnnotations(superType, method, parameters);
+            // Check the super types interfaces
+            for (Class<?> intf : superType.getInterfaces()) {
+                addAnnotations(intf, method, parameters);
+            }
+        }
+        // Get annotations from all the interfaces
+        return parameters;
+    }
+
+    private static void addAnnotations(final Class<?> type, final Method method, final List<Parameter> parameters) {
+        // Find the super method
+        try {
+            final var superMethod = type.getMethod(method.getName(), method.getParameterTypes());
+            Collections.addAll(parameters, superMethod.getParameters());
+        } catch (NoSuchMethodException ignore) {
+        }
     }
 
     private static class CopyInputStream extends InputStream {
