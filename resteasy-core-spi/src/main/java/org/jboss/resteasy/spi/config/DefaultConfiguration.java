@@ -129,6 +129,7 @@ public class DefaultConfiguration implements Configuration {
 
     private static class Resolver implements Function<String, String> {
         private final ResteasyConfiguration config;
+        private final ThreadLocal<Boolean> entered = ThreadLocal.withInitial(() -> Boolean.FALSE);
 
         private Resolver(final ResteasyConfiguration config) {
             this.config = config;
@@ -136,14 +137,26 @@ public class DefaultConfiguration implements Configuration {
 
         @Override
         public String apply(final String name) {
-            String value = System.getProperty(name);
-            if (value == null) {
-                value = System.getenv(name);
-                if (value == null && config != null) {
-                    value = config.getInitParameter(name);
-                }
+            // Check for recursion, if we're back here assume null
+            if (entered.get()) {
+                return null;
             }
-            return value;
+            try {
+                entered.set(Boolean.TRUE);
+                String value = System.getProperty(name);
+                if (value == null) {
+                    value = System.getenv(name);
+                    if (value == null && config != null) {
+                        value = config.getInitParameter(name);
+                        if (value == null) {
+                            value = config.getParameter(name);
+                        }
+                    }
+                }
+                return value;
+            } finally {
+                entered.remove();
+            }
         }
     }
 }

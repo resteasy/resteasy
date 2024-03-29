@@ -48,6 +48,16 @@ public class ServletBootstrap extends ListenerBootstrap {
     }
 
     @Override
+    public String getParameter(final String name) {
+        // First check the servlet context, not found delegate the super method
+        String value = config.getServletContext().getInitParameter(name);
+        if (value == null) {
+            value = super.getParameter(name);
+        }
+        return value;
+    }
+
+    @Override
     public Set<String> getInitParameterNames() {
         Set<String> set = new HashSet<String>();
         Enumeration<String> en = config.getInitParameterNames();
