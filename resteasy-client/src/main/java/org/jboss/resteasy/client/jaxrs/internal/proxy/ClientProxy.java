@@ -1,5 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -52,6 +53,11 @@ public class ClientProxy implements InvocationHandler {
                 return this.toString();
             } else if (method.getName().equals("as") && args.length == 1 && args[0] instanceof Class) {
                 return ProxyBuilder.proxy((Class<?>) args[0], target, config);
+            } else if (method.isDefault()) {
+                return MethodHandles.privateLookupIn(clazz, MethodHandles.lookup())
+                        .unreflectSpecial(method, clazz)
+                        .bindTo(o)
+                        .invokeWithArguments(args);
             }
         }
 
