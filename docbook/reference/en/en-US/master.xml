@@ -71,7 +71,7 @@
    <bookinfo>
       <title>RESTEasy</title>
       <subtitle>Jakarta RESTFul Web Services</subtitle>
-      <releaseinfo>7.0.0.Alpha1-SNAPSHOT</releaseinfo>
+      <releaseinfo>7.0.0.Alpha1</releaseinfo>
    </bookinfo>
 
    <toc/>

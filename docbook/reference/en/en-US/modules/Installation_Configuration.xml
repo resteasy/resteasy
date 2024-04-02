@@ -256,7 +256,7 @@
                 <programlisting><![CDATA[$ galleon.sh install wildfly:current]]></programlisting>
 
                 To install the RESTEasy upgrade on top of that you simply need to use the tool again with the Maven GAV:
-                <programlisting><![CDATA[$ galleon.sh install org.jboss.resteasy:galleon-feature-pack:7.0.0.Alpha1-SNAPSHOT]]></programlisting>
+                <programlisting><![CDATA[$ galleon.sh install org.jboss.resteasy:galleon-feature-pack:7.0.0.Alpha1]]></programlisting>
             </para>
             <para>
                 If you are using Maven to provision WildFly you can simply add the feature pack to your plugin configuration.
@@ -278,7 +278,7 @@
             <feature-pack>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>galleon-feature-pack</artifactId>
-                <version>7.0.0.Alpha1-SNAPSHOT</version>
+                <version>7.0.0.Alpha1</version>
             </feature-pack>
         </feature-packs>
     </configuration>
@@ -365,17 +365,17 @@ public class MyApplication extends Application
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-core</artifactId>
-    <version>7.0.0.Alpha1-SNAPSHOT</version>
+    <version>7.0.0.Alpha1</version>
 </dependency>
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-client</artifactId>
-    <version>7.0.0.Alpha1-SNAPSHOT</version>
+    <version>7.0.0.Alpha1</version>
 </dependency>
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxb-provider</artifactId>
-    <version>7.0.0.Alpha1-SNAPSHOT</version>
+    <version>7.0.0.Alpha1</version>
 </dependency>
 ]]></programlisting>
         <para>
@@ -408,7 +408,7 @@ public class MyApplication extends Application
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-servlet-initializer</artifactId>
-    <version>7.0.0.Alpha1-SNAPSHOT</version>
+    <version>7.0.0.Alpha1</version>
 </dependency>
 ]]></programlisting>
         </section>
@@ -1363,12 +1363,12 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-core</artifactId>
-    <version>7.0.0.Alpha1-SNAPSHOT</version>
+    <version>7.0.0.Alpha1</version>
 </dependency>
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-client</artifactId>
-    <version>7.0.0.Alpha1-SNAPSHOT</version>
+    <version>7.0.0.Alpha1</version>
 </dependency>
 ]]></programlisting>
 

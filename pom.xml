@@ -14,7 +14,7 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>7.0.0.Alpha1-SNAPSHOT</version>
+    <version>7.0.0.Alpha1</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -371,7 +371,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <configuration>
-                        <additionalJOption>--no-module-directories</additionalJOption>
                         <doclint>none</doclint>
                         <minmemory>128m</minmemory>
                         <maxmemory>1024m</maxmemory>

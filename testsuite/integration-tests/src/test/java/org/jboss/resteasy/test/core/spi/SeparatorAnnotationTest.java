@@ -44,7 +44,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpSubChapter Separator Annotation
  * @tpChapter Integration tests
  * @tpTestCaseDetails Testing Separator annotation, for each of its targets, see RESTEASY-3029
- * @tpSince RESTEasy 7.0.0.Alpha1-SNAPSHOT
+ * @tpSince RESTEasy 7.0.0.Alpha1
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
