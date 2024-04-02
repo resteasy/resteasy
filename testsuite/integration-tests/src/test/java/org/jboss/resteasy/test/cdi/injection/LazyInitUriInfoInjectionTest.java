@@ -1,9 +1,13 @@
 package org.jboss.resteasy.test.cdi.injection;
 
 import java.net.URI;
+import java.util.UUID;
 
+import jakarta.json.JsonObject;
+import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -19,6 +23,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * @tpSubChapter Injection
@@ -60,5 +65,20 @@ public class LazyInitUriInfoInjectionTest {
         val = base.request().get().readEntity(String.class);
         Assertions.assertEquals(val, "");
         client.close();
+    }
+
+    @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "7.0.0.Alpha1")
+    public void matchedResourceTemplate() {
+        try (Client client = ClientBuilder.newClient()) {
+            final String clientId = UUID.randomUUID().toString();
+            try (Response response = client.target(generateURL("test/template/" + clientId)).request().get()) {
+                Assertions.assertEquals(200, response.getStatus(), () -> response.readEntity(String.class));
+                final JsonObject json = response.readEntity(JsonObject.class);
+                Assertions.assertNotNull(json);
+                Assertions.assertEquals("/test/template/" + clientId, json.getString("path"));
+                Assertions.assertEquals("/test/template/{clientId}", json.getString("matchedResourceTemplate"));
+            }
+        }
     }
 }

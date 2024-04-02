@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import jakarta.ws.rs.client.ClientResponseContext;
 import jakarta.ws.rs.core.EntityTag;
@@ -14,6 +15,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
+
+import org.jboss.resteasy.util.HeaderHelper;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -136,6 +139,17 @@ public class ClientResponseContextImpl implements ClientResponseContext {
     @Override
     public String getHeaderString(String name) {
         return response.getHeaderString(name);
+    }
+
+    @Override
+    public boolean containsHeaderString(final String name, final Predicate<String> valuePredicate) {
+        return containsHeaderString(name, ",", valuePredicate);
+    }
+
+    @Override
+    public boolean containsHeaderString(final String name, final String valueSeparatorRegex,
+            final Predicate<String> valuePredicate) {
+        return HeaderHelper.containsHeaderString(getHeaderString(name), valueSeparatorRegex, valuePredicate);
     }
 
     // hack for MP exception mapping.  TODO revisit this implementation

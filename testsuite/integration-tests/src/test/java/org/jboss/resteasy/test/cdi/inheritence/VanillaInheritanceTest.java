@@ -12,6 +12,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.test.cdi.inheritence.resource.BookProducer;
 import org.jboss.resteasy.test.cdi.inheritence.resource.CDIInheritenceBook;
 import org.jboss.resteasy.test.cdi.inheritence.resource.CDIInheritenceInheritanceResource;
 import org.jboss.resteasy.test.cdi.inheritence.resource.CDIInheritenceSelectBook;
@@ -39,7 +40,7 @@ public class VanillaInheritanceTest {
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(VanillaInheritanceTest.class.getSimpleName());
         war.addClasses(UtilityProducer.class, CDIInheritenceBook.class, CDIInheritenceSelectBook.class,
-                CDIInheritenceInheritanceResource.class)
+                CDIInheritenceInheritanceResource.class, BookProducer.class)
                 .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }

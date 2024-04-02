@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.providers.sse.resource;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import jakarta.ejb.Singleton;
@@ -49,7 +50,7 @@ public class SseReconnectResource {
     @GET
     @Path("/unavailable")
     @Produces(MediaType.SERVER_SENT_EVENTS)
-    public void sendMessage(@Context SseEventSink sink, @Context Sse sse) {
+    public void sendMessage(@Context SseEventSink sink, @Context Sse sse) throws IOException {
         if (!isServiceAvailable) {
             isServiceAvailable = true;
             startTime = System.currentTimeMillis();
@@ -70,7 +71,7 @@ public class SseReconnectResource {
     @Path("/testReconnectDelayIsUsed")
     @Produces(MediaType.SERVER_SENT_EVENTS)
     public void testReconnectDelay(@Context SseEventSink sseEventSink, @Context Sse sse,
-            @HeaderParam(HttpHeaders.LAST_EVENT_ID_HEADER) @DefaultValue("") String lastEventId) {
+            @HeaderParam(HttpHeaders.LAST_EVENT_ID_HEADER) @DefaultValue("") String lastEventId) throws IOException {
         switch (lastEventId) {
             case "0":
                 checkReconnectDelay(TimeUnit.SECONDS.toMillis(3));
@@ -94,7 +95,7 @@ public class SseReconnectResource {
     @GET
     @Path("sselost")
     @Produces(MediaType.SERVER_SENT_EVENTS)
-    public void sseLost(@Context SseEventSink sink, @Context Sse sse) {
+    public void sseLost(@Context SseEventSink sink, @Context Sse sse) throws IOException {
         if (tryCount != 0) {
             tryCount--;
             // Throw a service unavailable, 503, with a 1 second retry.
@@ -109,7 +110,7 @@ public class SseReconnectResource {
     @GET
     @Path("data")
     @Produces(MediaType.SERVER_SENT_EVENTS)
-    public void sendData(@Context SseEventSink sink, @Context Sse sse) {
+    public void sendData(@Context SseEventSink sink, @Context Sse sse) throws IOException {
         try (SseEventSink s = sink) {
             s.send(sse.newEventBuilder().data("sse message sample").mediaType(MediaType.TEXT_HTML_TYPE)
                     .build());

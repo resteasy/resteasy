@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientRequestContext;
@@ -20,6 +21,8 @@ import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
+
+import org.jboss.resteasy.util.HeaderHelper;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -196,6 +199,17 @@ public class ClientRequestContextImpl implements ClientRequestContext {
     @Override
     public String getHeaderString(String name) {
         return invocation.getHeaders().getHeader(name);
+    }
+
+    @Override
+    public boolean containsHeaderString(final String name, final Predicate<String> valuePredicate) {
+        return containsHeaderString(name, ",", valuePredicate);
+    }
+
+    @Override
+    public boolean containsHeaderString(final String name, final String valueSeparatorRegex,
+            final Predicate<String> valuePredicate) {
+        return HeaderHelper.containsHeaderString(invocation.getHeaders().getHeader(name), valueSeparatorRegex, valuePredicate);
     }
 
     /**

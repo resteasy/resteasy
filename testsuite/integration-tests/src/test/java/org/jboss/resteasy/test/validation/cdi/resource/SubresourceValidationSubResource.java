@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.validation.cdi.resource;
 
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Size;
@@ -8,6 +9,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 
+@RequestScoped
 public class SubresourceValidationSubResource {
     @Max(3)
     private int y = 7;

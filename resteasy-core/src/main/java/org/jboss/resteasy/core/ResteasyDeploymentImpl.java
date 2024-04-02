@@ -375,16 +375,21 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
 
     public static Application createApplication(String applicationClass, Dispatcher dispatcher,
             ResteasyProviderFactory providerFactory) {
-        Class<?> clazz = null;
+        Class<? extends Application> clazz = null;
         try {
-            clazz = Thread.currentThread().getContextClassLoader().loadClass(applicationClass);
+            clazz = Thread.currentThread().getContextClassLoader().loadClass(applicationClass).asSubclass(Application.class);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 
-        Application app = (Application) providerFactory.createProviderInstance(clazz);
+        Application app = providerFactory.createProviderInstance(clazz);
         dispatcher.getDefaultContextObjects().put(Application.class, app);
         ResteasyContext.pushContext(Application.class, app);
+        final ApplicationDescription applicationDescription = ApplicationDescription.Builder.of(app)
+                .type(clazz)
+                .build();
+        dispatcher.getDefaultContextObjects().put(ApplicationDescription.class, applicationDescription);
+        ResteasyContext.pushContext(ApplicationDescription.class, applicationDescription);
         PropertyInjector propertyInjector = providerFactory.getInjectorFactory().createPropertyInjector(clazz, providerFactory);
         propertyInjector.inject(app, false);
         return app;
@@ -534,6 +539,12 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
         if (application != null) {
             dispatcher.getDefaultContextObjects().put(Application.class, application);
             ResteasyContext.getContextDataMap().put(Application.class, application);
+            // Potentially done twice as the current way this works createApplication() and registerApplication() may
+            // both be invoked. There is no guarantee of that though.
+            final ApplicationDescription applicationDescription = ApplicationDescription.Builder.of(application)
+                    .build();
+            dispatcher.getDefaultContextObjects().put(ApplicationDescription.class, applicationDescription);
+            ResteasyContext.pushContext(ApplicationDescription.class, applicationDescription);
             if (processApplication(application)) {
                 // Application class registered something so don't use scanning data.  See JAX-RS spec for more detail.
                 useScanning = false;

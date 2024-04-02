@@ -9,7 +9,9 @@ import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ext.Provider;
 
+@Provider
 @NameBoundProxiesAnnotation
 public class NameBoundCDIProxiesInterceptor implements ContainerRequestFilter, ContainerResponseFilter {
 

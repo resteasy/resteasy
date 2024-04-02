@@ -3,9 +3,11 @@ package org.jboss.resteasy.test.cdi.util;
 import java.util.Random;
 import java.util.logging.Logger;
 
+import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Produces;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 
+@Dependent
 public class UtilityProducer {
     private static Random random = new Random();
 

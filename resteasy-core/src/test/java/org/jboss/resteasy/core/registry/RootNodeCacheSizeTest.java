@@ -81,7 +81,7 @@ public class RootNodeCacheSizeTest {
             ResourceMethodInvoker resourceMethodInvoker = new ResourceMethodInvoker(resourceMethod, injectorFactory,
                     resourceFactory, providerFactory);
 
-            MatchCache match = new MatchCache();
+            MatchCache match = new MatchCache("/");
             match.match = new SegmentNode.Match(new MyMethodExpression(), null);
             match.invoker = resourceMethodInvoker;
             // returned match needs to be compliant with this if clause from RootNode

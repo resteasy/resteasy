@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.specimpl.ResteasyUriInfo;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -13,6 +14,37 @@ public class MatchCache {
     public MediaType chosen;
     public SegmentNode.Match match;
     public ResourceInvoker invoker;
+
+    private final String pathExpression;
+
+    /**
+     * Use the MatchCache(String) constructor
+     *
+     * @see #MatchCache(String)
+     */
+    @Deprecated(forRemoval = true, since = "7.0")
+    public MatchCache() {
+        this("/");
+    }
+
+    /**
+     * Creates a new match cache with the path expression for the match. The path expression is used in the
+     * {@link UriInfo#getMatchedResourceTemplate()}.
+     *
+     * @param pathExpression the path expression from the {@link SegmentNode.Match#expression}
+     */
+    protected MatchCache(final String pathExpression) {
+        this.pathExpression = (pathExpression == null) ? "/" : pathExpression;
+    }
+
+    /**
+     * Returns the path expression for this match.
+     *
+     * @return the path expression
+     */
+    protected String pathExpression() {
+        return pathExpression;
+    }
 
     public static class Key {
         public String path;

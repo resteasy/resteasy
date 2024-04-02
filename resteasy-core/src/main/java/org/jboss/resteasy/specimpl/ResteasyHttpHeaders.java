@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.function.Predicate;
 
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -16,6 +17,7 @@ import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.jboss.resteasy.util.CookieParser;
 import org.jboss.resteasy.util.DateUtil;
+import org.jboss.resteasy.util.HeaderHelper;
 import org.jboss.resteasy.util.LocaleHelper;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.WeightedLanguage;
@@ -147,6 +149,17 @@ public class ResteasyHttpHeaders implements HttpHeaders {
             builder.append(val);
         }
         return builder.toString();
+    }
+
+    @Override
+    public boolean containsHeaderString(final String name, final Predicate<String> valuePredicate) {
+        return containsHeaderString(name, ",", valuePredicate);
+    }
+
+    @Override
+    public boolean containsHeaderString(final String name, final String valueSeparatorRegex,
+            final Predicate<String> valuePredicate) {
+        return HeaderHelper.containsHeaderString(getHeaderString(name), valueSeparatorRegex, valuePredicate);
     }
 
     @Override

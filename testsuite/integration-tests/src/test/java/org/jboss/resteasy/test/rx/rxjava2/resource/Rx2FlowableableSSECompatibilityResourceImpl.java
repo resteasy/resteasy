@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.rx.rxjava2.resource;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import jakarta.ws.rs.GET;
@@ -31,6 +33,8 @@ public class Rx2FlowableableSSECompatibilityResourceImpl {
                 eventSink.send(builder.data(new Thing("e1")).build());
                 eventSink.send(builder.data(new Thing("e2")).build());
                 eventSink.send(builder.data(new Thing("e3")).build());
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
             }
         });
     }
