@@ -90,7 +90,7 @@ jobs:
         id: resteasy-build
         run:  |
           cd resteasy
-          mvn clean install -U -B -fae -DskipTests
+          mvn clean install -U -B -fae -DskipTests -Pjakarta-staging
           RESTEASY_VERSION="$(mvn -B help:evaluate -Dexpression=project.version -DforceStdout -q)"
           echo "RESTEASY_VERSION=$RESTEASY_VERSION"
           echo "RESTEASY_VERSION=$RESTEASY_VERSION" >> "$GITHUB_OUTPUT"
@@ -98,7 +98,7 @@ jobs:
         run:  |
           echo "RESTEASY_VERSION=${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
           cd resteasy-tck-runner
-          mvn clean install -U -B -fae -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
+          mvn clean install -U -B -fae -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}" -Djakarta.staging
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

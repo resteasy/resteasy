@@ -316,6 +316,19 @@
         <profile>
             <id>jakarta-staging</id>
             <repositories>
+                <!-- Check Maven Central first -->
+                <repository>
+                    <id>central</id>
+                    <name>Maven Central</name>
+                    <layout>default</layout>
+                    <url>https://repo1.maven.org/maven2</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
                 <repository>
                     <id>jakarta-sonatype-nexus-staging</id>
                     <name>Jakarta Sonatype Nexus Staging</name>
