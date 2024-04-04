@@ -39,4 +39,8 @@ public interface ResourceWithInterfaceSimpleClient {
     default String getBasicThroughDefaultMethod() {
         return getBasic();
     }
+
+    default String defaultQueryParameter(final String param) {
+        return getQueryParam(param);
+    }
 }

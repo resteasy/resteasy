@@ -6,12 +6,10 @@ import java.util.Set;
 
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
-import jakarta.ws.rs.ext.Provider;
 
 /**
  * Base class used from deployment.
  */
-@Provider
 @ApplicationPath("/")
 public class TestApplication extends Application {
 
