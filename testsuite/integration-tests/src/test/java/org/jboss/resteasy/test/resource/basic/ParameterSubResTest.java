@@ -25,7 +25,6 @@ import org.jboss.resteasy.test.resource.basic.resource.ParameterSubResRootImpl;
 import org.jboss.resteasy.test.resource.basic.resource.ParameterSubResSub;
 import org.jboss.resteasy.test.resource.basic.resource.ParameterSubResSubImpl;
 import org.jboss.resteasy.test.resource.basic.resource.RequestScopedObject;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -36,6 +35,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resources
@@ -65,7 +65,7 @@ public class ParameterSubResTest {
         war.addClass(ParameterSubResSub.class);
         war.addClass(ParameterSubResSubImpl.class);
         war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new LoggingPermission("control", "")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, ParameterSubResRootImpl.class, ParameterSubResGenericSub.class);
     }

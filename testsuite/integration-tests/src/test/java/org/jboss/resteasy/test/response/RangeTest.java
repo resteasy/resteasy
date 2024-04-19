@@ -17,7 +17,6 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.response.resource.RangeResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -27,6 +26,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -50,8 +50,8 @@ public class RangeTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(RangeTest.class.getSimpleName());
         // Deployment creates file in the filesystem
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                PermissionUtil.createTempDirPermission("read,write,delete")), "permissions.xml");
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
+                DeploymentDescriptors.createTempDirPermission("read,write,delete")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, RangeResource.class);
     }
 

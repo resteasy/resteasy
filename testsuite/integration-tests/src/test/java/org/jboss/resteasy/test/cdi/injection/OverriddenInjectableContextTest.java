@@ -30,7 +30,6 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.cdi.injection.resource.RequiredInjectableContextResource;
 import org.jboss.resteasy.test.cdi.injection.resource.RootApplication;
 import org.jboss.resteasy.test.cdi.injection.resource.TestProducer;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -38,6 +37,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -54,7 +54,7 @@ public class OverriddenInjectableContextTest {
                 .addClasses(RequiredInjectableContextResource.class, RootApplication.class, TestProducer.class)
                 .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml")
                 // This can be removed if WFARQ-118 is resolved
-                .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                .addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                         // Required for Arquillian
                         new ReflectPermission("suppressAccessChecks"),
                         new PropertyPermission("arquillian.debug", "read"),

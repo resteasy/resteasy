@@ -21,7 +21,6 @@ import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.security.smime.EnvelopedOutput;
 import org.jboss.resteasy.security.smime.SignedOutput;
 import org.jboss.resteasy.test.crypto.resource.VerifyDecryptResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -31,6 +30,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Crypto
@@ -75,9 +75,9 @@ public class VerifyDecryptTest {
         WebArchive war = TestUtil.prepareArchive(VerifyDecryptTest.class.getSimpleName());
         war.addAsResource(VerifyDecryptTest.class.getPackage(), "VerifyDecryptMycert.pem", "mycert.pem");
         war.addAsResource(VerifyDecryptTest.class.getPackage(), "VerifyDecryptMycertPrivate.pem", "mycert-private.pem");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 // Can be removed when WFLY-17061 is resolved
-                PermissionUtil.addModuleFilePermission("org.eclipse.angus.activation", "org.eclipse.angus.mail"),
+                DeploymentDescriptors.addModuleFilePermission("org.eclipse.angus.activation", "org.eclipse.angus.mail"),
                 // Can be removed when WFLY-17061 is resolved
                 new RuntimePermission("getClassLoader"),
                 new RuntimePermission("getenv.org.apache.james.mime4j.defaultStorageProvider"),

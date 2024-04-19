@@ -27,7 +27,6 @@ import org.jboss.resteasy.test.resource.param.resource.HeaderDelegateInterface4;
 import org.jboss.resteasy.test.resource.param.resource.HeaderDelegateResource;
 import org.jboss.resteasy.test.resource.param.resource.HeaderDelegateSubDelegate;
 import org.jboss.resteasy.util.DateUtil;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -37,6 +36,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Parameters
@@ -64,7 +64,7 @@ public class HeaderDelegateTest {
         war.addClass(HeaderDelegateTest.class);
 
         // required by arquillian PortProviderUtil
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new PropertyPermission("arquillian.*", "read"),
                 new PropertyPermission("ipv6", "read"),
                 new PropertyPermission("node", "read"),

@@ -18,7 +18,6 @@ import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPriiority
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPriiorityBImplementation;
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPriiorityCImplementation;
 import org.jboss.resteasy.test.core.spi.resource.ResourceClassProcessorPureEndPoint;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -26,6 +25,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter ResourceClassProcessor SPI
@@ -51,7 +51,7 @@ public class ResourceClassProcessorPriorityTest {
         WebArchive war = TestUtil.prepareArchive(ResourceClassProcessorPriorityTest.class.getSimpleName());
         war.addClass(ResourceClassProcessorPriorityTest.class);
         war.addClass(PortProviderUtil.class);
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new SocketPermission(PortProviderUtil.getHost(), "connect,resolve"),
                 new PropertyPermission("org.jboss.resteasy.port", "read"),
                 new PropertyPermission("quarkus.tester", "read"),

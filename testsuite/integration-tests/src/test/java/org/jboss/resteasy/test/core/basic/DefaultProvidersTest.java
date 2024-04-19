@@ -40,7 +40,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.test.core.basic.resource.ExceptionResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -48,6 +47,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -73,7 +73,7 @@ public class DefaultProvidersTest {
                         TestUtil.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 // This can be removed if WFARQ-118 is resolved
-                .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                .addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                         // Required for Arquillian
                         new ReflectPermission("suppressAccessChecks"),
                         new PropertyPermission("arquillian.*", "read"),

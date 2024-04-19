@@ -39,7 +39,6 @@ import org.jboss.resteasy.spi.config.Options;
 import org.jboss.resteasy.spi.config.security.ConfigPropertyPermission;
 import org.jboss.resteasy.test.security.resource.RestActivator;
 import org.jboss.resteasy.test.security.resource.SecurityCheckResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -49,6 +48,7 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * Tests that a deployment cannot exploit privileged actions.
@@ -86,7 +86,7 @@ public class SecurityManagerTest {
                 .addClasses(RestActivator.class, SecurityCheckResource.class)
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsManifestResource(
-                        PermissionUtil.createPermissionsXmlAsset(
+                        DeploymentDescriptors.createPermissionsXmlAsset(
                                 new PropertyPermission(PROPERTY_NAME, "read"),
                                 new ConfigPropertyPermission(PROPERTY_NAME),
                                 // Required to fall through to the System.getenv() in the default configuration
