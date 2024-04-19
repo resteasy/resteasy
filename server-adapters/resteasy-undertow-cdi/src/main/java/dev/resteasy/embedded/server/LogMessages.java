@@ -20,6 +20,7 @@
 package dev.resteasy.embedded.server;
 
 import org.jboss.logging.Logger;
+import org.jboss.logging.annotations.Cause;
 import org.jboss.logging.annotations.LogMessage;
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageLogger;
@@ -35,4 +36,8 @@ interface LogMessages {
     @LogMessage(level = Logger.Level.WARN)
     @Message(id = 900001, value = "Property %s is of type %s and expected to be of type %s")
     void invalidProperty(String propertyName, String foundType, String expectedType);
+
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 900010, value = "Failed to stop the deployment manager for servlet %s")
+    void failedToStopDeploymentManager(@Cause Throwable cause, String servletName);
 }
