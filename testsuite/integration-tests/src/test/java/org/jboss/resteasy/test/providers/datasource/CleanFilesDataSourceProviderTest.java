@@ -25,7 +25,6 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.providers.datasource.resource.CleanFilesDataSourceProviderResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -35,6 +34,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter DataSource provider
@@ -53,9 +53,10 @@ public class CleanFilesDataSourceProviderTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(CleanFilesDataSourceProviderTest.class.getSimpleName());
         // DataSource provider creates tmp file in the filesystem
-        war.addAsManifestResource(PermissionUtil.Builder.create()
-                .add(new PropertyPermission("java.io.tmpdir", "read"))
-                .add(PermissionUtil.createTempDirPermission("read")).build(), "permissions.xml");
+        war.addAsManifestResource(
+                DeploymentDescriptors.createPermissionsXmlAsset(DeploymentDescriptors.createTempDirPermission("read"),
+                        new PropertyPermission("java.io.tmpdir", "read")),
+                "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, CleanFilesDataSourceProviderResource.class);
     }
 

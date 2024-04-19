@@ -15,16 +15,15 @@ import java.util.Queue;
 
 import org.jboss.as.arquillian.api.ServerSetupTask;
 import org.jboss.as.arquillian.container.ManagementClient;
-import org.jboss.as.controller.client.Operation;
+import org.jboss.as.arquillian.setup.ReloadServerSetupTask;
 import org.jboss.as.controller.client.helpers.Operations;
 import org.jboss.as.controller.client.helpers.Operations.CompositeOperationBuilder;
 import org.jboss.dmr.ModelNode;
-import org.jboss.resteasy.utils.ServerReload;
 
 /**
  * This abstract class implements steps needed to create Elytron security domain.
  */
-public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSetupTask {
+public abstract class AbstractUsersRolesSecurityDomainSetup extends ReloadServerSetupTask implements ServerSetupTask {
 
     // Properties file path
     private static final String USERS_FILENAME = "users.properties";
@@ -43,7 +42,7 @@ public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSet
     }
 
     @Override
-    public void setup(ManagementClient client, String s) throws Exception {
+    public void doSetup(ManagementClient client, String s) throws Exception {
         ModelNode address = Operations.createAddress("path", "jboss.server.config.dir");
         ModelNode op = Operations.createReadAttributeOperation(address, "path");
         final Path configDir = Path.of(executeOperation(client, op).asString());
@@ -115,7 +114,7 @@ public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSet
     }
 
     @Override
-    public void tearDown(ManagementClient client, String s) throws Exception {
+    public void doTearDown(ManagementClient client, String s) throws Exception {
 
         final CompositeOperationBuilder builder = CompositeOperationBuilder.create();
         ModelNode address;
@@ -129,7 +128,6 @@ public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSet
         while ((file = filesToRemove.poll()) != null) {
             Files.deleteIfExists(file);
         }
-        ServerReload.reloadIfRequired(client.getControllerClient());
     }
 
     /**
@@ -156,22 +154,5 @@ public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSet
             }
         }
         return file;
-    }
-
-    private static ModelNode executeOperation(final ManagementClient client, final ModelNode op) throws IOException {
-        final ModelNode result = client.getControllerClient().execute(op);
-        if (!Operations.isSuccessfulOutcome(result)) {
-            throw new RuntimeException(String.format("Failed to execute op: %s%n%s", op,
-                    Operations.getFailureDescription(result).asString()));
-        }
-        return Operations.readResult(result);
-    }
-
-    private static void executeOperation(final ManagementClient client, final Operation op) throws IOException {
-        final ModelNode result = client.getControllerClient().execute(op);
-        if (!Operations.isSuccessfulOutcome(result)) {
-            throw new RuntimeException(String.format("Failed to execute op: %s%n%s", op,
-                    Operations.getFailureDescription(result).asString()));
-        }
     }
 }

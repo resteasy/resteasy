@@ -29,13 +29,13 @@ import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceIVdc
 import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceStoragePool;
 import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceTop;
 import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceUpdatableResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -67,7 +67,7 @@ public class GenericSuperInterfaceTest {
                 GenericSuperInterfaceBaseBackendResource.class,
                 TestUtil.class);
         // Arquillian in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new ReflectPermission("suppressAccessChecks"),
                 new RuntimePermission("accessDeclaredMembers"),
                 new PropertyPermission("arquillian.*", "read")), "permissions.xml");

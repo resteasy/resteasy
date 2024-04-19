@@ -492,6 +492,11 @@
             <artifactId>wildfly-arquillian-junit-api</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.wildfly.arquillian</groupId>
+            <artifactId>wildfly-testing-tools</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

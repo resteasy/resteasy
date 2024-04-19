@@ -14,7 +14,6 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationEJBProxyGreeterResource;
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationEJBProxyGreeting;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -25,6 +24,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter CDI
@@ -52,7 +52,7 @@ public class EJBCDIValidationEJBProxyTest {
         war.addClass(EJBCDIValidationEJBProxyGreeting.class);
         war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         war.setWebXML(EJBCDIValidationEJBProxyTest.class.getPackage(), "web.xml");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new HibernateValidatorPermission("accessPrivateMembers")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null,
                 EJBCDIValidationEJBProxyGreeterResource.class);

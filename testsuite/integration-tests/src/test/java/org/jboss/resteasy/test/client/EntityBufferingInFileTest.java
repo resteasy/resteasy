@@ -12,20 +12,14 @@ import org.apache.http.HttpEntity;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
-import org.jboss.as.arquillian.api.ServerSetup;
-import org.jboss.as.arquillian.container.ManagementClient;
-import org.jboss.as.controller.client.helpers.Operations;
-import org.jboss.dmr.ModelNode;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
-import org.jboss.resteasy.setup.SnapshotServerSetupTask;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.client.resource.EntityBufferingInFileResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -33,6 +27,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -41,32 +36,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@ServerSetup(EntityBufferingInFileTest.MaxPostServerSetupTask.class)
 public class EntityBufferingInFileTest extends ClientTestBase {
 
-    public static class MaxPostServerSetupTask extends SnapshotServerSetupTask {
-        @Override
-        protected void doSetup(final ManagementClient client, final String containerId) throws Exception {
-            final ModelNode address = Operations.createAddress("undertow", "server", "default-server", "http-listener",
-                    "default");
-            final ModelNode op = Operations.createWriteAttributeOperation(address, "max-post-size", MAX_POST_SIZE);
-            final ModelNode result = client.getControllerClient().execute(op);
-            if (!Operations.isSuccessfulOutcome(result)) {
-                throw new RuntimeException(
-                        "Failed to configure server: " + Operations.getFailureDescription(result).asString());
-            }
-        }
-    }
-
     private static final Logger logger = Logger.getLogger(EntityBufferingInFileTest.class);
-    private static final long MAX_POST_SIZE = 2147483647;
 
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(EntityBufferingInFileTest.class.getSimpleName());
         war.addClass(EntityBufferingInFileTest.class);
         // DataSource provider creates tmp file in the filesystem
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(PermissionUtil.createTempDirPermission("read")),
+        war.addAsManifestResource(
+                DeploymentDescriptors.createPermissionsXmlAsset(DeploymentDescriptors.createTempDirPermission("read")),
                 "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, EntityBufferingInFileResource.class);
     }

@@ -21,7 +21,6 @@ import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.FooResource;
 import org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.TestApplication;
 import org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.TestServlet;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TimeoutUtil;
@@ -32,6 +31,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter CDI
@@ -70,7 +70,7 @@ public class CDIResourceTest {
         war.addAsWebInfResource(CDIResourceTest.class.getPackage(),
                 "web-resteasy1082.xml", "web.xml");
 
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new RuntimePermission("accessDeclaredMembers")), "permissions.xml");
         //write file to disk
         war.as(ZipExporter.class).exportTo(exportFile, true);

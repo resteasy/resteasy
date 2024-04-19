@@ -42,7 +42,6 @@ import org.jboss.resteasy.client.exception.ResteasyServiceUnavailableException;
 import org.jboss.resteasy.client.exception.ResteasyWebApplicationException;
 import org.jboss.resteasy.test.client.exception.resource.ClientWebApplicationExceptionApplication;
 import org.jboss.resteasy.test.client.exception.resource.ClientWebApplicationExceptionResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -52,6 +51,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -173,7 +173,7 @@ public class ClientWebApplicationExceptionTest {
     @Deployment(name = newBehaviorDeploymentName)
     public static Archive<?> deployNewBehavior() {
         WebArchive war = TestUtil.prepareArchive(newBehaviorDeploymentName)
-                .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                .addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                         new PropertyPermission("ipv6", "read"),
                         new RuntimePermission("getenv.RESTEASY_PORT"),
                         new PropertyPermission("org.jboss.resteasy.port", "read"),
@@ -190,7 +190,7 @@ public class ClientWebApplicationExceptionTest {
     @Deployment(name = oldBehaviorDeploymentName)
     public static Archive<?> deployOldBehaviour() {
         WebArchive war = TestUtil.prepareArchive(oldBehaviorDeploymentName)
-                .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                .addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                         new PropertyPermission("ipv6", "read"),
                         new RuntimePermission("getenv.RESTEASY_PORT"),
                         new PropertyPermission("org.jboss.resteasy.port", "read"),

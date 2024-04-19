@@ -15,7 +15,6 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 import org.jboss.resteasy.test.crypto.resource.PKCS7SignatureSmokeResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -25,6 +24,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Crypto
@@ -54,7 +54,7 @@ public class PKCS7SignatureSmokeTest {
         List<Class<?>> singletons = new ArrayList<>(1);
         singletons.add(PKCS7SignatureSmokeResource.class);
         // This can be removed once RESTEASY-3344 is resolved and the WildFly upgrade (WFLY-18231) is done
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new SecurityPermission("removeProviderProperty.BC"),
                 new SecurityPermission("putProviderProperty.BC")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);

@@ -29,7 +29,6 @@ import org.jboss.resteasy.test.form.resteasy1405.BySetterForm;
 import org.jboss.resteasy.test.form.resteasy1405.InputData;
 import org.jboss.resteasy.test.form.resteasy1405.MyResource;
 import org.jboss.resteasy.test.form.resteasy1405.OutputData;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -38,6 +37,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Form tests
@@ -54,7 +54,7 @@ public class Resteasy1405Test {
         WebArchive war = TestUtil.prepareArchive(Resteasy1405Test.class.getSimpleName());
         war.addClasses(ByFieldForm.class, BySetterForm.class, InputData.class, OutputData.class);
 
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new FilePermission("<<ALL FILES>>", "read"),
                 new RuntimePermission("accessDeclaredMembers"),
                 new RuntimePermission("getClassLoader")),

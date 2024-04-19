@@ -28,13 +28,13 @@ import org.jboss.resteasy.test.cdi.extensions.resource.ScopeExtensionPlannedObso
 import org.jboss.resteasy.test.cdi.extensions.resource.ScopeExtensionResource;
 import org.jboss.resteasy.test.cdi.util.Utilities;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter CDI
@@ -61,7 +61,7 @@ public class ScopeExtensionTest {
                 .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml")
                 .addAsServiceProvider(Extension.class, ScopeExtensionPlannedObsolescenceExtension.class);
         // Arquillian in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new LoggingPermission("control", ""),
                 new PropertyPermission("arquillian.*", "read"),
                 new PropertyPermission("ipv6", "read"),

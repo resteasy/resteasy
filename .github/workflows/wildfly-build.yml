@@ -93,7 +93,6 @@ jobs:
         java: ['11', '21']
         profile:
           - '-Dsecurity.manager'
-          - '-Dprovision.preview'
           - '-am -Pprovision-without-resteasy,without-jackson-tests -pl resteasy-dependencies-bom,testsuite/integration-tests'
 
     steps:

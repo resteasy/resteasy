@@ -44,7 +44,6 @@ import org.jboss.resteasy.test.providers.atom.resource.AtomComplexModelNote;
 import org.jboss.resteasy.test.providers.atom.resource.AtomComplexModelState;
 import org.jboss.resteasy.test.providers.atom.resource.AtomComplexModelUuid;
 import org.jboss.resteasy.test.providers.atom.resource.AtomComplexModelVersionNumber;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -54,6 +53,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Atom provider
@@ -85,7 +85,7 @@ public class AtomComplexModelTest {
                 AtomComplexModelUuid.class,
                 AtomComplexModelVersionNumber.class);
 
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new FilePermission("<<ALL FILES>>", "read"),
                 new ReflectPermission("suppressAccessChecks"),
                 new RuntimePermission("accessDeclaredMembers")),
