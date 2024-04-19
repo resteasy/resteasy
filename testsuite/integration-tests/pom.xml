@@ -121,6 +121,16 @@
                 <server.test.feature.pack.artifactId>wildfly-preview-feature-pack</server.test.feature.pack.artifactId>
                 <server.test.feature.pack.version>${version.org.wildfly}</server.test.feature.pack.version>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <excludedGroups>managed-bean-support-required</excludedGroups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <id>provision-without-resteasy</id>
