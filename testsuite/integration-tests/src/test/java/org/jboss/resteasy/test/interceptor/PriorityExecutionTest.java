@@ -36,7 +36,6 @@ import org.jboss.resteasy.test.interceptor.resource.PriorityExecutionContainerRe
 import org.jboss.resteasy.test.interceptor.resource.PriorityExecutionContainerResponseFilterMax;
 import org.jboss.resteasy.test.interceptor.resource.PriorityExecutionContainerResponseFilterMin;
 import org.jboss.resteasy.test.interceptor.resource.PriorityExecutionResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -46,6 +45,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Interceptors
@@ -74,7 +74,7 @@ public class PriorityExecutionTest {
                 PriorityExecutionClientResponseFilterMax.class,
                 PriorityExecutionClientRequestFilterMin.class);
         // Arquillian in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new ReflectPermission("suppressAccessChecks"),
                 new LoggingPermission("control", ""),
                 new PropertyPermission("arquillian.*", "read"),

@@ -15,7 +15,6 @@ import org.jboss.resteasy.test.core.basic.resource.ContextBeforeEncoderIntercept
 import org.jboss.resteasy.test.core.basic.resource.ContextEncoderInterceptor;
 import org.jboss.resteasy.test.core.basic.resource.ContextEndInterceptor;
 import org.jboss.resteasy.test.core.basic.resource.ContextService;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -25,6 +24,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -47,7 +47,7 @@ public class ContextTest {
         war.addAsWebInfResource(ContextTest.class.getPackage(), "ContextIndex.txt", "index.txt");
         war.addAsWebInfResource(ContextTest.class.getPackage(), "ContextWeb.xml", "web.xml");
         // undertow requires read permission in order to perform forward request.
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new FilePermission("<<ALL FILES>>", "read")), "permissions.xml");
         return war;
     }

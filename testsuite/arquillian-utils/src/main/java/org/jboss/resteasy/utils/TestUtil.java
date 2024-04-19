@@ -554,12 +554,21 @@ public class TestUtil {
      * @return a {@code beans.xml} asset
      */
     public static Asset createBeansXml() {
+        return createBeansXml("annotated");
+    }
+
+    /**
+     * Creates a {@code beans.xml} file which uses a {@code bean-discovery-mode} of "annotated".
+     *
+     * @return a {@code beans.xml} asset
+     */
+    public static Asset createBeansXml(final String beanDiscoverMode) {
         return new StringAsset("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<beans xmlns=\"https://jakarta.ee/xml/ns/jakartaee\"\n" +
                 "       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
                 "       xsi:schemaLocation=\"https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_4_0.xsd\"\n"
                 +
-                "       version=\"4.0\" bean-discovery-mode=\"annotated\">\n" +
+                "       version=\"4.0\" bean-discovery-mode=\"" + beanDiscoverMode + "\">\n" +
                 "</beans>");
     }
 

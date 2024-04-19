@@ -45,7 +45,6 @@ import org.jboss.resteasy.test.cdi.util.Constants;
 import org.jboss.resteasy.test.cdi.util.Counter;
 import org.jboss.resteasy.test.cdi.util.PersistenceUnitProducer;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -56,6 +55,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter CDI
@@ -127,7 +127,7 @@ public class InjectionTest {
                 .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml")
                 .addAsResource(InjectionTest.class.getPackage(), "persistence.xml", "META-INF/persistence.xml");
 
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new HibernateValidatorPermission("accessPrivateMembers"),
                 new SocketPermission(PortProviderUtil.getHost(), "resolve")),
                 "permissions.xml");

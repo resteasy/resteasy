@@ -32,7 +32,6 @@ import org.jboss.resteasy.test.validation.resource.ValidationCoreFooReaderWriter
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithAllViolationTypes;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithReturnValues;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -43,6 +42,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Validation
@@ -94,7 +94,7 @@ public class ValidationJaxbTest {
                 .addClasses(ValidationCoreClassConstraint.class, ValidationCoreClassValidator.class)
                 .addClasses(ValidationCoreResourceWithAllViolationTypes.class, ValidationCoreResourceWithReturnValues.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new HibernateValidatorPermission("accessPrivateMembers")), "permissions.xml");
         Map<String, String> contextParams = new HashMap<>();
         contextParams.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, useJackson.toString());

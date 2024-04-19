@@ -13,7 +13,6 @@ import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.test.injection.resource.PostConstructInjectionEJBInterceptor;
 import org.jboss.resteasy.test.injection.resource.PostConstructInjectionEJBResource;
 import org.jboss.resteasy.test.injection.resource.PostConstructInjectionResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -24,6 +23,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Validation and @PostConstruct methods
@@ -50,7 +50,7 @@ public class PostConstructInjectionTest {
         war.addClass(PostConstructInjectionEJBInterceptor.class);
         war.addAsWebInfResource(PostConstructInjectionTest.class.getPackage(), "PostConstructInjection_beans_cdi_on.xml",
                 "beans.xml");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new HibernateValidatorPermission("accessPrivateMembers")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, PostConstructInjectionResource.class,
                 PostConstructInjectionEJBResource.class);
@@ -65,7 +65,7 @@ public class PostConstructInjectionTest {
         war.addClass(PostConstructInjectionEJBInterceptor.class);
         war.addAsWebInfResource(PostConstructInjectionTest.class.getPackage(), "PostConstructInjection_beans_cdi_off.xml",
                 "beans.xml");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new HibernateValidatorPermission("accessPrivateMembers")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, PostConstructInjectionResource.class);
     }

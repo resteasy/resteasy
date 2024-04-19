@@ -18,7 +18,6 @@ import org.jboss.resteasy.test.validation.cdi.resource.MultipleWarResource;
 import org.jboss.resteasy.test.validation.cdi.resource.MultipleWarSumConstraint;
 import org.jboss.resteasy.test.validation.cdi.resource.MultipleWarSumValidator;
 import org.jboss.resteasy.test.validation.resource.ValidationCoreFooReaderWriter;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -29,6 +28,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Response
@@ -48,7 +48,7 @@ public class MultipleWarTest {
                 .addClasses(MultipleWarResource.class)
                 .addClasses(MultipleWarSumConstraint.class, MultipleWarSumValidator.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war1.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war1.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new HibernateValidatorPermission("accessPrivateMembers")), "permissions.xml");
         return war1;
     }
@@ -59,7 +59,7 @@ public class MultipleWarTest {
                 .addClasses(MultipleWarResource.class)
                 .addClasses(MultipleWarSumConstraint.class, MultipleWarSumValidator.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war2.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war2.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new HibernateValidatorPermission("accessPrivateMembers")), "permissions.xml");
         return war2;
     }

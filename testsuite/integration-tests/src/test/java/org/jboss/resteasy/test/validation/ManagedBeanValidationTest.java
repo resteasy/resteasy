@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.validation;
 
+import java.util.Set;
+
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
@@ -7,18 +9,20 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
+import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.resteasy.setup.LoggingSetupTask;
 import org.jboss.resteasy.test.validation.resource.ManagedBeanValidationApplication;
 import org.jboss.resteasy.test.validation.resource.ManagedBeanValidationResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Verify class / property validation occurs for JNDI resources.
@@ -28,6 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@ServerSetup(LoggingSetupTask.class)
 public class ManagedBeanValidationTest {
 
     private static Client client;
@@ -36,7 +41,11 @@ public class ManagedBeanValidationTest {
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchiveWithApplication(ManagedBeanValidationTest.class.getSimpleName(),
                 ManagedBeanValidationApplication.class);
-        war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+        war.addAsWebInfResource(TestUtil.createBeansXml("none"), "beans.xml")
+                .addAsWebInfResource(
+                        DeploymentDescriptors.createJBossDeploymentStructureAsset(Set.of(),
+                                Set.of("org.jboss.resteasy.resteasy-cdi")),
+                        "jboss-deployment-structure.xml");
         return TestUtil.finishContainerPrepare(war, null, ManagedBeanValidationResource.class);
     }
 
@@ -78,5 +87,13 @@ public class ManagedBeanValidationTest {
         response = client.target(generateURL("/visited")).request().get();
         Assertions.assertEquals(200, response.getStatus());
         Assertions.assertFalse(response.readEntity(boolean.class));
+    }
+
+    @Test
+    public void managedBeanIntercepted() {
+        try (Response response = client.target(generateURL("/intercepted")).request().get()) {
+            Assertions.assertEquals(200, response.getStatus());
+            Assertions.assertEquals(1, response.readEntity(Integer.class));
+        }
     }
 }

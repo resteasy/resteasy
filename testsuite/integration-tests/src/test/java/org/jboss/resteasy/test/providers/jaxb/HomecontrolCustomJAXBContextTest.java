@@ -24,7 +24,6 @@ import org.jboss.resteasy.test.providers.jaxb.resource.homecontrol.IDType;
 import org.jboss.resteasy.test.providers.jaxb.resource.homecontrol.ObjectFactory;
 import org.jboss.resteasy.test.providers.jaxb.resource.homecontrol.RoleType;
 import org.jboss.resteasy.test.providers.jaxb.resource.homecontrol.UserType;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -34,6 +33,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -62,9 +62,9 @@ public class HomecontrolCustomJAXBContextTest {
                 UserType.class,
                 IDType.class,
                 ErrorMessageType.class);
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 // Can be removed when WFLY-17065 is resolved
-                PermissionUtil.addModuleFilePermission("org.glassfish.jaxb"),
+                DeploymentDescriptors.addModuleFilePermission("org.glassfish.jaxb"),
                 new ReflectPermission("suppressAccessChecks"),
                 new RuntimePermission("accessDeclaredMembers")), "permissions.xml");
         war.addAsWebInfResource(HomecontrolCustomJAXBContextTest.class.getPackage(), "homecontrol/web.xml");

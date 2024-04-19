@@ -17,7 +17,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.client.resource.ClientResponseRedirectIntf;
 import org.jboss.resteasy.test.client.resource.ClientResponseRedirectResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -27,6 +26,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -45,7 +45,7 @@ public class ClientResponseRedirectTest extends ClientTestBase {
         WebArchive war = TestUtil.prepareArchive(ClientResponseRedirectTest.class.getSimpleName());
         war.addClass(ClientTestBase.class);
         // Use of PortProviderutil in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new PropertyPermission("node", "read"),
                 new PropertyPermission("ipv6", "read"),
                 new RuntimePermission("getenv.RESTEASY_PORT"),

@@ -24,7 +24,6 @@ import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingDebugLo
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingDebugLoggingItemCorruptedGet;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingDebugLoggingItemCorruptedSet;
 import org.jboss.resteasy.utils.LogCounter;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -34,6 +33,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Interceptors
@@ -55,7 +55,7 @@ public class JsonBindingDebugLoggingTest {
         war.addClass(JsonBindingDebugLoggingItemCorruptedGet.class);
         war.addClass(JsonBindingDebugLoggingItemCorruptedSet.class);
         war.addClasses(LogCounter.class, PortProviderUtil.class, TestUtil.class);
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new ReflectPermission("suppressAccessChecks"),
                 new RuntimePermission("accessDeclaredMembers"),
                 new PropertyPermission("arquillian.debug", "read"),

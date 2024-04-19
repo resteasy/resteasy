@@ -20,7 +20,6 @@ import org.jboss.resteasy.test.providers.multipart.resource.XOPMultipartProxy;
 import org.jboss.resteasy.test.providers.multipart.resource.XOPMultipartProxyGetFileResponse;
 import org.jboss.resteasy.test.providers.multipart.resource.XOPMultipartProxyPutFileRequest;
 import org.jboss.resteasy.test.providers.multipart.resource.XOPMultipartProxyResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -30,6 +29,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Multipart provider used to send and receive XOP messages. RESTEASY-2127.
@@ -46,9 +46,9 @@ public class XOPMultipartProxyTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(XOPMultipartProxyTest.class.getSimpleName())
-                .addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                .addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                         // Required as XOPMultipartProxyResource.getResponse() creates a temporary file.
-                        PermissionUtil.createTempDirPermission("delete,read,write")), "permissions.xml");
+                        DeploymentDescriptors.createTempDirPermission("delete,read,write")), "permissions.xml");
         war.addClass(XOPMultipartProxyGetFileResponse.class);
         war.addClass(XOPMultipartProxyPutFileRequest.class);
         war.addClass(XOPMultipartProxy.class);

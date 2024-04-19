@@ -18,7 +18,6 @@ import org.jboss.resteasy.test.client.exception.ClientWebApplicationExceptionRes
 import org.jboss.resteasy.test.exception.resource.ClosedResponseHandlingEnableTracingRequestFilter;
 import org.jboss.resteasy.test.exception.resource.ClosedResponseHandlingPleaseMapExceptionMapper;
 import org.jboss.resteasy.test.exception.resource.ClosedResponseHandlingResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -27,6 +26,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.wildfly.arquillian.junit.annotations.RequiresModule;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -50,7 +50,7 @@ public class ClosedResponseHandlingTest {
         war.addClass(ClosedResponseHandlingTest.class);
         war.addPackage(ClosedResponseHandlingResource.class.getPackage());
         war.addClass(PortProviderUtil.class);
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new ReflectPermission("suppressAccessChecks")), "permissions.xml");
 
         Map<String, String> params = new HashMap<>();
@@ -69,7 +69,7 @@ public class ClosedResponseHandlingTest {
         war.addClass(ClosedResponseHandlingTest.class);
         war.addPackage(ClosedResponseHandlingResource.class.getPackage());
         war.addClass(PortProviderUtil.class);
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new ReflectPermission("suppressAccessChecks")), "permissions.xml");
         war.setWebXML(ClientWebApplicationExceptionResteasyProxyTest.class.getPackage(), "webapplicationexception_web.xml");
 

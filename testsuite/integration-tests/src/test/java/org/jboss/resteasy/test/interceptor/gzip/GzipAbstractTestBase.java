@@ -14,13 +14,13 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.interceptor.gzip.resource.GzipInterface;
 import org.jboss.resteasy.test.interceptor.gzip.resource.GzipResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * Abstract base class for gzip tests
@@ -53,7 +53,7 @@ public abstract class GzipAbstractTestBase {
         WebArchive war = TestUtil.prepareArchive(name);
         war = war.addClass(GzipInterface.class);
         war = war.addAsWebInfResource(EmptyAsset.INSTANCE, "WEB-INF/beans.xml");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new PropertyPermission("resteasy.allowGzip", "read")), "permissions.xml");
         if (addProvidersFileWithGzipInterceptors) {
             war.addAsManifestResource(GzipAbstractTestBase.class.getPackage(), "GzipAbstractTest-jakarta.ws.rs.ext.Providers",

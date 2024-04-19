@@ -31,7 +31,7 @@
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>4.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <server.version>31.0.1.Final</server.version>
         <version.org.wildfly>${server.version}</version.org.wildfly>
-        <version.org.wildfly.arquillian.wildfly-arquillian>5.1.0.Beta1</version.org.wildfly.arquillian.wildfly-arquillian>
+        <version.org.wildfly.arquillian.wildfly-arquillian>5.1.0.Beta2</version.org.wildfly.arquillian.wildfly-arquillian>
 
         <jboss.home/>
         <!-- print logs to file by default -->

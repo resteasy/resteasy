@@ -27,7 +27,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbMarshallingSoakAsyncService;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbMarshallingSoakItem;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TimeoutUtil;
@@ -38,6 +37,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -79,9 +79,9 @@ public class JaxbMarshallingSoakTest {
         Map<String, String> contextParam = new HashMap<>();
         contextParam.put("resteasy.async.job.service.enabled", "true");
         // Arquillian in the deployment use if TimeoutUtil in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 // Can be removed when WFLY-17065 is resolved
-                PermissionUtil.addModuleFilePermission("org.glassfish.jaxb"),
+                DeploymentDescriptors.addModuleFilePermission("org.glassfish.jaxb"),
                 new RuntimePermission("getClassLoader"),
                 new RuntimePermission("modifyThread"),
                 new ReflectPermission("suppressAccessChecks"),

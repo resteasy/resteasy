@@ -135,12 +135,6 @@
             <groupId>org.eclipse.aether</groupId>
             <artifactId>aether-transport-http</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.wildfly.plugins</groupId>
-            <artifactId>wildfly-plugin-tools</artifactId>
-            <version>1.0.0.Beta3</version>
-        </dependency>
     </dependencies>
 
     <build>

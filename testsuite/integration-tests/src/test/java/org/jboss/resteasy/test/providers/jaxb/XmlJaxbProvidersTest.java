@@ -27,7 +27,6 @@ import org.jboss.resteasy.test.providers.jaxb.resource.XmlJaxbProvidersHelper;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlJaxbProvidersOrderClient;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlJaxbProvidersOrderResource;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlStreamFactory;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -38,6 +37,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -61,7 +61,7 @@ public class XmlJaxbProvidersTest {
         war.addAsResource(XmlJaxbProvidersTest.class.getPackage(), "orders/order_123.xml");
         war.as(ZipExporter.class).exportTo(new File("target", XmlJaxbProvidersTest.class.getSimpleName() + ".war"), true);
 
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new FilePermission("<<ALL FILES>>", "read"),
                 new RuntimePermission("accessDeclaredMembers"),
                 new ReflectPermission("suppressAccessChecks"),

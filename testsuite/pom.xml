@@ -88,6 +88,11 @@
             </dependency>
             <dependency>
                 <groupId>org.wildfly.arquillian</groupId>
+                <artifactId>wildfly-testing-tools</artifactId>
+                <version>${version.org.wildfly.arquillian.wildfly-arquillian}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly.arquillian</groupId>
                 <artifactId>wildfly-arquillian-container-bootable</artifactId>
                 <version>${version.org.wildfly.arquillian.wildfly-arquillian}</version>
                 <exclusions>

@@ -27,7 +27,6 @@ import org.jboss.resteasy.test.providers.jackson2.resource.ExceptionMapperMarsha
 import org.jboss.resteasy.test.providers.jackson2.resource.ExceptionMapperMarshalName;
 import org.jboss.resteasy.test.providers.jackson2.resource.ExceptionMapperMarshalResource;
 import org.jboss.resteasy.test.providers.jackson2.resource.MyEntity;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -37,6 +36,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Jackson2 provider
@@ -55,7 +55,7 @@ public class ExceptionMapperMarshalTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ProxyWithGenericReturnTypeJacksonTest.class.getSimpleName());
         war.addClass(Jackson2Test.class);
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new RuntimePermission("getProtectionDomain"),
                 new ReflectPermission("suppressAccessChecks"),
                 new PropertyPermission("resteasy.server.tracing.*", "read")), "permissions.xml");

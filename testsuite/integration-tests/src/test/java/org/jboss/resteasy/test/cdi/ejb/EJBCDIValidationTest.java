@@ -17,7 +17,6 @@ import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationApplication;
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationSingletonResource;
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationStatefulResource;
 import org.jboss.resteasy.test.cdi.ejb.resource.EJBCDIValidationStatelessResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -28,6 +27,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter CDI
@@ -49,7 +49,7 @@ public class EJBCDIValidationTest {
                 .addClasses(EJBCDIValidationStatefulResource.class)
                 .addClasses(EJBCDIValidationSingletonResource.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new HibernateValidatorPermission("accessPrivateMembers")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null);
     }

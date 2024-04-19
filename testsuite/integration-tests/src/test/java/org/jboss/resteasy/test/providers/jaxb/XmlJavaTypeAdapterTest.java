@@ -26,7 +26,6 @@ import org.jboss.resteasy.test.providers.jaxb.resource.XmlJavaTypeAdapterAlienAd
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlJavaTypeAdapterFoo;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlJavaTypeAdapterHuman;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlJavaTypeAdapterResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -36,6 +35,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -53,7 +53,7 @@ public class XmlJavaTypeAdapterTest {
         WebArchive war = TestUtil.prepareArchive(XmlJavaTypeAdapterTest.class.getSimpleName());
         war.addClass(XmlJavaTypeAdapterTest.class);
         // Arquillian in the deployment and use of PortProviderUtil in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new PropertyPermission("node", "read"),
                 new LoggingPermission("control", ""),
                 new PropertyPermission("arquillian.*", "read"),

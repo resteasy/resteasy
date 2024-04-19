@@ -33,9 +33,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public class SubResourceWarningTest {
 
     public static class WarnLoggingSetupTask extends LoggingSetupTask {
-        @Override
-        protected Map<String, Set<String>> getLogLevels() {
-            return Map.of("WARN", Set.of("org.jboss.resteasy"));
+        public WarnLoggingSetupTask() {
+            super(Map.of("WARN", Set.of("org.jboss.resteasy")));
         }
     }
 

@@ -21,7 +21,6 @@ import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultChar
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF8;
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultCharsetOverwriteService;
 import org.jboss.resteasy.util.Encode;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -31,6 +30,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Multipart provider
@@ -84,7 +84,7 @@ public class InputPartDefaultCharsetOverwriteTest {
         WebArchive war = TestUtil.prepareArchive(InputPartDefaultCharsetOverwriteTest.class.getSimpleName());
         war.addClasses(InputPartDefaultCharsetOverwriteTest.class);
         war.addClasses(TestUtil.class, PortProviderUtil.class);
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new ReflectPermission("suppressAccessChecks")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteService.class);
     }
