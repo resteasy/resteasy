@@ -22,7 +22,6 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.providers.multipart.resource.Soup;
 import org.jboss.resteasy.test.providers.multipart.resource.SoupVendorResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -33,6 +32,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
@@ -45,7 +45,7 @@ public class SoupMultipartMsgTest {
         WebArchive war = TestUtil.prepareArchive(SoupMultipartMsgTest.class.getSimpleName());
         war.addClasses(Soup.class);
         war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new ReflectPermission("suppressAccessChecks")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, SoupVendorResource.class);
     }

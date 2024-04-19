@@ -18,13 +18,12 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.as.arquillian.container.ManagementClient;
+import org.jboss.as.arquillian.setup.SnapshotServerSetupTask;
 import org.jboss.as.controller.client.helpers.Operations;
 import org.jboss.as.controller.client.helpers.Operations.CompositeOperationBuilder;
 import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.setup.SnapshotServerSetupTask;
 import org.jboss.resteasy.test.security.resource.SslResource;
-import org.jboss.resteasy.utils.ServerReload;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -126,7 +125,6 @@ public class SslSniHostNamesTest extends SslTestBase {
             if (!Operations.isSuccessfulOutcome(result)) {
                 throw new RuntimeException("Failed to configure SSL: " + Operations.getFailureDescription(result).asString());
             }
-            ServerReload.reloadIfRequired(client.getControllerClient());
         }
     }
 

@@ -25,8 +25,6 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jakarta.servlet.MultipartConfigElement;
-import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
 
@@ -143,7 +141,7 @@ public class TestUtil {
         }
 
         if (contextParams != null && contextParams.size() > 0 && !war.contains("WEB-INF/web.xml")) {
-            war.addAsWebInfResource(createWebXml(null, contextParams), "web.xml");
+            war.addAsWebInfResource(createWebXml(null, null, contextParams), "web.xml");
         }
 
         // prepare class list for getClasses function of TestApplication class
@@ -556,30 +554,35 @@ public class TestUtil {
      * @return a {@code beans.xml} asset
      */
     public static Asset createBeansXml() {
+        return createBeansXml("all");
+    }
+
+    /**
+     * Creates a {@code beans.xml} file which uses a {@code bean-discovery-mode} of "annotated".
+     *
+     * @return a {@code beans.xml} asset
+     */
+    public static Asset createBeansXml(final String beanDiscoverMode) {
         return new StringAsset("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<beans xmlns=\"https://jakarta.ee/xml/ns/jakartaee\"\n" +
                 "       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "       xsi:schemaLocation=\"https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_3_0.xsd\"\n"
+                "       xsi:schemaLocation=\"https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_4_0.xsd\"\n"
                 +
-                "       version=\"3.0\" bean-discovery-mode=\"all\">\n" +
+                "       version=\"4.0\" bean-discovery-mode=\"" + beanDiscoverMode + "\">\n" +
                 "</beans>");
     }
 
     /**
      * Creates a {@code web.xml} file.
-     * <p>
-     * If the application is non-null a servlet entry is added. If the given annotation is annotated with
-     * {@link MultipartConfig @MultiConfig} that entry is added to the {@code web.xml}. The
-     * {@code <async-supported>true</async-supported>} entry is also added. The servlet name will be the name of the
-     * application.
-     * </p>
      *
-     * @param application   the application to add a servlet or {@code null} to use annotation scanning
-     * @param contextParams the optional context parameters to add
+     * @param application    the application to add a servlet or {@code null} to use annotation scanning
+     * @param mappingPattern the mapping parameter for cases when the application is not annotated with the
+     *                       {@link ApplicationPath} or is {@code null}, if {@code null} no servlet mapping is added
+     * @param contextParams  the optional context parameters to add
      *
      * @return a {@code web.xml} file
      */
-    public static Asset createWebXml(final Class<? extends Application> application,
+    public static Asset createWebXml(final Class<? extends Application> application, final String mappingPattern,
             final Map<String, String> contextParams) {
         final StringBuilder webXml = new StringBuilder()
                 .append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
@@ -601,45 +604,14 @@ public class TestUtil {
         if (application != null) {
             final String servletName = application.getName();
             webXml.append("    <servlet>\n")
-                    .append("        <servlet-name>")
-                    .append(servletName)
-                    .append("</servlet-name>\n")
-                    .append("        <servlet-class>")
-                    .append(HttpServlet30Dispatcher.class.getName())
+                    .append("        <servlet-name>").append(servletName).append("</servlet-name>\n")
+                    .append("        <servlet-class>").append(HttpServlet30Dispatcher.class.getName())
                     .append("</servlet-class>\n")
                     .append("        <init-param>\n")
-                    .append("            <param-name>")
-                    .append(Application.class.getName())
-                    .append("</param-name>\n")
-                    .append("            <param-value>")
-                    .append(application.getName())
-                    .append("</param-value>\n")
+                    .append("            <param-name>").append(Application.class.getName()).append("</param-name>\n")
+                    .append("            <param-value>").append(application.getName()).append("</param-value>\n")
                     .append("        </init-param>\n")
-                    .append("        <async-supported>true</async-supported>\n");
-            final MultipartConfig multipartConfig = application.getAnnotation(MultipartConfig.class);
-            final MultipartConfigElement multipartConfigElement;
-            if (multipartConfig != null) {
-                multipartConfigElement = new MultipartConfigElement(multipartConfig);
-            } else {
-                multipartConfigElement = null;
-            }
-            if (multipartConfigElement != null) {
-                webXml.append("        <multipart-config>\n")
-                        .append("            <max-file-size>")
-                        .append(multipartConfigElement.getMaxFileSize())
-                        .append("</max-file-size>\n")
-                        .append("            <max-request-size>")
-                        .append(multipartConfigElement.getMaxRequestSize())
-                        .append("</max-request-size>\n")
-                        .append("            <file-size-threshold>")
-                        .append(multipartConfigElement.getFileSizeThreshold())
-                        .append("</file-size-threshold>\n")
-                        .append("            <location>")
-                        .append(multipartConfigElement.getLocation())
-                        .append("</location>\n")
-                        .append("        </multipart-config>\n");
-            }
-            webXml.append("    </servlet>\n");
+                    .append("    </servlet>\n");
 
             final ApplicationPath applicationPath = application.getAnnotation(ApplicationPath.class);
             webXml.append("    <servlet-mapping>\n")
@@ -650,11 +622,21 @@ public class TestUtil {
                         .append(pattern.endsWith("/") ? pattern + "*" : pattern + "/*")
                         .append("</url-pattern>\n");
             } else {
-                webXml.append("        <url-pattern>").append("/*").append("</url-pattern>\n");
+                webXml.append("        <url-pattern>").append((mappingPattern == null ? "/*" : mappingPattern))
+                        .append("</url-pattern>\n");
             }
             webXml.append("    </servlet-mapping>\n");
+        } else if (mappingPattern != null) {
+            // This is per the spec. For whatever reason the "core" part of the package was left off.
+            final String servletName = Application.class.getName();
+            webXml.append("    <servlet>\n")
+                    .append("        <servlet-name>").append(servletName).append("</servlet-name>\n")
+                    .append("    </servlet>\n")
+                    .append("    <servlet-mapping>\n")
+                    .append("        <servlet-name>").append(servletName).append("</servlet-name>\n")
+                    .append("        <url-pattern>").append(mappingPattern).append("</url-pattern>\n")
+                    .append("    </servlet-mapping>\n");
         }
-
         webXml.append("</web-app>\n");
         return new StringAsset(webXml.toString());
     }

@@ -46,9 +46,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public class DebugLoggingTest {
 
     public static class DebugLoggingSetupTask extends LoggingSetupTask {
-        @Override
-        protected Map<String, Set<String>> getLogLevels() {
-            return Map.of("ALL", Set.of("org.jboss.resteasy", "jakarta.xml.bind", "com.fasterxml.jackson"));
+
+        public DebugLoggingSetupTask() {
+            super(Map.of("ALL", Set.of("org.jboss.resteasy", "jakarta.xml.bind", "com.fasterxml.jackson")));
         }
     }
 

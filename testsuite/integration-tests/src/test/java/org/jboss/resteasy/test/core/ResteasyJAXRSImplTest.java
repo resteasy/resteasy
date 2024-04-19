@@ -12,7 +12,6 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -21,6 +20,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Jaxrs implementation
@@ -34,7 +34,7 @@ public class ResteasyJAXRSImplTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ResteasyJAXRSImplTest.class.getSimpleName());
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new PropertyPermission("arquillian.*", "read"),
                 new RuntimePermission("accessDeclaredMembers"),
                 new ReflectPermission("suppressAccessChecks")), "permissions.xml");

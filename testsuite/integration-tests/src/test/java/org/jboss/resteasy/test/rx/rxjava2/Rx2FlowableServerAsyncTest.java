@@ -24,7 +24,6 @@ import org.jboss.resteasy.test.rx.resource.TestException;
 import org.jboss.resteasy.test.rx.resource.TestExceptionMapper;
 import org.jboss.resteasy.test.rx.resource.Thing;
 import org.jboss.resteasy.test.rx.rxjava2.resource.Rx2FlowableResourceNoStreamImpl;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -38,6 +37,7 @@ import org.junit.jupiter.api.MethodOrderer.MethodName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Reactive classes
@@ -104,7 +104,8 @@ public class Rx2FlowableServerAsyncTest {
         WebArchive war = TestUtil.prepareArchive(Rx2FlowableServerAsyncTest.class.getSimpleName())
                 .addAsManifestResource(
                         // Required until WFLY-17051 is resolved
-                        PermissionUtil.createPermissionsXmlAsset(PermissionUtil.addModuleFilePermission("org.eclipse.yasson")),
+                        DeploymentDescriptors
+                                .createPermissionsXmlAsset(DeploymentDescriptors.addModuleFilePermission("org.eclipse.yasson")),
                         "permissions.xml");
         war.addClass(Thing.class);
         war.addClass(Bytes.class);

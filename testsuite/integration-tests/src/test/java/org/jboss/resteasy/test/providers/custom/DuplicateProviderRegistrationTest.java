@@ -20,13 +20,13 @@ import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationFeature;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationFilter;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationInterceptor;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Providers
@@ -47,7 +47,7 @@ public class DuplicateProviderRegistrationTest {
         war.addClasses(DuplicateProviderRegistrationFeature.class, DuplicateProviderRegistrationFilter.class,
                 TestUtil.class, DuplicateProviderRegistrationInterceptor.class, ContainerConstants.class);
         // Arquillian in the deployment, test reads the server.log
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new ReflectPermission("suppressAccessChecks"),
                 new FilePermission(TestUtil.getStandaloneDir(DEFAULT_CONTAINER_QUALIFIER) + File.separator + "log" +
                         File.separator + "server.log", "read"),

@@ -14,7 +14,6 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.config.security.ConfigPropertyPermission;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.test.resource.basic.resource.ConstructedInjectionResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -24,6 +23,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resource
@@ -42,7 +42,7 @@ public class ConstructedInjectionTest {
         war.addClass(TestPortProvider.class);
 
         // Use of PortProviderUtil in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new PropertyPermission("node", "read"),
                 new PropertyPermission("ipv6", "read"),
                 // Required for the PortProvider

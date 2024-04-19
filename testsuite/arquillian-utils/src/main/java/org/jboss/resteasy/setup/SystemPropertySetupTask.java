@@ -54,12 +54,10 @@ public abstract class SystemPropertySetupTask implements ServerSetupTask {
             op.get("value").set(entry.getValue());
             builder.addStep(op);
         }
-        final ModelNode result = managementClient.getControllerClient().execute(builder.build());
-        if (!Operations.isSuccessfulOutcome(result)) {
-            throw new RuntimeException(
-                    String.format("Failed to add system properties %s%n%s", properties, Operations.getFailureDescription(result)
-                            .asString()));
-        }
+        executeOperation(managementClient, builder.build(),
+                (result) -> String.format("Failed to add system properties %s%n%s", properties,
+                        Operations.getFailureDescription(result)
+                                .asString()));
     }
 
     @Override
@@ -69,11 +67,9 @@ public abstract class SystemPropertySetupTask implements ServerSetupTask {
             final ModelNode address = Operations.createAddress("system-property", entry.getKey());
             builder.addStep(Operations.createRemoveOperation(address));
         }
-        final ModelNode result = managementClient.getControllerClient().execute(builder.build());
-        if (!Operations.isSuccessfulOutcome(result)) {
-            throw new RuntimeException(String.format("Failed to remove system properties %s%n%s", properties,
-                    Operations.getFailureDescription(result)
-                            .asString()));
-        }
+        executeOperation(managementClient, builder.build(),
+                (result) -> String.format("Failed to remove system properties %s%n%s", properties,
+                        Operations.getFailureDescription(result)
+                                .asString()));
     }
 }

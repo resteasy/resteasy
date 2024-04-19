@@ -76,7 +76,6 @@ import org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWith
 import org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithSubLocators;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithValidField;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexSubResourceWithCrossParameterConstraint;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TimeoutUtil;
@@ -87,6 +86,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Response
@@ -140,7 +140,7 @@ public class ValidationComplexTest {
                 ValidationComplexClassConstraint2.class, ValidationComplexClassValidator2.class,
                 ValidationComplexOtherGroupValidator.class);
         // Arquillian in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new LoggingPermission("control", ""),
                 new PropertyPermission("arquillian.*", "read"),
                 new PropertyPermission("ipv6", "read"),

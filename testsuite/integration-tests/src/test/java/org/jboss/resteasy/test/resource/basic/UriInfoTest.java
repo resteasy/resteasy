@@ -23,7 +23,6 @@ import org.jboss.resteasy.test.resource.basic.resource.UriInfoQueryParamsResourc
 import org.jboss.resteasy.test.resource.basic.resource.UriInfoRelativizeResource;
 import org.jboss.resteasy.test.resource.basic.resource.UriInfoSimpleResource;
 import org.jboss.resteasy.test.resource.basic.resource.UriInfoSimpleSingletonResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -33,6 +32,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resources
@@ -66,7 +66,7 @@ public class UriInfoTest {
         war.addClass(PortProviderUtil.class);
 
         // Use of PortProviderUtil in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new PropertyPermission("node", "read"),
                 new PropertyPermission("ipv6", "read"),
                 new RuntimePermission("getenv.RESTEASY_PORT"),
@@ -89,7 +89,7 @@ public class UriInfoTest {
     public static Archive<?> deployUriInfoSimpleResourceAsSingleton() {
         WebArchive war = TestUtil.prepareArchive(UriInfoSimpleSingletonResource.class.getSimpleName());
         war.addClass(PortProviderUtil.class);
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new PropertyPermission("node", "read"),
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(new PropertyPermission("node", "read"),
                 new PropertyPermission("ipv6", "read"),
                 new RuntimePermission("getenv.RESTEASY_PORT"),
                 new PropertyPermission("org.jboss.resteasy.port", "read"),

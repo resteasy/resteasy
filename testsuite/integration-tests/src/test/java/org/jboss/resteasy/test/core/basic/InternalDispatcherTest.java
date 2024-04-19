@@ -17,7 +17,6 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.test.core.basic.resource.InternalDispatcherClient;
 import org.jboss.resteasy.test.core.basic.resource.InternalDispatcherForwardingResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestApplication;
 import org.jboss.resteasy.utils.TestUtil;
@@ -28,6 +27,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Core
@@ -49,13 +49,13 @@ public class InternalDispatcherTest {
         WebArchive war = TestUtil.prepareArchive(InternalDispatcherTest.class.getSimpleName());
         war.addClasses(InternalDispatcherClient.class, InternalDispatcherForwardingResource.class);
         war.addClasses(TestUtil.class, PortProviderUtil.class);
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new RuntimePermission("accessDeclaredMembers"),
                 new ReflectPermission("suppressAccessChecks")), "permissions.xml");
         List<Class<?>> singletons = new ArrayList<>();
         singletons.add(InternalDispatcherForwardingResource.class);
         // Arquillian in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
                 new LoggingPermission("control", ""),
                 new PropertyPermission("arquillian.*", "read"),
                 new PropertyPermission("ipv6", "read"),

@@ -16,7 +16,6 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.validation.cdi.resource.SubresourceValidationQueryBeanParam;
 import org.jboss.resteasy.test.validation.cdi.resource.SubresourceValidationResource;
 import org.jboss.resteasy.test.validation.cdi.resource.SubresourceValidationSubResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -25,6 +24,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Response
@@ -39,7 +39,7 @@ public class SubresourceValidationTest {
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(SubresourceValidationTest.class.getSimpleName())
                 .addAsManifestResource(
-                        PermissionUtil.createPermissionsXmlAsset(HibernateValidatorPermission.ACCESS_PRIVATE_MEMBERS),
+                        DeploymentDescriptors.createPermissionsXmlAsset(HibernateValidatorPermission.ACCESS_PRIVATE_MEMBERS),
                         "permissions.xml")
                 .addClasses(SubresourceValidationResource.class, SubresourceValidationSubResource.class,
                         SubresourceValidationQueryBeanParam.class)

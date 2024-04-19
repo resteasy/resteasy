@@ -18,7 +18,6 @@ import org.jboss.resteasy.test.validation.cdi.resource.CDIValidationCoreResource
 import org.jboss.resteasy.test.validation.cdi.resource.CDIValidationCoreSubResource;
 import org.jboss.resteasy.test.validation.cdi.resource.CDIValidationCoreSumConstraint;
 import org.jboss.resteasy.test.validation.cdi.resource.CDIValidationCoreSumValidator;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -29,6 +28,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Response
@@ -45,8 +45,9 @@ public class CDIValidationCoreTest {
                 .addClass(CDIValidationCoreSubResource.class)
                 .addClasses(CDIValidationCoreSumConstraint.class, CDIValidationCoreSumValidator.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-                new HibernateValidatorPermission("accessPrivateMembers")), "permissions.xml");
+        war.addAsManifestResource(
+                DeploymentDescriptors.createPermissionsXmlAsset(new HibernateValidatorPermission("accessPrivateMembers")),
+                "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, CDIValidationCoreResource.class);
     }
 

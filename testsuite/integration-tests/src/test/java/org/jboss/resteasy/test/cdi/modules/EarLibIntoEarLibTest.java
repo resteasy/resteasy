@@ -21,7 +21,6 @@ import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectableIntf;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesModulesResource;
 import org.jboss.resteasy.test.cdi.modules.resource.CDIModulesModulesResourceIntf;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestApplication;
 import org.jboss.resteasy.utils.TestUtil;
@@ -31,6 +30,7 @@ import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter CDI
@@ -60,7 +60,7 @@ public class EarLibIntoEarLibTest {
                 .addAsLibrary(fromJar)
                 .addAsLibrary(toJar);
         // This is needed, because we don't use TestUtil.finishContainerPrepare(...) so TestApplication calls getContextClassLoader() directly.
-        ear.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        ear.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new RuntimePermission("getClassLoader")), "permissions.xml");
         return ear;
     }

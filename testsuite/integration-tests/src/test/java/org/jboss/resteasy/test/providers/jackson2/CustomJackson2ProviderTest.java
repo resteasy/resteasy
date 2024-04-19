@@ -15,7 +15,6 @@ import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.config.security.ConfigPropertyPermission;
 import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2ProviderApplication;
 import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2ProviderResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -27,6 +26,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Jackson2 provider
@@ -45,7 +45,7 @@ public class CustomJackson2ProviderTest {
         war.addClasses(CustomJackson2ProviderApplication.class, CustomJackson2ProviderResource.class);
         war.addAsWebInfResource(CustomJackson2ProviderTest.class.getPackage(), "jboss-deployment-structure-exclude-jaxrs.xml",
                 "jboss-deployment-structure.xml");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new RuntimePermission("getProtectionDomain"),
                 new RuntimePermission("accessDeclaredMembers"),
                 new ReflectPermission("suppressAccessChecks"),

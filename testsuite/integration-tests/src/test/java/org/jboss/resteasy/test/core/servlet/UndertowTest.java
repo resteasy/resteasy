@@ -13,7 +13,6 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.core.servlet.resource.FilterForwardServlet;
 import org.jboss.resteasy.test.core.servlet.resource.UndertowServlet;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -22,6 +21,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Configuration
@@ -38,7 +38,7 @@ public class UndertowTest {
                         PortProviderUtil.class)
                 .addAsWebInfResource(ServletConfigTest.class.getPackage(), "UndertowWeb.xml", "web.xml");
         // Arquillian in the deployment and use of PortProviderUtil
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
                 new RuntimePermission("accessDeclaredMembers"),
                 new PropertyPermission("arquillian.*", "read"),
                 new PropertyPermission("node", "read"),

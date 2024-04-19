@@ -28,11 +28,11 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 import org.jboss.as.arquillian.api.ServerSetupTask;
 import org.jboss.as.arquillian.container.ManagementClient;
+import org.jboss.as.arquillian.setup.SnapshotServerSetupTask;
 import org.jboss.as.controller.client.Operation;
 import org.jboss.as.controller.client.helpers.Operations;
 import org.jboss.as.controller.client.helpers.Operations.CompositeOperationBuilder;
 import org.jboss.dmr.ModelNode;
-import org.jboss.resteasy.setup.SnapshotServerSetupTask;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>

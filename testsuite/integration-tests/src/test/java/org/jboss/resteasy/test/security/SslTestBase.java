@@ -12,7 +12,6 @@ import org.jboss.as.controller.client.helpers.Operations.CompositeOperationBuild
 import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.resteasy.utils.ServerReload;
 import org.jboss.resteasy.utils.TestUtil;
 import org.junit.jupiter.api.Assertions;
 
@@ -94,8 +93,6 @@ public abstract class SslTestBase {
         if (!Operations.isSuccessfulOutcome(result)) {
             Assertions.fail("Failed to configure SSL context: " + Operations.getFailureDescription(result).asString());
         }
-
-        ServerReload.reloadIfRequired(client);
     }
 
 }

@@ -12,7 +12,6 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -22,6 +21,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
@@ -34,9 +34,9 @@ public class DeploymentTest {
         WebArchive war = TestUtil.prepareArchiveWithApplication(DeploymentTest.class.getSimpleName(),
                 WadlTestApplication.class);
         war.addPackages(true, "org.jboss.resteasy.wadl");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 // Can be removed when WFLY-17065 is resolved
-                PermissionUtil.addModuleFilePermission("org.glassfish.jaxb"),
+                DeploymentDescriptors.addModuleFilePermission("org.glassfish.jaxb"),
                 new RuntimePermission("getClassLoader"),
                 new ReflectPermission("suppressAccessChecks"),
                 new RuntimePermission("accessDeclaredMembers")), "permissions.xml");

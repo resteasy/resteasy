@@ -20,11 +20,10 @@
 package org.jboss.resteasy.test.cdi.injection;
 
 import org.jboss.as.arquillian.container.ManagementClient;
+import org.jboss.as.arquillian.setup.SnapshotServerSetupTask;
 import org.jboss.as.controller.client.helpers.Operations;
 import org.jboss.as.controller.client.helpers.Operations.CompositeOperationBuilder;
 import org.jboss.dmr.ModelNode;
-import org.jboss.resteasy.setup.SnapshotServerSetupTask;
-import org.jboss.resteasy.utils.ServerReload;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -50,7 +49,6 @@ public class JmsTestQueueSetupTask extends SnapshotServerSetupTask {
             throw new RuntimeException(Operations.getFailureDescription(result)
                     .asString());
         }
-        ServerReload.reloadIfRequired(client.getControllerClient());
 
     }
 }

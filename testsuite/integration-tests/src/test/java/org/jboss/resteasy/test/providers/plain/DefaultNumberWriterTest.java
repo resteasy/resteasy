@@ -14,7 +14,6 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.providers.plain.resource.DefaultNumberWriterCustom;
 import org.jboss.resteasy.test.providers.plain.resource.DefaultNumberWriterResource;
-import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -24,6 +23,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Plain provider
@@ -43,7 +43,7 @@ public class DefaultNumberWriterTest {
         WebArchive war = TestUtil.prepareArchive(DefaultNumberWriterTest.class.getSimpleName());
         war.addClasses(TestUtil.class, PortProviderUtil.class);
         // Arquillian in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                 new SocketPermission(PortProviderUtil.getHost(), "connect,resolve"),
                 new PropertyPermission("org.jboss.resteasy.port", "read"),
                 new PropertyPermission("quarkus.tester", "read"),
