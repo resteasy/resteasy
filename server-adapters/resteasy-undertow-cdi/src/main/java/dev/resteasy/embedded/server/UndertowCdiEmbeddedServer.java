@@ -80,6 +80,11 @@ public class UndertowCdiEmbeddedServer implements EmbeddedServer {
             throw new RuntimeException(e);
         }
         undeployAction = () -> {
+            try {
+                manager.stop();
+            } catch (ServletException e) {
+                LogMessages.LOGGER.failedToStopDeploymentManager(e, deploymentInfo.getDeploymentName());
+            }
             manager.undeploy();
             servletContainer.removeDeployment(deploymentInfo);
         };
@@ -91,13 +96,13 @@ public class UndertowCdiEmbeddedServer implements EmbeddedServer {
         if (deployment != null) {
             deployment.stop();
         }
-        final Undertow server = this.server;
-        if (server != null) {
-            server.stop();
-        }
         final Runnable undeployAction = this.undeployAction;
         if (undeployAction != null) {
             undeployAction.run();
+        }
+        final Undertow server = this.server;
+        if (server != null) {
+            server.stop();
         }
     }
 
