@@ -1,3 +1,22 @@
+/*
+ * JBoss, Home of Professional Open Source.
+ *
+ * Copyright 2024 Red Hat, Inc., and individual contributors
+ * as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.jboss.resteasy.plugins.providers.sse.client;
 
 import java.io.IOException;
@@ -238,9 +257,7 @@ public class SseEventSourceImpl implements SseEventSource {
             try {
                 clientResponse.releaseConnection(false);
             } catch (IOException e) {
-                onErrorConsumers.forEach(consumer -> {
-                    consumer.accept(e);
-                });
+                onErrorConsumers.forEach(consumer -> consumer.accept(e));
             }
         }
         sseEventSourceScheduler.shutdownNow();
@@ -255,9 +272,9 @@ public class SseEventSourceImpl implements SseEventSource {
 
         private long reconnectDelay;
 
-        private String verb;
-        private Entity<?> entity;
-        private MediaType[] mediaTypes;
+        private final String verb;
+        private final Entity<?> entity;
+        private final MediaType[] mediaTypes;
 
         EventHandler(final long reconnectDelay, final String lastEventId, final String verb, final Entity<?> entity,
                 final MediaType... mediaTypes) {
@@ -285,9 +302,11 @@ public class SseEventSourceImpl implements SseEventSource {
             }
 
             SseEventInputImpl eventInput = null;
+            InboundSseEvent event = null;
+            final Providers providers = (ClientConfiguration) target.getConfiguration();
             try {
                 final Invocation.Builder requestBuilder = buildRequest(mediaTypes);
-                Invocation request = null;
+                Invocation request;
                 if (entity == null) {
                     request = requestBuilder.build(verb);
                 } else {
@@ -305,13 +324,17 @@ public class SseEventSourceImpl implements SseEventSource {
                     eventInput = clientResponse.readEntity(SseEventInputImpl.class);
                     //if 200<= response code <300 and response contentType is null, fail the connection.
                     if (eventInput == null) {
-                        if (!alwaysReconnect) {
-                            internalClose();
-                        } else {
+                        if (alwaysReconnect) {
                             reconnect(this.reconnectDelay);
+                        } else {
+                            // Run the onComplete callback, then close as something went wrong
+                            runCompleteConsumers();
+                            internalClose();
                         }
                         return;
                     }
+                    // Success, read the event data
+                    event = eventInput.read(providers);
                 } else {
                     //Let's buffer the entity in case the response contains an entity the user would like to retrieve from the exception.
                     //This will also ensure that the connection is correctly closed.
@@ -321,10 +344,15 @@ public class SseEventSourceImpl implements SseEventSource {
                 }
             } catch (ServiceUnavailableException ex) {
                 if (ex.hasRetryAfter()) {
-                    onConnection();
-                    Date requestTime = new Date();
-                    long localReconnectDelay = ex.getRetryTime(requestTime).getTime() - requestTime.getTime();
-                    reconnect(localReconnectDelay);
+                    // Reconnect, but if an error occurs this is unrecoverable, see https://issues.redhat.com/browse/RESTEASY-2952
+                    try {
+                        onConnection();
+                        Date requestTime = new Date();
+                        long localReconnectDelay = ex.getRetryTime(requestTime).getTime() - requestTime.getTime();
+                        reconnect(localReconnectDelay);
+                    } catch (Throwable t) {
+                        onUnrecoverableError(t);
+                    }
                 } else {
                     onUnrecoverableError(ex);
                 }
@@ -333,21 +361,23 @@ public class SseEventSourceImpl implements SseEventSource {
                 onUnrecoverableError(e);
                 return;
             }
-            final Providers providers = (ClientConfiguration) target.getConfiguration();
+
             while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN) {
-                if (eventInput == null || eventInput.isClosed()) {
+                if (event == null || eventInput.isClosed()) {
                     if (alwaysReconnect) {
                         reconnect(reconnectDelay);
                     } else {
+                        // Run the onComplete callback, then close as something went wrong
+                        runCompleteConsumers();
                         internalClose();
                     }
                     break;
                 }
                 try {
-                    InboundSseEvent event = eventInput.read(providers);
-                    if (event != null) {
-                        onEvent(event);
-                    }
+                    // Process the event
+                    onEvent(event);
+                    // Read next event
+                    event = eventInput.read(providers);
                 } catch (IOException e) {
                     reconnect(reconnectDelay);
                     break;
