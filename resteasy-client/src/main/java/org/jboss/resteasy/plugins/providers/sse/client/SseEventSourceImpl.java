@@ -234,9 +234,7 @@ public class SseEventSourceImpl implements SseEventSource {
         try {
             return sseEventSourceScheduler.awaitTermination(timeout, unit);
         } catch (InterruptedException e) {
-            onErrorConsumers.forEach(consumer -> {
-                consumer.accept(e);
-            });
+            runOnErrorConsumers(e);
             Thread.currentThread().interrupt();
             return false;
         }
@@ -248,6 +246,12 @@ public class SseEventSourceImpl implements SseEventSource {
         }
     }
 
+    private void runOnErrorConsumers(final Throwable t) {
+        // Ensure the onComplete callbacks do not get invoked
+        completeListenersInvoked.set(true);
+        onErrorConsumers.forEach(onError -> onError.accept(t));
+    }
+
     private void internalClose() {
         if (state.getAndSet(State.CLOSED) == State.CLOSED) {
             return;
@@ -257,7 +261,7 @@ public class SseEventSourceImpl implements SseEventSource {
             try {
                 clientResponse.releaseConnection(false);
             } catch (IOException e) {
-                onErrorConsumers.forEach(consumer -> consumer.accept(e));
+                runOnErrorConsumers(e);
             }
         }
         sseEventSourceScheduler.shutdownNow();
@@ -400,9 +404,7 @@ public class SseEventSourceImpl implements SseEventSource {
 
         private void onUnrecoverableError(Throwable throwable) {
             connectedLatch.countDown();
-            onErrorConsumers.forEach(consumer -> {
-                consumer.accept(throwable);
-            });
+            runOnErrorConsumers(throwable);
             internalClose();
         }
 
