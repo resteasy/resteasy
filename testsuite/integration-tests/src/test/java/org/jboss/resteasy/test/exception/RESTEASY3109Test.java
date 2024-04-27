@@ -65,6 +65,9 @@ public class RESTEASY3109Test {
                         }, t -> {
                             String s = t.getMessage();
                             Assertions.assertTrue(s.contains("HTTP 500 Internal Server Error"));
+                            // We need to count down here as well. Per the SseEventSource.register() the onComplete
+                            // callback should not be invoked if the onError callback is invoked.
+                            latch.countDown();
                         }, latch::countDown);
                         source.open();
                         Assertions.assertTrue(latch.await(5, TimeUnit.SECONDS));
