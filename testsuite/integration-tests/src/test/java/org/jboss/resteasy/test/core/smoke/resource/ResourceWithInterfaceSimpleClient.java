@@ -35,4 +35,12 @@ public interface ResourceWithInterfaceSimpleClient {
     @Path("uriParam/{param}")
     @Produces("text/plain")
     int getUriParam(@PathParam("param") int param);
+
+    default String getBasicThroughDefaultMethod() {
+        return getBasic();
+    }
+
+    default String defaultQueryParameter(final String param) {
+        return getQueryParam(param);
+    }
 }
