@@ -61,7 +61,7 @@ jobs:
           cache: 'maven'
       - name: Build with Maven Java ${{ matrix.java }} - ${{ matrix.os }}
         run:  |
-          mvn clean install -U -B -fae '-Dgithub.actions' '-Pjakarta-staging'
+          mvn clean install -U -B -fae '-Dgithub.actions'
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -94,7 +94,7 @@ jobs:
           cache: 'maven'
       - name: Test with ${{ matrix.profile }} - JDK ${{ matrix.java }}
         run:  |
-          mvn clean install -U -B -fae ${{ matrix.profile }} '-Dgithub.actions' '-Pjakarta-staging'
+          mvn clean install -U -B -fae ${{ matrix.profile }} '-Dgithub.actions'
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -119,5 +119,5 @@ jobs:
           cache: 'maven'
       - name: Build Java Docs with Java 17
         run: |
-          mvn clean install -B -DskipTests '-Pjakarta-staging'
-          mvn clean site -B -DskipTests '-Pjakarta-staging'
+          mvn clean install -B -DskipTests
+          mvn clean site -B -DskipTests
