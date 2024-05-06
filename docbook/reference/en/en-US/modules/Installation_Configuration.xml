@@ -969,6 +969,17 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
                         </row>
                         <row>
                             <entry>
+                                resteasy.disable.providers
+                            </entry>
+                            <entry>
+                                no default
+                            </entry>
+                            <entry>
+                                A comma delimited list of fully qualified &REST-API; @Provider class names that will be disabled.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
                                 resteasy.use.builtin.providers
                             </entry>
                             <entry>
@@ -1376,6 +1387,28 @@ String value = ConfigProvider.getConfig().getOptionalValue("prop_name", String.c
         Other modules, such as resteasy-jaxb-provider, may be brought in as needed.
     </para>
 
+    </section>
+    <section>
+        <title>Configuring Providers</title>
+
+        <para>There are a number of ways in which Providers can be supplied to RESTEasy.</para>
+
+        <itemizedlist>
+            <listitem>The &REST-API; specification mandates a number of built-in providers.</listitem>
+            <listitem><methodname>Application.getClasses()</methodname> may supply provider classes.</listitem>
+            <listitem>The configuration parameter "resteasy.providers" may supply a comma delimited
+                list of fully qualified provider class names.</listitem>
+            <listitem>If an <classname>Application</classname> returns empty sets from
+                <methodname>getClasses()</methodname> and <methodname>getSingletons()</methodname>,
+                classes annotated with <classname>@Provider</classname> are discovered automatically.</listitem>
+        </itemizedlist>
+
+        <para>RESTEasy also implements the configuration parameter "resteasy.disable.providers", which can be
+            set to a comma delimited list of fully qualified class names of providers that <emphasis role="bold">are not</emphasis>
+            meant to be made available. That list may include any providers supplied by any of the means listed
+            above, and it will override them.
+
+        </para>
     </section>
 </chapter>
 

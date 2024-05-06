@@ -4,6 +4,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +72,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
     @SuppressWarnings("rawtypes")
     protected List<Class> actualProviderClasses;
     protected List<Object> providers;
+    private final Set<String> disabledProviders;
     protected boolean securityEnabled = false;
     protected List<String> jndiResources;
     protected List<String> resourceClasses;
@@ -102,6 +104,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
         providerClasses = new ArrayList<String>();
         actualProviderClasses = new ArrayList<Class>();
         providers = new ArrayList<Object>();
+        disabledProviders = new HashSet<String>();
         jndiResources = new ArrayList<String>();
         resourceClasses = new ArrayList<String>();
         unwrappedExceptions = new ArrayList<String>();
@@ -116,7 +119,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
     }
 
     public ResteasyDeploymentImpl(final boolean quarkus) {
-
+        disabledProviders = new HashSet<>();
     }
 
     public void start() {
@@ -141,7 +144,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
 
             if (registerBuiltin) {
                 providerFactory.setRegisterBuiltins(true);
-                RegisterBuiltin.register(providerFactory);
+                RegisterBuiltin.register(providerFactory, disabledProviders);
 
                 // having problems using form parameters from container for a couple of TCK tests.  I couldn't figure out
                 // why, specifically:
@@ -359,6 +362,8 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
         actualProviderClasses.addAll(other.getActualProviderClasses());
         providers.addAll(other.getProviders());
 
+        disabledProviders.addAll(other.getDisabledProviderClasses());
+
         jndiResources.addAll(other.getJndiResources());
         resourceClasses.addAll(other.getResourceClasses());
         unwrappedExceptions.addAll(other.getUnwrappedExceptions());
@@ -413,24 +418,42 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
 
         if (useScanning && scannedProviderClasses != null) {
             for (String provider : scannedProviderClasses) {
-                registerProvider(provider);
+                if (disabledProviders.contains(provider)) {
+                    LogMessages.LOGGER.debugf("Skipping provider \"%s\" as it is marked as disabled.", provider);
+                } else {
+                    registerProvider(provider);
+                }
             }
         }
 
         if (providerClasses != null) {
             for (String provider : providerClasses) {
-                registerProvider(provider);
+                if (disabledProviders.contains(provider)) {
+                    LogMessages.LOGGER.debugf("Skipping provider \"%s\" as it is marked as disabled.", provider);
+                } else {
+                    registerProvider(provider);
+                }
             }
         }
         if (providers != null) {
             for (Object provider : providers) {
-                providerFactory.registerProviderInstance(provider);
+                if (disabledProviders.contains(provider.getClass().getName())) {
+                    LogMessages.LOGGER.debugf("Skipping provider \"%s\" as it is marked as disabled.",
+                            provider.getClass().getName());
+                } else {
+                    providerFactory.registerProviderInstance(provider);
+                }
             }
         }
 
         if (actualProviderClasses != null) {
             for (Class<?> actualProviderClass : actualProviderClasses) {
-                providerFactory.registerProvider(actualProviderClass);
+                if (disabledProviders.contains(actualProviderClass.getName())) {
+                    LogMessages.LOGGER.debugf("Skipping provider \"%s\" as it is marked as disabled.",
+                            actualProviderClass.getName());
+                } else {
+                    providerFactory.registerProvider(actualProviderClass);
+                }
             }
         }
         registerResources(useScanning);
@@ -775,6 +798,32 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
     @SuppressWarnings("rawtypes")
     public void setActualProviderClasses(List<Class> actualProviderClasses) {
         this.actualProviderClasses = actualProviderClasses;
+    }
+
+    @Override
+    public Set<String> getDisabledProviderClasses() {
+        return Set.copyOf(disabledProviders);
+    }
+
+    @Override
+    public void addDisabledProviderClass(final String disabledProviderClass) {
+        this.disabledProviders.add(disabledProviderClass);
+    }
+
+    @Override
+    public void addDisabledProviderClasses(final Set<String> disabledProviderClasses) {
+        this.disabledProviders.addAll(disabledProviderClasses);
+    }
+
+    @Override
+    public void setDisabledProviderClasses(final Set<String> disabledProviderClasses) {
+        disabledProviders.clear();
+        disabledProviders.addAll(disabledProviderClasses);
+    }
+
+    @Override
+    public void setDisabledProviderClasses(final String... disabledProviderClasses) {
+        setDisabledProviderClasses(Set.of(disabledProviderClasses));
     }
 
     @SuppressWarnings("rawtypes")
