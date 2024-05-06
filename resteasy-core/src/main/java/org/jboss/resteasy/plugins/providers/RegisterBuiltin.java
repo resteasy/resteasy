@@ -14,6 +14,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import jakarta.ws.rs.RuntimeType;
@@ -59,6 +60,10 @@ public class RegisterBuiltin {
     }
 
     public static void register(ResteasyProviderFactory factory) {
+        register(factory, Set.of());
+    }
+
+    public static void register(ResteasyProviderFactory factory, Set<String> disabledProviders) {
         final ResteasyProviderFactory monitor = (factory instanceof ThreadLocalResteasyProviderFactory)
                 ? ((ThreadLocalResteasyProviderFactory) factory).getDelegate()
                 : factory;
@@ -66,7 +71,7 @@ public class RegisterBuiltin {
             if (factory.isBuiltinsRegistered() || !factory.isRegisterBuiltins())
                 return;
             try {
-                registerProviders(factory);
+                registerProviders(factory, disabledProviders);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -75,7 +80,11 @@ public class RegisterBuiltin {
     }
 
     public static void registerProviders(ResteasyProviderFactory factory) throws Exception {
-        Map<String, URL> origins = scanBuiltins();
+        registerProviders(factory, Set.of());
+    }
+
+    public static void registerProviders(ResteasyProviderFactory factory, Set<String> disabledProviders) throws Exception {
+        Map<String, URL> origins = scanBuiltins(disabledProviders);
         for (final Entry<String, URL> entry : origins.entrySet()) {
             final String line = entry.getKey();
             try {
@@ -105,6 +114,11 @@ public class RegisterBuiltin {
     }
 
     public static Map<String, URL> scanBuiltins() throws IOException, PrivilegedActionException {
+        return scanBuiltins(Set.of());
+    }
+
+    public static Map<String, URL> scanBuiltins(final Set<String> disabledProviders)
+            throws IOException, PrivilegedActionException {
         Enumeration<URL> en;
         if (System.getSecurityManager() == null) {
             en = Thread.currentThread().getContextClassLoader().getResources("META-INF/services/" + Providers.class.getName());
@@ -142,8 +156,12 @@ public class RegisterBuiltin {
                         line = line.substring(0, commentIdx);
                     }
                     line = line.trim();
-                    if (line.equals(""))
+                    if (line.isEmpty())
                         continue;
+                    if (disabledProviders.contains(line)) {
+                        LogMessages.LOGGER.debugf("Skipping provider \"%s\" as it is marked as disabled.", line);
+                        continue;
+                    }
                     origins.put(line, url);
                 }
             } finally {
