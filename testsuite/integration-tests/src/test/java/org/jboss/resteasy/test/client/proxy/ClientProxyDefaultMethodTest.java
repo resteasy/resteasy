@@ -48,6 +48,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * @tpSubChapter Smoke tests for jaxrs
@@ -107,6 +108,7 @@ public class ClientProxyDefaultMethodTest {
      * @throws Exception if an error occurs
      */
     @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "7.0.0.Alpha2")
     public void inContainerDefaultResourceParameter() throws Exception {
         try (Client client = ClientBuilder.newClient()) {
             final String response = client.target(TestUtil.generateUri(uri, "/client"))
