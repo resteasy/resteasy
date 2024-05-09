@@ -6,6 +6,8 @@ import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import jakarta.ws.rs.core.Application;
 
@@ -73,6 +75,12 @@ public abstract class ConfigurationBootstrap implements ResteasyConfiguration {
             String[] p = providers.split(",");
             for (String pr : p)
                 deployment.getProviderClasses().add(pr.trim());
+        }
+
+        final String disableProviders = getParameter(ResteasyContextParameters.RESTEASY_DISABLE_PROVIDERS);
+        if (disableProviders != null && !disableProviders.isBlank()) {
+            deployment.addDisabledProviderClasses(
+                    Stream.of(disableProviders.split(",")).map(String::trim).collect(Collectors.toSet()));
         }
 
         String resteasySecurity = getParameter(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY);

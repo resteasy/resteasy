@@ -21,6 +21,7 @@ package org.jboss.resteasy.spi;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import jakarta.ws.rs.core.Application;
 
@@ -207,6 +208,31 @@ public class DelegateResteasyDeployment implements ResteasyDeployment {
     @Override
     public void setProviders(final List<Object> providers) {
         getDelegate().setProviders(providers);
+    }
+
+    @Override
+    public Set<String> getDisabledProviderClasses() {
+        return getDelegate().getDisabledProviderClasses();
+    }
+
+    @Override
+    public void addDisabledProviderClass(final String disabledProviderClass) {
+        getDelegate().addDisabledProviderClass(disabledProviderClass);
+    }
+
+    @Override
+    public void addDisabledProviderClasses(final Set<String> disabledProviderClasses) {
+        getDelegate().addDisabledProviderClasses(disabledProviderClasses);
+    }
+
+    @Override
+    public void setDisabledProviderClasses(final Set<String> disabledProviderClasses) {
+        getDelegate().setDisabledProviderClasses(disabledProviderClasses);
+    }
+
+    @Override
+    public void setDisabledProviderClasses(final String... disabledProviderClasses) {
+        getDelegate().setDisabledProviderClasses(disabledProviderClasses);
     }
 
     @Override

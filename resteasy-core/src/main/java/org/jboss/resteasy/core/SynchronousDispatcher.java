@@ -533,8 +533,12 @@ public class SynchronousDispatcher implements Dispatcher {
                         }
                     });
         } catch (Exception e) {
-            //logger.error("writeResponse() failed mapping exception", e);
             writeException(request, response, e, t -> {
+                // If there is an error, rethrow the original error suppressing the new error.
+                if (t != null) {
+                    e.addSuppressed(t);
+                    rethrow(e);
+                }
             });
         } finally {
             RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);

@@ -8,6 +8,7 @@ package org.jboss.resteasy.plugins.server.servlet;
  */
 public interface ResteasyContextParameters {
     String RESTEASY_PROVIDERS = "resteasy.providers";
+    String RESTEASY_DISABLE_PROVIDERS = "resteasy.disable.providers";
 
     String RESTEASY_USE_BUILTIN_PROVIDERS = "resteasy.use.builtin.providers";
     String RESTEASY_SCAN_PROVIDERS = "resteasy.scan.providers";
