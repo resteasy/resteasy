@@ -2,6 +2,7 @@ package org.jboss.resteasy.spi;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import jakarta.ws.rs.core.Application;
 
@@ -80,6 +81,57 @@ public interface ResteasyDeployment {
     List<Object> getProviders();
 
     void setProviders(List<Object> providers);
+
+    /**
+     * Returns an immutable set of disabled provider classes.
+     *
+     * @return an immutable set of disabled provider class names
+     */
+    default Set<String> getDisabledProviderClasses() {
+        return Set.of();
+    }
+
+    /**
+     * Adds the provider to the set of providers which will be excluded when attempting to locate providers for
+     * processing requests.
+     *
+     * @param disabledProviderClass the fully qualified class name of the provider ot be disabled
+     */
+    default void addDisabledProviderClass(final String disabledProviderClass) {
+        addDisabledProviderClasses(Set.of(disabledProviderClass));
+    }
+
+    /**
+     * Adds the providers to the set of providers which will be excluded when attempting to locate providers for
+     * processing requests.
+     *
+     * @param disabledProviderClasses the fully qualified class names of the providers ot be disabled
+     */
+    default void addDisabledProviderClasses(final Set<String> disabledProviderClasses) {
+        // Do nothing by default. This method exists in 3.10+, however not in 4.x+ as the feature was mistakenly
+        // not added.
+    }
+
+    /**
+     * Adds the providers to the set of providers which will be excluded when attempting to locate providers for
+     * processing requests. Any previously added disabled providers will be cleared first.
+     *
+     * @param disabledProviderClasses the fully qualified class names of the providers ot be disabled
+     */
+    default void setDisabledProviderClasses(final Set<String> disabledProviderClasses) {
+        // Do nothing by default. This method exists in 3.10+, however not in 4.x+ as the feature was mistakenly
+        // not added.
+    }
+
+    /**
+     * Adds the providers to the set of providers which will be excluded when attempting to locate providers for
+     * processing requests. Any previously added disabled providers will be cleared first.
+     *
+     * @param disabledProviderClasses the fully qualified class names of the providers ot be disabled
+     */
+    default void setDisabledProviderClasses(final String... disabledProviderClasses) {
+        setDisabledProviderClasses(Set.of(disabledProviderClasses));
+    }
 
     List<Class> getActualProviderClasses();
 
