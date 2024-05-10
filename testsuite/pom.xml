@@ -28,6 +28,18 @@
         <version.org.jboss.shrinkwrap.resolver>3.3.0</version.org.jboss.shrinkwrap.resolver>
         <version.org.jboss.slf4j.slf4j-jboss-logmanager>2.0.1.Final</version.org.jboss.slf4j.slf4j-jboss-logmanager>
         <version.org.wildfly.cloud-tests>1.0.0.Alpha2</version.org.wildfly.cloud-tests>
+
+        <!-- Provisioning properties -->
+        <server.version/>
+        <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
+        <server.test.feature.pack.artifactId>wildfly-ee-galleon-pack</server.test.feature.pack.artifactId>
+
+        <wildfly.channel.manifest.groupId>org.wildfly.channels</wildfly.channel.manifest.groupId>
+        <wildfly.channel.manifest.artifactId>wildfly-ee</wildfly.channel.manifest.artifactId>
+
+        <resteasy.channel.manifest.groupId>dev.resteasy.channels</resteasy.channel.manifest.groupId>
+        <resteasy.channel.manifest.artifactId>resteasy-${channel.stream.version}</resteasy.channel.manifest.artifactId>
+        <resteasy.channel.manifest.version>${project.version}</resteasy.channel.manifest.version>
     </properties>
 
     <dependencyManagement>
@@ -191,6 +203,28 @@
                 <module>jetty-integration-tests</module>
                 <module>integration-tests-embedded</module>
             </modules>
+        </profile>
+        <profile>
+            <id>provision-preview</id>
+            <activation>
+                <property>
+                    <name>provision.preview</name>
+                </property>
+            </activation>
+            <properties>
+                <server.test.feature.pack.artifactId>wildfly-preview-feature-pack</server.test.feature.pack.artifactId>
+                <wildfly.channel.manifest.artifactId>wildfly-preview</wildfly.channel.manifest.artifactId>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <excludedGroups>managed-bean-support-required</excludedGroups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <id>cloud-tests</id>
