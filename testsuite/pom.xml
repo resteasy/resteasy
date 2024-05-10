@@ -15,7 +15,8 @@
 
     <properties>
         <version.resteasy.testsuite>${project.version}</version.resteasy.testsuite>
-        <additional.surefire.excluded.groups/>
+        <!-- Currently WildFly Preview does not include MBean support as it was removed from Jakarta EE 11 -->
+        <additional.surefire.excluded.groups>managed-bean-support-required</additional.surefire.excluded.groups>
         <!-- default value required for cmd-line -->
         <securityManagerArg>-DSECMGR="false"</securityManagerArg>
         <jacoco.agent/>
@@ -31,11 +32,16 @@
 
         <!-- Provisioning properties -->
         <server.version/>
+
         <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
-        <server.test.feature.pack.artifactId>wildfly-ee-galleon-pack</server.test.feature.pack.artifactId>
+        <!-- WildFly Preview is currently targeting Jakarta EE 11 and we should use it by default
+        <server.test.feature.pack.artifactId>wildfly-ee-galleon-pack</server.test.feature.pack.artifactId> -->
+        <server.test.feature.pack.artifactId>wildfly-preview-feature-pack</server.test.feature.pack.artifactId>
+        <wildfly.channel.manifest.artifactId>wildfly-preview</wildfly.channel.manifest.artifactId>
 
         <wildfly.channel.manifest.groupId>org.wildfly.channels</wildfly.channel.manifest.groupId>
-        <wildfly.channel.manifest.artifactId>wildfly-ee</wildfly.channel.manifest.artifactId>
+        <!-- WildFly Preview is currently targeting Jakarta EE 11 and we should use it by default
+        <wildfly.channel.manifest.artifactId>wildfly-ee</wildfly.channel.manifest.artifactId> -->
 
         <resteasy.channel.manifest.groupId>dev.resteasy.channels</resteasy.channel.manifest.groupId>
         <resteasy.channel.manifest.artifactId>resteasy-${channel.stream.version}</resteasy.channel.manifest.artifactId>
@@ -207,24 +213,16 @@
         <profile>
             <id>provision-preview</id>
             <activation>
+                <activeByDefault>true</activeByDefault>
+                <!-- WildFly Preview is currently targeting Jakarta EE 11 and we should use it by default
                 <property>
                     <name>provision.preview</name>
-                </property>
+                </property> -->
             </activation>
             <properties>
                 <server.test.feature.pack.artifactId>wildfly-preview-feature-pack</server.test.feature.pack.artifactId>
                 <wildfly.channel.manifest.artifactId>wildfly-preview</wildfly.channel.manifest.artifactId>
             </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <excludedGroups>managed-bean-support-required</excludedGroups>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
         <profile>
             <id>cloud-tests</id>
@@ -241,7 +239,7 @@
             <id>home</id>
             <activation>
                 <property>
-                  <name>!jboss.home</name>
+                    <name>!jboss.home</name>
                 </property>
             </activation>
             <properties>
