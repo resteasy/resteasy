@@ -33,6 +33,7 @@
     <packaging>pom</packaging>
 
     <properties>
+        <wildfly.channel.manifest.artifactId>wildfly</wildfly.channel.manifest.artifactId>
     </properties>
 
     <modules>
@@ -55,10 +56,26 @@
                         <feature-pack>
                             <location>org.wildfly.cloud:wildfly-cloud-galleon-pack:${version.wildfly.cloud.galleon.pack}</location>
                         </feature-pack>
-                        <feature-pack>
-                            <location>org.jboss.resteasy:galleon-feature-pack:${version.resteasy.testsuite}</location>
-                        </feature-pack>
                     </feature-packs>
+                    <channels>
+                        <!-- If the server.version is blank the newest version of WildFly will be used. Otherwise, be
+                             explicit.
+                         -->
+                        <channel>
+                            <manifest>
+                                <groupId>${wildfly.channel.manifest.groupId}</groupId>
+                                <artifactId>${wildfly.channel.manifest.artifactId}</artifactId>
+                                <version>${server.version}</version>
+                            </manifest>
+                        </channel>
+                        <channel>
+                            <manifest>
+                                <groupId>${resteasy.channel.manifest.groupId}</groupId>
+                                <artifactId>${resteasy.channel.manifest.artifactId}</artifactId>
+                                <version>${resteasy.channel.manifest.version}</version>
+                            </manifest>
+                        </channel>
+                    </channels>
                     <galleon-options>
                         <jboss-fork-embedded>${galleon.fork.embedded}</jboss-fork-embedded>
                     </galleon-options>
@@ -101,5 +118,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

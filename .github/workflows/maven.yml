@@ -20,7 +20,6 @@ on:
       - 'resteasy-client-vertx/**'
       - 'resteasy-core/**'
       - 'resteasy-core-spi/**'
-      - 'resteasy-feature-pack/**'
       - 'resteasy-jsapi/**'
       - 'resteasy-links/**'
       - 'resteasy-reactor/**'
@@ -32,6 +31,7 @@ on:
       - 'security/**'
       - 'server-adapters/**'
       - 'testsuite/**'
+      - 'wildfly/**'
   schedule:
     - cron: '0 0 * * *' # Every day at 00:00 UTC
 

@@ -17,9 +17,9 @@ on:
       - 'resteasy-core/**'
       - 'resteasy-core-spi/**'
       - 'resteasy-dependencies-bom/**'
-      - 'resteasy-feature-pack/**'
       - 'testsuite/arquillian-utils/**'
       - 'testsuite/integration-tests/**'
+      - 'wildfly/**'
   pull_request:
     branches:
       - '**'
@@ -90,7 +90,7 @@ jobs:
         profile:
           - '-Dsecurity.manager'
           - '-Dprovision.preview'
-          - '-am -Pprovision-without-resteasy,without-jackson-tests -pl resteasy-dependencies-bom,testsuite/integration-tests'
+          - '-am -Pprovision-without-resteasy,without-jackson -pl wildfly/resteasy-channel,/resteasy-dependencies-bom,testsuite/integration-tests'
 
     steps:
       - uses: actions/checkout@v4

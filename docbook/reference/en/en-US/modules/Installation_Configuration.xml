@@ -247,41 +247,15 @@
 	        <title>Upgrading RESTEasy within WildFly</title>
 	        <para>
                 RESTEasy is bundled with WildFly. However you may wish to upgrade to the latest version. With
-                <ulink url="https://docs.wildfly.org/24/Galleon_Guide.html">Galleon</ulink> this makes upgrading RESTEasy
+                <ulink url="https://docs.wildfly.org/32/Galleon_Guide.html">Galleon</ulink> this makes upgrading RESTEasy
                 in WildFly quite easy.
 	        </para>
             <para>
-                The first requirement is the WildFly installation is provisioned with Galleon. The simplest way to do
-                this for a local installation is with <ulink url="https://docs.wildfly.org/galleon/#_galleon_cli_tool">Galleon CLI</ulink>.
-                <programlisting><![CDATA[$ galleon.sh install wildfly:current]]></programlisting>
-
-                To install the RESTEasy upgrade on top of that you simply need to use the tool again with the Maven GAV:
-                <programlisting><![CDATA[$ galleon.sh install org.jboss.resteasy:galleon-feature-pack:7.0.0.Alpha2-SNAPSHOT]]></programlisting>
-            </para>
-            <para>
-                If you are using Maven to provision WildFly you can simply add the feature pack to your plugin configuration.
+                Using Maven to provision WildFly you can simply use the RESTEasy Channel Manifest
                 <programlisting><![CDATA[
 <plugin>
-    <groupId>org.jboss.galleon</groupId>
-    <artifactId>galleon-maven-plugin</artifactId>
-    <configuration>
-        <install-dir>${jboss.home}</install-dir>
-        <record-state>true</record-state>
-        <log-time>true</log-time>
-        <offline>false</offline>
-        <feature-packs>
-            <feature-pack>
-                <groupId>org.wildfly</groupId>
-                <artifactId>wildfly-ee-galleon-pack</artifactId>
-                <version>${version.org.wildfly}</version>
-            </feature-pack>
-            <feature-pack>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>galleon-feature-pack</artifactId>
-                <version>7.0.0.Alpha2-SNAPSHOT</version>
-            </feature-pack>
-        </feature-packs>
-    </configuration>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
     <executions>
         <execution>
             <id>server-provisioning</id>
@@ -289,6 +263,28 @@
             <goals>
                 <goal>provision</goal>
             </goals>
+            <configuration>
+                <feature-packs>
+                    <feature-pack>
+                        <groupId>org.wildfly</groupId>
+                        <artifactId>wildfly-ee-galleon-pack</artifactId>
+                    </feature-pack>
+                </feature-packs>
+                <channels>
+                    <channel>
+                        <manifest>
+                            <groupId>org.wildfly.channels</groupId>
+                            <artifactId>wildfly-ee</artifactId>
+                        </manifest>
+                    </channel>
+                    <channel>
+                        <manifest>
+                            <groupId>dev.resteasy.channels</groupId>
+                            <artifactId>resteasy-7.0</artifactId>
+                        </manifest>
+                    </channel>
+                </channels>
+            </configuration>
         </execution>
     </executions>
 </plugin>]]>
