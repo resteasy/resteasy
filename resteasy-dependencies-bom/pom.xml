@@ -74,7 +74,7 @@
         <version.org.eclipse.yasson>3.0.3</version.org.eclipse.yasson>
         <version.org.glassfish.jakarta.el>4.0.2</version.org.glassfish.jakarta.el>
         <version.jakarta.persistence.persistence-api>3.0.0</version.jakarta.persistence.persistence-api>
-        <version.org.jacoco>0.8.11</version.org.jacoco>
+        <version.org.jacoco>0.8.12</version.org.jacoco>
         <version.org.jboss.logging.jboss-logging>3.5.3.Final</version.org.jboss.logging.jboss-logging>
         <version.org.jboss.logging.jboss-logging-annotations>2.2.1.Final</version.org.jboss.logging.jboss-logging-annotations>
         <version.org.jboss.logmanager>3.0.6.Final</version.org.jboss.logmanager>
