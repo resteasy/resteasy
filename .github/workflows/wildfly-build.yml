@@ -25,6 +25,7 @@ on:
       - '**'
     paths:
       - '.github/workflows/wildfly-build.yml'
+      - 'testsuite/integration-tests/**'
   schedule:
     - cron: '0 0 * * *' # Every day at 00:00 UTC
 
