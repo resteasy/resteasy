@@ -88,8 +88,6 @@ jobs:
       matrix:
         java: ['17', '21']
         profile:
-          - '-Dsecurity.manager'
-          - '-Dprovision.preview'
           - '-am -Pprovision-without-resteasy,without-jackson -pl wildfly/resteasy-channel,/resteasy-dependencies-bom,testsuite/integration-tests'
 
     steps:

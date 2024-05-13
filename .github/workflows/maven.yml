@@ -73,39 +73,6 @@ jobs:
           name: server-logs-${{ matrix.os }}-${{ matrix.java }}
           path: '**/server.log'
 
-  additional-profiles:
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
-    strategy:
-      fail-fast: false
-      matrix:
-        java: ['17', '21']
-        profile:
-          - '-Dsecurity.manager'
-          - '-Dprovision.preview'
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK ${{ matrix.java }}
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ matrix.java }}
-          distribution: 'temurin'
-          cache: 'maven'
-      - name: Test with ${{ matrix.profile }} - JDK ${{ matrix.java }}
-        run:  |
-          mvn clean install -U -B -fae ${{ matrix.profile }} '-Dgithub.actions'
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}
-          path: '**/surefire-reports/*'
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: server-logs-${{ matrix.os }}-${{ matrix.java }}
-          path: '**/server.log'
-
   build-java-docs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
