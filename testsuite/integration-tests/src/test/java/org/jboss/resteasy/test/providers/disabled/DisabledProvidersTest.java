@@ -47,6 +47,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * @tpSubChapter Disabled providers: context parameter "resteasy.disable.providers" is used to disable providers.
@@ -57,6 +58,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup(LoggingSetupTask.class)
+@RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "6.2.9.Final")
 public class DisabledProvidersTest {
 
     static Client client;
