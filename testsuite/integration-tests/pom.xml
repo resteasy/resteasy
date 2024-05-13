@@ -122,7 +122,7 @@
                         <artifactId>wildfly-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>server-provisioning-without-resteasy</id>
+                                <id>server-provisioning</id>
                                 <phase>generate-test-resources</phase>
                                 <goals>
                                     <goal>provision</goal>
