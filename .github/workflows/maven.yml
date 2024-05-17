@@ -11,6 +11,8 @@ on:
       - '.github/workflows/maven.yml'
       - '**/pom.xml'
       - 'providers/**'
+      - '!docbook/pom.xml'
+      - '!distribution/pom.xml'
       - 'resteasy-cdi/**'
       - 'resteasy-client/**'
       - 'resteasy-client-api/**'

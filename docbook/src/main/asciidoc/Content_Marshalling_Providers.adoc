@@ -1,0 +1,261 @@
+== Content Marshalling/Providers
+
+=== Default Providers and default {jakarta-rest-spec} Content Marshalling
+
+RESTEasy can automatically marshal and unmarshal a few different message bodies. 
+
+
+
+[cols="1,1", frame="topbot", options="header"]
+|===
+| 
+Media Types
+|
+Java Type
+|
+`application/\*\+xml`, `text/\*\+xml`, `application/\*\+json`, `application/\*\+fastinfoset`, `application/atom\+\*`
+|
+{xml-binding} annotated classes
+|
+`application/\*+xml`, `text/\*+xml`
+|
+`org.w3c.dom.Document`
+|
+`\*/*`
+|
+`java.lang.String`
+|
+`\*/*`
+|
+`java.io.InputStream`
+|
+`text/plain`
+|
+primitives, `java.lang.String`, or any type that has a String constructor, or static `valueOf(String)` method for input,
+toString() for output
+|
+`\*/*`
+|
+`jakarta.activation.DataSource`
+|
+`\*/*`
+|
+`java.io.File`
+|
+`\*/*`
+|
+`byte[]`
+|
+`application/x-www-form-urlencoded`
+|
+`jakarta.ws.rs.core.MultivaluedMap`
+|===
+
+[NOTE]
+====
+When a `java.io.File` is created, as in
+
+[source,java]
+----
+
+@Path("/test")
+public class TempFileDeletionResource {
+   @POST
+   @Path("post")
+   public Response post(File file)  {
+      return Response.ok(file.getPath()).build();
+   }
+}
+----
+
+a temporary file is created in the file system.
+On the server side, that temporary file will be deleted at the end of the invocation.
+On the client side, however, it is the responsibility of the user to  delete the temporary file.
+====
+
+
+
+
+[[_content_marshalling_with__provider_classes]]
+=== Content Marshalling with @Provider classes
+
+The {spec-name} specification allows the user to plug in their own request/response body reader and writers.
+To do this, the user annotates a class with `@Provider` and specify the `@Produces` types for a writer and `@Consumes` types for a reader.
+The user must also implement a MessageBodyReader/Writer interface respectively.
+Here is an example:
+
+[source,java]
+----
+@Provider
+@Produces("text/plain")
+@Consumes("text/plain")
+public class DefaultTextPlain implements MessageBodyReader, MessageBodyWriter {
+
+    @Override
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+       // StringTextStar should pick up strings
+       return !String.class.equals(type)  TypeConverter.isConvertable(type);
+    }
+
+    @Override
+    public Object readFrom(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+       InputStream delegate = NoContent.noContentCheck(httpHeaders, entityStream);
+       String value = ProviderHelper.readString(delegate, mediaType);
+       return TypeConverter.getType(type, value);
+    }
+
+    @Override
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+       // StringTextStar should pick up strings
+       return !String.class.equals(type) && !type.isArray();
+    }
+
+    @Override
+    public long getSize(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+       String charset = mediaType.getParameters().get("charset");
+       if (charset != null)
+          try {
+             return o.toString().getBytes(charset).length;
+          } catch (UnsupportedEncodingException e) {
+             // Use default encoding.
+          }
+       return o.toString().getBytes(StandardCharsets.UTF_8).length;
+    }
+
+    @Override
+    public void writeTo(Object o, Clas<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+       String charset = mediaType.getParameters().get("charset");
+       if (charset == null) entityStream.write(o.toString().getBytes(StandardCharsets.UTF_8));
+       else entityStream.write(o.toString().getBytes(charset));
+    }
+}
+----
+
+Note that in order to support <<_asynchronous_io,Async IO>>, the user must implement the `AsyncMessageBodyWriter` interface, which requires the implementation of this extra method: 
+
+[source,java]
+----
+ @Provider
+ @Produces("text/plain")
+ @Consumes("text/plain")
+ public class DefaultTextPlain implements MessageBodyReader, AsyncMessageBodyWriter {
+    // ...
+    public CompletionStage<Void> asyncWriteTo(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, AsyncOutputStream entityStream) {
+       String charset = mediaType.getParameters().get("charset");
+       if (charset == null)
+          return entityStream.asyncWrite(o.toString().getBytes(StandardCharsets.UTF_8));
+       else
+          return entityStream.asyncWrite(o.toString().getBytes(charset));
+    }
+ }
+----
+
+The RESTEasy ServletContextLoader will automatically scan the application's `WEB-INF/lib` and classes directories for classes annotated with `@Provider` or the user can manually configure them in web.xml.
+See <<installation_configuration,Installation/Configuration>>.
+
+
+
+[[_messagebodyworkers]]
+=== Providers Utility Class
+
+{jakarta-rest-javadoc}/jakarta/ws/rs/ext/providers[`jakarta.ws.rs.ext.Providers`] is a simple injectable interface that allows you to look up `MessageBodyReaders`, Writers, ContextResolvers, and ExceptionMappers.
+It is very useful, for instance, for implementing multipart providers.
+Content types that embed other random content types.
+
+A Providers instance is injectable into MessageBodyReader or Writers: 
+
+[source,java]
+----
+@Provider
+@Consumes("multipart/fixed")
+public class MultipartProvider implements MessageBodyReader {
+
+    @Context
+    private Providers providers;
+
+}
+----
+
+[[_configuring_document_marshalling]]
+=== Configuring Document Marshalling
+
+XML document parsers are subject to a form of attack known as the XXE (Xml eXternal Entity) Attack (https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing), in which expanding an external entity causes an unsafe file to be loaded.
+For example, the document 
+
+[source,xml]
+----
+<?xml version="1.0"?>
+<!DOCTYPE foo
+[<!ENTITY xxe SYSTEM "file:///etc/passwd">]>
+<search>
+    <user>bill</user>
+    <file>&xxe;<file>
+</search>
+----
+
+could cause the passwd file to be loaded. 
+
+By default, RESTEasy's built-in unmarshaller for `org.w3c.dom.Document` documents will not expand external entities, replacing them by the empty string instead.
+It can be configured to replace external entities by values defined in the DTD by setting the parameter
+`resteasy.document.expand.entity.references` to "true". If configured in the `web.xml` file, it would be:
+
+[source,xml]
+----
+<context-param>
+    <param-name>resteasy.document.expand.entity.references</param-name>
+    <param-value>true</param-value>
+</context-param>
+----
+
+See <<_microprofile_config>> for more information about application configuration. 
+
+Another way of dealing with the problem is by prohibiting DTDs, which RESTEasy does by default.
+This behavior can be changed by setting the parameter `resteasy.document.secure.disableDTDs` to "false".
+
+Documents are also subject to Denial of Service Attacks when buffers are overrun by large entities or too many attributes.
+For example, if a DTD defined the following entities 
+
+[source]
+----
+!ENTITY foo 'foo'
+!ENTITY foo1 'foo;foo;foo;foo;foo;foo;foo;foo;foo;foo;'
+!ENTITY foo2 'foo1;foo1;foo1;foo1;foo1;foo1;foo1;foo1;foo1;foo1;'
+!ENTITY foo3 'foo2;foo2;foo2;foo2;foo2;foo2;foo2;foo2;foo2;foo2;'
+!ENTITY foo4 'foo3;foo3;foo3;foo3;foo3;foo3;foo3;foo3;foo3;foo3;'
+!ENTITY foo5 'foo4;foo4;foo4;foo4;foo4;foo4;foo4;foo4;foo4;foo4;'
+!ENTITY foo6 'foo5;foo5;foo5;foo5;foo5;foo5;foo5;foo5;foo5;foo5;'
+----
+
+then the expansion of foo6;  would result in 1,000,000 foos.
+By default, RESTEasy will limit the number of expansions and the number of attributes per entity.
+The exact behavior depends on the underlying parser.
+The limits can be turned off by setting the parameter `resteasy.document.secure.processing.feature` to "false".
+
+[[_text_media_types]]
+=== Text media types and character sets
+
+The {spec-name} specification says
+
+[quote]
+When writing responses, implementations SHOULD respect application-supplied character
+set metadata and SHOULD use UTF-8 if a character set is not specified by the application
+or if the application specifies a character set that is unsupported.
+
+On the other hand, the HTTP specification says 
+
+[quote]
+When no explicit charset parameter is provided by the sender, media subtypes of the
+"text" type are defined to have a default charset value of "ISO-8859-1" when received
+via HTTP. Data in character sets other than "ISO-8859-1" or its subsets MUST be labeled
+with an appropriate charset value.
+
+It follows that, in the absence of a character set specified by a resource or resource method, RESTEasy SHOULD use UTF-8 as the character set for text media types, and, if it does, it MUST add an explicit  charset parameter to the Content-Type response header.
+RESTEasy started adding the explicit charset parameter in releases 3.1.2.Final and 3.0.22.Final, and that new behavior could cause some compatibility problems.
+To specify the previous behavior, in which UTF-8 was used for text media types, but the explicit charset was not appended, the parameter "resteasy.add.charset" may be set to "false". It defaults to "true". 
+
+NOTE: By "text" media types, we mean
+
+* a media type with type "text" and any subtype;
+* a media type with type ""application" and subtype beginning with "xml".
+
+The latter set includes "application/xml-external-parsed-entity" and "application/xml-dtd". 

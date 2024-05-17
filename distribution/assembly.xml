@@ -19,7 +19,7 @@
             <outputDirectory>docs/javadocs</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../docbook/target/docbook/publish/en-US</directory>
+            <directory>../docbook/target/generated-docs/</directory>
             <outputDirectory>docs/userguide</outputDirectory>
         </fileSet>
     </fileSets>

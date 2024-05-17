@@ -1,0 +1,14 @@
+[[_context]]
+== @Context
+
+The `@Context` annotation allows the injection of instances of the following types:
+
+* `jakarta.ws.rs.core.HttpHeaders`
+* `jakarta.ws.rs.core.UriInfo`
+* `jakarta.ws.rs.core.Request`
+* `jakarta.servlet.http.HttpServletRequest`
+* `jakarta.servlet.http.HttpServletResponse`
+* `jakarta.servlet.ServletConfig`
+* `jakarta.servlet.ServletContext`
+* `jakarta.ws.rs.core.SecurityContext`
+

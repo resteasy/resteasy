@@ -1,0 +1,176 @@
+[[_i18n]]
+== Internationalization and Localization
+
+With the help of the JBoss Logging project, all log and exception messages in RESTEasy can be internationalized.
+for more about JBoss Logging Tooling, see
+https://jboss-logging.github.io/jboss-logging-tools/[https://jboss-logging.github.io/jboss-logging-tools/], Chapters 4 and 5.
+
+=== Internationalization
+
+Each module in RESTEasy that produces any text in the form of logging messages or exception messages has an interface named
+org.jboss.resteasy...i18n.Messages which contains the default messages. Those modules which do any logging also have an
+interface named org.jboss.resteasy...i18n.LogMessages which gives access to an underlying logger. With the exception of
+the resteasy-core-spi module, all messages are in the `Messages` class. resteasy-core-spi has exception messages in the
+`Messages` class and log messages in the `LogMessages` class.
+
+Each message is prefixed by the project code "RESTEASY" followed by an ID which is unique to RESTEasy.
+These IDs belong to the following ranges: 
+
+[cols="1,1", frame="topbot", options="header"]
+|===
+| Range
+| Module
+
+
+|2000-2999
+|resteasy-core-spi log messages
+
+|3000-4499
+|resteasy-core-spi exception messages
+
+|4500-4999
+|resteasy-client
+
+|5000-5499
+|providers/resteasy-atom
+
+|5500-5999
+|providers/fastinfoset
+
+|6000-6499
+|providers/resteasy-html
+
+|6500-6999
+|providers/jaxb
+
+|7500-7999
+|providers/multipart
+
+|8000-8499
+|providers/resteasy-hibernatevalidator-provider
+
+|8500-8999
+|providers/resteasy-validator-provider
+
+|9500-9999
+|async-http-servlet-3.0
+
+|10000-10499
+|cache-core
+
+|10500-10999
+|resteasy-cdi
+
+|11500-11999
+|resteasy-jsapi
+
+|12000-12499
+|resteasy-links
+
+|12500-12999
+|resteasy-servlet-initializer
+
+|13000-13499
+|resteasy-spring
+
+|13500-13999
+|security/resteasy-crypto
+
+|14000-14499
+|security/jose-jwt
+
+|14500-14999
+|security/keystone/keystone-as7
+
+|15000-15499
+|security/keystone/keystone-core
+
+|15500-15999
+|security/resteasy-oauth
+
+|16000-16499
+|security/skeleton-key-idm/skeleton-key-as7
+
+|16500-16999
+|security/skeleton-key-idm/skeleton-key-core
+
+|17000-17499
+|security/skeleton-key-idm/skeleton-key-idp
+
+|17500-17999
+|server-adapters/resteasy-jdk-http
+
+|18500-18999
+|server-adapters/resteasy-netty4
+|===
+
+For example, the {xml-binding} provider contains the interface
+`[class]org.jboss.resteasy.plugins.providers.jaxb.i18.Messages`
+which looks like 
+
+[source,java]
+----
+@MessageBundle(projectCode = "RESTEASY")
+public interface Messages {
+   Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
+   int BASE = 6500;
+
+   @Message(id = BASE, value = "Collection wrapping failed, expected root element name of %s got %s")
+   String collectionWrappingFailedLocalPart(String element, String localPart);
+
+   @Message(id = BASE + 05, value = "Collection wrapping failed, expect namespace of %s got %s")
+   String collectionWrappingFailedNamespace(String namespace, String uri);
+}
+----
+
+The value of a message is retrieved by referencing a method and passing the appropriate parameters.
+For example, 
+
+[source,java]
+----
+throw new JAXBUnmarshalException(Messages.MESSAGES.collectionWrappingFailedLocalPart(wrapped.element(), ele.getName().getLocalPart()));
+----
+
+== Localization
+
+When RESTEasy is built with the "i18n" profile, a template properties file containing the default messages is created in a subdirectory of target/generated-translation-files. In the {xml-binding} provider, for example, the
+`Messages.i18n_locale_COUNTRY_VARIANT.properties` goes in the `org/jboss/resteasy/plugins/providers/jaxb/i18n`
+directory, and the first few lines are:
+
+[source,properties]
+----
+# Id: 6500
+# Message: Collection wrapping failed, expected root element name of {0} got {1}
+# @param 1: element -
+# @param 2: localPart -
+collectionWrappingFailedLocalPart=Collection wrapping failed, expected root element name of {0} got {1}
+# Id: 6505
+# Message: Collection wrapping failed, expect namespace of {0} got {1}
+# @param 1: namespace -
+# @param 2: uri -
+collectionWrappingFailedNamespace=Collection wrapping failed, expect namespace of {0} got {1}
+----
+
+To provide the translation of the messages for a particular locale, the file should be renamed, replacing "locale", "COUNTRY", and "VARIANT" as appropriate (possibly omitting the latter two), and copied to the `src/main/resources` directory.
+In the {xml-binding} provider, it would go in src/main/resources/org/jboss/resteasy/plugins/providers/jaxb/i18n`.
+
+For testing purposes, each module containing a Messages interface has two sample properties files, for the locale "en" and the imaginary locale "xx", in the `src/test/resources` directory.
+They are copied to `src/main/resources` when the module is built and deleted when it is cleaned.
+
+The `Messages.i18n_xx.properties` file in the {xml-binding} provider, for example, looks like
+
+[source,properties]
+----
+# Id: 6500
+# Message: Collection wrapping failed, expected root element name of {0} got {1}
+# @param 1: element -
+# @param 2: localPart -
+collectionWrappingFailedLocalPart=Collection wrapping failed, expected root element name of {0} got {1}
+# Id: 6505
+# Message: Collection wrapping failed, expect namespace of {0} got {1}
+# @param 1: namespace -
+# @param 2: uri -
+collectionWrappingFailedNamespace=aaa {0} bbb {1} ccc
+----
+
+Note that the value of `collectionWrappingFailedNamespace` is modified.

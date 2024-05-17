@@ -1,0 +1,198 @@
+[[_exceptionhandling]]
+== Exception Handling
+
+[[_exceptionmappers]]
+=== Exception Mappers
+
+ExceptionMappers are custom, application provided, components that can catch thrown application exceptions and write specific HTTP responses.
+They are classes annotated with `@Provider` and implement the {jakarta-rest-javadoc}/jakarta/ws/rs/ext/exceptionmapper[`ExceptionMapper`] interface.
+
+When an application exception is thrown it will be caught by the {spec-name} runtime.
+{spec-name} will then scan registered ExceptionMappers to see which one support marshalling the exception type thrown.
+Here is an example of ExceptionMapper 
+
+
+[source,java]
+----
+@Provider
+public class EJBExceptionMapper implements ExceptionMapper<EJBException> {
+
+    @Override
+    public Response toResponse(EJBException exception) {
+       return Response.status(500).build();
+    }
+}
+----
+
+ExceptionMappers are registered the same way as MessageBodyReader/Writers.
+By scanning for `@Provider` annotated classes, or programmatically through the `ResteasyProviderFactory` class.
+
+As of RESTEasy 6.1 if a default `ExceptionMapper` is registered.
+It handles all uncaught exceptions and returns a response with the exception's message and a status of 500.
+If the exception is a `WebApplicationException` the response from the exception is returned.
+This can be turned off by setting the `dev.resteasy.exception.mapper` to `false`.
+
+The default `ExceptionMapper` will also log the exception at a error level.
+The logger name is `org.jboss.resteasy.core.providerfactory.DefaultExceptionMapper` which can be used to disable these log messages. 
+
+
+
+[[_builtinexception]]
+=== RESTEasy Built-in Internally-Thrown Exceptions
+
+RESTEasy has a set of built-in exceptions that are thrown when it encounters errors during dispatching or marshalling.
+They all revolve around specific HTTP error codes.
+They can be found in RESTEasy's javadoc under the package org.jboss.resteasy.spi.
+Here's a list of them:
+
+[cols="1,1,1", frame="topbot", options="header"]
+|===
+| Exception
+| HTTP Code
+| Description
+
+| `ReaderException`
+| 400
+| All exceptions thrown from MessageBodyReaders are wrapped within this exception.  If there is no `ExceptionMapper` for the
+wrapped exception or if the exception isn't a `WebApplicationException`, then resteasy will return a 400 code by default.
+
+| `WriterException`
+| 500
+| All exceptions thrown from MessageBodyWriters are wrapped within this exception.  If there is no `ExceptionMapper` for the
+wrapped exception or if the exception isn't a `WebApplicationExceptio`n, then resteasy will return a 400 code by default.
+
+| `org.jboss.resteasy.plugins.providers.jaxb.`JAXBUnmarshalException`
+| 400
+| The {spec-name} providers throw this exception on reads. They may be wrapping `JAXBExceptions`. This class extends `ReaderException`.
+
+| `org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException`
+| 500
+| The {spec-name} providers throw this exception on writes. They may be wrapping `JAXBExceptions`. This class extends `WriterException`.
+
+| `ApplicationException`
+| N/A
+| This exception wraps all exceptions thrown from application code.  It functions much in the same way as `InvocationTargetException`.
+If there is an `ExceptionMapper` for wrapped exception, then that is used to handle the request.
+
+| `Failure`
+| N/A
+| Internal RESTEasy. Not logged
+
+| `LoggableFailure`
+| N/A
+| Internal RESTEasy error. Logged
+
+| `DefaultOptionsMethodException`
+| N/A
+| If the user invokes HTTP OPTIONS and no {spec-name} method for it, RESTEasy provides a default behavior by throwing this exception.
+This is only done if the property `dev.resteasy.throw.options.exception` is set to true.
+
+| `JsonProcessingException`
+| 400
+| A Jackson provider throws this exception when JSON data is determined to be invalid.
+|===
+
+[[_resteasywebapplicationexception]]
+=== Resteasy WebApplicationExceptions
+
+Suppose a client at local.com calls the following resource method:
+
+[source,java]
+----
+@GET
+@Path("remote")
+public String remote() {
+    Client client = ClientBuilder.newClient();
+    return client.target("http://localhost/exception").request().get(String.class);
+}
+----
+
+If the call to http://localhost returns a status code 3xx, 4xx, or 5xx, then the `Client` is obliged by the
+{spec-name} specification to throw a `WebApplicationException`. Moreover, if the `WebApplicationException`
+contains a `Response`, which it normally would in RESTEasy, the server runtime is obliged by the {spec-name}
+specification to return that `Response`. As a result, information from the server at third.party.com, e.g., headers and
+body, will get sent back to local.com. The problem is that that information could be, at best, meaningless to the
+client and, at worst, a security breach.
+
+RESTEasy has a solution that works around the problem and still conforms to the {spec-name} specification.
+In particular, for each `WebApplicationException` it defines a new subclass:
+
+[source]
+----
+WebApplicationException
++-ResteasyWebApplicationException
++-ClientErrorException
+| +-ResteasyClientErrorException
+| +-BadRequestException
+| | +-ResteasyBadRequestException
+| +-ForbiddenException
+| | +-ResteasyForbiddenException
+| +-NotAcceptableException
+| | +-ResteasyNotAcceptableException
+| +-NotAllowedException
+| | +-ResteasyNotAllowedException
+| +-NotAuthorizedException
+| | +-ResteasyNotAuthorizedException
+| +-NotFoundException
+| | +-ResteasyNotFoundException
+| +-NotSupportedException
+| | +-ResteasyNotSupportedException
++-RedirectionException
+| +-ResteasyRedirectionException
++-ServerErrorException
+| +-ResteasyServerErrorException
+| +-InternalServerErrorException
+| | +-ResteasyInternalServerErrorException
+| +-ServiceUnavailableException
+| | +-ResteasyServiceUnavailableException
+----
+
+The new exceptions play the same role as the original ones, but RESTEasy treats them slightly differently.
+When a `Client` detects that it is running in the context of a resource method, it will throw one of the new `Exception`.
+However, instead of storing the original `Response`, it stores a "sanitized" version of the `Response`, in which only
+the status and the Allow and Content-Type headers are preserved.
+The original `WebApplicationException`, and therefore the original `Response`, can be accessed in one of two ways:
+
+[source,java]
+----
+// Create a NotAcceptableException.
+NotAcceptableException nae = new NotAcceptableException(Response.status(406).entity("ooops").build());
+
+// Wrap the NotAcceptableException in a ResteasyNotAcceptableException.
+ResteasyNotAcceptableException rnae = (ResteasyNotAcceptableException) WebApplicationExceptionWrapper.wrap(nae);
+
+// Extract the original NotAcceptableException using instance method.
+NotAcceptableException nae2 = rnae.unwrap();
+Assertions.assertEquals(nae, nae2);
+
+// Extract the original NotAcceptableException using class method.
+NotAcceptableException nae3 = (NotAcceptableException) WebApplicationExceptionWrapper.unwrap(nae); // second way
+Assertions.assertEquals(nae, nae3);
+----
+
+Note that this change is intended to introduce a safe default behavior in the case that the `Exception` generated by the
+remote call is allowed to make its way up to the server runtime. It is considered a good practice, though, to catch the
+`Exception` and treat it in some appropriate manner:
+
+[source,java]
+----
+@GET
+@Path("remote/{i}")
+public String remote(@PathParam("i") String i) throws Exception {
+  Client client = ClientBuilder.newClient();
+  try {
+     return client.target("http://localhost/exception/" + i).request().get(String.class);
+  } catch (WebApplicationException wae) {
+      LOGGER.errorf(wae, "Failed to execute %s", i);
+  }
+}
+----
+
+NOTE: While RESTEasy will default to the new, safer behavior, the original behavior can be restored by setting the
+configuration parameter `resteasy.original.webapplicationexception.behavior` to "true".
+
+[[_overring_resteasy_exceptions]]
+=== Overriding RESTEasy Builtin Exceptions
+
+RESTEasy built-in exceptions can be overridden by writing an `ExceptionMapper` for the exception.
+You can write an `ExceptionMapper` for any thrown exception including `WebApplicationException`.

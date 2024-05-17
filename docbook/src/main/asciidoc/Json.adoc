@@ -1,0 +1,268 @@
+[[_json]]
+== JSON Support via Jackson
+
+RESTEasy supports integration with the Jackson project.
+For more on Jackson 2, see https://github.com/FasterXML/jackson-databind/wiki.
+Besides having {xml-binding} like APIs, it has a JavaBean based model, described at
+https://github.com/FasterXML/jackson-databind/wiki/Databind-annotations, which allows the marshalling of Java objects to
+and from JSON. RESTEasy integrates with the JavaBean model. While Jackson does come with its own {spec-name}
+integration, RESTEasy expanded it a little, as described below.
+
+=== Using Jackson 2 Outside of WildFly
+
+If deploying RESTEasy outside WildFly, add the RESTEasy Jackson provider to the pom.xml:
+
+[source,xml,subs="attributes+"]
+----
+<dependency>
+   <groupId>org.jboss.resteasy</groupId>
+   <artifactId>resteasy-jackson2-provider</artifactId>
+   <version>{resteasy-version}</version>
+</dependency>
+----
+
+=== {xml-binding} Annotations
+
+In Jackson 2.13+ `com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule` must be registered in
+order to use XML binding annotations for Jackson to marshall/unmarshall them in JSON. To do this,
+`com.fasterxml.jackson.databind.ObjectMapper` must be provided via an implementation of `jakarta.ws.rs.ext.ContextResolver`.
+
+An example `jakarta.ws.rs.ext.ContextResolver`:
+
+[source,java]
+----
+@Provider
+public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
+    static final JsonMapper MAPPER = JsonMapper.builder()
+            .addModule(new JakartaXmlBindAnnotationModule())
+            .build();
+
+    @Override
+    public ObjectMapper getContext(final Class<?> type) {
+        return MAPPER;
+    }
+}
+----
+
+=== Additional RESTEasy Specifics
+
+RESTEasy added support for "application/*+json". Jackson supports "application/json" and "text/json" as valid media types.
+This allows the creation of json-based media types and still lets Jackson perform the marshalling.
+For example: 
+
+[source,java]
+----
+
+@Path("/customers")
+public class MyService {
+
+    @GET
+    @Produces("application/vnd.customer+json")
+    public Customer[] getCustomers() {}
+}
+----
+
+=== JSONP Support
+
+RESTEasy supports http://en.wikipedia.org/wiki/JSONP[JSONP].
+It can be enabled by adding provider `org.jboss.resteasy.plugins.providers.jackson.Jackson2JsonpInterceptor` to the deployment.
+Jackson and JSONP can be used together.
+If the media type of the response is json and a callback query parameter is given, the response will be a JavaScript snippet with a method call of the method defined by the callback parameter.
+For example:
+
+[source]
+----
+GET /resources/stuff?callback=processStuffResponse
+----
+
+will produce this response:
+
+[source]
+----
+processStuffResponse(nomal JSON body)
+----
+
+This supports the default behavior of http://api.jquery.com/jQuery.ajax/[jQuery].
+To enable Jackson2JsonpInterceptor in WildFly, annotations must be imported from the `org.jboss.resteasy.resteasy-jackson2-provider` module.
+To do that a `jboss-deployment-structure.xml` file must be added to the application's WAR:
+
+[source,xml]
+----
+<jboss-deployment-structure>
+  <deployment>
+    <dependencies>
+      <module name="org.jboss.resteasy.resteasy-jackson2-provider" annotations="true"/>
+    </dependencies>
+  </deployment>
+</jboss-deployment-structure>
+----
+
+The name of the callback parameter can be changed by setting the `callbackQueryParameter` property.
+
+`Jackson2JsonpInterceptor` can wrap the response into a try-catch block:
+
+[source]
+----
+try{processStuffResponse(normal JSON body)}catch(e){}
+----
+
+This feature can be enabled by setting the resteasy.jsonp.silent property to true
+
+[NOTE]
+====
+Because JSONP can be used in **Cross Site Scripting Inclusion (XSSI) attacks**, `Jackson2JsonpInterceptor` is disabled by default.
+Two steps are necessary to enable it:
+
+. As noted above, `Jackson2JsonpInterceptor` must be included in the deployment. For example, a service file
+  `META-INF/services/jakarta.ws.rs.ext.Providers` with the line
++
+[source]
+----
+org.jboss.resteasy.plugins.providers.jackson.Jackson2JsonpInterceptor
+----
++
+may be included on the classpath
+. Parameter "resteasy.jsonp.enable" must be set to "true". [See <<_microprofile_config>> for more information about application configuration.]
+
+====
+
+=== Jackson JSON Decorator
+
+If using the Jackson 2 provider, RESTEasy has provided a pretty-printing annotation similar with the one in {xml-binding} provider:
+`org.jboss.resteasy.annotations.providers.jackson.Formatted`
+
+Here is an example:
+
+[source,java]
+----
+@GET
+@Produces("application/json")
+@Path("/formatted/{id}")
+@Formatted
+public Product getFormattedProduct() {
+    return new Product(333, "robot");
+}
+----
+As the example shown above, the @Formatted annotation will enable the underlying Jackson option `SerializationFeature.INDENT_OUTPUT`.
+
+=== JSON Filter Support
+
+Jackson2 provides annotation, http://fasterxml.github.io/jackson-annotations/javadoc/2.13/com/fasterxml/jackson/annotation/JsonFilter.html[JsonFilter].
+`@JsonFilter` is used to apply filtering during serialization/de-serialization for example which properties are to be used or not.
+Here is an example which defines mapping from "nameFilter" to filter instances and filter bean properties when serialized to json format:
+
+[source,java]
+----
+@JsonFilter(value="nameFilter")
+public class Jackson2Product {
+    protected String name;
+    protected int id;
+    public Jackson2Product() {
+    }
+    public Jackson2Product(final int id, final String name) {
+        this.id = id;
+        this.name = name;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+}
+----
+
+`@JsonFilter` annotates a resource class to filter out some property not to be serialized in the json response.
+To map the filter id and instance we need to create another Jackson class to add the id and filter instance map:
+
+[source,java]
+----
+public class ObjectFilterModifier extends ObjectWriterModifier {
+    public ObjectFilterModifier() {
+    }
+    @Override
+    public ObjectWriter modify(EndpointConfigBase<?> endpoint,
+            MultivaluedMap<String, Object> httpHeaders, Object valueToWrite,
+            ObjectWriter w, JsonGenerator jg) throws IOException {
+
+        FilterProvider filterProvider = new SimpleFilterProvider().addFilter(
+                "nameFilter",
+                SimpleBeanPropertyFilter.filterOutAllExcept("name"));
+        return w.with(filterProvider);
+
+    }
+}
+----
+
+Here the method `modify()` takes care of filtering all properties except "name" property before a write.
+To make this work, the mapping information must be accessible to RESTEasy.
+This can be made available through a WriterInterceptor that uses Jackson's `ObjectWriterInjector`:
+
+[source,java]
+----
+
+
+@Provider
+public class JsonFilterWriteInterceptor implements WriterInterceptor{
+
+    private ObjectFilterModifier modifier = new ObjectFilterModifier();
+    @Override
+    public void aroundWriteTo(WriterInterceptorContext context)
+            throws IOException, WebApplicationException {
+        //set a threadlocal modifier
+        ObjectWriterInjector.set(modifier);
+        context.proceed();
+    }
+
+}
+----
+
+Alternatively, Jackson's documentation suggest doing the same in a servlet filter; that however potentially leads to issues in RESTEasy.
+The ObjectFilterModifier is stored using a ThreadLocal object and there's no guarantee the same thread serving the servlet filter will be running the resource endpoint execution.
+For the servlet filter scenario, RESTEasy offers its own injector that relies on the current thread context classloader for carrying the specified modifier: 
+[source,java]
+----
+public class ObjectWriterModifierFilter implements Filter {
+    private static ObjectFilterModifier modifier = new ObjectFilterModifier();
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response,
+            FilterChain chain) throws IOException, ServletException {
+        ResteasyObjectWriterInjector.set(Thread.currentThread().getContextClassLoader(), modifier);
+        chain.doFilter(request, response);
+    }
+
+    @Override
+    public void destroy() {
+    }
+
+}
+----
+
+== Polymorphic Typing deserialization
+
+Due to numerous CVEs for a specific kind of Polymorphic Deserialization (see details in FasterXML Jackson documentation), starting from Jackson 2.10 users have a means to allow only specified classes to be deserialized.
+RESTEasy enables this feature by default.
+It allows controlling the content of the whitelist of allowed classes/packages. 
+
+[cols="1,1,1", frame="topbot", options="header"]
+|===
+| Property
+| Description
+
+| resteasy.jackson.deserialization.whitelist.allowIfBaseType.prefix
+| Method for appending a matcher that will allow all subtypes in cases where nominal base type's class name starts with specific prefix. "*" can be used for allowing any class.
+
+| resteasy.jackson.deserialization.whitelist.allowIfSubType.prefix
+| Method for appending a matcher that will allow specific subtype (regardless of declared base type) in cases where subclass name starts with specified prefix. "*" can be used for allowing any class.
+|===

@@ -1,0 +1,406 @@
+[[_tracing_feature]]
+== RESTEasy Tracing Feature
+
+=== Overview
+
+Tracing feature is a way for the users of the RESTEasy to understand what's going on internally in the container when a request is processed.
+It's different from the pure logging system or profiling feature, which provides more general information about the request and response. 
+
+The tracing feature provides more internal states of the {spec-name} container.
+For example, it could be able to show what filters a request is going through, or how long a request is processed and other kinds of information. 
+
+Currently, it doesn't have a standard or spec to define the tracing feature, so the tracing feature is tightly coupled
+with the concrete {spec-name} implementation itself. This chapter, discusses the design and usage of the tracing feature.
+
+=== Tracing Info Mode
+
+The RESTEasy tracing feature supports three logging mode: 
+
+* OFF
+* ON_DEMAND
+* ALL
+
+"ALL" will enable the tracing feature.
+"ON_DEMAND" mode will give the control to the client side: A client can send a tracing request via HTTP header and get the tracing info back from response headers.
+"OFF" mode disables the tracing feature, and is the default mode. 
+
+=== Tracing Info Level
+
+The tracing info has three levels: 
+
+* SUMMARY
+* TRACE
+* VERBOSE
+
+The "SUMMARY" level will emit some brief tracing information.
+The "TRACE" level will produce more detailed tracing information, and the "VERBOSE" level will generate extremely detailed tracing information. 
+
+The tracing feature relies on the JBoss Logging framework to produce the tracing info.
+The JBoss Logging configuration controls the final output of the tracing info. 
+
+=== Basic Usages
+
+By default, the tracing feature is turned off.
+To enable the tracing feature, add the following dependency in your project: 
+
+[source,xml,subs="attributes+"]
+----
+<dependency>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-tracing-api</artifactId>
+    <version>{resteasy-version}</version>
+</dependency>
+----
+
+Because the tracing feature is an optional feature, the above dependency is provided by the
+https://github.com/resteasy/resteasy-extensions[resteasy-extensions] project.
+
+After including the dependency in the project, set the tracing mode and tracing level via the context-param parameters
+in the project's web.xml file.
+Here is the example: 
+
+[source,xml]
+----
+<context-param>
+    <param-name>resteasy.server.tracing.type</param-name>
+    <param-value>ALL</param-value>
+    <param-name>resteasy.server.tracing.threshold</param-name>
+    <param-value>SUMMARY</param-value>
+</context-param>
+----
+
+Besides the above configuration, the user needs to make sure that the underlying log manager is configured
+properly, so the tracing output can be viewed. Here is an example of the "logging.properties" for the JBoss Log Manager:
+
+[source,properties]
+----
+# Additional logger names to configure (root logger is always configured)
+#loggers=org.foo.bar, org.foo.baz
+# Root logger level
+logger.level=ALL
+# Declare handlers for the root logger
+logger.handlers=CONSOLE,FILE
+# Declare handlers for additional loggers
+#logger.org.foo.bar.handlers=XXX, YYY
+# Console handler configuration
+handler.CONSOLE=org.jboss.logmanager.handlers.ConsoleHandler
+handler.CONSOLE.properties=autoFlush
+handler.CONSOLE.level=ALL
+handler.CONSOLE.autoFlush=true
+handler.CONSOLE.formatter=PATTERN
+# File handler configuration
+handler.FILE=org.jboss.logmanager.handlers.FileHandler
+handler.FILE.level=ALL
+handler.FILE.properties=autoFlush,fileName
+handler.FILE.autoFlush=true
+handler.FILE.fileName=/tmp/jboss.log
+handler.FILE.formatter=PATTERN
+# The log format pattern for both logs
+formatter.PATTERN=org.jboss.logmanager.formatters.PatternFormatter
+formatter.PATTERN.properties=pattern
+formatter.PATTERN.pattern=%d{HH:mm:ss,SSS} %-5p [%c{1}] %m%n
+----
+
+In above setting, the logger level is set to "ALL", and the output log file to "/tmp/jboss.log".  This example is reporting all the tracing information. 
+
+After enabling the tracing feature above, the tracing output looks like the following:
+
+[source]
+----
+16:21:40,110 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff START baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/type] method=[GET] authScheme=[n/a] accept=n/a accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a  [ ---- ms]
+16:21:40,110 TRACE [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff START_HEADERS Other request headers: Connection=[Keep-Alive] Host=[localhost:8081] User-Agent=[Apache-HttpClient/4.5.4 (Java/1.8.0_201)]  [ ---- ms]
+16:21:40,114 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff PRE_MATCH_SUMMARY PreMatchRequest summary: 0 filters [ 0.04 ms]
+16:21:40,118 DEBUG [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff REQUEST_FILTER Filter by [io.weli.tracing.HttpMethodOverride @60353244] [ 0.02 ms]
+...
+16:21:40,164 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff RESPONSE_FILTER_SUMMARY Response summary: 1 filters [ 8.11 ms]
+16:21:40,164 INFO  [general] org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff FINISHED Response status: 200 [ ---- ms]
+----
+
+There are several part to the entries in the log information above. 
+
+* Level Of The Log Entry
++
+The entries log level is reported, such as "TRACE", "INFO", "DEBUG". The tracing feature maps its own tracing info
+levels to the JBoss Logger output levels like this.
+* The Request Scope Id
++
+A request id is listed: 
++
+[source]
+----
+org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@721299ff
+----
++
+This identifies which request the log entry belongs to. 
+* The Type Of The Tracing Log
++
+tracing log entries are divided into multiple categories, such as "START_HEADERS", "REQUEST_FILTER", "FINISHED", etc. 
+* The Detail Of The Log Entry 
++
+The last part of a log entry is the detail message of this entry. 
+
+In next section describes how the tracing info is fetched from client side. 
+
+=== Client Side Tracing Info
+
+From the client side, request can be sent to the server side.
+If the server side is configured properly to produce tracing info, the info will be sent back to client side via response headers.
+For example, a request is sent to the server like this:
+
+[source,bash]
+----
+curl -i http://localhost:8081/foo
+----
+
+The tracing information is retrieved from the response header follows:
+
+[source]
+----
+HTTP/1.1 200 OK
+X-RESTEasy-Tracing-026: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7a49a8aa MBW         [ ---- / 61.57 ms |  ---- %] [org.jboss.resteasy.plugins.providers.InputStreamProvider @1cbf0b08] is skipped
+...
+Date: Wed, 27 Mar 2019 09:39:50 GMT
+Connection: keep-alive
+X-RESTEasy-Tracing-000: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7a49a8aa START       [ ---- /  ---- ms |  ---- %] baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/type] method=[GET] authScheme=[n/a] accept=*/* accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a
+...
+X-RESTEasy-Tracing-025: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7a49a8aa MBW         [ ---- / 61.42 ms |  ---- %] [org.jboss.resteasy.plugins.providers.FileRangeWriter @35b791fa] is skipped
+----
+
+From above output, the tracing info is in the response headers, and it is marked in sequence as in the form of "X-RESTEasy-Tracing-nnn". 
+
+=== Json Formatted Response
+
+The tracing log can be returned to client side in JSON format.
+To use this feature, the user must specify a JSON provider for the tracing module to generate JSON formatted info.
+There are two JSON providers to choose from.
+Both support JSON data marshalling.
+The first choice is to use the jackson2 provider:
+
+[source,xml,subs="attributes+"]
+----
+<dependency>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-jackson2-provider</artifactId>
+    <version>{resteasy-version}</version>
+</dependency>
+----
+
+The second choice is to use the json-binding provider: 
+[source,xml,subs="attributes+"]
+----
+<dependency>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-json-binding-provider</artifactId>
+    <version>{resteasy-version}</version>
+</dependency>
+----
+
+After including one of the above modules, send a request to server.
+The JSON formatted tracing information will be returned.
+Here is a request example (the example is provided at last section of this chapter):
+
+[source,bash]
+----
+curl -H "X-RESTEasy-Tracing-Accept-Format: JSON" -i http://localhost:8081/type
+----
+
+In the above curl command, "X-RESTEasy-Tracing-Accept-Format: JSON" was added into the request header.
+This is requesting the json formatted tracing info from server, and the tracing info in response header is as follows:
+
+[source]
+----
+X-RESTEasy-Tracing-000: [{"event":"START","duration":0,"timestamp":195286694509932,"text":"baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/type] method=[GET] authScheme=[n/a] accept=*/* accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a ","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"},{"event":"START_HEADERS","duration":0,"timestamp":195286695053606,"text":"Other request headers: Accept=[*/*] Host=[localhost:8081] User-Agent=[curl/7.54.0] X-RESTEasy-Tracing-Accept-Format=[JSON] ","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"}...{"event":"FINISHED","duration":0,"timestamp":195286729758836,"text":"Response status: 200","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"}]
+----
+
+The above text is the raw output from the response.
+It can be formatted it to make it readable:
+
+[source,json]
+----
+[{
+    "X-RESTEasy-Tracing-000": [
+        {
+            "event": "START",
+            "duration": 0,
+            "timestamp": 195286694509932,
+            "text": "baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/type] method=[GET] authScheme=[n/a] accept=*/* accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a ",
+            "requestId": "org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"
+        },
+        {
+            "event": "START_HEADERS",
+            "duration": 0,
+            "timestamp": 195286695053606,
+            "text": "Other request headers: Accept=[*/*] Host=[localhost:8081] User-Agent=[curl/7.54.0] X-RESTEasy-Tracing-Accept-Format=[JSON] ",
+            "requestId": "org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"
+        },
+        {
+            "event": "PRE_MATCH_SUMMARY",
+            "duration": 14563,
+            "timestamp": 195286697637157,
+            "text": "PreMatchRequest summary: 0 filters",
+            "requestId": "org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"
+        },
+        {
+            "event": "FINISHED",
+            "duration": 0,
+            "timestamp": 195286729758836,
+            "text": "Response status: 200",
+            "requestId": "org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@7f8a33b9"
+        }
+    ]
+}]
+----
+
+From above shows the tracing info is returned as JSON text. 
+
+=== ON_DEMAND Mode Usage
+
+To use the ON_DEMAND mode, set the tracing mode via the context-param parameters in the project`'s web.xml file.
+Here is the example:
+
+[source,xml]
+----
+<context-param>
+    <param-name>resteasy.server.tracing.type</param-name>
+    <param-value>ON_DEMAND</param-value>
+</context-param>
+----
+
+From the client side, the user can send a request with additional tracing headers to enable the tracing feature and set the tracing level at per-request level.
+Here is the trigger header to enable the tracing information for this request:
+
+[source]
+----
+X-RESTEasy-Tracing-Accept
+----
+
+By putting this header with any value in your header, the tracing information will be enabled for the request.
+To control the tracing level, send this header with relative level value in the request:
+
+[source]
+----
+X-RESTEasy-Tracing-Threshold
+----
+
+Here is an example showing how to send the request with tracing feature enabled:
+
+[source,bash]
+----
+$ curl --header "X-RESTEasy-Tracing-Accept: ok" --header "X-RESTEasy-Tracing-Threshold: VERBOSE" -i http://localhost:8081/foo
+----
+
+Here is the  tracing information:
+
+[source]
+----
+X-RESTEasy-Tracing-026: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@5e84478b MBW         [ ---- /  5.95 ms |  ---- %] [org.jboss.resteasy.plugins.providers.FileProvider @37a3c619] is skipped
+X-RESTEasy-Tracing-027: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@5e84478b MBW         [ ---- /  5.96 ms |  ---- %] [org.jboss.resteasy.plugins.providers.ByteArrayProvider @646b8da5] is skipped
+X-RESTEasy-Tracing-028: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@5e84478b MBW         [ ---- /  5.97 ms |  ---- %] [org.jboss.resteasy.plugins.providers.StreamingOutputProvider @3b2a4bf4] is skipped
+X-RESTEasy-Tracing-029: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@5e84478b MBW         [ ---- /  5.98 ms |  ---- %] [org.jboss.resteasy.plugins.providers.ReaderProvider @24729366] is skipped
+X-RESTEasy-Tracing-030: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@5e84478b MBW         [ ---- /  5.99 ms |  ---- %] [org.jboss.resteasy.plugins.providers.DataSourceProvider @d481aff] is skipped
+X-RESTEasy-Tracing-031: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@5e84478b MBW         [ ---- /  6.00 ms |  ---- %] [org.jboss.resteasy.plugins.providers.AsyncStreamingOutputProvider @35f6b856] is skipped
+X-RESTEasy-Tracing-032: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@5e84478b MBW         [ ---- /  6.01 ms |  ---- %] [org.jboss.resteasy.plugins.providers.FileRangeWriter @5cea30f7] is skipped
+X-RESTEasy-Tracing-033: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@5e84478b MBW         [ ---- /  6.02 ms |  ---- %] [org.jboss.resteasy.plugins.providers.InputStreamProvider @6c3361af] is skipped
+X-RESTEasy-Tracing-034: org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@5e84478b MBW         [ ---- /  6.02 ms |  ---- %] WriteTo by org.jboss.resteasy.plugins.providers.StringTextStar
+----
+
+In addition, this header can be used to set the tracing info format:
+
+[source]
+----
+X-RESTEasy-Tracing-Accept-Format
+----
+
+For example, set the value to 'JSON' to get the JSON formatted tracing info.
+Here is the command example:
+
+[source,bash]
+----
+curl --header "X-RESTEasy-Tracing-Accept: ok" --header "X-RESTEasy-Tracing-Threshold: VERBOSE" --header "X-RESTEasy-Tracing-Accept-Format: JSON" -i http://localhost:8081/foo
+----
+
+The JSON formatted tracing info from the response header will look like this:
+
+[source]
+----
+X-RESTEasy-Tracing-000: [{"event":"START","duration":0,"timestamp":1108675323356714,"text":"baseUri=[http://localhost:8081/] requestUri=[http://localhost:8081/level] method=[GET] authScheme=[n/a] accept=*/* accept-encoding=n/a accept-charset=n/a accept-language=n/a content-type=n/a content-length=n/a ","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"START_HEADERS","duration":0,"timestamp":1108675323563245,"text":"Other request headers: Accept=[*/*] Host=[localhost:8081] User-Agent=[curl/7.79.1] X-RESTEasy-Tracing-Accept=[ok] X-RESTEasy-Tracing-Accept-Format=[JSON] X-RESTEasy-Tracing-Threshold=[VERBOSE] ","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"PRE_MATCH_SUMMARY","duration":5361,"timestamp":1108675323671984,"text":"PreMatchRequest summary: 0 filters","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"REQUEST_FILTER_SUMMARY","duration":3675,"timestamp":1108675324245024,"text":"Request summary: 0 filters","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MATCH_RUNTIME_RESOURCE","duration":0,"timestamp":1108675324473886,"text":"Matched resource: template=[[org.jboss.resteasy.core.registry.ClassExpression @335ce24a]] regexp=[\\Q\\E(.*)] matches=[[org.jboss.resteasy.core.registry.SegmentNode @3f56df02]] from=[]","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MATCH_SUMMARY","duration":189460,"timestamp":1108675324593863,"text":"RequestMatching summary","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MATCH_RESOURCE","duration":0,"timestamp":1108675324720925,"text":"Resource instance: [org.jboss.resteasy.core.ResourceMethodInvoker @1d4d0e20]","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MATCH_RESOURCE_METHOD","duration":0,"timestamp":1108675324897726,"text":"Matched method  : public java.lang.String org.jboss.resteasy.tracing.examples.TracingConfigResource.level(jakarta.ws.rs.core.Configuration)","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"REQUEST_FILTER","duration":9518,"timestamp":1108675325000692,"text":"Filter by [org.jboss.resteasy.plugins.providers.jackson.PatchMethodFilter @748a2754 #2147483647]","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"REQUEST_FILTER","duration":3702,"timestamp":1108675325018731,"text":"Filter by [org.jboss.resteasy.plugins.providers.sse.SseEventSinkInterceptor @7dad4808 #2147483647]","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"REQUEST_FILTER_SUMMARY","duration":49575,"timestamp":1108675325026071,"text":"Request summary: 2 filters","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"METHOD_INVOKE","duration":512182,"timestamp":1108675325569769,"text":"Resource [SINGLETON|class org.jboss.resteasy.tracing.examples.TracingConfigResource|org.jboss.resteasy.tracing.examples.TracingConfigResource@2634d8ed] method=[public java.lang.String org.jboss.resteasy.tracing.examples.TracingConfigResource.level(jakarta.ws.rs.core.Configuration)]","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"DISPATCH_RESPONSE","duration":0,"timestamp":1108675325849901,"text":"Response: [org.jboss.resteasy.specimpl.BuiltResponse @1b63a199 <200/SUCCESSFUL|OK|java.lang.String @2e2fb68e>]","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"RESPONSE_FILTER","duration":7044,"timestamp":1108675326500226,"text":"Filter by [org.jboss.resteasy.plugins.interceptors.MessageSanitizerContainerResponseFilter @bba8498 #4000]","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_FIND","duration":0,"timestamp":1108675326755389,"text":"Find MBW for type=[java.lang.String] genericType=[java.lang.String] mediaType=[[jakarta.ws.rs.core.MediaType @1cc060ef]] annotations=[@jakarta.ws.rs.GET(), @jakarta.ws.rs.Path(\"/level\")]","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SELECTED","duration":0,"timestamp":1108675326771918,"text":"[org.jboss.resteasy.plugins.providers.StringTextStar @23ffcf54] IS writeable","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SKIPPED","duration":0,"timestamp":1108675326783918,"text":"[org.jboss.resteasy.plugins.providers.FileProvider @37a3c619] is skipped","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SKIPPED","duration":0,"timestamp":1108675326790367,"text":"[org.jboss.resteasy.plugins.providers.ByteArrayProvider @646b8da5] is skipped","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SKIPPED","duration":0,"timestamp":1108675326796138,"text":"[org.jboss.resteasy.plugins.providers.StreamingOutputProvider @3b2a4bf4] is skipped","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SKIPPED","duration":0,"timestamp":1108675326801733,"text":"[org.jboss.resteasy.plugins.providers.ReaderProvider @24729366] is skipped","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SKIPPED","duration":0,"timestamp":1108675326810040,"text":"[org.jboss.resteasy.plugins.providers.DataSourceProvider @d481aff] is skipped","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SKIPPED","duration":0,"timestamp":1108675326820622,"text":"[org.jboss.resteasy.plugins.providers.AsyncStreamingOutputProvider @35f6b856] is skipped","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SKIPPED","duration":0,"timestamp":1108675326831804,"text":"[org.jboss.resteasy.plugins.providers.FileRangeWriter @5cea30f7] is skipped","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SKIPPED","duration":0,"timestamp":1108675326840405,"text":"[org.jboss.resteasy.plugins.providers.InputStreamProvider @6c3361af] is skipped","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_FIND","duration":0,"timestamp":1108675326885669,"text":"Find MBW for type=[java.lang.String] genericType=[java.lang.String] mediaType=[[jakarta.ws.rs.core.MediaType @1cc060ef]] annotations=[@jakarta.ws.rs.GET(), @jakarta.ws.rs.Path(\"/level\")]","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SELECTED","duration":0,"timestamp":1108675326901119,"text":"[org.jboss.resteasy.plugins.providers.StringTextStar @23ffcf54] IS writeable","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SKIPPED","duration":0,"timestamp":1108675326929864,"text":"[org.jboss.resteasy.plugins.providers.FileProvider @37a3c619] is skipped","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SKIPPED","duration":0,"timestamp":1108675326935210,"text":"[org.jboss.resteasy.plugins.providers.ByteArrayProvider @646b8da5] is skipped","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SKIPPED","duration":0,"timestamp":1108675326942651,"text":"[org.jboss.resteasy.plugins.providers.StreamingOutputProvider @3b2a4bf4] is skipped","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SKIPPED","duration":0,"timestamp":1108675326948715,"text":"[org.jboss.resteasy.plugins.providers.ReaderProvider @24729366] is skipped","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SKIPPED","duration":0,"timestamp":1108675326954536,"text":"[org.jboss.resteasy.plugins.providers.DataSourceProvider @d481aff] is skipped","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SKIPPED","duration":0,"timestamp":1108675326961563,"text":"[org.jboss.resteasy.plugins.providers.AsyncStreamingOutputProvider @35f6b856] is skipped","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SKIPPED","duration":0,"timestamp":1108675326968934,"text":"[org.jboss.resteasy.plugins.providers.FileRangeWriter @5cea30f7] is skipped","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_SKIPPED","duration":0,"timestamp":1108675326974075,"text":"[org.jboss.resteasy.plugins.providers.InputStreamProvider @6c3361af] is skipped","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"MBW_WRITE_TO","duration":0,"timestamp":1108675326996329,"text":"WriteTo by org.jboss.resteasy.plugins.providers.StringTextStar","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"WI_SUMMARY","duration":528614,"timestamp":1108675327196716,"text":"WriteTo summary: 0 interceptors","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"RESPONSE_FILTER_SUMMARY","duration":1671988,"timestamp":1108675328127602,"text":"Response summary: 1 filters","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"},{"event":"FINISHED","duration":0,"timestamp":1108675328830911,"text":"Response status: 200","requestId":"org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@78dd0a57"}]
+----
+
+Above is the basic usage introduction of the ON_DEMAND tracing mode.
+
+=== List Of Tracing Events
+
+The tracing events are defined in https://github.com/resteasy/resteasy-extensions/blob/master/tracing/src/main/java/org/jboss/resteasy/tracing/api/RESTEasyServerTracingEvent.java[RESTEasyServerTracingEvent].
+Here is a complete list of the tracing events and its descriptions: 
+
+* DISPATCH_RESPONSE 
++
+Resource method invocation results to {spec-name} Response.
+* EXCEPTION_MAPPING 
++
+ExceptionMapper invoked. 
+* FINISHED 
++
+Request processing finished. 
+* MATCH_LOCATOR 
++
+Matched sub-resource locator method. 
+* MATCH_PATH_FIND 
++
+Matching path pattern. 
+* MATCH_PATH_NOT_MATCHED 
++
+Path pattern not matched. 
+* MATCH_PATH_SELECTED 
++
+Path pattern matched/selected. 
+* MATCH_PATH_SKIPPED 
++
+Path pattern skipped as higher-priority pattern has been selected already. 
+* MATCH_RESOURCE 
++
+Matched resource instance. 
+* MATCH_RESOURCE_METHOD 
++
+Matched resource method. 
+* MATCH_RUNTIME_RESOURCE 
++
+Matched runtime resource. 
+* MATCH_SUMMARY 
++
+Matching summary. 
+* METHOD_INVOKE 
++
+Resource method invoked. 
+* PRE_MATCH 
++
+RESTEasy HttpRequestPreprocessor invoked. 
+* PRE_MATCH_SUMMARY 
++
+RESTEasy HttpRequestPreprocessor invoked. 
+* REQUEST_FILTER 
++
+ContainerRequestFilter invoked. 
+* REQUEST_FILTER_SUMMARY 
++
+ContainerRequestFilter invocation summary. 
+* RESPONSE_FILTER 
++
+ContainerResponseFilter invoked. 
+* RESPONSE_FILTER_SUMMARY 
++
+ContainerResponseFilter invocation summary. 
+* START 
++
+Request processing started. 
+* START_HEADERS 
++
+All HTTP request headers. 
+
+
+=== Tracing Example
+
+The "resteasy-example" project, contains a
+https://github.com/resteasy/resteasy-examples/tree/main/tracing-example[RESTEasy Tracing Example] to show the usages
+of tracing features. Please check the example to see the usages in action.
+

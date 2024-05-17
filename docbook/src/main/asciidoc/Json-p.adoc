@@ -1,0 +1,15 @@
+[[_json_p]]
+== JSON Support via Jakarta EE JSON-P API
+
+JSON-P is a Jakarta EE parsing API. RESTEasy provides an archive for it. It has support for `JsonObject`, `JsonArray`,
+and `JsonStructure` as request or response entities. It should not conflict with Jackson if it is on the classpath too.
+RESTEasy's provider is provided by default in WildFly. If using another server, use this maven dependency.
+
+[source,xml,subs="attributes+"]
+----
+<dependency>
+   <groupId>org.jboss.resteasy</groupId>
+   <artifactId>resteasy-json-p-provider</artifactId>
+   <version>{resteasy-version}</version>
+</dependency>
+----

@@ -1,0 +1,672 @@
+[[_stringconverter]]
+== String marshalling for String based @*Param
+
+=== Simple conversion
+
+Parameters and properties annotated with `@CookieParam`, `@HeaderParam`, `@MatrixParam`, `@PathParam`, or `@QueryParam`
+are represented as strings in a raw HTTP request. The specification says that any of these injected parameters can be
+converted to an object if the object's class has a `valueOf(String)` static method or a constructor that takes one
+`String` parameter. In the following, for example,
+
+[source,java]
+----
+public static class Customer {
+   private String name;
+
+   public Customer(String name) {
+      this.name = name;
+   }
+   
+   public String getName() {
+      return name;
+   }
+}
+
+@Path("test")
+public static class TestResource {
+
+   @GET
+   @Path("")
+   public Response test(@QueryParam("cust") Customer cust) {
+      return Response.ok(cust.getName()).build();
+   }
+}
+
+@Test
+public void testQuery() throws Exception {
+   Invocation.Builder request = ClientBuilder.newClient().target("http://localhost:8081/test?cust=Bill").request();
+   Response response = request.get();
+}
+----
+
+the query "?cust=Bill" will be transformed automatically to an instance of `Customer` with name == "Bill". 
+
+=== ParamConverter
+
+What if you have a class where `valueOf()` or this string constructor don't exist or is inappropriate for an HTTP
+request? {spec-name} has the `jakarta.ws.rs.ext.ParamConverterProvider` to help in this situation.
+
+A {jakarta-rest-javadoc}/jakarta/ws/rs/ext/paramconverterprovider[`ParamConverterProvider`] is a provider defined as follows:
+
+[source,java]
+----
+public interface ParamConverterProvider {
+
+   <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations);
+}
+----
+
+where a {jakarta-rest-javadoc}/jakarta/ws/rs/ext/paramconverter[`ParamConverter`] is defined:
+
+[source,java]
+----
+public interface ParamConverter<T> {
+   T fromString(String value);
+   String toString(T value);
+}
+----
+
+For example, consider `DateParamConverterProvider` and `DateParamConverter`: 
+
+[source,java]
+----
+@Provider
+public class DateParamConverterProvider implements ParamConverterProvider {
+
+   @SuppressWarnings("unchecked")
+   @Override
+   public T ParamConverterT getConverter(ClassT rawType, Type genericType, Annotation[] annotations) {
+      if (rawType.isAssignableFrom(Date.class)) {
+         return (ParamConverterT) new DateParamConverter();
+      }
+      return null;
+   }
+}
+
+public class DateParamConverter implements ParamConverterDate {
+
+   public static final String DATE_PATTERN = "yyyyMMdd";
+
+   @Override
+   public Date fromString(String param) {
+      try {
+         return new SimpleDateFormat(DATE_PATTERN).parse(param.trim());
+      } catch (ParseException e) {
+         throw new BadRequestException(e);
+      }
+   }
+
+   @Override
+   public String toString(Date date) {
+      return new SimpleDateFormat(DATE_PATTERN).format(date);
+   }
+}
+----
+
+Sending a `Date` in the form of a query, e.g., "?date=20161217" will cause the string "20161217" to be converted to a `Date` on the server. 
+
+=== StringParameterUnmarshaller
+
+In addition to the {spec-name} `jakarta.ws.rs.ext.ParamConverterProvider`, RESTEasy also has its own `org.jboss.resteasy.StringParameterUnmarshaller`, defined
+
+[source,java]
+----
+public interface StringParameterUnmarshaller<T> {
+   void setAnnotations(Annotation[] annotations);
+
+   T fromString(String str);
+}
+----
+
+It is similar to `jakarta.ws.rs.ext.ParamConverter` except that 
+
+* it converts only from String's;
+* it is configured with the annotations on the injected parameter, which 
+  allows for fine-grained control over the injection; and
+* it is bound to a given parameter by an annotation that is annotated with the meta-annotation `org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder:`
+
+
+[source,java]
+----
+@Target({ElementType.ANNOTATION_TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface StringParameterUnmarshallerBinder {
+   Class<? extends StringParameterUnmarshaller> value();
+}
+----
+
+For example, 
+
+[source,java]
+----
+@Retention(RetentionPolicy.RUNTIME)
+@StringParameterUnmarshallerBinder(TestDateFormatter.class)
+public @interface TestDateFormat {
+    String value();
+}
+
+public static class TestDateFormatter implements StringParameterUnmarshallerDate {
+  private SimpleDateFormat formatter;
+
+  public void setAnnotations(Annotation[] annotations) {
+     TestDateFormat format = FindAnnotation.findAnnotation(annotations, TestDateFormat.class);
+     formatter = new SimpleDateFormat(format.value());
+  }
+
+  public Date fromString(String str) {
+     try {
+        return formatter.parse(str);
+     } catch (ParseException e) {
+        throw new RuntimeException(e);
+     }
+  }
+}
+
+@Path("/")
+public static class TestResource {
+
+  @GET
+  @Produces("text/plain")
+  @Path("/datetest/{date}")
+  public String get(@PathParam("date") @TestDateFormat("MM-dd-yyyy") Date date) {
+     Calendar c = Calendar.getInstance();
+     c.setTime(date);
+     return date.toString();
+  }
+}
+----
+
+Note that the annotation `@StringParameterUnmarshallerBinder` on the annotation `@TestDateFormat` binds the formatter `TestDateFormatter` to a parameter annotated with `@TestDateFormat`.
+In this example, `TestDateFormatter` is used to format the `Date` parameter.
+Note also that the parameter "MM-dd-yyyy" to `@TestDateFormat` is accessible from `TestDateFormatter.setAnnotations()`. 
+
+=== Collections
+
+For parameters and properties annotated with `@CookieParam`, `@HeaderParam`, `@MatrixParam`, `@PathParam,` or `@QueryParam`, the {spec-name}
+specification [{jakarta-rest-spec}] allows conversion as defined in the Javadoc of the corresponding annotation.
+In general, the following types are supported: 
+
+. Types for which a `ParamConverter` is available via a registered `ParamConverterProvider`. See Javadoc for these classes for more information. 
+. Primitive types. 
+. Types that have a constructor that accepts a single `String` argument. 
+. Types that have a static method named `valueOf` or `fromString` with a single `String` argument that return an instance of the type. If both methods are present then `valueOf` MUST be used unless the type is an enum in which case `fromString` MUST be used. 
+. `List<T>`, `Set<T>`, or `SortedSet<T>`, where `T` satisfies 3 or 4 above.
+
+Items 1, 3, and 4 have been discussed above, and item 2 is obvious.
+Note that item 5 allows for collections of parameters.
+How these collections are expressed in HTTP messages depends, by default, on the particular kind of parameter.
+In most cases, the notation for collections is based on convention rather than a specification. 
+
+==== @QueryParam
+
+For example, a multivalued query parameter is conventionally expressed like this: 
+
+[source]
+----
+http://bluemonkeydiamond.com?q=1q=2q=3
+----
+
+In this case, there is a query with name "q" and value {1, 2, 3}. This notation is further supported in {spec-name} by the method
+
+[source,java]
+----
+public MultivaluedMap<String, String> getQueryParameters();
+----
+
+in `jakarta.ws.rs.core.UriInfo`. 
+
+==== @MatrixParam
+
+There is no specified syntax for collections derived from matrix parameters, but 
+
+. matrix parameters in a URL segment are conventionally separated by ";", and 
+. the method
++
+[source,java]
+----
+MultivaluedMap<String, String> getMatrixParameters();
+----
++
+in `jakarta.ws.rs.core.PathSegment` supports extraction of collections from matrix parameters. 
+
+RESTEasy adopts the convention that multiple instances of a matrix parameter with the same name are treated as a collection.
+For example, 
+
+[source]
+----
+http://bluemonkeydiamond.com/sippycup;m=1;m=2;m=3
+----
+
+is interpreted as a matrix parameter on path segment "sippycup" with name "m" and value {1, 2, 3}.
+
+==== @HeaderParam
+
+The HTTP 1.1 specification doesn't exactly specify that multiple components of a header value should be separated by commas, but commas are used in those headers that naturally use lists, e.g.
+Accept and Allow.
+Also, note that the method 
+
+[source,java]
+----
+public MultivaluedMap<String, String> getRequestHeaders();
+----
+
+in `jakarta.ws.rs.core.HttpHeaders` returns a `MultivaluedMap`.
+It is natural, then, for RESTEasy to treat 
+
+[source]
+----
+x-header: a, b, c
+----
+
+as mapping name "x-header" to set {a, b, c}. 
+
+==== @CookieParam
+
+The syntax for cookies is specified, but, unfortunately, it is specified in multiple competing specifications.
+Typically, multiple name=value cookie pairs are separated by ";". However, unlike the case with query and matrix parameters, there is no specified {spec-name} method that returns a collection of cookie values.
+Consequently, if two cookies with the same name are received on the server and directed to a collection typed parameter, RESTEasy will inject only the second one.
+Note, in fact, that the method 
+
+[source,java]
+----
+public Map<String, Cookie> getCookies();
+----
+
+in `jakarta.ws.rs.core.HttpHeaders` returns a `Map` rather than a `MultivaluedMap`. 
+
+==== @PathParam
+
+Deriving a collection from path segments is somewhat less natural than it is for other parameters, but {spec-name} supports the injection of multiple `jakarta.ws.rs.core.PathSegment`.
+There are a couple of ways of obtaining multiple `PathSegment`.
+One is through the use of multiple path variables with the same name.
+For example, the result of calling `testTwoSegmentsArray()` and `testTwoSegmentsList()` in 
+
+[source,java]
+----
+@Path("")
+public static class TestResource {
+
+   @GET
+   @Path("{segment}/{other}/{segment}/array")
+   public Response getTwoSegmentsArray(@PathParam("segment") PathSegment[] segments) {
+      System.out.println("array segments: " + segments.length);
+      return Response.ok().build();
+   }
+   
+   @GET
+   @Path("{segment}/{other}/{segment}/list")
+   public Response getTwoSegmentsList(@PathParam("segment") ListPathSegment segments) {
+      System.out.println("list segments: " + segments.size());
+      return Response.ok().build();
+   }
+}
+
+   @Test
+   public void testTwoSegmentsArray() throws Exception {
+      Invocation.Builder request = client.target("http://localhost:8081/a/b/c/array").request();
+      Response response = request.get();
+      Assert.assertEquals(200, response.getStatus());
+      response.close();
+   }
+   
+   @Test
+   public void testTwoSegmentsList() throws Exception {
+      Invocation.Builder request = client.target("http://localhost:8081/a/b/c/list").request();
+      Response response = request.get();
+      Assert.assertEquals(200, response.getStatus());
+      response.close();
+   }
+----
+
+is
+
+[source]
+----
+array segments: 2
+list segments: 2
+----
+
+An alternative is to use a wildcard template parameter.
+For example, the output of calling `testWildcardArray()` and `testWildcardList()` in
+
+[source,java]
+----
+@Path("")
+public static class TestResource {
+
+   @GET
+   @Path("{segments:.*}/array")
+   public Response getWildcardArray(@PathParam("segments") PathSegment[] segments) {
+      System.out.println("array segments: " + segments.length);
+      return Response.ok().build();
+   }
+   
+   @GET
+   @Path("{segments:.*}/list")
+   public Response getWildcardList(@PathParam("segments") ListPathSegment segments) {
+      System.out.println("list segments: " + segments.size());
+      return Response.ok().build();
+   }
+
+   @Test
+   public void testWildcardArray() throws Exception {
+      Invocation.Builder request = client.target("http://localhost:8081/a/b/c/array").request();
+      Response response = request.get();
+      response.close();
+   }
+   
+   @Test
+   public void testWildcardList() throws Exception {
+      Invocation.Builder request = client.target("http://localhost:8081/a/b/c/list").request();
+      Response response = request.get();
+      response.close();
+   }
+}
+----
+
+is
+
+[source]
+----
+array segments: 3
+list segments: 3
+----
+
+=== Extension to `ParamConverter` semantics
+
+In the {spec-name} semantics, a `ParamConverter` is supposed to convert a single `String` that represents an individual object.
+RESTEasy extends the semantics to allow a `ParamConverter` to parse the `String` representation of multiple objects and
+generate a `List<T>`, `Set<T>`, `SortedSet<T>`, array, or, indeed, any multivalued data structure whatever.
+First, consider the resource 
+
+[source,java]
+----
+@Path("queryParam")
+public static class TestResource {
+
+   @GET
+   @Path("")
+   public Response conversion(@QueryParam("q") List<String> list) {
+      return Response.ok(stringify(list)).build();
+   }
+}
+
+private static <T> String stringify(List<T> list) {
+   StringBuilder sb = new StringBuilder();
+   for (T s : list) {
+      sb.append(s).append(',');
+   }
+   return sb.toString();
+}
+----
+
+Calling `TestResource` as follows, using the standard notation, 
+
+[source,java]
+----
+@Test
+public void testQueryParamStandard() throws Exception {
+   Client client = ClientBuilder.newClient();
+   Invocation.Builder request = client.target("http://localhost:8081/queryParam?q=20161217q=20161218q=20161219").request();
+   Response response = request.get();
+   System.out.println("response: " + response.readEntity(String.class));
+}
+----
+
+results in
+
+[source]
+----
+response: 20161217,20161218,20161219,
+----
+
+Suppose, instead, that we want to use a comma separated notation.
+We can add 
+
+[source,java]
+----
+public static class MultiValuedParamConverterProvider implements ParamConverterProvider {
+
+   @SuppressWarnings("unchecked")
+   @Override
+   public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations) {
+      if (List.class.isAssignableFrom(rawType)) {
+         return (ParamConverterT) new MultiValuedParamConverter();
+      }
+      return null;
+   }   
+}
+
+public static class MultiValuedParamConverter implements ParamConverter<List<?>> {
+
+   @Override
+   public List<?> fromString(String param) {
+      if (param == null || param.trim().isEmpty()) {
+         return null;
+      }
+      return parse(param.split(","));
+   }
+
+   @Override
+   public String toString(List<?> list) {
+      if (list == null || list.isEmpty()) {
+         return null;
+      }
+      return stringify(list);
+   }
+   
+   private static List<String> parse(String[] params) {
+      List<String> list = new ArrayList<String>();
+      for (String param : params) {
+         list.add(param);
+      }
+      return list;
+   }
+}
+----
+
+Now we can call
+
+[source,java]
+----
+@Test
+public void testQueryParamCustom() throws Exception {
+   Client client = ClientBuilder.newClient();
+   Invocation.Builder request = client.target("http://localhost:8081/queryParam?q=20161217,20161218,20161219").request();
+   Response response = request.get();
+   System.out.println("response: " + response.readEntity(String.class));
+}
+----
+
+and get
+
+[source]
+----
+response: 20161217,20161218,20161219,
+----
+
+Note that in this case, `MultiValuedParamConverter.fromString()` creates and returns an `ArrayList`, so `TestResource.conversion()` could be rewritten 
+
+[source,java]
+----
+@Path("queryParam")
+public static class TestResource {
+
+   @GET
+   @Path("")
+   public Response conversion(@QueryParam("q") ArrayList<String> list) {
+      return Response.ok(stringify(list)).build();
+   }
+}
+----
+
+On the other hand, `MultiValuedParamConverter` could be rewritten to return a `LinkList` and the parameter list in `TestResource.conversion()` could be either a `List` or a `LinkedList`. 
+
+Finally, note that this extension works for arrays as well.
+For example, 
+
+[source,java]
+----
+  public static class Foo {
+      private String foo;
+      public Foo(String foo) {this.foo = foo;}
+      public String getFoo() {return foo;}
+   }
+   
+   public static class FooArrayParamConverter implements ParamConverter<Foo[]> {
+
+      @Override
+      public Foo[] fromString(String value) {
+         String[] ss = value.split(",");
+         Foo[] fs = new Foo[ss.length];
+         int i = 0;
+         for (String s : ss) {
+            fs[i++] = new Foo(s);
+         }
+         return fs;
+      }
+
+      @Override
+      public String toString(Foo[] values) {
+         StringBuffer sb = new StringBuffer();
+          for (Foo value : values) {
+              sb.append(value.getFoo()).append(",");
+          }
+         if (sb.length() < 0) {
+            sb.deleteCharAt(sb.length() - 1);
+         }
+         return sb.toString();
+      }
+   }
+   
+   @Provider
+   public static class FooArrayParamConverterProvider implements ParamConverterProvider {
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations) {
+         if (rawType.equals(Foo[].class))
+            return (ParamConverter<T>) new FooArrayParamConverter();
+         return null;
+      }
+   }
+   
+   @Path("")
+   public static class ParamConverterResource {
+
+      @GET
+      @Path("test")
+      public Response test(@QueryParam("foos") Foo[] foos) {
+         return Response.ok(new FooArrayParamConverter().toString(foos)).build();
+      }
+   }
+----
+
+=== Default multiple valued `ParamConverter`
+
+RESTEasy includes two built-in ParamConverter's in the resteasy-core module, one for collections:
+
+[source]
+----
+org.jboss.resteasy.plugins.providers.MultiValuedCollectionParamConverter,
+----
+
+and one for arrays: 
+
+[source]
+----
+org.jboss.resteasy.plugins.providers.MultiValuedArrayParamConverter,
+----
+
+which implement the concepts in the previous section. 
+
+In particular, `MultiValued*ParamConverter.fromString()` can transform a string representation coming over the network into a `Collection` or array, and `MultiValued*ParamConverter.toString()` can be used by a client side proxy to transform `Collection`s or arrays into a string representation. 
+
+String representations are determined by `org.jboss.resteasy.annotations.Separator`, a parameter annotation in the resteasy-core module: 
+
+[source,java]
+----
+@Target({ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Separator {
+   String value() default "";
+}
+----
+
+The value of `Separator.value()` is used to separate individual elements of a `Collection` or array.
+For example, a proxy implementing 
+
+[source,java]
+----
+@Path("path/separator/multi/{p}")
+@GET
+public String pathMultiSeparator(@PathParam("p") @Separator("-") List<String> ss);
+----
+
+will turn 
+
+[source,java]
+----
+List<String> list = new ArrayList<String>();
+list.add("abc");
+list.add("xyz");
+proxy.pathMultiSeparator(list);
+----
+
+and "path/separator/multi/\{p}" into ".../path/separator/multi/abc-xyz". On the server side, the RESTEasy runtime will turn "abc-xyz" back into a list consisting of elements "abc" and "xyz" for
+
+[source,java]
+----
+@Path("path/separator/multi/{p}")
+@GET
+public String pathMultiSeparator(@PathParam("p") @Separator("-") List<String> ss) {
+    return String.join("|", ss);
+}
+----
+
+which will return "abc|xyz|". 
+
+In fact, the value of the `Separator` annotations may be a more general regular expression, which is passed to `String.split()`.
+For example, "[-,;]" tells the server side to break up a string using either "-", ",", or ";". On the client side, a string will be created using the first element, "-" in this case. 
+
+If a parameter is annotated with `@Separator` with no value, then the default value is 
+
+* "," for a `@HeaderParam`, `@MatrixParam`, `@PathParam`, or `@QueryParam`, and 
+* "-" for a `@CookieParam`. 
+
+The MultiValued*ParamConverter's depend on existing facilities for handling the individual elements.
+On the server side, once it has parsed the incoming string into substrings, `MultiValued*ParamConverter` turns each substring into an Java object according to Section 3.2 "Fields and Bean Properties" of the {spec-name} specification.
+On the client side, `MultiValued*ParamConverter` turns a Java object into a string as follows: 
+
+. look for a `ParamConverter`;
+. if there is no suitable `ParamConverter` and the parameter is labeled `@HeaderParam`, look for a `HeaderDelegate`; or
+. call `toString()`. 
+
+These `ParamConverter`s are meant to be fairly general, but there are a number of restrictions: 
+
+. They don't handle nested `Collections` or arrays. That is, `List<String>` and `String[]` are OK, but `List<List<String>>` and `String[][]` are not.
+. The regular expression used in Separator must match the regular expression
++
+[source]
+----
+"\\p{Punct}|\\[\\p{Punct}+\\]"
+----
++
+That is, it must be either a single instance of a punctuation symbol, i.e., a symbol in the set
++
+[source]
+----
+!"#$%'()*+,-./:;=?@[\]^_`{|}~
+----
++
+or a class of punctuation symbols like "[-,;]".
+. For either of these ParamConverter's to be available for use with a given parameter, that parameter must be annotated with `@Separator`.
+
+There are also some logical restrictions: 
+
+. Cookie syntax, as specified in https://tools.ietf.org/html/rfc6265#section-4.1.1, assigns a meaning to ";", so it cannot be used as a separator.
+. If a separator character appears in the content of an element, then there will be problems. For example, if "," is
+  used as a separator, then, if a proxy sends the array `["a","b,c","d"]`, it will turn into the  string "a,b,c,d" on
+  the wire and be reconstituted on the server as four elements.
+
+These built-in `ParamConverter`s have the lowest priority, so any user supplied ParamConverter's will be tried first.

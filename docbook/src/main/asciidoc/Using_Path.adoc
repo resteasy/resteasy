@@ -1,0 +1,116 @@
+[[_using_path]]
+== Using `@Path` and `@GET`, `@POST`, etc.
+
+[source,java]
+----
+@Path("/library")
+public class Library {
+
+   @GET
+   @Path("/books")
+   public String getBooks() {}
+
+   @GET
+   @Path("/book/{isbn}")
+   public String getBook(@PathParam("isbn") String id) {
+      // search my database and get a string representation and return it
+   }
+
+   @PUT
+   @Path("/book/{isbn}")
+   public void addBook(@PathParam("isbn") String id, @QueryParam("name") String name) {}
+
+   @DELETE
+   @Path("/book/{id}")
+   public void removeBook(@PathParam("id") String id) {}
+   
+}
+----
+
+In the class above, the RESTEasy servlet is configured and reachable at a root path of http://localhost/services.
+The requests handled by class, Library, are:
+
+* GET http://localhost/services/library/books
+* GET http://localhost/services/library/book/333
+* PUT http://localhost/services/library/book/333
+* DELETE http://localhost/services/library/book/333
+
+The `@jakarta.ws.rs.Path` annotation must exist on either the class and/or a resource method.
+If it exists on both the class and method, the relative path to the resource method is a concatenation of the class and method. 
+
+In the `jakarta.ws.rs` package there are annotations for each HTTP method.
+`@GET`, `@POST`, `@PUT`, `@DELETE`, and `@HEAD`.
+Place these on public methods that you want to map to that certain kind of HTTP method.
+As long as there is a @Path annotation on the class, a @Path annotation is not required on the method you are mapping.
+There can be more than one HTTP method as long as they can be distinguished from other methods. 
+
+When a `@Path` annotation is on a method without an HTTP method, these are called `JAXRSResourceLocators`.
+
+[[_path_and_regular_expression_mappings]]
+=== `@Path` and regular expression mappings
+
+The @Path annotation is not limited to simple path expressions.
+Regular expressions can be inserted into a `@Path` value attribute.
+For example:
+
+[source,java]
+----
+@Path("/resources)
+public class MyResource {
+
+   @GET
+   @Path("{var:.*}/stuff")
+   public String get() {}
+}
+----
+
+The following GETs will route to the `getResource()` method:
+
+[source]
+----
+
+GET /resources/stuff
+GET /resources/foo/stuff
+GET /resources/on/and/on/stuff
+----
+
+The format of the expression is: 
+
+[source]
+----
+"{" variable-name [ ":" regular-expression ] "}"
+----
+
+The regular-expression part is optional.
+When the expression is not provided, it defaults to a wildcard matching of one particular segment.
+In regular-expression terms, the expression defaults to 
+
+[source]
+----
+"([]*)"
+----
+
+For example: 
+
+[source,java]
+----
+@Path("/resources/{var}/stuff")
+----
+
+will match these:
+
+[source]
+----
+GET /resources/foo/stuff
+GET /resources/bar/stuff
+----
+
+but will not match: 
+
+[source]
+----
+GET /resources/a/bunch/of/stuff
+----
+
+
+
