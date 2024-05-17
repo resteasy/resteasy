@@ -14,7 +14,7 @@
 :enterprise-beans: Jakarta Enterprise Beans
 :spec-name: Jakarta RESTful Web Services
 :jakarta-bean-validation: https://jakarta.ee/specifications/bean-validation/3.1/
-:jakarta-rest-version: 4.0
+:jakarta-rest-version: 3.1
 :jakarta-rest-javadoc: https://jakarta.ee/specifications/restful-ws/{jakarta-rest-version}/apidocs/jakarta.ws.rs
 :jakarta-rest-spec: https://jakarta.ee/specifications/restful-ws/{jakarta-rest-version}/jakarta-restful-ws-spec-{jakarta-rest-version}
 :sprint-version: 6.1
