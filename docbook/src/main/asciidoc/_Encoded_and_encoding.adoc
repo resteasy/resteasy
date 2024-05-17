@@ -1,0 +1,61 @@
+[[_encoded_and_encoding]]
+== @Encoded and encoding
+
+{spec-name} allows encoded or decoded `@*Params`, the specification of path definitions and parameter names using encoded or decoded strings.
+
+
+The `@jakarta.ws.rs.Encoded` annotation can be used on a class, method, or param.
+By default, inject `@PathParam` and `@QueryParams` are decoded. Additionally adding the `@Encoded` annotation, the value
+of these params will be provided in encoded form.
+
+
+[source,java]
+----
+
+@Path("/")
+public class MyResource {
+
+    @Path("/{param}")
+    @GET
+    public String get(@PathParam("param") @Encoded String param) {}
+}
+----
+
+In the above example, the value of the `@PathParam` injected into the param of the `get()` method will be URL encoded.
+Adding the `@Encoded` annotation as a parameter annotation triggers this affect.
+
+The `@Encoded` annotation may also be used on the entire method and any combination of `@QueryParam` or `@PathParam`'s
+values will be encoded.
+
+
+[source,java]
+----
+
+@Path("/")
+public class MyResource {
+  
+    @Path("/{param}")
+    @GET
+    @Encoded
+    public String get(@QueryParam("foo") String foo, @PathParam("param") String param) {}
+}
+----
+
+In the above example, the values of the foo query param and param path param will be injected as encoded values. 
+
+The default can also be encoded for the entire class.
+
+[source,java]
+----
+
+@Path("/")
+@Encoded
+public class ClassEncoded {
+  
+    @GET
+    public String get(@QueryParam("foo") String foo) {}
+}
+----
+
+
+

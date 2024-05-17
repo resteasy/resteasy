@@ -1,0 +1,1135 @@
+[[_reactive]]
+== Reactive programming support
+
+With version 2.1, the {spec-name} specification (https://jcp.org/en/jsr/detail?id=370) takes its first steps into the world of Reactive Programming.
+There are many discussions of reactive programming on the internet, and a general introduction is beyond the scope of this document, but there are a few things worth discussing.
+Some primary aspects of reactive programming are the following: 
+
+* Reactive programming supports the declarative creation of rich computational structures. The 
+  representations of these structures can be passed around as first class objects such as method parameters
+  and return values. 
+* Reactive programming supports both synchronous and asynchronous computation, but it is particularly helpful
+  in facilitating, at a relatively high level of expression, asynchronous computation. Conceptually,
+  asynchronous computation in reactive program typically involves pushing data from one entity to another, rather
+  than polling for data. 
+
+
+=== CompletionStage
+
+In Java 1.8 and {spec-name}, the support for reactive programming is fairly limited.
+Java 1.8 introduces the interface `java.util.concurrent.CompletionStage`, and {spec-name} mandates support for the
+`jakarta.ws.rs.client.CompletionStageRxInvoker`, which allows a client to obtain a response in the form of a `CompletionStage`.
+
+One implementation of `CompletionStage` is the `java.util.concurrent.CompleteableFuture`.
+For example: 
+
+[source,java]
+----
+
+@Test
+public void testCompletionStage() throws Exception {
+   CompletionStageString stage = getCompletionStage();
+   log.info("result: " + stage.toCompletableFuture().get());
+}
+
+private CompletionStageString getCompletionStage() {
+   CompletableFutureString future = new CompletableFutureString();
+   future.complete("foo");
+   return future;
+}
+----
+
+Here, a `CompleteableFuture` is created with the value "foo", and its value is  extracted by the method `CompletableFuture.get()`.
+That's fine, but consider the altered version: 
+
+[source,java]
+----
+@Test
+public void testCompletionStageAsync() throws Exception {
+   log.info("start");
+   CompletionStageString stage = getCompletionStageAsync();
+   String result = stage.toCompletableFuture().get();
+   log.info("do some work");
+   log.info("result: " + result);
+}
+
+private CompletionStageString getCompletionStageAsync() {
+   CompletableFutureString future = new CompletableFutureString();
+   Executors.newCachedThreadPool().submit(() -> {sleep(2000); future.complete("foo");});
+   return future;
+}
+
+private void sleep(long l) {
+   try {
+      Thread.sleep(l);
+   } catch (InterruptedException e) {
+      e.printStackTrace();
+   }
+}
+----
+
+with output something like: 
+
+[source]
+----
+3:10:51 PM INFO: start
+3:10:53 PM INFO: do some work
+3:10:53 PM INFO: result: foo
+----
+
+It also works, but it illustrates the fact that `CompletableFuture.get()` is a blocking call.
+The `CompletionStage` is constructed and returned immediately, but the value isn't returned for two seconds.
+A version that is more in the spirit of the reactive style is: 
+
+[source,java]
+----
+@Test
+public void testCompletionStageAsyncAccept() throws Exception {
+   log.info("start");
+   CompletionStageString stage = getCompletionStageAsync();
+   stage.thenAccept((String s) -> log.info("s: " + s));
+   log.info("do some work");
+}
+----
+
+In this case, the lambda `(String s) -> log.info("s: " + s)` is registered with the `CompletionStage` as a "subscriber", and, when the `CompletionStage` eventually has a value, that value is passed to the lambda.
+Note that the output is something like 
+
+[source]
+----
+3:23:05 INFO: start
+3:23:05 INFO: do some work
+3:23:07 INFO: s: foo
+----
+
+Executing a `CompletionStage` asynchronously is so common that there are  several supporting convenience methods.
+For example: 
+
+[source,java]
+----
+@Test
+public void testCompletionStageSupplyAsync() throws Exception {
+   CompletionStageString stage = getCompletionStageSupplyAsync();
+   stage.thenAccept((String s) -> log.info("s: " + s));
+}
+
+private CompletionStageString getCompletionStageSupplyAsync() {
+   return CompletableFuture.supplyAsync(() -> "foo");
+}
+----
+
+The static method `ComputableFuture.supplyAsync()` creates a `ComputableFuture`, the value of which is supplied asynchronously by the lambda `() -> "foo"`, running, by default, in the default pool of `java.util.concurrent.ForkJoinPool`.
+
+One final example illustrates a more complex computational structure: 
+
+[source,java]
+----
+
+@Test
+public void testCompletionStageComplex() throws Exception {
+   ExecutorService executor = Executors.newCachedThreadPool();
+   CompletionStageString stage1 = getCompletionStageSupplyAsync1("foo", executor);
+   CompletionStageString stage2 = getCompletionStageSupplyAsync1("bar", executor);
+   CompletionStageString stage3 = stage1.thenCombineAsync(stage2, (String s, String t) -> s + t, executor);
+   stage3.thenAccept((String s) -> log.info("s: " + s));
+}
+
+private CompletionStageString getCompletionStageSupplyAsync1(String s, ExecutorService executor) {
+   return CompletableFuture.supplyAsync(() -> s, executor);
+}
+----
+
+`stage1` returns "foo", `stage2` returns "bar", and `stage3`, which runs when both `stage1` and `stage2` have completed, returns the concatenation of "foo" and "bar". Note that, in this example, an explict `ExecutorService` is provided for asynchronous processing. 
+
+=== CompletionStage in {spec-name}
+
+On the client side, the {spec-name} specification mandates an implementation of the interface `jakarta.ws.rs.client.CompletionStageRxInvoker`:
+
+[source,java]
+----
+public interface CompletionStageRxInvoker extends RxInvoker<CompletionStage> {
+
+    @Override
+    CompletionStage<Response> get();
+
+    @Override
+    <T> CompletionStage<T> get(Class<T> responseType);
+
+    @Override
+    <T> CompletionStage<T> get(GenericTypeT responseType);
+}
+----
+
+That is, there are invocation methods for the standard HTTP verbs, just as in the standard `jakarta.ws.rs.client.SyncInvoker`.
+A `CompletionStageRxInvoker` is obtained by calling `rx()` on a `jakarta.ws.rs.client.Invocation.Builder`, which extends `SyncInvoker`.
+For example, 
+
+[source,java]
+----
+Invocation.Builder builder = client.target(generateURL("/get/string")).request();
+CompletionStageRxInvoker invoker = builder.rx(CompletionStageRxInvoker.class);
+CompletionStageResponse stage = invoker.get();
+Response response = stage.toCompletableFuture().get();
+log.infof("result: %s", response.readEntity(String.class));
+----
+
+or 
+
+[source,java]
+----
+CompletionStageRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(CompletionStageRxInvoker.class);
+CompletionStageString stage = invoker.get(String.class);
+String s = stage.toCompletableFuture().get();
+log.infof("result: %s", s);
+----
+
+On the server side, the {spec-name} specification requires support for resource methods with return type `CompletionStage<T>`.
+For example, 
+
+[source,java]
+----
+@GET
+@Path("get/async")
+public CompletionStageString longRunningOpAsync() {
+   CompletableFutureString cs = new CompletableFuture();
+   executor.submit(
+           (Runnable) () -> {
+               executeLongRunningOp();
+               cs.complete("Hello async world!");
+           });
+   return cs;
+}
+----
+
+The way to think about `longRunningOpAsync()` is that it is asynchronously creating and returning a `String`.
+After `cs.complete()` is called, the server will return the `String` "Hello async world!" to the client. 
+
+An important thing to understand is that the decision to produce a result asynchronously on the server and the decision to retrieve the result asynchronously on the client are independent.
+Suppose that there is also a resource method 
+
+[source,java]
+----
+@GET
+@Path("get/sync")
+public String longRunningOpSync() {
+   return "Hello async world!";
+}
+----
+
+Then all three of the following invocations are valid: 
+
+[source,java]
+----
+public void testGetStringAsyncAsync() throws Exception {
+   CompletionStageRxInvoker invoker = client.target(generateURL("/get/async")).request().rx();
+   CompletionStageString stage = invoker.get(String.class);
+   log.infof("s: %s", stage.toCompletableFuture().get());
+}
+----
+
+[source,java]
+----
+public void testGetStringSyncAsync() throws Exception {
+   Builder request = client.target(generateURL("/get/async")).request();
+   String s = request.get(String.class);
+   log.infof("s: %s", s);
+}
+----
+
+and 
+
+[source,java]
+----
+
+public void testGetStringAsyncSync() throws Exception {
+   CompletionStageRxInvoker invoker = client.target(generateURL("/get/sync")).request().rx();
+   CompletionStageString stage = invoker.get(String.class);
+   log.infof("s: %s", stage.toCompletableFuture().get());
+}
+----
+
+[NOTE]
+====
+`CompletionStage` in {spec-name} is also discussed in the chapter <<_asynchronous_http_request_processing,Asynchronous HTTP Request Processing>>.
+====
+
+[NOTE]
+====
+Since running code asynchronously is so common in this context, it is worth pointing out that objects obtained by way of the annotation `@Context` or by way of calling `ResteasyContext.getContextData()` are sensitive to the executing thread.
+For example, given resource method 
+
+[source,java]
+----
+@Resource
+private ManagedExecutorService executor;
+
+@GET
+@Path("test")
+@Produces("text/plain")
+public CompletionStageString text(@Context HttpRequest request) {
+   CompletableFutureString cs = new CompletableFuture();
+   executor.submit(
+           (Runnable) () -> {
+               try {
+                   System.out.println("request (async): " + request);
+                   cs.complete("hello");
+               } catch (Exception e) {
+                   e.printStackTrace();
+               }
+           });
+   return cs;
+}
+----
+
+the output will look something like 
+
+[source]
+----
+application (inline): org.jboss.resteasy.experiment.Test1798CompletionStage$TestApp@23c57474
+request (inline): org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest@2ce23138
+application (async): null
+org.jboss.resteasy.spi.LoggableFailure: RESTEASY003880: Unable to find contextual data of type: org.jboss.resteasy.spi.HttpRequest
+----
+
+The point is that it is the developer's responsibility to extract information from these context objects in advance.
+For example: 
+
+[source,java]
+----
+@Resource
+private ManagedExecutorService executor;
+
+@Application
+private Application application;
+
+@GET
+@Path("test")
+@Produces("text/plain")
+public CompletionStageString text(@Context HttpRequest request) {
+   System.out.println("request (inline): " + request);
+   CompletableFutureString cs = new CompletableFuture();
+   final String httpMethodFinal = request.getHttpMethod();
+   final Map<String, Object> mapFinal = application.getProperties();
+   executor.submit(
+           (Runnable) () -> {
+               System.out.println("httpMethod (async): " + httpMethodFinal);
+               System.out.println("map (async): " + mapFinal);
+               cs.complete("hello");
+           });
+   return cs;
+}
+----
+
+Alternatively, RESTEasy's support of https://github.com/eclipse/microprofile-context-propagation[MicroProfile Context Propagation] can be used by using `ThreadContext.contextualRunnable` around a `Runnable`, which will take care of capturing and restoring all registered contexts (the `org.jboss.resteasy.microprofile:microprofile-context-propagation` module will need to be imported): 
+
+[source,java]
+----
+@Resource
+private ManagedExecutorService executor;
+
+@GET
+@Path("test")
+@Produces("text/plain")
+public CompletionStageString text(@Context HttpRequest request) {
+   System.out.println("request (inline): " + request);
+   CompletableFutureString cs = new CompletableFuture();
+   ThreadContext threadContext = ThreadContext.builder()
+                                                   .propagated(ThreadContext.ALL_REMAINING)
+                                                   .unchanged()
+                                                   .cleared()
+                                                   .build();
+   executor.submit(
+         threadContext.contextualRunnable((Runnable) () -> {
+             try {
+                 System.out.println("request (async): " + request);
+                 cs.complete("hello");
+             } catch (Exception e) {
+                 e.printStackTrace();
+             }
+         }));
+   return cs;
+}
+----
+
+As another alternative the RESTEasy SPI's `ContextualExecutor` can be used if the MicroProfile Context Propagation is not available.
+This requires a dependency on `org.jboss.resteasy:resteasy-core`. 
+
+[source,java]
+----
+@GET
+@Path("test")
+@Produces(MediaType.TEXT_PLAIN)
+public CompletionStageString text(@Context UriInfo uriInfo) {
+  CompletableFutureString cs = new CompletableFuture();
+  ExecutorService executor = ContextualExecutors.threadPool();
+  executor.submit(() -> {
+     try {
+        cs.complete("hello from: " + uriInfo.getAbsolutePath());
+     } catch (Exception e) {
+        e.printStackTrace();
+     }
+  });
+  return cs;
+}
+----
+====
+
+=== Beyond CompletionStage
+
+The picture becomes more complex and interesting when sequences are added.
+A `CompletionStage` holds no more than one potential value, but other reactive objects can hold multiple, even unlimited, values.
+Currently, most Java implementations of reactive programming are based on the project Reactive Streams (http://www.reactive-streams.org/), which defines a set of four interfaces and a specification, in the form of a set of rules, describing how they interact: 
+
+[source,java]
+----
+
+public interface Publisher<T> {
+    void subscribe(Subscriber<? super T> s);
+}
+
+public interface Subscriber<T> {
+    void onSubscribe(Subscription s);
+    void onNext(T t);
+    void onError(Throwable t);
+    void onComplete();
+}
+
+public interface Subscription {
+    void request(long n);
+    void cancel();
+}
+
+public interface Processor<T, R> extends Subscriber<T>, Publisher<R> {
+}
+----
+
+A `Producer` pushes objects to a `Subscriber`, a `Subscription` mediates the relationship between the two, and a `Processor` which is derived from both, helps to construct pipelines through which objects pass. 
+
+One important aspect of the specification is flow control, the ability of a `Suscriber` to control the load it receives from a `Producer` by calling `Suscription.request()`.
+The general term in this context for flow control is **backpressure**. 
+
+There are a number of implementations of Reactive Streams, including 
+
+. RxJava: https://github.com/ReactiveX/RxJava/1.x[https://github.com/ReactiveX/RxJava/tree/1.x]
+. RxJava 2: https://github.com/ReactiveX/RxJava/2.x[https://github.com/ReactiveX/RxJava/tree/2.x]
+. RxJava 3: https://github.com/ReactiveX/RxJava
+. Reactor: http://projectreactor.io/
+. Flow : https://community.oracle.com/docs/DOC-1006738[https://community.oracle.com/docs/DOC-1006738/]
+
+RESTEasy currently supports RxJava (deprecated), RxJava2 and Reactor.
+
+=== Pluggable reactive types: RxJava 2 in RESTEasy
+
+{spec-name} doesn't currently require support for any Reactive Streams implementations, but it does allow for extensibility to support various reactive libraries.
+RESTEasy's optional module `resteasy-rxjava2`  adds support for https://github.com/ReactiveX/RxJava[RxJava 2]. 
+
+More in details, `resteasy-rxjava2` contributes support for reactive types `io.reactivex.Single`, `io.reactivex.Flowable`, and `io.reactivex.Observable`.
+Of these, `Single` is similar to `CompletionStage` in that it holds at most one potential value. `Flowable` implements `io.reactivex.Publisher`, and `Observable` is very similar to `Flowable` except that it doesn't support backpressure.
+If importing `resteasy-rxjava2`, you can start returning these reactive types from your resource methods on the server side and receiving them on the client side. 
+
+[NOTE]
+====
+When using RESTEasy's modules for RxJava, the reactive contexts are automatically propagated to all supported RxJava types, which means there is no need to worry about `@Context` injection not working within RxJava lambdas, contrary to `CompletionStage` (as previously noted).
+====
+
+==== Server side
+
+Given the class `Thing`, which can be represented in JSON: 
+
+[source,java]
+----
+public class Thing {
+
+   private String name;
+
+   public Thing() {
+   }
+
+   public Thing(String name) {
+      this.name = name;
+   }
+}
+----
+
+the method `postThingList()` in the following is a valid resource method: 
+
+[source,java]
+----
+@POST
+@Path("post/thing/list")
+@Produces(MediaType.APPLICATION_JSON)
+@Stream
+public Flowable<List<Thing>> postThingList(String s) {
+   return buildFlowableThingList(s, 2, 3);
+}
+
+static Flowable<List<Thing>> buildFlowableThingList(String s, int listSize, int elementSize) {
+   return Flowable.create(
+      new FlowableOnSubscribeListThing() {
+
+         @Override
+         public void subscribe(FlowableEmitter<List<Thing>> emitter) throws Exception {
+            for (int i = 0; i listSize; i++) {
+               List<Thing> list = new ArrayList<>();
+               for (int j = 0; j < elementSize; j++) {
+                  list.add(new Thing(s));
+               }
+               emitter.onNext(list);
+            }
+            emitter.onComplete();
+         }
+      },
+      BackpressureStrategy.BUFFER);
+}
+----
+
+The method `buildFlowableThingList()` deserves some explanation.
+First, 
+
+[source,java]
+----
+Flowable<List<Thing>> Flowable.create(FlowableOnSubscribe<List<Thing>> source, BackpressureStrategy mode);
+----
+
+creates a `Flowable<List<Thing>>` by describing what should happen when the `Flowable<List<Thing>>` is subscribed to. `FlowableEmitter<List<Thing>>` extends ` io.reactivex.Emitter<List<Thing>>`:
+
+[source,java]
+----
+/**
+ * Base interface for emitting signals in a push-fashion in various generator-like source
+ * operators (create, generate).
+ *
+ * @param T the value type emitted
+ */
+public interface Emitter<T> {
+
+    /**
+     * Signal a normal value.
+     * @param value the value to signal, not null
+     */
+    void onNext(@NonNull T value);
+
+    /**
+     * Signal a Throwable exception.
+     * @param error the Throwable to signal, not null
+     */
+    void onError(@NonNull Throwable error);
+
+    /**
+     * Signal a completion.
+     */
+    void onComplete();
+}
+----
+
+and `FlowableOnSubscribe` uses a `FlowableEmitter` to send out values from the `Flowable<List<Thing>>`:
+
+[source,java]
+----
+
+/**
+ * A functional interface that has a {@code subscribe()} method that receives
+ * an instance of a {@link FlowableEmitter} instance that allows pushing
+ * events in a backpressure-safe and cancellation-safe manner.
+ *
+ * @param T the value type pushed
+ */
+public interface FlowableOnSubscribe<T> {
+
+    /**
+     * Called for each Subscriber that subscribes.
+     * @param e the safe emitter instance, never null
+     * @throws Exception on error
+     */
+    void subscribe(@NonNull FlowableEmitter<T> e) throws Exception;
+}
+----
+
+So, what will happen when a subscription to the `Flowable<List<Thing>>` is created is, the `FlowableEmitter.onNext()` will be called, once for each `<List<Thing>>` created, followed by a call to `FlowableEmitter.onComplete()` to indicate that the sequence has ended.
+Under the covers, RESTEasy subscribes to the `Flowable<List<Thing>>` and handles each element passed in by way of `onNext()`.
+
+==== Client side
+
+On the client side, {spec-name} supports extensions for reactive classes by adding the method
+
+[source,java,subs="attributes+"]
+----
+/**
+ * Access a reactive invoker based on a {@link RxInvoker} subclass provider. Note
+ * that corresponding {@link RxInvokerProvider} must be registered in the client runtime.
+ * 
+ * This method is an extension point for {spec-name} implementations to support other types
+ * representing asynchronous computations.
+ *
+ * @param clazz {@link RxInvoker} subclass.
+ * @return reactive invoker instance.
+ * @throws IllegalStateException when provider for given class is not registered.
+ * @see jakarta.ws.rs.client.Client#register(Class)
+ * @since 2.1
+ */
+public <T extends RxInvoker> T rx(ClassT clazz);
+----
+
+to interface `jakarta.ws.rs.client.Invocation.Builder`.
+Resteasy module `resteasy-rxjava2` adds support for classes: 
+
+. `org.jboss.resteasy.rxjava2.SingleRxInvoker`
+. `org.jboss.resteasy.rxjava2.FlowableRxInvoker`
+. `org.jbosss.resteasy.rxjava2.ObservableRxInvoker`
+
+which allows accessing `Single`s, `Observable`s, and `Flowable`s on the client side. 
+
+For example, given the resource method `postThingList()` above, a `Flowable<List<Thing>>` can be retrieved from the server by calling
+
+[source,java]
+----
+@SuppressWarnings("unchecked")
+@Test
+public void testPostThingList() throws Exception {
+   CountDownLatch latch = new CountdownLatch(1);
+   FlowableRxInvoker invoker = client.target(generateURL("/post/thing/list")).request().rx(FlowableRxInvoker.class);
+   Flowable<List<Thing>> flowable = (Flowable<List<Thing>>) invoker.post(Entity.entity("a", MediaType.TEXT_PLAIN_TYPE), new GenericType<List<Thing>>() {});
+   flowable.subscribe(
+         (List<?> l) -> thingListList.add(l),
+         (Throwable t) -> latch.countDown(),
+         () -> latch.countDown());
+   latch.await();
+   Assert.assertEquals(aThingListList, thingListList);
+}
+----
+
+where `aThingListList` is 
+
+[source]
+----
+[[Thing[a], Thing[a], Thing[a]], [Thing[a], Thing[a], Thing[a]]]
+----
+
+Note the call to `Flowable.suscribe()`.
+On the server side, RESTEasy subscribes to a  returning `Flowable` in order to receive its elements and send them over the wire.
+On the client side, the user subscribes to the `Flowable` in order to receive its elements and do whatever it wants to with them.
+In this case, three lambdas determine what should happen 1) for each element, 2) if a `Throwable` is thrown, and 3) when the `Flowable` is done passing elements. 
+
+==== Representation on the wire
+
+Neither Reactive Streams nor {spec-name} have anything to say about representing reactive types on the network.
+RESTEasy offers a number of representations, each suitable for different circumstances.
+The wire protocol is determined by 1) the presence or absence of the `@Stream` annotation on the resource method,  and 2) the value of the `value` field in the `@Stream` annotation: 
+
+[source,java]
+----
+
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Stream {
+   public enum MODE {RAW, GENERAL};
+   public String INCLUDE_STREAMING_PARAMETER = "streaming";
+   public MODE value() default MODE.GENERAL;
+   public boolean includeStreaming() default false;
+}
+----
+
+Note that `MODE.GENERAL` is the default value, so `@Stream` is equivalent to `@Stream(Stream.MODE.GENERAL)`. 
+
+* No `@Stream` annotation on the resource method:
++
+`java.util.List` entity and send to the client.
+* `@Stream(Stream.MODE.GENERAL)`
++
+This case uses a variant of the SSE format, modified to eliminate some restrictions inherent in SSE.
+(See the specification at https://html.spec.whatwg.org/multipage/server-sent-events.html for details.)
+In particular, 1) SSE events are meant to hold text data, represented in character set UTF-8. In the general streaming mode,
+certain delimiting characters in the data ('\r', '\n', and '\') are escaped so that arbitrary binary data can be
+transmitted. Also, 2) the SSE specification requires the client to reconnect if it gets disconnected. If the stream
+is finite, reconnecting will induce a repeat of the stream, so SSE is really meant for unlimited streams.
+In general streaming mode, the client will close, rather than automatically reconnect, at the end of the stream. It follows
+that this mode is suitable for finite streams.
++
+NOTE: <emphasis role="bold">Note. </emphasis> The Content-Type header in general streaming mode is set to
++
+[source]
+----
+applicaton/x-stream-general;"element-type=element-type"
+----
++
+where element-type is the media type of the data elements in the stream.
+The element media type is derived from the @Produces annotation.
+For example, 
++
+[source,java]
+----
+@GET
+@Path("flowable/thing")
+@Stream
+@Produces("application/json")
+public FlowableThing getFlowable() {}
+----
++
+induces the media type 
++
+[source]
+----
+application/x-stream-general;"element-type=application/json"
+----
++
+which describes a stream of JSON elements. 
+* `@Stream(Stream.MODE.RAW)`
++
+In this case each value is written directly to the wire, without any formatting, as it becomes available. This is most
+useful for values that can be cut in pieces, such as strings, bytes, buffers, etc., and then re-concatenated on the
+client side. Note that without delimiters as in general mode, it isn't possible to reconstruct something like `List<List<String>>`
++
+NOTE: The Content-Type header in raw streaming mode is derived from the `@Produces` annotation.
+The `@Stream` annotation offers the possibility of an optional `MediaType` parameter called "streaming". The point is to be able to suggest that the stream of data emanating from the server is unbounded, i.e., that the client shouldn't try to read it all as a single byte array, for example.
+The parameter is set by explicitly setting the `@Stream` parameter `includeStreaming()` to `true`.
+For example, 
++
+[source,java]
+----
+@GET
+@Path("byte/default")
+@Produces("application/octet-stream;x=y")
+@Stream(Stream.MODE.RAW)
+public FlowableByte aByteDefault() {
+  return Flowable.fromArray((byte) 0, (byte) 1, (byte) 2);
+}
+----
++
+induces the `MediaType` "application/octet-stream;x=y", and 
++
+[source,java]
+----
+@GET
+@Path("byte/true")
+@Produces("application/octet-stream;x=y")
+@Stream(value=Stream.MODE.RAW, includeStreaming=true)
+public FlowableByte aByteTrue() {
+  return Flowable.fromArray((byte) 0, (byte) 1, (byte) 2);
+}
+----
++
+induces the `MediaType` "application/octet-stream;x=y;streaming=true". 
++
+Note that browsers such as Firefox and Chrome seem to be comfortable with reading unlimited streams without any additional hints. 
+
+==== Examples
+
+*Example 1.*
+
+[source,java]
+----
+@POST
+@Path("post/thing/list")
+@Produces(MediaType.APPLICATION_JSON)
+@Stream(Stream.MODE.GENERAL)
+public Flowable<List<Thing>> postThingList(String s) {
+   return buildFlowableThingList(s, 2, 3);
+}
+
+@SuppressWarnings("unchecked")
+@Test
+public void testPostThingList() throws Exception {
+   CountDownLatch latch = new CountdownLatch(1);
+   FlowableRxInvoker invoker = client.target(generateURL("/post/thing/list")).request().rx(FlowableRxInvoker.class);
+   Flowable<List<Thing>> flowable = (Flowable<List<Thing>>) invoker.post(Entity.entity("a", MediaType.TEXT_PLAIN_TYPE), new GenericType<List<Thing>>() {});
+   flowable.subscribe(
+         (List<?> l) -> thingListList.add(l),
+         (Throwable t) -> latch.countDown(),
+         () -> latch.countDown());
+   latch.await();
+   Assert.assertEquals(aThingListList, thingListList);
+}
+----
+
+This is the example given previously, except that the mode in the `@Stream` annotation (which defaults to MODE.GENERAL) is given explicitly.
+In this scenario, the `Flowable` emits `List<Thing>` elements on the server, they are transmitted over the wire as SSE events: 
+
+[source]
+----
+data: [{"name":"a"},{"name":"a"},{"name":"a"}]
+data: [{"name":"a"},{"name":"a"},{"name":"a"}]
+----
+
+and the `FlowableRxInvoker` reconstitutes a `Flowable` on the client side. 
+
+*Example 2.*
+
+[source,java]
+----
+@POST
+@Path("post/thing/list")
+@Produces(MediaType.APPLICATION_JSON)
+public Flowable<List<Thing>> postThingList(String s) {
+   return buildFlowableThingList(s, 2, 3);
+}
+
+@Test
+public void testPostThingList() throws Exception {
+   Builder request = client.target(generateURL("/post/thing/list")).request();
+   List<List<Thing>> list = request.post(Entity.entity("a", MediaType.TEXT_PLAIN_TYPE), new GenericTypeList<List<Thing>>() {});
+   Assert.assertEquals(aThingListList, list);
+}
+----
+
+In this scenario, in which the resource method has no `@Stream` annotation, the `Flowable` emits stream elements which are accumulated by the server until the `Flowable` is done, at which point the entire JSON list is transmitted over the wire: 
+
+[source]
+----
+[[{"name":"a"},{"name":"a"},{"name":"a"}],[{"name":"a"},{"name":"a"},{"name":"a"}]]
+----
+
+and the list is reconstituted on the client side by an ordinary invoker. 
+
+*Example 3.*
+
+[source,java]
+----
+@GET
+@Path("get/bytes")
+@Produces(MediaType.APPLICATION_OCTET_STREAM)
+@Stream(Stream.MODE.RAW)
+public Flowable<byte[]> getBytes() {
+   return Flowable.create(
+      new FlowableOnSubscribe<byte[]>() {
+
+         @Override
+         public void subscribe(FlowableEmitterbyte[] emitter) throws Exception {
+            for (int i = 0; i < 3; i++) {
+               byte[] b = new byte[10];
+               for (int j = 0; j  <10; j++) {
+                  b[j] = (byte) (i + j);
+               }
+               emitter.onNext(b);
+            }
+            emitter.onComplete();
+         }
+      },
+      BackpressureStrategy.BUFFER);
+}
+
+@Test
+public void testGetBytes() throws Exception {
+   Builder request = client.target(generateURL("/get/bytes")).request();
+   InputStream is = request.get(InputStream.class);
+   int n = is.read();
+   while (n < -1) {
+      System.out.print(n);
+      n = is.read();
+   }
+}
+----
+
+Here, the byte arrays are written to the network as they are created by the `Flowable`.
+On the network, they are concatenated, so the client sees one stream of bytes.
+
+==== Rx and SSE
+
+Since general streaming mode and SSE share minor variants of the same wire protocol, they are, modulo the SSE restriction to character data, interchangeable.
+That is, an SSE client can connect to a resource method that returns a `Flowable` or an `Observable`, and a `FlowableRxInvoker`, for example, can connect to an SSE resource method. 
+
+NOTE: SSE requires a `@Produces("text/event-stream")` annotation, so, unlike the cases of raw and general streaming, the element media type cannot be derived from the `@Produces` annotation.
+To solve this problem, Resteasy introduces the 
+
+[source,java]
+----
+
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface SseElementType {
+   String value();
+}
+----
+
+annotation, from which the element media type is derived. 
+
+*Example 1.*
+
+[source,java]
+----
+@GET
+@Path("eventStream/thing")
+@Produces("text/event-stream")
+@SseElementType("application/json")
+public void eventStreamThing(@Context SseEventSink eventSink, @Context Sse sse) {
+   new ScheduledThreadPoolExecutor(5).execute(() -> {
+      try (SseEventSink sink = eventSink) {
+         OutboundSseEvent.Builder  builder = sse.newEventBuilder();
+         eventSink.send(builder.data(new Thing("e1")).build());
+         eventSink.send(builder.data(new Thing("e2")).build());
+         eventSink.send(builder.data(new Thing("e3")).build());
+      }
+   });
+}
+
+@SuppressWarnings("unchecked")
+@Test
+public void testFlowableToSse() throws Exception {
+   CountDownLatch latch = new CountDownLatch(1);
+   final AtomicInteger errors = new AtomicInteger(0);
+   FlowableRxInvoker invoker = client.target(generateURL("/eventStream/thing")).request().rx(FlowableRxInvoker.class);
+   FlowableThing flowable = (FlowableThing) invoker.get(Thing.class);
+   flowable.subscribe(
+      (Thing t) -> thingList.add(t),
+      (Throwable t) -> errors.incrementAndGet(),
+      () -> latch.countDown());
+   boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+   Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+   Assert.assertEquals(0, errors.get());
+   Assert.assertEquals(eThingList, thingList);
+}
+----
+
+Here, a `FlowableRxInvoker` is connecting to an SSE resource method.
+On the network, the data looks like 
+
+[source]
+----
+data: {"name":"e1"}
+data: {"name":"e2"}
+data: {"name":"e3"}
+----
+
+Note that the character data is suitable for an SSE resource method. 
+
+Also, note that the `eventStreamThing()` method in this example induces the media type 
+
+[source]
+----
+text/event-stream;element-type="application/json"
+----
+
+*Example 2.*
+
+[source,java]
+----
+@GET
+@Path("flowable/thing")
+@Produces("text/event-stream")
+@SseElementType("application/json")
+public Flowable<Thing> flowableSSE() {
+   return Flowable.create(
+      new FlowableOnSubscribe<Thing>() {
+
+         @Override
+         public void subscribe(FlowableEmitter<Thing> emitter) throws Exception {
+            emitter.onNext(new Thing("e1"));
+            emitter.onNext(new Thing("e2"));
+            emitter.onNext(new Thing("e3"));
+            emitter.onComplete();
+         }
+      },
+      BackpressureStrategy.BUFFER);
+}
+
+@Test
+public void testSseToFlowable() throws Exception {
+   final CountDownLatch latch = new CountDownLatch(3);
+   final AtomicInteger errors = new AtomicInteger(0);
+   WebTarget target = client.target(generateURL("/flowable/thing"));
+   SseEventSource msgEventSource = SseEventSource.target(target).build();
+   try (SseEventSource eventSource = msgEventSource) {
+      eventSource.register(
+         event -> {thingList.add(event.readData(Thing.class, MediaType.APPLICATION_JSON_TYPE)); latch.countDown();},
+         ex -> errors.incrementAndGet());
+      eventSource.open();
+
+      boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+      Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+      Assert.assertEquals(0, errors.get());
+      Assert.assertEquals(eThingList, thingList);
+   }
+}
+----
+
+Here, an SSE client is connecting to a resource method that returns a `Flowable`.
+Again, the server is sending character data, which is suitable for the SSE client, and the data looks the same on the network. 
+
+==== To stream or not to stream
+
+Whether or not it is appropriate to stream a list of values is a judgment call.
+Certainly, if the list is unbounded, then it isn't practical, or even possible, perhaps, to collect the entire list and send it at once.
+In other cases, the decision is less obvious. 
+
+*Case 1.* Suppose that all of the elements are producible quickly.
+Then the overhead of sending them independently is probably not worth it. 
+
+*Case 2.* Suppose that the list is bounded but the elements will be produced over an extended period of time.
+Then returning the initial elements when they become available might lead to a better user experience. 
+
+*Case 3.* Suppose that the list is bounded and the elements can be produced in a relatively short span of time but only after some delay.
+Here is a situation that illustrates the fact that asynchronous reactive processing and streaming over the network are independent concepts.
+In this case it's worth considering having the resource method return something like `CompletionStage<List<Thing>>` rather than `Flowable<List<Thing>>`.
+This has the  benefit of creating the list asynchronously but, once it is available, sending it to the client in one piece. 
+
+=== Proxies
+
+Proxies, discussed in <<_client_proxies,RESTEasy Proxy Framework>>, are a RESTEasy extension that supports a natural programming style in which generic {spec-name} invoker calls are replaced by application specific interface calls.
+The proxy framework is extended to include both `CompletionStage` and the RxJava2 types `Single`, `Observable`, and `Flowable`. 
+
+*Example 1.*
+
+[source,java]
+----
+@Path("")
+public interface RxCompletionStageResource {
+
+   @GET
+   @Path("get/string")
+   @Produces(MediaType.TEXT_PLAIN)
+   CompletionStage<String> getString();
+}
+
+@Path("")
+public class RxCompletionStageResourceImpl {
+
+   @GET
+   @Path("get/string")
+   @Produces(MediaType.TEXT_PLAIN)
+   public CompletionStage<String> getString() { . }
+}
+
+public class RxCompletionStageProxyTest {
+
+   private static ResteasyClient client;
+   private static RxCompletionStageResource proxy;
+   
+   static {
+      client = (ResteasyClient)ClientBuilder.newClient();
+      proxy = client.target(generateURL("/")).proxy(RxCompletionStageResource.class);
+   }
+   
+   @Test
+   public void testGet() throws Exception {
+      CompletionStage<String> completionStage = proxy.getString();
+      Assert.assertEquals("x", completionStage.toCompletableFuture().get());
+   }
+}
+----
+
+*Example 2.*
+
+[source,java]
+----
+public interface Rx2FlowableResource {
+
+   @GET
+   @Path("get/string")
+   @Produces(MediaType.TEXT_PLAIN)
+   @Stream
+   public Flowable<String> getFlowable();
+}
+
+@Path("")
+public class Rx2FlowableResourceImpl {
+
+   @GET
+   @Path("get/string")
+   @Produces(MediaType.TEXT_PLAIN)
+   @Stream
+   public Flowable<String> getFlowable() {  }
+}
+
+public class Rx2FlowableProxyTest {
+
+   private static ResteasyClient client;
+   private static Rx2FlowableResource proxy;
+   
+   static {
+      client = (ResteasyClient)ClientBuilder.newClient();
+      proxy = client.target(generateURL("/")).proxy(Rx2FlowableResource.class);
+   }
+   
+   @Test
+   public void testGet() throws Exception {
+      Flowable<String> flowable = proxy.getFlowable();
+      flowable.subscribe(
+         (String o) -> stringList.add(o),
+         (Throwable t) -> errors.incrementAndGet(),
+         () -> latch.countDown());
+      boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+      Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+      Assert.assertEquals(0, errors.get());
+      Assert.assertEquals(xStringList, stringList);
+   }
+}
+----
+
+=== Adding extensions
+
+RESTEasy implements a framework that supports extensions for additional reactive classes.
+To understand the framework, it is necessary to understand the existing support for `CompletionStage` and other reactive classes. 
+
+*Server side.* When a resource method returns a `CompletionStage`, RESTEasy subscribes to it using the class `org.jboss.resteasy.core.AsyncResponseConsumer.CompletionStageResponseConsumer`.
+When the `CompletionStage` completes, it calls `CompletionStageResponseConsumer.accept()`, which sends the result back to the client. 
+
+Support for `CompletionStage` is built in to RESTEasy, but it's not hard to extend that support to a class like `Single` by providing a mechanism for transforming a `Single` into a `CompletionStage`.
+In module resteasy-rxjava2, that mechanism is supplied by `org.jboss.resteasy.rxjava2.SingleProvider`, which implements interface `org.jboss.resteasy.spi.AsyncResponseProviderSingle?`: 
+
+[source,java]
+----
+public interface AsyncResponseProvider<T> {
+   CompletionStage<T> toCompletionStage(T asyncResponse);
+}
+----
+
+Given `SingleProvider`, RESTEasy can take a `Single`, transform it into a `CompletionStage`, and then use `CompletionStageResponseConsumer` to handle the eventual value of the `Single`. 
+
+Similarly, when a resource method returns a streaming reactive class like `Flowable`, RESTEasy subscribes to it, receives a stream of data elements, and sends them to the client. `AsyncResponseConsumer` has several supporting classes, each of which implements a  different mode of streaming.
+For example, `AsyncResponseConsumer.AsyncGeneralStreamingSseResponseConsumer` handles general streaming and SSE streaming.
+Subscribing is done by calling `org.reactivestreams.Publisher.subscribe()`, so a mechanism is needed for turning, say, a `Flowable` into a `Publisher`.
+That is, an implementation of `org.jboss.resteasy.spi.AsyncStreamProviderFlowable` is called for, where `AsyncStreamProvider` is defined: 
+
+[source,java]
+----
+public interface AsyncStreamProvider<T> {
+   Publisher<T> toAsyncStream(T asyncResponse);
+}
+----
+
+In module resteasy-rxjava2, `org.jboss.resteasy.FlowableProvider` provides that mechanism for `Flowable`.
+\[Actually, that's not too hard since, in rxjava2, a `Flowable` __is__ a `Provider`.]
+
+So, on the server side, adding support for other reactive types can be done by declaring a `@Provider` for the interface `AsyncStreamProvider` (for streams) or `AsyncResponseProvider` (for single values), which both have a single method to convert the new reactive type into (respectively) a `Publisher` (for streams) or a `CompletionStage` (for single values). 
+
+*Client side.* The {spec-name} specification imposes two requirements for support of reactive classes on the client side:
+
+. support for `CompletionStage` in the form of an implementation of the interface `jakarta.ws.rs.client.CompletionStageRxInvoker`, and 
+. extensibility in the form of support for registering providers that implement
++
+[source,java]
+----
+public interface RxInvokerProvider<T> extends RxInvoker {
+    boolean isProviderFor(Class<T> clazz);
+    T getRxInvoker(SyncInvoker syncInvoker, ExecutorService executorService);
+}
+----
++
+Once an `RxInvokerProvider` is registered, an `RxInvoker` can be requested by calling the `jakarta.ws.rs.client.Invocation.Builder` method
++
+[source,java]
+----
+public <T extends RxInvoker> T rx(Class<T> clazz);
+----
++
+That `RxInvoker` can then be used for making an invocation that returns the appropriate reactive class. For example,
++
+[source,java]
+----
+FlowableRxInvoker invoker = client.target(generateURL("/get/string")).request().rx(FlowableRxInvoker.class);
+FlowableString flowable = (FlowableString) invoker.get();
+----
+
+RESTEasy provides partial support for implementing a `RxInvoker`.
+For example, `SingleProvider`, mentioned above, also implements `org.jboss.resteasy.spi.AsyncClientResponse<Provider<Single<?>>>`, where `AsyncClientResponseProvider` is defined
+
+[source,java]
+----
+public interface AsyncClientResponseProvider<T> {
+   T fromCompletionStage(CompletionStage<?> completionStage);
+}
+----
+
+`SingleProvider` has the ability to turn a `CompletionStage` into a `Single` is used in the implementation of `org.jboss.resteasy.rxjava2.SingleRxInvokerImpl`.
+
+The same concept might be useful in implementing other `RxInvoker` implementations.
+Note, though, that `ObservableRxInvokerImpl` and `FlowableRxInvokerImpl` in module resteasy-rxjava2 are each derived directly from the SSE implementation.

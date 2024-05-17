@@ -1,0 +1,120 @@
+[[_jakarta_rest_resource_locators_and_sub_resources]]
+== {spec-name} Resource Locators and Sub Resources
+
+Resource classes are able to partially process a request and provide another sub resource object that can process the remainder of the request.
+For example: 
+
+[source,java]
+----
+@Path("/")
+public class ShoppingStore {
+
+    @Inject
+    CustomerRegistry customerRegistry;
+
+    @Path("/customers/{id}")
+    public Customer getCustomer(@PathParam("id") int id) {
+        return customerRegistry.find(id);
+    }
+}
+
+public class Customer {
+   
+    @GET
+    public String get() {}
+
+    @Path("/address")
+    public String getAddress() {}
+}
+----
+
+Resource methods that have a `@Path` annotation, but no HTTP method are considered sub-resource locators.
+Their job is to provide an object that can process the request.
+In the above example `ShoppingStore` is a root resource because its class is annotated with `@Path`.
+The `getCustomer()` method is a sub-resource locator method.
+
+If the client invoked:
+
+[source]
+----
+GET /customer/123
+----
+
+The `ShoppingStore.getCustomer()` method would be invoked first.
+This method provides a Customer object that can service the request.
+The http request will be dispatched to the `Customer.get()` method.
+Another example is:
+
+[source]
+----
+GET /customer/123/address
+----
+
+In this request, again, first the `ShoppingStore.getCustomer()` method is invoked.
+A customer object is returned, and the rest of the request is dispatched to the `Customer.getAddress()` method.
+
+Another interesting feature of Sub-resource locators is that the locator method result is dynamically processed at runtime to figure out how to dispatch the request.
+So, the `ShoppingStore.getCustomer()` method does not have to declare any specific type.
+
+[source,java]
+----
+@Path("/")
+public class ShoppingStore {
+
+    @Inject
+    CustomerRegistry customerRegistry;
+
+    @Path("/customers/{id}")
+    public java.lang.Object getCustomer(@PathParam("id") int id) {
+        return customerRegistry.find(id);
+    }
+}
+
+public class Customer {
+   
+    @GET
+    public String get() {}
+
+    @Path("/address")
+    public String getAddress() {}
+}
+----
+
+In the above example, `getCustomer()` returns a `java.lang.Object`.
+Per request, at runtime, the {spec-name} server will determine how to dispatch the request based on the object returned by
+`getCustomer()`.  Possible uses of this are:
+
+* There maybe a class hierarchy for your customers. Customer is the abstract base class,
+  `CorporateCustomer` and `IndividualCustomer` are subclasses.
+* The `getCustomer()` method might be doing a Hibernate polymorphic query and doesn't know, or
+  care, what concrete class is it querying for, or what it returns. 
+
+
+[source,java]
+----
+@Path("/")
+public class ShoppingStore {
+
+   @Path("/customers/{id}")
+   public java.lang.Object getCustomer(@PathParam("id") int id) {
+      return entityManager.find(Customer.class, id);
+   }
+}
+
+public class Customer {
+   
+    @GET
+    public String get() {}
+
+    @Path("/address")
+    public String getAddress() {}
+}
+
+public class CorporateCustomer extends Customer {
+   
+    @Path("/businessAddress")
+    public String getAddress() {}
+}
+----
+
+

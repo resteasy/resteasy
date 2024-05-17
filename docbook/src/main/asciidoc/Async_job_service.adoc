@@ -1,0 +1,129 @@
+[[_async_job_service]]
+== Asynchronous Job Service
+
+The RESTEasy Asynchronous Job Service is an implementation of the Asynchronous Job pattern defined in O'Reilly's "Restful Web Services" book.
+The idea of it is to bring asynchronicity to a synchronous protocol. 
+
+[[_async_job]]
+=== Using Async Jobs
+
+While HTTP is a synchronous protocol it does have a faint idea of asynchronous invocations.
+The HTTP 1.1 response code 202, "Accepted" means that the server has received and accepted the response for processing, but the processing has not yet been completed.
+The RESTEasy Asynchronous Job Service builds around this idea.
+
+[source]
+----
+POST http://localhost/myservice?asynch=true
+----
+
+For example, if making the above post with the asynch query parameter set to true, RESTEasy will return a 202, "Accepted" response code and run the invocation in the background.
+It also sends back a Location header with a URL pointing to where the response of the background method is located. 
+
+[source]
+----
+HTTP/1.1 202 Accepted
+Location: http://localhost/asynch/jobs/3332334
+----
+
+The URI will have the form of: 
+
+[source]
+----
+/asynch/jobs/{job-id}?wait={millisconds}|nowait=true
+----
+
+You can perform the GET, POST, and DELETE operations on this job URL.
+GET returns whatever the {spec-name} resource method invoked returns as a response if the job was completed.
+If the job has not completed, this GET will return a response code of 202, Accepted.
+Invoking GET does not remove the job, so it can be called multiple times.
+When RESTEasy's job queue gets full, it will evict the least recently used job from memory.
+Manual clean up can be performed by calling DELETE on the URI.
+POST does a read of the JOB response and will remove the JOB it has completed. 
+
+Both GET and POST allow the specification of a maximum wait time in milliseconds, a "wait" query parameter.
+Here's an example: 
+
+[source]
+----
+POST http://localhost/asynch/jobs/122?wait=3000
+----
+
+If a "wait" parameter is not specified, the GET or POST will not wait if the job is not complete.
+
+NOTE!!  While GET, DELETE, and PUT methods can be invoked asynchronously, this breaks the HTTP 1.1 contract of these methods.
+While these invocations may not change the state of the resource if invoked more than once, they do change the state of the server as new Job entries with each invocation.
+To be a purist, stick with only invoking POST methods asynchronously. 
+
+Security NOTE!  RESTEasy's role-based security (annotations) does not work with the Asynchronous Job Service.
+XML declarative security must be used within the web.xml file, because it is impossible to implement role-based security in a portable way. 
+
+NOTE.
+A `java.security.SecureRandom` object is used to generate unique job ids.
+For security purposes, the `SecureRandom` is periodically reseeded.
+By default, it is reseeded after 100 uses.
+This value may be configured with the servlet init parameter "resteasy.secure.random.max.use". 
+
+[[_oneway]]
+=== Oneway: Fire and Forget
+
+RESTEasy also supports the notion of fire and forget.
+This will also return a 202, Accepted response, but no Job will be created.
+This is as simple as using the oneway query parameter instead of asynch.
+For example: 
+
+[source]
+----
+
+POST http://localhost/myservice?oneway=true
+----
+
+Security NOTE!  RESTEasy role-based security (annotations) does not work with the Asynchronous Job Service.
+XML declarative security must be use within the web.xml file, because it is impossible to implement role-based security in a portable way.
+
+[[_async_job_setup]]
+=== Setup and Configuration
+
+The Asynchronous Job Service must be enabled, as it is not turned on by default.
+If the relevant configuration properties are configured in web.xml, it would look like the following: 
+
+[source,xml]
+----
+<web-app>
+    <!-- enable the Asynchronous Job Service -->
+    <context-param>
+        <param-name>resteasy.async.job.service.enabled</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <!-- The next context parameters are all optional.  
+         Their default values are shown as example param-values -->
+
+    <!-- How many jobs results can be held in memory at once? -->
+    <context-param>
+        <param-name>resteasy.async.job.service.max.job.results</param-name>
+        <param-value>100</param-value>
+    </context-param>
+
+    <!-- Maximum wait time on a job when a client is querying for it -->
+    <context-param>
+        <param-name>resteasy.async.job.service.max.wait</param-name>
+        <param-value>300000</param-value>
+    </context-param>
+
+    <!-- Thread pool size of background threads that run the job -->
+    <context-param>
+        <param-name>resteasy.async.job.service.thread.pool.size</param-name>
+        <param-value>100</param-value>
+    </context-param>
+
+    <!-- Set the base path for the Job uris -->
+    <context-param>
+        <param-name>resteasy.async.job.service.base.path</param-name>
+        <param-value>/asynch/jobs</param-value>
+    </context-param>
+
+    ...
+</web-app>
+----
+
+See <<_microprofile_config>> for more information about application configuration.

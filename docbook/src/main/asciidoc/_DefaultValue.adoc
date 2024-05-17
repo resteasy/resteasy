@@ -1,0 +1,14 @@
+[[_defaultvalue]]
+== @DefaultValue
+
+`@DefaultValue` is a parameter annotation that can be combined with any of the other @*Param annotations to define a
+default value when the HTTP request item does not exist.
+
+
+[source,java]
+----
+@GET
+public String getBooks(@QueryParam("num") @DefaultValue("10") int num) {}
+----
+
+
