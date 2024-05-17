@@ -1,0 +1,66 @@
+[[_headerparam]]
+== @HeaderParam
+
+[NOTE]
+====
+RESTEasy <<_newparam,supports `@HeaderParam` annotations with no parameter name.>>. 
+====
+
+The `@HeaderParam` annotation allows you to map a request HTTP header to a method invocation.
+
+----
+GET /books?num=5 
+----
+
+[source,java]
+----
+@GET
+public String getBooks(@HeaderParam("From") String from) {
+}
+----
+
+Like `PathParam`, a parameter type can be a String, primitive, or class that has a String constructor or static valueOf() method.
+For example, MediaType has a valueOf() method and you could do: 
+
+
+[source,java]
+----
+
+@PUT
+public void put(@HeaderParam("Content-Type") MediaType contentType);
+----
+
+
+
+
+== [class]``HeaderDelegate``s
+
+In addition to the usual methods for translating parameters to and from strings, parameters annotated with
+`@HeaderParam` have another option: implementations of {jakarta-rest-javadoc}/jakarta/ws/rs/ext/runtimedelegate.headerdelegate[`RuntimeDelegate$HeaderDelegate`].
+
+`HeaderDelegate` is similar to {jakarta-rest-javadoc}/jakarta/ws/rs/ext/paramconverter[`ParamConverter`],
+but it is not very convenient to register a `HeaderDelegate` since, unlike, for example, `ParamConverterProvider`, it
+is not treated by the  specification as a provider. The class `jakarta.ws.rs.core.Configurable`, which is subclassed by,
+for example, `org.jboss.resteasy.spi.ResteasyProviderFactory` has methods like
+
+[source,java]
+----
+    /**
+     * Register a class of a custom  component (such as an extension provider or
+     * a {@link jakarta.ws.rs.core.Feature feature} meta-provider) to be instantiated
+     * and used in the scope of this configurable context.
+     *
+     * ...
+     *
+     * @param componentClass  component class to be configured in the scope of this
+     *                       configurable context.
+     * @return the updated configurable context.
+     */
+    public C register(Class<?> componentClass);
+----
+
+but it is not clear that they are applicable to `HeaderDelegate`s.
+
+RESTEasy approaches this problem by allowing `HeaderDelegate` to be annotated with `@Provider`.
+Not only will `ResteasyProviderFactory.register()` process a `HeaderDelegate`, but another useful consequence is that
+a `HeaderDelegate` can be discovered automatically at runtime.

@@ -1,0 +1,90 @@
+[[_securing_jakarta_rest_and_resteasy]]
+== Securing {spec-name} and RESTEasy
+
+Because RESTEasy is deployed as a servlet, standard web.xml constraints must be used to enable authentication and authorization. 
+
+Unfortunately, web.xml constraints do not mesh very well with {spec-name} in some situations.
+The problem is that web.xml URL pattern matching is limited.
+URL patterns in web.xml only support simple wildcards, so {spec-name} resources such as the following:
+
+
+[source]
+----
+/{pathparam1}/foo/bar/{pathparam2}
+----
+
+Cannot be mapped as a web.xml URL pattern like: 
+
+[source]
+----
+/*/foo/bar/*
+----
+
+To resolve this issue, use the security annotations defined below on your {spec-name} methods.
+Some general security constraint elements will still need to be declared in web.xml to turn on authentication. 
+
+
+RESTEasy supports the `@RolesAllowed`, `@PermitAll` and `@DenyAll` annotations on {spec-name} methods.
+By default, RESTEasy does not recognize these annotations.
+RESTEasy must be configured to turn on role-based security by setting the appropriate parameter.
+The code fragment below show how to enable security. 
+
+IMPORTANT: Do not turn on this switch if using {enterprise-beans}.  The {enterprise-beans} container will provide this functionality instead of RESTEasy.
+
+[source,xml]
+----
+<web-app>
+   <context-param>
+      <param-name>resteasy.role.based.security</param-name>
+      <param-value>true</param-value>
+   </context-param>
+</web-app>
+----
+
+See <<_microprofile_config>> for more information about application configuration. 
+
+RESTEasy requires that all roles used within the application be declared in the war's web.xml file.
+A security constraint that permits all of those roles access to every URL handled by the {spec-name} runtime must also be declared in the web.xml.
+
+RESTEasy performs authorization by checking the method annotations.
+If a method is annotated with @RolesAllowed.
+It calls HttpServletRequest.isUserInRole.
+If one of the @RolesAllowed passes, the request is processed, otherwise, a response is returned with a 401 (Unauthorized) response code. 
+
+Here is an example of a modified RESTEasy WAR file.
+Notice that every role declared is allowed access to every URL controlled by the RESTEasy servlet. 
+
+
+[source,xml]
+----
+<web-app>
+   <context-param>
+      <param-name>resteasy.role.based.security</param-name>
+      <param-value>true</param-value>
+   </context-param>
+
+   <security-constraint>
+      <web-resource-collection>
+         <web-resource-name>Resteasy</web-resource-name>
+         <url-pattern>/security</url-pattern>
+      </web-resource-collection>
+       <auth-constraint>
+         <role-name>admin</role-name>
+         <role-name>user</role-name>
+      </auth-constraint>
+  </security-constraint>
+
+   <login-config>
+      <auth-method>BASIC</auth-method>
+      <realm-name>Test</realm-name>
+   </login-config>
+
+   <security-role>
+      <role-name>admin</role-name>
+   </security-role>
+   <security-role>
+      <role-name>user</role-name>
+   </security-role>
+</web-app>
+----
+

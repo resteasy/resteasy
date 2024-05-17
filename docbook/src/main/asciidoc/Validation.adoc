@@ -1,0 +1,392 @@
+[[_validation]]
+== Validation
+
+RESTEasy provides the support for validation mandated by the {jakarta-rest-spec}[{spec-name}, given the presence of an
+implementation of the {jakarta-bean-validation}[Bean Validation specification] such as http://hibernate.org/validator/[Hibernate Validator].
+
+Validation provides a declarative way of imposing constraints on fields and properties of beans, bean classes, and the parameters and return values of bean methods.
+For example, in 
+
+[source,java]
+----
+@Path("all")
+@TestClassConstraint(5)
+public class TestResource {
+   @Size(min=2, max=4)
+   @PathParam("s")
+   String s;
+
+   private String t;
+
+   @Size(min=3)  
+   public String getT() {
+      return t;
+   }
+
+   @PathParam("t") 
+   public void setT(String t) {
+      this.t = t;
+   }
+
+   @POST
+   @Path("{s}/{t}/{u}")
+   @Pattern(regexp="[a-c]+")
+   public String post(@PathParam("u") String u) {
+      return u;
+   }
+}
+----
+
+the field `s` is constrained by the Bean Validation built-in annotation `@Size` to have between 2 and 4 characters, the property `t` is constrained to have at least 3 characters, and the `TestResource` object is constrained by the application defined annotation `@TestClassConstraint` to have the combined lengths of `s` and `t` less than 5: 
+
+[source,java]
+----
+@Constraint(validatedBy = TestClassValidator.class)
+@Target({TYPE})
+@Retention(RUNTIME)
+public @interface TestClassConstraint {
+   String message() default "Concatenation of s and t must have length > {value}";
+   Class<?>[] groups() default {};
+   Class<? extends Payload>[] payload() default {};
+   int value();
+}
+
+public class TestClassValidator implements ConstraintValidator<TestClassConstraint, TestResource> {
+   int length;
+
+   public void initialize(TestClassConstraint constraintAnnotation) {
+      length = constraintAnnotation.value();
+   }
+
+   public boolean isValid(TestResource value, ConstraintValidatorContext context) {
+      return value.retrieveS().length() + value.getT().length() < length;
+   }
+}
+----
+
+See the links above for more about how to create validation annotations. 
+
+Also, the method parameter `u` is constrained to have no more than 5 characters, and the return value of method `post`
+is constrained by the built-in annotation `@Pattern` to match the regular expression "[a-c]+".
+
+The sequence of validation constraint testing is as follows: 
+
+. Create the resource and validate property, and class constraints.
+. Validate the resource method parameters.
+. If no violations have been detected, call the resource method and validate the return value
+
+NOTE: Though fields and properties are technically different, they are subject to the same kinds of constraints, so
+they are treated the same in the context of validation. Together, they will both be referred to as "properties" herein.
+
+=== Violation reporting
+
+If a validation problem occurs, either a problem with the validation definitions or a constraint violation, RESTEasy
+will set the return header `org.jboss.resteasy.api.validation.Validation.VALIDATION_HEADER` ("validation-exception") to "true".
+
+If RESTEasy detects a structural validation problem, such as a validation annotation with a  missing validator class,
+it will return a String representation of a `jakarta.validation.ValidationException`. For example:
+
+[source]
+----
+jakarta.validation.ValidationException: HV000028: Unexpected exception during isValid call.[org.jboss.resteasy.test.validation.TestValidationExceptions$OtherValidationException]
+----
+
+If any constraint violations are detected, RESTEasy will return a report in one of a variety of formats.
+If one of "application/xml" or "application/json" occur in the "Accept" request header, RESTEasy will return an
+appropriately marshalled instance of `org.jboss.resteasy.api.validation.ViolationReport`:
+
+[source,java]
+----
+@XmlRootElement(name="violationReport")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class ViolationReport {
+
+   public ArrayList<ResteasyConstraintViolation> getPropertyViolations() {
+      return propertyViolations;
+   }
+
+   public ArrayList<ResteasyConstraintViolation> getClassViolations() {
+      return classViolations;
+   }
+
+   public ArrayList<ResteasyConstraintViolation> getParameterViolations() {
+      return parameterViolations;
+   }
+
+   public ArrayList<ResteasyConstraintViolation> getReturnValueViolations() {
+      return returnValueViolations;
+   }
+}
+----
+
+where `org.jboss.resteasy.api.validation.ResteasyConstraintViolation` is defined:
+
+[source,java]
+----
+@XmlRootElement(name="resteasyConstraintViolation")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class ResteasyConstraintViolation implements Serializable {
+   
+   /**
+    * @return type of constraint
+    */
+   public ConstraintType.Type getConstraintType() {
+      return constraintType;
+   }
+   
+   /**
+    * @return description of element violating constraint
+    */
+   public String getPath() {
+      return path;
+   }
+   
+   /**
+    * @return description of constraint violation
+    */
+   public String getMessage() {
+      return message;
+   }
+   
+   /**
+    * @return object in violation of constraint
+    */
+   public String getValue() {
+      return value;
+   }
+   
+   /**
+    * @return String representation of violation
+    */
+   public String toString() {
+      return "[" + type() + "]\r[" + path + "]\r[" + message + "]\r[" + value + "]\r";
+   }
+   
+   /**
+    * @return String form of violation type 
+    */
+   public String type() {
+      return constraintType.toString();
+   }
+}
+----
+
+and `org.jboss.resteasy.api.validation.ConstraintType` is the enumeration
+
+[source,java]
+----
+public class ConstraintType {
+   public enum Type {CLASS, PROPERTY, PARAMETER, RETURN_VALUE}
+}
+----
+
+If both "application/xml" or "application/json" occur in the "Accept" request header, the media type is chosen according to the ranking given by implicit or explicit "q" parameter values.
+In the case of a tie, the returned media type is indeterminate. 
+
+If neither "application/xml" or "application/json" occur in the "Accept" request header, RESTEasy returns a report with a String representation of each `ResteasyConstraintViolation`, where each field is delimited by '[' and ']', followed by a '\r', with a final '\r' at the end.
+For example, 
+
+[source]
+----
+
+[PROPERTY]
+[s]
+[size must be between 2 and 4]
+[a]
+
+[PROPERTY]
+[t]
+[size must be between 3 and 5]
+[z]
+
+[CLASS]
+[]
+[Concatenation of s and t must have length > 5]
+[org.jboss.resteasy.validation.TestResource@68467a6f]
+
+[PARAMETER]
+[test.<cross-parameter>]
+[Parameters must total <= 7]
+[[5, 7]]
+
+[RETURN_VALUE]
+[g.<return value>]
+[size must be between 2 and 4]
+[abcde]
+----
+
+where the four fields are 
+
+. type of constraint
+. path to violating element (e.g., property name, class name, method name and parameter name)
+. message
+. violating element
+
+The `ViolationReport` can be reconsititued from the `String` as follows:
+
+[source,java]
+----
+Client client = ClientBuilder.newClient();
+Invocation.Builder request = client.target(...).request();
+Response response = request.get();
+if (Boolean.valueOf(response.getHeaders().getFirst(Validation.VALIDATION_HEADER))) {
+   String s = response.readEntity(String.class);
+   ViolationReport report = new ViolationReport(s);
+}
+----
+
+If the path field is considered to be too much server side information, it can be suppressed by setting the parameter
+"resteasy.validation.suppress.path" to "true". In that case, "*" will be returned in the path fields.
+[See <<_microprofile_config>> for more information about application configuration.] 
+
+=== Validation Service Providers
+
+The form of validation mandated by the {spec-name} specification, based on Bean Validation 1.1 or greater, is supported
+by the RESTEasy module resteasy-validator-provider, which produces the artifact resteasy-validator-provider-version.jar.
+Validation is turned on by default (assuming resteasy-validator-provider-version.jar is available), though parameter and
+return value validation can be turned off or modified in the validation.xml configuration file.
+See the https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/[Hibernate Validator] documentation for the details.
+
+RESTEasy obtains a bean validation implementation by looking in the available `META-INF/services/jakarta.ws.rs.Providers`
+files for an implementation of `ContextResolverGeneralValidator`, where `org.jboss.resteasy.spi.GeneralValidator` is
+
+[source,java]
+----
+public interface GeneralValidator {
+   /**
+    * Validates all constraints on {@code object}.
+    *
+    * @param object object to validate
+    * @param groups the group or list of groups targeted for validation (defaults to
+    *        {@link Default})
+    * @return constraint violations or an empty set if none
+    * @throws IllegalArgumentException if object is {@code null}
+    *         or if {@code null} is passed to the varargs groups
+    * @throws ValidationException if a non recoverable error happens
+    *         during the validation process
+    */
+   void validate(HttpRequest request, Object object, Class<?>... groups);
+   /**
+    * Validates all constraints placed on the parameters of the given method.
+    *
+    * @param <T> the type hosting the method to validate
+    * @param object the object on which the method to validate is invoked
+    * @param method the method for which the parameter constraints is validated
+    * @param parameterValues the values provided by the caller for the given method's
+    *        parameters
+    * @param groups the group or list of groups targeted for validation (defaults to
+    *        {@link Default})
+    * @return a set with the constraint violations caused by this validation;
+    *         will be empty if no error occurs, but never {@code null}
+    * @throws IllegalArgumentException if {@code null} is passed for any of the parameters
+    *         or if parameters don't match with each other
+    * @throws ValidationException if a non recoverable error happens during the
+    *         validation process
+    */
+   void validateAllParameters(HttpRequest request, Object object, Method method, Object[] parameterValues, Class<?>... groups);
+
+   /**
+    * Validates all return value constraints of the given method.
+    *
+    * @param <T> the type hosting the method to validate
+    * @param object the object on which the method to validate is invoked
+    * @param method the method for which the return value constraints is validated
+    * @param returnValue the value returned by the given method
+    * @param groups the group or list of groups targeted for validation (defaults to
+    *        {@link Default})
+    * @return a set with the constraint violations caused by this validation;
+    *         will be empty if no error occurs, but never {@code null}
+    * @throws IllegalArgumentException if {@code null} is passed for any of the object,
+    *         method or groups parameters or if parameters don't match with each other
+    * @throws ValidationException if a non recoverable error happens during the
+    *         validation process
+    */
+   void validateReturnValue(
+         HttpRequest request, Object object, Method method, Object returnValue, Class<?>... groups);
+
+   /**
+    * Indicates if validation is turned on for a class.
+    * 
+    * @param clazz Class to be examined
+    * @return true if and only if validation is turned on for clazz
+    */
+   boolean isValidatable(Class<?> clazz);
+     
+   /**
+    * Indicates if validation is turned on for a method.
+    * 
+    * @param method method to be examined
+    * @return true if and only if validation is turned on for method
+    */   
+   boolean isMethodValidatable(Method method);
+
+   void checkViolations(HttpRequest request);
+}
+----
+
+The methods and the javadoc are adapted from the Bean Validation 1.1 classes `jakarta.validation.Validator` and `jakarta.validation.executable.ExecutableValidator`.
+
+RESTEasy module resteasy-validator-provider supplies an implementation of `GeneralValidator`.
+An alternative implementation may be supplied by implementing `ContextResolverGeneralValidator` and `org.jboss.resteasy.spi.validation.GeneralValidator`.
+
+A validator intended to function in the presence of CDI must also implement the sub-interface
+
+[source,java]
+----
+public interface GeneralValidatorCDI extends GeneralValidator {
+   /**
+    * Indicates if validation is turned on for a class.
+    * 
+    * This method should be called from the resteasy-core module. It should
+    * test if injectorFactor is an instance of CdiInjectorFactory, which indicates
+    * that CDI is active.  If so, it should return false. Otherwise, it should
+    * return the same value returned by GeneralValidator.isValidatable().
+    * 
+    * @param clazz Class to be examined
+    * @param injectorFactory the InjectorFactory used for clazz
+    * @return true if and only if validation is turned on for clazz
+    */
+   boolean isValidatable(Class<?> clazz, InjectorFactory injectorFactory);
+   
+   /**
+    * Indicates if validation is turned on for a class.
+    * This method should be called only from the resteasy-cdi module.
+    * 
+    * @param clazz Class to be examined
+    * @return true if and only if validation is turned on for clazz
+    */
+   boolean isValidatableFromCDI(Class<?> clazz);
+  
+   /**
+    * Throws a ResteasyViolationException if any validation violations have been detected.
+    * The method should be called only from the resteasy-cdi module.
+    * @param request
+    */
+   void checkViolationsfromCDI(HttpRequest request);
+   
+   /**
+    * Throws a ResteasyViolationException if either a ConstraintViolationException or a
+    * ResteasyConstraintViolationException is embedded in the cause hierarchy of e.
+    * 
+    * @param request
+    * @param e
+    */
+   void checkForConstraintViolations(HttpRequest request, Exception e);
+}
+----
+
+The validator in resteasy-validator-provider implements GeneralValidatorCDI. 
+
+=== Validation Implementations
+
+As mentioned above, RESTEasy validation requires an implementation of the {jakarta-bean-validation}[Bean Validation specification] such as http://hibernate.org/validator/[Hibernate Validator].
+Hibernate Validator is supplied automatically when RESTEasy is running in the context of WildFly.
+Otherwise, it should be made available.
+For example, in maven 
+[source,xml]
+----
+<dependency>
+    <groupId>org.hibernate.validator</groupId>
+    <artifactId>hibernate-validator/artifactId>
+</dependency>
+----

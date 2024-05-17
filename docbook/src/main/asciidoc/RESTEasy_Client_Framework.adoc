@@ -1,0 +1,907 @@
+[[_resteasy_client_framework]]
+== RESTEasy Client API
+
+=== {spec-name} Client API
+
+The {spec-name} includes a client API so the user can make http requests to remote RESTful web services.
+It is a 'fluent' request building API with really 3 main classes: `Client`, `WebTarget`, and `Response`.
+The `Client` interface is a builder of `WebTarget` instances.
+`WebTarget` represents a distinct URL or URL template from which the user can build more sub-resource WebTargets or invoke requests on.
+
+There are really two ways to create a `Client`.
+Standard way, or to use the `ResteasyClientBuilder` class.
+The advantage of the latter is that it provides a few more helper methods to configure the client. 
+
+[source,java]
+----
+Client client = ClientBuilder.newClient();
+// or
+client = ClientBuilder.newBuilder().build();
+WebTarget target = client.target("http://foo.com/resource");
+Response response = target.request().get();
+String value = response.readEntity(String.class);
+response.close();  // You should close connections!
+
+Client client = ClientBuilder.newClient();
+WebTarget target = client.target("http://foo.com/resource");
+----
+
+RESTEasy will automatically load a set of default providers.
+(Basically all classes listed in all `META-INF/services/jakarta.ws.rs.ext.Providers` files). Additionally, other providers, filters, and interceptors can be manually registered through the Configuration object provided by the method call `Client.configuration()`. Configuration also lets the user set various configuration properties that may be needed.
+
+Each WebTarget has its own Configuration instance which inherits the components and properties registered with its parent.
+This allows the user to set specific configuration options per target resource.
+For example, username and password. 
+
+One RESTEasy extension to the client API is the ability to specify that requests should be sent in "chunked" transfer mode.
+There are two ways of doing that.
+One is to configure an `org.jboss.resteasy.client.jaxrs.ResteasyWebTarget` so that all requests to that target are sent in chunked mode: 
+
+[source,java]
+----
+ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+ResteasyWebTarget target = client.target("http://localhost:8081/test");
+target.setChunked(b.booleanValue());
+Invocation.Builder request = target.request();
+----
+
+Alternatively, it is possible to configure a particular request to be sent in chunked mode: 
+
+[source,java]
+----
+ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+ResteasyWebTarget target = client.target("http://localhost:8081/test");
+ClientInvocationBuilder request = (ClientInvocationBuilder) target.request();
+request.setChunked(b);
+----
+
+Note that `org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder`, unlike `jakarta.ws.rs.client.Invocation.Builder`, is a RESTEasy class. 
+
+NOTE: The ability to send in chunked mode depends on the underlying transport layer; in particular, it depends on which implementation of `org.jboss.resteasy.client.jaxrs.ClientHttpEngine` is being used.
+Currently, only the default implementation, `ApacheHttpClient43Engine`, supports chunked mode.
+See Section <<_transport_layer,Apache HTTP Client 4.x and other backends>> for more information. 
+
+[NOTE]
+====
+To follow REST principles and avoid introducing state management in applications, `jakarta.ws.rs.client.Client` instances do not provide support for cookie management by default.
+However, the user can enable it if necessary using `ResteasyClientBuilder`: 
+
+[source]
+----
+Client client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).enableCookieManagement().build();
+----
+====
+
+[[_client_proxies]]
+=== RESTEasy Proxy Framework
+
+The RESTEasy Proxy Framework is the mirror opposite of the {spec-name} server-side specification.
+Instead of using {spec-name} annotations to map an incoming request to {spec-name} methods, the client framework builds
+an HTTP request that it uses to invoke a remote {spec-name}.
+This remote service does not have to be a {spec-name} service and can be any web resource that accepts HTTP requests.
+
+RESTEasy has a client proxy framework that allows the use of {spec-name} annotations to invoke a remote HTTP resource.
+Write a Java interface and use {spec-name} annotations on methods and the interface.
+For example: 
+
+
+[source,java]
+----
+
+public interface SimpleClient {
+   @GET
+   @Path("basic")
+   @Produces("text/plain")
+   String getBasic();
+
+   @PUT
+   @Path("basic")
+   @Consumes("text/plain")
+   void putBasic(String body);
+
+   @GET
+   @Path("queryParam")
+   @Produces("text/plain")
+   String getQueryParam(@QueryParam("param")String param);
+
+   @GET
+   @Path("matrixParam")
+   @Produces("text/plain")
+   String getMatrixParam(@MatrixParam("param")String param);
+
+   @GET
+   @Path("uriParam/{param}")
+   @Produces("text/plain")
+   int getUriParam(@PathParam("param")int param);
+}
+----
+
+RESTEasy has a simple API to generate a proxy, then invoke methods on the proxy.
+The invoked method gets translated to an HTTP request based on how the method was annotated and posted to the server.
+Here's how to set this up: 
+
+[source,java]
+----
+public void invokeClient() {
+    try (Client client = ClientBuilder.newClient()) {
+          WebTarget target = client.target("http://example.com/base/uri");
+          ResteasyWebTarget rtarget = (ResteasyWebTarget)target;
+
+          SimpleClient simple = rtarget.proxy(SimpleClient.class);
+          simple.putBasic("hello world");
+    }
+}
+----
+
+Alternatively use the RESTEasy client extension interfaces directly: 
+[source,java]
+----
+public void invokeClient() {
+    try (ResteasyClient client = (ResteasyClient)ClientBuilder.newClient()) {
+        ResteasyWebTarget target = client.target("http://example.com/base/uri");
+
+        SimpleClient simple = target.proxy(SimpleClient.class);
+        simple.putBasic("hello world");
+    }
+}
+----
+
+`@CookieParam` works the mirror opposite of its server-side counterpart and creates a cookie header to send to the server.
+It is not needed to use `@CookieParam` if you allocate your own `jakarta.ws.rs.core.Cookie` object and pass it as a parameter to a client proxy method.
+The client framework understands the cookie is being passed to the server so no extra metadata is needed. 
+
+The framework supports the {spec-name} locator pattern, but on the client side.
+So, if there is a method annotated only with @Path, that proxy method will return a new proxy of the interface returned by that method. 
+
+[[_custom_client_side_responses]]
+==== Abstract Responses
+
+Sometimes there is interest in viewing the response status code and/or the response headers in addition to the response body of the client request.
+The Client-Proxy framework has two ways to get at this information 
+
+A `jakarta.ws.rs.core.Response.Status` enumeration can be returned from the method.
+
+
+[source,java]
+----
+@Path("/")
+public interface MyProxy {
+   @POST
+   Response.Status updateSite(MyPojo pojo);
+}
+----
+
+Internally, after invoking the server, the client proxy internals will convert the HTTP response code into a `Response.Status` enum.
+
+The `jakarta.ws.rs.core.Response` class provides all accessible information:
+
+
+[source,java]
+----
+@Path("/")
+public interface LibraryService {
+
+   @GET
+   @Produces("application/xml")
+   Response getAllBooks();
+}
+----
+
+==== Response proxies
+
+A further extension implemented by the RESTEasy client proxy framework is the "response proxy facility", where a client proxy method returns an interface that represents the information contained in a `jakarta.ws.rs.core.Response`.
+Such an interface must be annotated with `@ResponseObject` from package `org.jboss.resteasy.annotations`, and its methods may be further annotated with `@Body`, `@LinkHeaderParam`, and `@Status` from the same package,  as well as `jakarta.ws.rs.HeaderParam`.
+Consider the following example. 
+
+[source,java]
+----
+ @ResponseObject
+ public interface TestResponseObject {
+
+    @Status
+    int status();
+
+    @Body
+    String body();
+
+    @HeaderParam("Content-Type")
+    String contentType();
+
+    ClientResponse response();
+ }
+
+ @Path("test")
+ public interface TestClient {
+
+    @GET
+    TestResponseObject get();
+ }
+
+ @Path("test")
+ public static class TestResource {
+
+    @GET
+    @Produces("text/plain")
+    public String get() {
+       return "ABC";
+    }
+ }
+----
+
+Here, `TestClient` will define the client side proxy for `TestResource`.
+Note that `TestResource.get()` returns a `String` but the proxy based on `TestClient` will return a `TestResponseObject` on a  call to `get()`: 
+
+[source,java]
+----
+Client client = ClientBuilder.newClient();
+TestClient ClientInterface = ProxyBuilder.builder(TestClient.class, client.target("http://localhost:8081")).build();
+TestResponseObject tro = ClientInterface.get();
+----
+
+The methods of `TestResponseObject` provide access to various pieces of information about the response received from `TestResponse.get()`.
+This is where the annotations on those methods come into play. `status()` is annotated with `@Status`, and a call to `status()` returns the HTTP status.
+Similarly, `body()` returns the returned entity, and `contentType()` returns the value of the response header Content-Type: 
+
+[source]
+----
+System.out.printf("status: %s", tro.status());
+System.out.printf("entity: %s%n", tro.body());
+System.out.printf("Content-Type: %s%n", tro.contentType());
+----
+
+will yield 
+
+[source]
+----
+status: 200
+entity: ABC
+Content-Type: text/plain;charset=UTF-8
+----
+
+Note that there is one other method in `TestResponseObject`, `response()`, that has no annotation.
+When RESTEasy sees a method in an interface annotated with `@ResponseObject` that returns a `jakarta.ws.rs.core.Response` (or a subclass thereof), it will return a `org.jboss.resteasy.client.jaxrs.internal.ClientResponse`.
+For example, 
+
+[source,java]
+----
+ClientResponse clientResponse =  tro.response();
+System.out.printf("Content-Length: %d%n", clientResponse.getLength());
+----
+
+Perhaps the most interesting piece of the response proxy facility is the treatment of methods  annotated with `@LinkHeaderParam`.
+Its simplest use is to assist in  accessing a `jakarta.ws.rs.core.Link` returned by a resource method.
+For example, let's add 
+
+[source,java]
+----
+@GET
+@Path("/link-header")
+public Response getWithHeader(@Context UriInfo uri) {
+   URI subUri = uri.getAbsolutePathBuilder().path("next-link").build();
+   Link link = new LinkBuilderImpl().uri(subUri).rel("nextLink").build();
+   return Response.noContent().header("Link", link.toString()).build();
+}
+----
+
+to `TestResource`, add 
+
+[source,java]
+----
+@GET
+@Path("link-header")
+ResponseObjectInterface performGetBasedOnHeader();
+----
+
+to `ClientInterface`, and add 
+
+[source,java]
+----
+@LinkHeaderParam(rel = "nextLink")
+URI nextLink();
+----
+
+to `ResponseObjectInterface`.
+Then calling 
+
+[source,java]
+----
+ResponseObjectInterface obj = ClientInterface.performGetBasedOnHeader();
+System.out.printf("nextLink(): %s%n", obj.nextLink());
+----
+
+will access the `LinkHeader` returned by `TestResource.getWithHeader()`: 
+
+[source]
+----
+nextlink: http://localhost:8081/test/link-header/next-link
+----
+
+Last but not least, let's add 
+
+[source,java]
+----
+@GET
+@Produces("text/plain")
+@Path("/link-header/next-link")
+public String getHeaderForward() {
+   return "forwarded";
+}
+----
+
+to `TestResource` and 
+
+[source,java]
+----
+@GET
+@LinkHeaderParam(rel = "nextLink")
+String followNextLink();
+----
+
+to `ResponseObjectInterface`.
+Note that, unlike `ResponseObjectInterface.nextLink()`, `followNextLink()` is annotated with `@GET`; that is, it qualifies as (the client proxy to) a resource method.
+When executing `followNextLink()`, RESTEasy will retrieve the value of the `Link` returned by `TestResource.getWithHeader()` and then will make a GET invocation on the `URL` in that `Link`.
+Calling 
+
+[source,java]
+----
+System.out.printf("followNextLink(): %s%n", obj.followNextLink());
+----
+
+causes RESTEasy to retrieve the `URL` http://localhost:8081/test/link-header/next-link from the call to `TestResource.getWithHeader()` and then perform a GET on it, invoking `TestResource.getHeaderForward()`: 
+
+[source]
+----
+followNextLink(): forwarded
+----
+
+NOTE: This facility for extracting a `URL` and following it is a step toward supporting the Representation State Transfer principle of HATEOAS.
+For more information, see http://shop.oreilly.com/product/0636920028925.do[RESTful Java with JAX-RS 2.0, 2nd Edition] by Bill Burke. 
+
+[[_clienturi]]
+==== Giving client proxy an ad hoc URI
+
+Client proxies figure out appropriate URIs for targeting resource methods by looking at `@Path`  annotations in the client side interface, but it is also possible to pass URIs explicitly to the proxy through the use of the `org.jboss.resteasy.annotations.ClientURI` annotation.
+For example, let `TestResource` be a client side interface and `TestResourceImpl` a server resource: 
+
+[source,java]
+----
+@Path("")
+public interface TestResource {
+
+  @GET
+  @Path("dispatch")
+  String dispatch(@ClientURI String uri);
+}
+
+@Path("")
+public static class TestResourceImpl {
+
+  @GET
+  @Path("a")
+  public String a() {
+     return "a";
+  }
+
+  @GET
+  @Path("b")
+  public String b() {
+     return "b";
+  }
+}
+----
+
+Calling `TestResource.dispatch()` allows specifying a specific URI for accessing a resource method.
+In the following, let BASE_URL be the address of the `TestResourceImpl` resource. 
+
+[source,java]
+----
+ private static String BASE_URL = "http://localhost:8081/";
+
+ public void test() throws Exception {
+    try (ResteasyClient client = (ResteasyClient)ClientBuilder.newClient()) {
+        TestResource proxy = client.target(BASE_URL).proxy(TestResource.class);
+        String name = proxy.dispatch(BASE_URL + "a");
+        System.out.printf("name: %s%n", name);
+        name = proxy.dispatch(BASE_URL + "b");
+        System.out.println("name: %s%n", name);
+    }
+}
+----
+
+Then passing "http://localhost:8081/a" and "http://localhost/b" to `dispatch()` invokes `TestResourceImp.a()` and `TestResourceImpl.b()` respectively, yielding the output 
+
+[source]
+----
+name: a
+name: b
+----
+
+[[_sharing_interfaces]]
+==== Sharing an interface between client and server
+
+It is generally possible to share an interface between the client and server.
+In this scenario, just have the {spec-name} services implement an annotated interface and then reuse that same interface to create client proxies to invoke on the client-side.
+
+[[_transport_layer]]
+=== Apache HTTP Client 4.x and other backends
+
+[WARNING]
+====
+WARNING: The Apache HTTP Client support is deprecated in RESTEasy.
+The exposed API's will eventually be removed.
+However, it's still the default client implementation as we prepare for a replacement backing HTTP client. 
+====
+
+Network communication between the client and server is handled by default in RESTEasy.
+The interface between the RESTEasy Client Framework and the network is defined by RESTEasy's `ClientHttpEngine` interface.
+RESTEasy ships with multiple implementations of this interface. 
+
+The default implementation is `ApacheHttpClient43Engine`, which uses version 4.3 of the `HttpClient` from the Apache `HttpComponents` project. 
+
+`ApacheHttpAsyncClient4Engine`, instead, is built on top of _HttpAsyncClient_ (still from the Apache _HttpComponents_ project) with internally dispatches requests using a non-blocking IO model. 
+
+`JettyClientEngine` is built on top of _Eclipse Jetty_ HTTP engine, which is possibly an interesting option for those already running on the Jetty server. 
+
+`VertxClientHttpEngine` is built on top of __Eclipse Vert.x__, which provides a non-blocking HTTP client based on Vert.x framework. 
+
+`ReactorNettyClientHttpEngine` is built on top of __Reactor Netty__, which provides a non-blocking HTTP client based on Netty framework. 
+
+[cols="1,1", frame="topbot", options="header"]
+|===
+| RESTEasy ClientHttpEngine implementations
+|
+
+| ApacheHttpClient43Engine (deprecated)
+| Uses HttpComponents HttpClient 4.3+
+
+| ApacheHttpAsyncClient4Engine (deprecated)
+| Uses HttpComponents HttpAsyncClient
+
+| JettyClientEngine
+| Uses Eclipse Jetty
+
+| ReactorNettyClientHttpEngine
+| Uses Reactor Netty
+
+| VertxClientHttpEngine
+| Uses Eclipse Vert.x
+
+| URLConnectionEngine
+| Uses java.net.HttpURLConnection
+|===
+
+The RESTEasy Client Framework can also be customized.
+The user can provide their own implementations of `ClientHttpEngine` to the `ResteasyClient`. 
+
+[source,java]
+----
+ClientHttpEngine myEngine = new ClientHttpEngine() {
+
+    @Override
+    public ClientResponse invoke(ClientInvocation request) {
+        // implement your processing code and return a
+        // org.jboss.resteasy.client.jaxrs.internal.ClientResponse
+        // object.
+    }
+
+    @Override
+    public SSLContext getSslContext() {
+       return sslContext;
+    }
+
+    @Override
+    public HostnameVerifier getHostnameVerifier() {
+       return hostnameVerifier;
+    }
+
+    @Override
+    public void close() {
+       // do nothing
+    }
+};
+
+Client client = ClientBuilder.newBuilder().register(myEngine).build();
+----
+
+RESTEasy and `HttpClient` make reasonable default decisions so that it is possible to use the client framework without ever referencing `HttpClient`.
+For some applications it may be necessary to drill down into the `HttpClient` details. `ApacheHttpClient43Engine` can be supplied with an instance of `org.apache.http.client.HttpClient` and an instance of `org.apache.http.protocol.HttpContext`, which can carry additional configuration details into the `HttpClient` layer.
+
+`HttpContextProvider` is a RESTEasy provided interface through which a custom `HttpContext` is supplied to `ApacheHttpClient43Engine`.
+
+[source,java]
+----
+package org.jboss.resteasy.client.jaxrs.engines;
+
+import org.apache.http.protocol.HttpContext;
+
+public interface HttpContextProvider {
+   HttpContext getContext();
+}
+----
+
+Here is an example of providing a custom HttpContext 
+
+[source,java]
+----
+DefaultHttpClient httpClient = new DefaultHttpClient();
+ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient,
+   new HttpContextProvider() {
+           @Override
+           public HttpContext getContext() {
+              // Configure HttpClient to authenticate preemptively
+              // by prepopulating the authentication data cache.
+              // 1. Create AuthCache instance
+              AuthCache authCache = new BasicAuthCache();
+              // 2. Generate BASIC scheme object and add it to the local auth cache
+              BasicScheme basicAuth = new BasicScheme();
+              authCache.put(getHttpHost(url), basicAuth);
+              // 3. Add AuthCache to the execution context
+              BasicHttpContext localContext = new BasicHttpContext();
+              localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+              return localContext;
+           }
+});
+----
+
+==== HTTP redirect
+
+The `ClientHttpEngine` implementations based on Apache `HttpClient` support HTTP redirection.
+The feature is disabled by default and has to be enabled by users explicitly.
+Either by setting up the following property: 
+
+* `dev.resteasy.client.follow.redirects`
+
+[source,java]
+----
+Client client = ClientBuilder.newBuilder().property("dev.resteasy.client.follow.redirects", "true").build();
+----
+or by explicitly calling the API method as following:
+
+[source,java]
+----
+ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine();
+engine.setFollowRedirects(true);
+Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(engine).build();
+----
+
+[[_https]]
+==== Configuring SSL
+
+To enable SSL on client, a `ClientHttpEngine` containing a SSLContext can be created to build client as in the following example:
+
+[source,java]
+----
+public Client createClient() {
+  ClientHttpEngine myEngine = new ClientHttpEngine() {
+     public void setSslContext(SSLContext sslContext) {
+        this.sslContext = sslContext;
+     }
+
+     @Override
+     public HostnameVerifier getHostnameVerifier() {
+        return hostnameVerifier;
+     }
+  };
+  myEngine.setSslContext(mySslContext);
+  return ((ResteasyClientBuilder)ClientBuilder.newBuilder()).httpEngine(myEngine).build();
+}
+----
+An alternative is to set up a keystore and truststore and pass a custom SslContext to ClientBuilder:
+
+[source,java]
+----
+Client sslClient = ClientBuilder.newBuilder().sslContext(mySslContext).build();
+----
+If you don't want to create a SSLContext, you can build client with a keystore and truststore.
+Note if both SSLContext and keystore/truststore are configured, the later will be ignored by Resteasy ClientBuilder.
+
+[source,java]
+----
+Client sslClient = ClientBuilder.newBuilder().keystore(keystore,mypassword).
+                      trustKeystore(trustStore).build();
+----
+During handshaking, a custom HostNameVerifier can be called to allow the connection if URL's hostname and the server's identification hostname match. 
+
+[source,java]
+----
+Client sslClient =  ((ResteasyClientBuilder)ClientBuilder.newBuilder()).sslContext(mysslContext)
+                       .hostnameVerifier(myhostnameVerifier).build();
+----
+
+Resteasy provides another simple way to set up a `HostnameVerifier`.
+It allows configuring `ResteasyClientBuilder` with a `HostnameVerificationPolicy` without creating a custom `HostNameVerifier`:
+[source,java]
+----
+Client sslClient =  ((ResteasyClientBuilder)ClientBuilder.newBuilder()).sslContext(mysslContext)
+                       .hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.ANY).build();
+----
+
+* Setting `HostnameVerificationPolicy.ANY` will allow all connections without a check.
+* `HostnameVerificationPolicy.WILDCARD` only allows wildcards in subdomain names i.e. *.foo.com.
+* `HostnameVerificationPolicy.STRICT` checks if DNS names match the content of the Public Suffix List
+  (https://publicsuffix.org/list/public_suffix_list.dat). Please note if this public suffix list isn't the check
+  wanted, create your own `HostNameVerifier` instead of this policy setting.
+
+
+==== HTTP proxy
+
+The `ClientHttpEngine` implementations based on Apache `HttpClient` support HTTP proxy.
+This feature can be enabled by setting specific properties on the builder: 
+
+* `org.jboss.resteasy.jaxrs.client.proxy.host`
+* `org.jboss.resteasy.jaxrs.client.proxy.port`
+* `org.jboss.resteasy.jaxrs.client.proxy.scheme`
+
+[source,java]
+----
+Client client = ClientBuilder.newBuilder().property("org.jboss.resteasy.jaxrs.client.proxy.host", "someproxy.com").property("org.jboss.resteasy.jaxrs.client.proxy.port", 8080).build();
+----
+
+[[_apache_4_3]]
+==== Apache HTTP Client 4.3 APIs
+
+The RESTEasy Client framework automatically creates and properly configures the underlying Apache HTTP Client engine.
+When the `ApacheHttpClient43Engine` is manually created, though, the user can either let it build and use a default `HttpClient` instance or provide a custom one: 
+
+[source,java]
+----
+
+public ApacheHttpClient43Engine() {
+}
+
+public ApacheHttpClient43Engine(HttpClient httpClient) {
+}
+
+public ApacheHttpClient43Engine(HttpClient httpClient, boolean closeHttpClient) {
+}
+----
+
+The _closeHttpClient_ parameter on the last constructor above allows controlling whether the Apache `HttpClient` is to be closed upon engine finalization.
+The default value is __true__.
+When a custom `HttpClient` instance is not provided, the default instance will always be closed together with the engine. 
+
+For more information about HttpClient (4.x), see the documentation at https://hc.apache.org/index.html[
+         https://hc.apache.org/index.html/]. 
+
+[TIP]
+====
+It is important to understand the difference between "releasing" a connection and "closing" a connection.
+
+* Releasing a connection makes it available for reuse.
+* Closing a connection frees its resources and makes it unusable.
+====
+
+If an execution of a request or a call on a proxy returns a class other than `Response`, then RESTEasy will take care of releasing the connection.
+For example, in the fragments 
+
+[source,java]
+----
+WebTarget target = client.target("http://localhost:8081/customer/123");
+String answer = target.request().get(String.class);
+----
+
+or 
+
+[source,java]
+----
+ResteasyWebTarget target = client.target("http://localhost:8081/customer/123");
+RegistryStats stats = target.proxy(RegistryStats.class);
+RegistryData data = stats.get();
+----
+
+RESTEasy will release the connection under the covers.
+The only counterexample is the case in which the response is an instance of `InputStream`, which must be closed explicitly. 
+
+On the other hand, if the result of an invocation is an instance of `Response`, then the Response.close() method must be used to release the connection. 
+
+[source,java]
+----
+WebTarget target = client.target("http://localhost:8081/customer/123");
+Response response = target.request().get();
+System.out.println(response.getStatus());
+response.close();
+----
+
+It is advisable to execute this in a try-with-resources block.
+Again, releasing a connection only makes it available for another use. *It does not normally close the socket.*
+
+On the other hand, `ApacheHttpClient43Engine.finalize()` will close any open sockets, unless the user set _closeHttpClient_ as _false_ when building the engine, in which case he is responsible for closing the connections. 
+
+Note that if `ApacheHttpClient43Engine` has created its own instance of `HttpClient`, it is not necessary to wait for `finalize()` to close open sockets.
+The `ClientHttpEngine` interface has a `close()` method for this purpose. 
+
+If the user's `jakarta.ws.rs.client.Client` class has created the engine automatically, the user should call `Client.close()` and this will clean up any socket connections.
+
+Finally, having explicit `finalize()` methods can badly affect performances, the `org.jboss.resteasy.client.jaxrs.engines.ManualClosingApacheHttpClient43Engine` flavour of `org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine` can be used.
+With that the user is always responsible for calling `close()` as no `finalize()` is there to do that before object garbage collection. 
+
+[[_apache_asynch]]
+==== Asynchronous HTTP Request Processing
+
+RESTEasy's default async engine implementation class is `ApacheHttpAsyncClient4Engine`.
+It can be set as the active engine by calling method `useAsyncHttpEngine` in `ResteasyClientBuilder`.
+
+[source,java]
+----
+public void doTest() {
+    Client asyncClient = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).useAsyncHttpEngine()
+                             .build();
+    FutureResponse future = asyncClient
+                             .target("http://locahost:8080/test").request()
+                             .async().get();
+    Response res = future.get();
+    Assertions.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
+    String entity = res.readEntity(String.class);
+}
+----
+
+===== InvocationCallbacks
+
+InvocationCallbacks are called from within the io-threads and thus must not block or else the application may slow down to a halt.
+Reading the response is safe because the response is buffered in memory, as are other async and in-memory client-invocations that submit-calls returning a future not containing Response, InputStream or Reader. 
+
+[source,java]
+----
+public void doTest() {
+   final CountDownLatch latch = new CountDownLatch(1);
+   FutureString future = nioClient.target(generateURL("/test")).request()
+         .async().get(new InvocationCallbackString()
+                {
+                   @Override
+                   public void completed(String s)
+                   {
+                      Assertions.assertEquals("get", s);
+                      latch.countDown();
+                      throw new RuntimeException("for the test of it");
+                   }
+
+                   @Override
+                   public void failed(Throwable error)
+                   {
+                   }
+                });
+   String entity = future.get();
+   Assertions.assertEquals("get", entity);
+}
+----
+
+InvocationCallbacks may be called seemingly "after" the future-object returns.
+Thus, responses should be handled solely in the InvocationCallback. 
+
+InvocationCallbacks will see the same result as the future-object and vice versa.
+Thus, if the invocationcallback throws an exception, the future-object will not see it.
+This is the reason to handle responses only in the InvocationCallback. 
+
+===== Async Engine Usage Considerations
+
+Asynchronous IO means non-blocking IO utilizing few threads, typically at most as many threads as number of cores.
+As such, performance may profit from fewer thread switches and less memory usage due to fewer thread-stacks.
+But doing synchronous, blocking IO (the invoke-methods not returning a future) may suffer, because the data has to be transferred piecewise to/from the io-threads. 
+
+Request-Entities are fully buffered in memory, thus `HttpAsyncClient` is unsuitable for very large uploads.
+Response-Entities are buffered in memory, except if requesting a Response, InputStream or Reader as Result.
+For large downloads or COMET, one of these three return types must be requested, but there may be a performance penalty because the response-body is transferred piecewise from the io-threads.
+When using InvocationCallbacks, the response is always fully buffered in memory. 
+
+[[_jetty_client]]
+==== Jetty Client Engine
+
+As a drop in replacement, RESTEasy allows selecting a Jetty 9.4+ based HTTP engine.
+The Jetty implementation is newer and less tested, but it may end up being a good choice when relying on Jetty as server side already.
+The Jetty Server can even share execution resources with Client libraries if configured to use e.g.
+the same QueuedThreadPool. 
+
+The Jetty engine is enabled by adding a dependency to the `org.jboss.resteasy:resteasy-client-jetty` artifact to the Maven project; then the client can be built as follows:
+
+[source,java]
+----
+ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).clientEngine(
+   new JettyClientEngine(new HttpClient())).build();
+----
+
+[[_vertx_client]]
+==== Vertx Client Engine
+
+Still as a drop in replacement, RESTEasy allows selecting a Vert.x-based HTTP engine.
+The Vert.x implementation can perform asynchronous client invocations.
+It provides the following features: 
+
+* HTTP/1.1
+* HTTP/2
+* SSL/TLS (including native SSL engine)
+* Efficient client connection pooling
+* Optional native IO on Linux and BSD for greater performance
+* Domain sockets
+* HTTP Metrics with Dropwizard or Micrometer
+
+The Vert.x engine is enabled by adding a dependency to the `org.jboss.resteasy:resteasy-client-vertx` artifact to the Maven project; then the client can be built as follows:
+
+[source,java]
+----
+VertxClientHttpEngine engine = new VertxClientHttpEngine();
+ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
+  .clientEngine(engine).build();
+----
+
+A Vert.x instance can also be provided when creating the client engine, as well as options configuration: 
+
+[source,java]
+----
+public HttpEngine createVertxEngine() {
+  HttpClientOptions options = new HttpClientOptions()
+   .setSsl(true)
+   .setTrustStoreOptions(new JksOptions()
+     .setPath("/path/to/your/truststore.jks")
+     .setPassword("password-of-your-truststore")
+  );
+  return new VertxClientHttpEngine(vertx, options);
+}
+----
+
+You can read more about HttpClient configuration https://vertx.io/docs/vertx-core/java/#_making_requests[here].
+
+[[_reactor_netty_client]]
+==== Reactor Netty Client Engine
+
+Still as a drop in replacement, RESTEasy allows selecting a Reactor Netty based HTTP engine.
+The Reactor Netty implementation is newer and less tested, but can be a good choice if the user application is already depending on Netty and performs asynchronous client invocations. 
+
+The Reactor Netty engine is enabled by adding a dependency to the `org.jboss.resteasy:resteasy-client-reactor-netty` artifact to the Maven project; then the client can be built as follows:
+
+[source,java]
+----
+ReactorNettyClientHttpEngine engine = new ReactorNettyClientHttpEngine(
+   HttpClient.create(),
+   new DefaultChannelGroup(new DefaultEventExecutor()),
+   HttpResources.get());
+ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
+   .clientEngine(engine).build();
+----
+
+When coupled with the MonoRxInvoker, this has several benefits.
+It supports things like this:
+
+[source]
+----
+webTarget.path("/foo").get().rx(MonoRxInvoker.class).map(...).subscribe()
+----
+
+in order to achieve non-blocking HTTP client calls.
+This allows leveraging some reactor features: 
+
+* the ability for a `Mono#timeout` set on the response to aggressively terminate the HTTP request;
+* the ability to pass a (reactor) context from client calls into `ReactorNettyClientHttpEngine`.
+
+For some sample code, see `org.jboss.resteasy.reactor.ReactorTest` in the RESTEasy module resteasy-reactor. 
+
+=== Client Utilities
+
+The client utilities contain various client side helpers that can be registered on a client.
+These utilities do not require RESTEasy and can be used with any Jakarta RESTful Web Services implementation. 
+
+[[_client_utilities_auth]]
+==== Client Authentication
+
+The client authentication utilities can be used on a client when an endpoint requires authentication.
+Currently, BASIC and DIGEST authentication are supported. 
+[source,java]
+----
+public Response invoke() {
+  try (
+          Client client = ClientBuilder.newBuilder()
+                  .register(HttpAuthenticators.basic(UserCredentials.clear("user", new char[] {'p', 'a', 's', 's', 'w', 'o', 'r', 'd'})))
+                  .build()
+      ) {
+      return client.target("https://example.com/api/info")
+              .request(MediaType.APPLICATION_JSON_TYPE)
+              .get();
+    }
+}
+----
+[source,java]
+----
+final Response response = client.target("https://example.com/api/info")
+        .register(HttpAuthenticators.digest(UserCredentials.clear("user", new char[] {'p', 'a', 's', 's', 'w', 'o', 'r', 'd'})))
+        .request(MediaType.APPLICATION_JSON_TYPE)
+        .get();
+----

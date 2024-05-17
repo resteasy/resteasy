@@ -1,0 +1,96 @@
+[[_se_bootstrap]]
+== {spec-name} SeBootstrap
+
+In {spec-name} 3.1 the new `jakarta.ws.rs.SeBootstrap` API was introduced to run {spec-name} applications in a
+Java SE environment. As an implementation of the specification RESTEasy includes an implementation for this API.
+
+[[_sebootstrap_overview]]
+=== Overview
+
+Its suggested by default that the `org.jboss.resteasy:resteasy-undertow-cdi` implementation be used.
+However, the other `org.jboss.resteasy.plugins.server.embedded.EmbeddedServer` will work excluding the
+`org.jboss.resteasy:resteasy-jdk-http`.
+
+The `org.jboss.resteasy:resteasy-undertow-cdi` implementation also uses Weld to create a CDI container.
+This allows the CDI in the SE environment to be used.
+If CDI is not required or desired the `org.jboss.resteasy:resteasy-undertow` implementation could be used instead. 
+
+Example POM Dependencies: 
+[source,xml]
+----
+<dependencies>
+    <dependency>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-core</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-client</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-undertow-cdi</artifactId>
+    </dependency>
+</dependencies>
+----
+
+Its also suggested that if you do not explicitly define the resources to be used in your application that you use the
+`io.smallrye:jandex-maven-plugin` to create a Jandex Index.
+Without this the class path will be scanned for resources which could have significant performance impacts. 
+[source,xml]
+----
+<plugin>
+    <groupId>io.smallrye</groupId>
+    <artifactId>jandex-maven-plugin</artifactId>
+    <executions>
+        <execution>
+            <id>make-index</id>
+            <goals>
+                <goal>jandex</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+[[_sebootstrap_usage]]
+=== Usage
+
+Example of using the `jakarta.ws.rs.SeBootstrap` API:
+[source,java]
+----
+public static void main(final String[] args) throws Exception {
+    SeBootstrap.start(ExampleApplication.class, SeBootstrap.Configuration.builder()
+                    .build())
+            .thenApply((instance) -> {
+                try (Client client = ClientBuilder.newClient()) {
+                    final WebTarget target = client.target(instance.configuration().baseUriBuilder());
+                    final Response response = client.target(instance.configuration()
+                                    .baseUriBuilder()
+                                    .path("/api/product/widget"))
+                            .request()
+                            .get();
+                    System.out.printf("Response: %d - %s%n", response.getStatus(), response.readEntity(String.class));
+                }
+                return instance;
+            })
+            .whenComplete((instance, t) -> instance.stop());
+}
+----
+
+[[_sebootstrap_config_options]]
+=== Configuration Options
+
+Configuration options are represented by the `org.jboss.resteasy.core.se.ConfigurationOption` enum.
+This enum includes all the supported configuration options. 
+[source,java]
+----
+final SeBootstrap.Configuration configuration = SeBootstrap.Configuration.builder()
+        .port(8443)
+        .protocol("HTTPS")
+        .property(ConfigurationOption.JANDEX_CLASS_PATH_FILTER.key(), Index.of(ItemResource.class, OrderResource.class));
+----

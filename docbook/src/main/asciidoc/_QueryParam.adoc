@@ -1,0 +1,26 @@
+[[_queryparam]]
+== @QueryParam
+
+[NOTE]
+====
+RESTEasy <<_newparam,supports `@QueryParam` annotations with no parameter name>>.
+====
+
+The `@QueryParam` annotation allows mapping a URI query string parameter or url form encoded parameter to a method invocation.
+
+----
+GET /books?num=5
+----
+
+
+[source,java]
+----
+@GET
+public String getBooks(@QueryParam("num") int num) {
+}
+----
+
+Since RESTEasy is built on top of a Servlet, it does not distinguish between URI query strings or url form encoded parameters.
+Like `PathParam`, the parameter type can be a String, primitive, or class that has a String constructor or static valueOf() method.
+
+

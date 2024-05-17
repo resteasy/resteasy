@@ -1,0 +1,157 @@
+[[_interceptors]]
+== Filters and Interceptors
+
+{spec-name} has two different concepts for interceptions: Filters and Interceptors. Filters are mainly used to modify
+or process incoming and outgoing request headers or response headers. They execute before and after request and response
+processing.
+
+=== Server Side Filters
+
+On the server-side there are two different types of filters.ContainerRequestFilters run before a {spec-name} resource
+method is invoked. ContainerResponseFilters run after a {spec-name} resource method is invoked. As an added caveat,
+ContainerRequestFilters come in two flavors: pre-match and post-matching.
+Pre-matching ContainerRequestFilters are designated with the `@PreMatching` annotation and will execute before the
+{spec-name} resource method is matched with the incoming HTTP request.
+Pre-matching filters often are used to modify request attributes to change how it matches to a specific resource method
+(i.e. strip .xml and add an Accept header). ContainerRequestFilters can abort the request by calling
+`ContainerRequestContext.abortWith(Response)`.  A filter might want to abort if it implements a custom authentication protocol.
+
+After the resource class method is executed, {spec-name} will run all ContainerResponseFilters.
+These filters allow the outgoing response to be modified before it is marshalling and sent to the client.
+Here is some pseudocode to give some understanding of how it works. 
+
+[source,java]
+----
+public void filter() {
+    // execute pre match filters
+    for (ContainerRequestFilter filter : preMatchFilters) {
+        filter.filter(requestContext);
+        if (isAborted(requestContext)) {
+           sendAbortionToClient(requestContext);
+           return;
+        }
+    }
+    // match the HTTP request to a resource class and method
+    JaxrsMethod method = matchMethod(requestContext);
+
+    // Execute post match filters
+    for (ContainerRequestFilter filter : postMatchFilters) {
+       filter.filter(requestContext);
+       if (isAborted(requestContext)) {
+          sendAbortionToClient(requestContext);
+          return;
+       }
+    }
+
+    // execute resource class method
+    method.execute(request);
+
+    // execute response filters
+    for (ContainerResponseFilter filter : responseFilters) {
+       filter.filter(requestContext, responseContext);
+    }
+}
+----
+
+[[_asynchronous_filter]]
+==== Asynchronous filters
+
+It is possible to turn filters into asynchronous filters, if it is needed to suspend execution of the filter until a certain resource has become available.
+This makes the request asynchronous, but requires no change to the resource method declaration.
+In particular, <<_asynchronous_http_request_processing,synchronous and asynchronous resource methods>> continue to work
+as specified, regardless of whether a filter has made the request asynchronous. Similarly, one filter making the request
+asynchronous requires no change in the declaration of other filters.
+
+In order to make a filter's execution asynchronous, `ContainerRequestContext` must be cast to a
+`SuspendableContainerRequestContext` (for pre/post request filters), or cast the `ContainerResponseContext` to a
+`SuspendableContainerResponseContext` (for response filters).
+
+These context objects can make the current filter's execution asynchronous by calling the `suspend()` method.
+Once asynchronous, the filter chain is suspended, and will only resume after one of the following methods is called on the context object:
+
+* `abortWith(Response)`
++
+Terminate the filter chain, return the given `Response` to the client (only for `ContainerRequestFilter`).
+* `resume()`
++
+Resume execution of the filter chain by calling the next filter.
+* `resume(Throwable)`
++
+Abort execution of the filter chain by throwing the given exception. This behaves as if the filter were synchronous
+and threw the given exception.
+
+Async processing can be done inside an `AsyncWriterInterceptor` (if using <<_asynchronous_io,Async IO>>), which is the
+asynchronous-supporting equivalent to `WriterInterceptor`. In this case, there is no need to manually suspend or resume the request.
+
+=== Client Side Filters
+
+The client side also has two types of filters: `ClientRequestFilter` and `ClientResponseFilter`.
+ClientRequestFilters run before an HTTP request is sent over the wire to the server.
+ClientResponseFilters run after a response is received from the server, but before the response body is unmarshalled.
+ClientRequestFilters are allowed to abort the execution of the request and provide a canned response without going over the wire to the server.
+ClientResponseFilters can modify the Response object before it is handed back to application code.
+Here's pseudocode to illustrate this. 
+
+[source,java]
+----
+public Response filter() {
+    // execute request filters
+    for (ClientRequestFilter filter : requestFilters) {
+       filter.filter(requestContext);
+       if (isAborted(requestContext)) {
+          return requestContext.getAbortedResponseObject();
+       }
+    }
+
+    // send request over the wire
+    response = sendRequest(request);
+
+    // execute response filters
+    for (ClientResponseFilter filter : responseFilters) {
+       filter.filter(requestContext, responseContext);
+    }
+}
+----
+
+=== Reader and Writer Interceptors
+
+While filters modify request or response headers, interceptors deal with message bodies.
+Interceptors are executed in the same call stack as their corresponding reader or writer.
+ReaderInterceptors wrap around the execution of MessageBodyReaders.
+WriterInterceptors wrap around the execution of MessageBodyWriters.
+They can be used to implement a specific content-encoding.
+They can be used to generate digital signatures or to post or pre-process a Java object model before or after it is marshalled. 
+
+Note that in order to support Async IO, `AsyncWriterInterceptor` can be implemented, which is a subtype of `WriterInterceptor`.
+
+=== Per Resource Method Filters and Interceptors
+
+Sometimes it is desired to have a filter or interceptor only run for a specific resource method.
+This can be done in two different ways:  register an implementation of `DynamicFeature` or use the `@NameBinding` annotation.
+The DynamicFeature interface is executed at deployment time for each resource method.
+Use the Configurable interface to register the filters and interceptors wanted for the specific resource method.
+`@NameBinding` works a lot like CDI interceptors.
+Annotate a custom annotation with `@NameBinding` and then apply that custom annotation to the filter and resource method.
+The custom annotation must use `@Retention(RetentionPolicy.RUNTIME)` in order for the attribute to be picked up by the RESTEasy runtime when it is deployed.
+
+[source,java]
+----
+@NameBinding
+@Retention(RetentionPolicy.RUNTIME)
+public @interface DoIt {}
+
+@DoIt
+public class MyFilter implements ContainerRequestFilter {}
+
+@Path("/root")
+public class MyResource {
+
+   @GET
+   @DoIt
+   public String get() {}
+}
+----
+
+=== Ordering
+
+Ordering is accomplished by using the `@BindingPriority` annotation on the filter or interceptor classes.

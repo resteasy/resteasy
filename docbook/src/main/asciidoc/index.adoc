@@ -1,0 +1,144 @@
+= image:images/resteasy_logo_200x.png[RESTEasy]
+:title-logo-image: image:images/resteasy_logo_450x.png[]
+:favicon: images/favicon.ico
+:revnumber: {resteasy-version}
+:revdate: {localdate}
+:doctype: book
+:linkcss: false
+:sectanchors:
+:sectnums:
+:toc: left
+:icons: font
+:source-highlighter: coderay
+:experimental:
+:enterprise-beans: Jakarta Enterprise Beans
+:spec-name: Jakarta RESTful Web Services
+:jakarta-bean-validation: https://jakarta.ee/specifications/bean-validation/3.1/
+:jakarta-rest-version: 4.0
+:jakarta-rest-javadoc: https://jakarta.ee/specifications/restful-ws/{jakarta-rest-version}/apidocs/jakarta.ws.rs
+:jakarta-rest-spec: https://jakarta.ee/specifications/restful-ws/{jakarta-rest-version}/jakarta-restful-ws-spec-{jakarta-rest-version}
+:sprint-version: 6.1
+:wildfly-version: 32
+:xml-binding: Jakarta XML Binding
+
+// Add a space after each includes, otherwise each include needs to end with two line feeds
+
+include::Overview.adoc[]
+
+include::License.adoc[]
+
+include::Installation_Configuration.adoc[]
+
+include::Using_Path.adoc[]
+
+include::_PathParam.adoc[]
+
+include::_QueryParam.adoc[]
+
+include::_HeaderParam.adoc[]
+
+include::Links.adoc[]
+
+include::gzip.adoc[]
+
+include::_MatrixParam.adoc[]
+
+include::_CookieParam.adoc[]
+
+include::_FormParam.adoc[]
+
+include::_Form.adoc[]
+
+include::_NewParam.adoc[]
+
+include::_OptionalParam.adoc[]
+
+include::Cache_NoCache_CacheControl.adoc[]
+
+include::_DefaultValue.adoc[]
+
+include::_Encoded_and_encoding.adoc[]
+
+include::_Context.adoc[]
+
+include::Jakarta_REST_Resource_Locators_and_Sub_Resources.adoc[]
+
+include::Resources_Metadata.adoc[]
+
+include::Jakarta_REST_Content_Negotiation.adoc[]
+
+include::Content_Marshalling_Providers.adoc[]
+
+include::StringConverter.adoc[]
+
+include::Responses_using_jakarta.ws.rs.core.Response.adoc[]
+
+include::ExceptionMappers.adoc[]
+
+include::Asynchronous_HTTP.adoc[]
+
+include::Async_job_service.adoc[]
+
+include::Async_Injection.adoc[]
+
+include::Reactive.adoc[]
+
+include::Jakarta_Se_Bootstrap.adoc[]
+
+include::RESTEasy_Embedded_Container.adoc[]
+
+include::RESTEasy_Server-side_Mock_Framework.adoc[]
+
+include::Securing_Jakarta_REST_and_RESTeasy.adoc[]
+
+include::RESTEasy_Enterprise_Bean_Integration.adoc[]
+
+include::RESTEasy_Spring_Integration.adoc[]
+
+include::RESTEasy_Client_Framework.adoc[]
+
+include::MicroProfile_Rest_Client.adoc[]
+
+include::AJAX_Client.adoc[]
+
+include::WADL.adoc[]
+
+include::tracing.adoc[]
+
+include::Maven_and_RESTEasy.adoc[]
+
+include::Migration_from_older_versions.adoc[]
+
+include::Multipart.adoc[]
+
+include::Atom.adoc[]
+
+include::content-range.adoc[]
+
+include::Json-p.adoc[]
+
+include::Json.adoc[]
+
+include::xml-binding.adoc[]
+
+include::Interceptors.adoc[]
+
+include::Books.adoc[]
+
+include::CDI.adoc[]
+
+include::signature.adoc[]
+
+include::jwt.adoc[]
+
+include::smime.adoc[]
+
+include::Validation.adoc[]
+
+include::cors.adoc[]
+
+include::I18N.adoc[]
+
+include::Jakarta_REST_2.1_additions.adoc[]
+
+include::Books.adoc[]

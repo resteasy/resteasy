@@ -1,0 +1,4 @@
+== License
+
+RESTEasy is distributed under the https://repository.jboss.org/licenses/apache-2.0.txt[Apache License 2.0].
+Some dependencies are covered by other open source licenses. 

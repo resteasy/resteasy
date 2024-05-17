@@ -1,0 +1,11 @@
+== CORS
+
+RESTEasy has a `ContainerRequestFilter` that can be used to handle CORS preflight and actual requests. `org.jboss.resteasy.plugins.interceptors.CorsFilter`.
+You must allocate this and register it as a singleton provider from your Application class.
+See the javadoc or its various settings. 
+
+[source,java]
+----
+CorsFilter filter = new CorsFilter();
+filter.getAllowedOrigins().add("http://localhost");
+----

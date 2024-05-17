@@ -1,0 +1,53 @@
+[[_formparam]]
+== @FormParam
+
+[NOTE]
+====
+RESTEasy <<_newparam,supports `@FormParam` annotations with no parameter name.>>.
+====
+
+When the input request body is of the type "application/x-www-form-urlencoded", a.k.a.
+an HTML Form, individual form parameters can be injected from the request body into method parameter values. 
+
+
+[source,html]
+----
+<form method="POST" action="/resources/service">
+First name: 
+<input type="text" name="firstname">
+<br>
+Last name: 
+<input type="text" name="lastname">
+</form>
+----
+
+If posted through that form, this is what the service might look like: 
+
+
+[source,java]
+----
+@Path("/")
+public class NameRegistry {
+
+   @Path("/resources/service")
+   @POST
+   public void addName(@FormParam("firstname") String first, @FormParam("lastname") String last) {}
+}
+----
+
+A `@FormParam` cannot be combined with the default "application/x-www-form-urlencoded" that unmarshalls to a
+`MultivaluedMap<String, String>`.  i.e. This is illegal:
+
+
+[source,java]
+----
+@Path("/")
+public class NameRegistry {
+
+   @Path("/resources/service")
+   @POST
+   @Consumes("application/x-www-form-urlencoded")
+   public void addName(@FormParam("firstname") String first, MultivaluedMap<String, String> form) {}
+}
+----
+

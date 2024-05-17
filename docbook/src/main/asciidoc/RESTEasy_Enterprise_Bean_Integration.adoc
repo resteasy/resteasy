@@ -1,0 +1,57 @@
+[[_resteasy_enterprise_bean_integration]]
+== {enterprise-beans} Integration
+
+RESTEasy currently only has simple integration with {enterprise-beans}. To make a bean a {spec-name} resource, an SLSB's
+`@Remote` or `@Local` interface must be annotated with {spec-name} annotations. Also, the application's beans must be
+configured in web.xml.
+
+
+[source,java]
+----
+@Local
+@Path("/Library")
+public interface Library {
+   
+   @GET
+   @Path("/books/{isbn}")
+   String getBook(@PathParam("isbn") String isbn);
+}
+
+@Stateless
+public class LibraryBean implements Library {
+}
+----
+
+Next, in RESTEasy's web.xml file manually register the bean with RESTEasy using the `resteasy.jndi.resources` context-param
+
+[source,xml]
+----
+<web-app>
+   <display-name>Example EJB</display-name>
+   <context-param>
+      <param-name>resteasy.jndi.resources</param-name>
+      <param-value>LibraryBean/local</param-value>
+   </context-param>
+</web-app>
+----
+
+This is the only portable way RESTEasy offers {enterprise-beans} integration.
+Future versions of RESTEasy will have tighter integration with Wildfly, thus eliminating manual registrations or modifications to web.xml.
+
+If you're using RESTEasy with an EAR and {enterprise-beans}, a good structure to have is:
+
+[source]
+----
+my-ear.ear
+|------myejb.jar
+|------resteasy-jaxrs.war
+       |
+       ----WEB-INF/web.xml
+       ----WEB-INF/lib (nothing)
+|------lib/
+       |
+       ----All RESTEasy jar files
+----
+
+From the distribution, remove all libraries from `WEB-INF/lib` and place them in a common EAR lib or place the RESTEasy
+jar dependencies in the application server's system classpath.
