@@ -31,7 +31,7 @@
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>4.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <version.org.wildfly>32.0.0.Final</version.org.wildfly>
         <version.org.wildfly.arquillian.wildfly-arquillian>5.1.0.Beta2</version.org.wildfly.arquillian.wildfly-arquillian>
-        <version.org.wildfly.wildfly-channel-maven-plugin>1.0.12</version.org.wildfly.wildfly-channel-maven-plugin>
+        <version.org.wildfly.wildfly-channel-maven-plugin>1.0.13</version.org.wildfly.wildfly-channel-maven-plugin>
 
         <jboss.home/>
         <!-- print logs to file by default -->
