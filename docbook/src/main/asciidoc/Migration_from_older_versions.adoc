@@ -1,0 +1,210 @@
+== Migration from older versions
+
+=== Migration to RESTEasy 3.0 series
+
+Many facilities from RESTEasy 2 appear in a different form in RESTEasy 3.
+For example, much of the client framework in RESTEasy 2 is formalized, in modified form, in JAX-RS 2.0.
+RESTEasy versions 3.0.x implement both the older deprecated form and the newer conformant form.
+The deprecated form is moved to legacy module in RESTEasy 3.1 and finally removed in RESTEasy 4.
+For more information on upgrading from various deprecated facilities in RESTEasy 2, see http://docs.jboss.org/resteasy/docs/resteasy-upgrade-guide-en-US.pdf
+
+[[_migration_to_resteasy_3.1]]
+=== Migration to RESTEasy 3.1 series
+
+RESTEasy 3.1.0.Final release comes with many changes compared to previous 3.0 point releases.
+User discernible changes in RESTEasy 3.1.0.Final include 
+
+* module reorganization
+* package reorganization
+* new features
+* minor behavioral changes
+* miscellaneous changes
+
+In this chapter we focus on changes that might cause existing code to fail or behave in new ways.
+The audience for this discussion may be partitioned into three subsets, depending on the version of RESTEasy currently in use, the API currently in use, and the API to be used after an upgrade to RESTEasy 3.1.
+The following APIs are available: 
+
+. **RESTEasy 2**: RESTEasy 2 implements the JAX-RS 1 specification, and adds a variety of additional facilities, such as a client API, a caching system, an interceptor framework, etc. All of these user facing classes and interfaces comprise the RESTEasy 2 API.
+. **RESTEasy 3**: RESTEasy 3 implements the JAX-RS 2 specification, and adds some additional facilities. Many of the non-spec facilities from the RESTEasy 2 API are formalized, in altered form, in JAX-RS 2, in which case the older facilites are deprecated. The non-deprecated user facing classes and interfaces in RESTEasy 3 comprise the RESTEasy 3 API.
+
+These definitions are rather informal and imprecise, since the user facing classes / interfaces in Resteasy 3.0.19.Final, for example, are a proper superset of the user facing classes / interfaces in RESTEasy 3.0.1.Final.
+For this discussion, we identify the API with the version currently in use in a given project. 
+
+Now, there are three potential target audiences of users planning to upgrade to RESTEasy 3.1.0.Final: 
+
+. Those currently using RESTEasy API 3 with some RESTEasy 3.0.x release
+. Those currently using RESTEasy API 2 with some RESTEasy 2.x or 3.0.x release and planning to upgrade to RESTEasy API 3
+. Those currently using RESTEasy API 2 with some RESTEasy 2.x or 3.0.x release and planning to continue to use RESTEasy API 2
+
+Of these, users in Group 2 have the most work to do in upgrading from RESTEasy API 2 to RESTEasy API 3.
+They should consult the separate guide http://docs.jboss.org/resteasy/docs/resteasy-upgrade-guide-en-US.pdf[Upgrading from RESTEasy 2 to RESTEasy 3]. 
+
+Ideally, users in Groups 1 and 3 might make some changes to take advantage of new features but would have no changes forced on them by reorganization or altered behavior.
+Indeed, that is almost the case, but there are a few changes that they should be aware of. 
+
+==== Upgrading with RESTEasy 3 API
+
+All RESTEasy changes are documented in JIRA issues.
+Issues that describe detectable changes in release 3.1.0.Final that might impact existing applications include 
+
+* https://issues.jboss.org/browse/RESTEASY-1341[RESTEASY-1341: Build method of org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder always return the same instance.]
++
+When a `build()` method from
++
+** `org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder` in resteasy-client,
+** `org.jboss.resteasy.specimpl.LinkBuilderImpl` in resteasy-core,
+** `org.jboss.resteasy.specimpl.ResteasyUriBuilder` in resteasy-jaxrs
++
+is called, it will return a new object.
+This behavior might be seen indirectly.
+For example, 
++
+[source,java]
+----
+Builder builder = client.target(generateURL(path)).request();
+Link link = new LinkBuilderImpl().uri(href).build();
+URI uri = uriInfo.getBaseUriBuilder().path("test").build();
+----
+* https://issues.jboss.org/browse/RESTEASY-1433[RESTEASY-1433: Compile with JDK 1.8 source/target version]
++
+As it says.
+Depending on the application, it might be necessary to recompile with a target of JDK 1.8 so that calls to RESTEasy code can work. 
+*  https://issues.jboss.org/browse/RESTEASY-1484[RESTEASY-1484: CVE-2016-6346: Abuse of GZIPInterceptor in can lead to denial of service attack]
++
+Prior to release 3.1.0.Final, the default behavior of RESTEasy was to use GZIP to compress and decompress messages whenever "gzip" appeared in the Content-Encoding header.
+However, decompressing messages can lead to security issues, so, as of release 3.1.0.Final, GZIP compression has to be enabled explicitly.
+For details, see Chapter <<_gzip,GZIP Compression/Decompression>>. 
++
+NOTE: Because of some package reorganization due to RESTEASY-1531 (see below), the GZIP interceptors, which used to be
+in package `org.jboss.resteasy.plugins.interceptors.encoding` are now in `org.jboss.resteasy.plugins.interceptors`.
+*  https://issues.jboss.org/browse/RESTEASY-1531[RESTEASY-1531: Restore removed RESTEasy internal classes into a deprecated/disabled module]
++
+This issue is related to refactoring deprecated elements of the RESTEasy 2 API into a separate module, and, ideally, would have no bearing at all on RESTEasy 3.
+However, a reorganization of packages has led to moving some non-deprecated API elements in the resteasy-core module:
+
+** `org.jboss.resteasy.client.ClientURI` is now `org.jboss.resteasy.annotations.ClientURI`
+** `org.jboss.resteasy.core.interception.JaxrsInterceptorRegistryListener` is now `org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistryListener`
+** `org.jboss.resteasy.spi.interception.DecoratorProcessor` is now `org.jboss.resteasy.spi.DecoratorProcessor`
+** All of the dynamic features and interceptors in the package `org.jboss.resteasy.plugins.interceptors.encoding` are now in
+   `org.jboss.resteasy.plugins.interceptors`
+
+
+=== Migration to RESTEasy 3.5+ series
+
+RESTEasy 3.5 series is a spin-off of the old RESTEasy 3.0 series, featuring {spec-name} implementation.
+
+The reason why 3.5 comes from 3.0 instead of the 3.1 / 4.0 development streams is basically providing users with a selection of RESTEasy 4 critical / strategic new features, while ensuring full backward compatibility.
+As a consequence, no major issues are expected when upgrading RESTEasy from 3.0.x to 3.5.x.
+The 3.6 and all other 3.x minors after that are backward compatible evolutions of 3.5 series. 
+
+The natural upgrade path for users already on RESTEasy 3.1 series is straight to RESTEasy 4 instead. 
+
+=== Migration to RESTEasy 4 series
+
+User migrating from RESTEasy 3.0 and 3.5+ series should be aware of the changes mentioned in the <<_migration_to_resteasy_3.1,RESTEasy 3.1 migration section>>.
+In addition to that, the aspects from the following sections are to be considered. 
+
+==== Public / private API
+
+The `resteasy-jaxrs` and `resteasy-client` modules in RESTEasy 3 contain most of the framework classes and there's no real demarcation between what is internal implementation detail and what is for public consumption.
+In WildFly, the artifact archives from those modules are also included in a public module.
+Given the common expectation of full backward compatibility of whatever comes from public modules, to allow for easier project evolution and maintenance, in RESTEasy 4.0.0.Final those big components have been split as follows: 
+
+===== resteasy-core-spi
+
+The public classes of the former `resteasy-jaxrs` module; the following packages are included: 
+
+* `org.jboss.resteasy.annotations`
+* `org.jboss.resteasy.api.validation`
+* `org.jboss.resteasy.spi`
+* `org.jboss.resteasy.plugins.providers.validation`
+
+
+===== resteasy-core
+
+The internal details of the former `resteasy-jaxrs` module, including classes from the following packages: 
+
+* `org.jboss.resteasy.core`
+* `org.jboss.resteasy.mock`
+* `org.jboss.resteasy.plugins`
+* `org.jboss.resteasy.specimpl`
+* `org.jboss.resteasy.tracing`
+* `org.jboss.resteasy.util`
+
+
+===== resteasy-client-api
+
+The public classes from the former `resteasy-client` module, basically whatever is used for configuring the RESTEasy client additions: 
+
+* `ClientHttpEngine` and `ClientHttpEngineBuilder`
+* `ProxyBuilder` and `ProxyConfig`
+* `ResteasyClient`
+* `ResteasyClientBuilder`
+* `ResteasyWebTarget`
+
+
+===== resteasy-client
+
+The remainings of the former `resteasy-client` module, internal details. 
+
+As a consequence of the split, all modules except `resteasy-core-spi` and `resteasy-client-api` are effectively private / internal.
+User applications and integration code should not directly rely on classes from those modules, which can be changed without going through any formal deprecation process. 
+
+Unfortunately, the refactoring that led to this implied some unavoidable class moves and changes breaking backward compatibility.
+A detailed list of the potentially problematic changes is available on the https://github.com/resteasy/Resteasy/pull/1697[refactoring PR]. 
+
+==== Deprecated classes and modules removal
+
+All classes and modules that were deprecated in RESTEasy 3 have been dropped in 4.
+In particular, this includes the legacy modules (`resteasy-legacy`, `security-legacy`) that were introduced in 3.1. 
+
+In addition to the legacy modules, few other modules have been dropped for multiple different reasons, including dependency on unsupported / abandoned libraries, better options available, etc: 
+
+* `resteasy-jackson-provider`, users should rely on `resteasy-jackson2-provider` instead;
+* `resteasy-jettison-provider`, users should rely on `resteasy-jackson2-provider` instead;
+* `abdera-atom-provider`;
+* `resteasy-yaml-provider`;
+* `resteasy-rx-java`, users should rely on `resteasy-rx-java2` instead;
+* `tjws`.
+
+The `resteasy-validator-provider-11` is also gone, with the `resteasy-validator-provider` one now supporting Bean Validation 2.0. 
+
+==== Behavior changes
+
+With the `ClientHttpEngine` based on Apache HTTP Client 4.0 having gone (it was previously deprecated) and the engine based on version 4.3 of the same library being the default, the user might want to double check the notes about connection close in <<_apache_4_3>>. 
+
+The conversion of `String` objects to `MediaType` objects is quite common in RESTEasy; for performances reasons a cache has been added to store the results of that conversion; by default the cache keeps the result of 200 conversions, but the number can be configured by setting the `org.jboss.resteasy.max_mediatype_cache_size` system property. 
+
+==== Other changes
+
+*  In releases 3.x, when bean validation <<_validation>> threw instances of exceptions
+** `jakarta.validation.ConstraintDefinitionException`
+** `jakarta.validation.ConstraintDeclarationException`
+** `jakarta.validation.GroupDefinitionException`
++
+they were wrapped in a `org.jboss.resteasy.api.validation.Resteasy.ResteasyViolationException`, which `org.jboss.resteasy.api.validation.ResteasyViolationExceptionMapper`, the built-in implementation of `jakarta.ws.rs.ext.ExceptionMapperjakarta.validation.ValidationException`, then turned into descriptive text.
+As of release 4.0.0, instances of `ConstraintDefinitionException`, etc., are thrown as is.
+They are still caught by `ResteasyViolationExceptionMapper`, so, in general, there is no detectable change.
+It should be noted, however, that an implementation of `ExceptionMapperResteasyViolationException`, which, prior to release 4.0.0, would have caught wrapped instances of `ConstraintDefinitionException`, will not catch unwrapped instances. 
+* The `ResteasyProviderFactory` is now an abstract class and is meant to be created using its `getInstance()` and `newInstance()` methods. Moreover, on client side, the resolution of the current instance is cached for each thread local context classloader. 
+* The `ResteasyClient` and `ResteasyClientBuilder` are now abstract classes (from `resteasy-client-api`) and are not
+meant for user direct instantiation; plain {spec-name} API usage is expected instead:
++
+[source,java,subs="attributes+"]
+----
+//ResteasyClient client = new ResteasyClientBuilder().build(); NO!
+//if plain {spec-name} is enough ...
+Client client = ClientBuilder.newClient();
+
+//if RESTEasy API is needed ...
+ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
+
+
+//ResteasyClientBuilder builder = new ResteasyClientBuilder(); NO!
+//if plain {spec-name} is enough ...
+ClientBuilder builder = ClientBuilder.newBuilder();
+
+//if RESTEasy API is needed ...
+ResteayClientBuilder builder = (ResteasyClientBuilder)ClientBuilder.newBuilder();
+----
+* The package `org.jboss.resteasy.plugins.stats` (which contains a resource and some related classes) has been moved out of the `resteasy-jaxb-provider` module into a `new resteasy-stats` module. 

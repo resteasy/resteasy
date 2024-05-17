@@ -1,0 +1,182 @@
+[[_gzip]]
+== Content encoding
+
+=== GZIP Compression/Decompression
+
+RESTEasy supports (though not by default - see below) GZIP decompression. If properly configured, the client framework
+or a {spec-name} service, upon receiving a message body with a Content-Encoding of "gzip", will automatically
+decompress it. The client framework can (though not by default - see below) automatically set the Accept-Encoding
+header to be "gzip, deflate", so you do not have to set this header yourself.
+
+RESTEasy also supports (though not by default - see below) automatic compression.
+If the client framework is sending a request or the server is sending a response with the Content-Encoding header set to "gzip", RESTEasy will (if properly configured) do the compression.
+So that you do not have to set the Content-Encoding header directly, you can use the @org.jboss.resteasy.annotation.GZIP annotation. 
+
+[source,java]
+----
+@Path("/")
+public interface MyProxy {
+
+   @Consumes("application/xml")
+   @PUT
+   void put(@GZIP Order order);
+}
+----
+
+In the above example, we tag the outgoing message body, order, to be gzip compressed.
+The same annotation can be used to tag server responses 
+
+[source,java]
+----
+@Path("/")
+public class MyService {
+
+   @GET
+   @Produces("application/xml")
+   @GZIP
+   public String getData() {}
+}
+----
+
+[[_configuring]]
+==== Configuring GZIP compression / decompression
+
+NOTE: Decompression carries a risk of attack from a bad actor that can package an entity that will expand greatly.
+Consequently, RESTEasy disables GZIP compression / decompression by default. 
+
+There are three interceptors that are relevant to GZIP compression / decompression: 
+
+. `org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor`: If the Content-Encoding header is present and has the value "gzip", `GZIPDecodingInterceptor` will install an `InputStream` that decompresses the message body. 
+. `org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor`: If the Content-Encoding header is present and has the value "gzip", `GZIPEncodingInterceptor` will install an `OutputStream` that compresses the message body.
+. `org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter`:  If the Accept-Encoding header does not exist, `AcceptEncodingGZIPFilter` will add Accept-Encoding with the value "gzip, deflate". If the Accept-Encoding header exists but does not contain "gzip", `AcceptEncodingGZIPFilter` will append ", gzip". Note that enabling GZIP compression / decompression does not depend on the presence of this interceptor.
+
+If GZIP decompression is enabled, an upper limit is imposed on the number of bytes `GZIPDecodingInterceptor` will extract from a compressed message body.
+The default limit is 10,000,000, but a different value can be configured.
+See below. 
+
+===== Server side configuration
+
+The interceptors may be enabled by including their classnames in a META-INF/services/jakarta.ws.rs.ext.Providers file on the classpath.
+The upper limit on deflated files may be configured by setting the parameter "resteasy.gzip.max.input". [See <<_microprofile_config>> for more information about application configuration.] If the limit is exceeded on the server side, `GZIPDecodingInterceptor` will return a `Response` with status 413 ("Request Entity Too Large") and a message specifying the upper limit.
+
+NOTE: As of release 3.1.0.Final, the GZIP interceptors have moved from package `org.jboss.resteasy.plugins.interceptors.encoding` to `org.jboss.resteasy.plugins.interceptors` and they should be named accordingly in `jakarta.ws.rs.ext.Providers`.
+
+===== Client side configuration
+
+The interceptors may be enabled by registering them with a `Client` or `WebTarget`.
+For example, 
+
+[source,java]
+----
+Client client = ClientBuilder.newBuilder() // Activate gzip compression on client:
+                    .register(AcceptEncodingGZIPFilter.class)
+                    .register(GZIPDecodingInterceptor.class)
+                    .register(GZIPEncodingInterceptor.class)
+                    .build();
+----
+
+The upper limit on deflated files may be configured by creating an instance of `GZIPDecodingInterceptor` with a specific value: 
+
+[source,java]
+----
+Client client = ClientBuilder.newBuilder() // Activate gzip compression on client:
+                    .register(AcceptEncodingGZIPFilter.class)
+                    .register(new GZIPDecodingInterceptor(256))
+                    .register(GZIPEncodingInterceptor.class)
+                    .build();
+----
+
+If the limit is exceeded on the client side, `GZIPDecodingInterceptor` will throw a `ProcessingException` with a message specifying the upper limit.
+
+=== General content encoding
+
+The designation of a compressible entity by the use of the `@GZIP` annotation is a built-in, specific instance of a more general facility supported by RESTEasy.
+There are three components to this facility. 
+
+. The annotation `org.jboss.resteasy.annotations.ContentEncoding` is a "meta-annotation" used on other annotations to
+indicate that they represent a Content-Encoding. For example, @GZIP is defined
++
+[source,java]
+----
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+@ContentEncoding("gzip")
+public @interface GZIP {
+}
+----
++
+The value of @ContentEncoding indicates the represented Content-Encoding. For `@GZIP` it is "gzip".
+
+. `ClientContentEncodingAnnotationFeature` and `ServerContentEncodingAnnotationFeature`, two `DynamicFeatures` in
+package `org.jboss.resteasy.plugins.interceptors`, examine resource methods for annotations decorated with
+`@ContentEncoding`.
+
+. For each value found in a `@ContentEncoding` decorated annotation on a resource method, an instance of
+`ClientContentEncodingAnnotationFilter` or `ServerContentEncodingAnnotationFilter`, `jakarta.ws.rs.ext.WriterInterceptors`
+in package `org.jboss.resteasy.plugins.interceptors`, is registered. They are responsible for adding an appropriate
+Content-Encoding header. For example, `ClientContentEncodingAnnotationFilter` is defined.
++
+[source,java]
+----
+
+@ConstrainedTo(RuntimeType.CLIENT)
+@Priority(Priorities.HEADER_DECORATOR)
+public class ClientContentEncodingAnnotationFilter implements WriterInterceptor {
+   protected String encoding;
+
+   public ClientContentEncodingAnnotationFilter(String encoding) {
+      this.encoding = encoding;
+   }
+
+   @Override
+   public void aroundWriteTo(WriterInterceptorContext context) {
+      context.getHeaders().putSingle(HttpHeaders.CONTENT_ENCODING, encoding);
+      context.proceed();
+   }
+}
+----
+
+The annotation `@GZIP` is built into RESTEasy, but `ClientContentEncodingAnnotationFeature` and `ServerContentEncodingAnnotationFeature` will also recognize application defined annotations.
+For example, 
+
+[source,java]
+----
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+@ContentEncoding("compress")
+public @interface Compress {
+}
+
+@Path("")
+public static class TestResource {
+
+  @GET
+  @Path("a")
+  @Compress
+  public String a() {
+     return "a";
+  }
+}
+----
+
+If `TestResource.a()` is invoked as follows
+
+[source,java]
+----
+@Test
+public void testCompress() throws Exception {
+  try (Client client = ClientBuilder.newClient()) {
+      Invocation.Builder request = client.target("http://localhost:8081/a").request();
+      request.acceptEncoding("gzip,compress");
+      Response response = request.get();
+      System.out.println("content-encoding: "+ response.getHeaderString("Content-Encoding"));
+  }
+}
+----
+
+the output will be 
+
+[source]
+----
+content-encoding: compress
+----

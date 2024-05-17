@@ -1,0 +1,257 @@
+[[_jakarta_rest_2.1_additions]]
+== {spec-name} 2.1 Additions
+
+{spec-name} 2.1 adds more asynchronous processing support in both the Client and the Server API.
+The specification adds a Reactive programming style to the Client side and Server-Sent Events (SSE) protocol support to both client and server. 
+
+=== `CompletionStage` support
+
+The specification adds support for declaring asynchronous resource methods by returning a `CompletionStage` instead of
+using the `@Suspended` annotation.
+
+[NOTE]
+====
+RESTEasy <<_reactive,supports more reactive types than the specification>>. 
+====
+
+== Reactive Clients API
+
+The specification defines a new type of invoker named `RxInvoker`, and a default implementation of this type named
+`CompletionStageRxInvoker`. `CompletionStageRxInvoker` implements Java 8's interface `CompletionStage`.
+This interface declares a large number of methods dedicated to managing asynchronous computations. 
+
+There is also a new rx method which is used in a similar manner to async. 
+
+[[_sse_server]]
+=== Server-Sent Events (SSE)
+
+SSE is part of HTML standard, currently supported by many browsers.
+It is a server push technology, which provides a way to establish  a one-way channel to continuously send data to clients.
+SSE events are pushed  to the client via a long-running HTTP connection.
+In case of lost connection, clients can retrieve missed events by setting a "Last-Event-ID" HTTP header in a new request. 
+
+SSE stream has text/event-stream media type and contains multiple SSE events.
+SSE event is a data structure encoded with UTF-8 and contains fields and comment.
+The field can be event, data, id, retry and other kinds of field will be ignored. 
+
+From {spec-name} 2.1, Server-sent Events APIs are introduced to support sending, receiving and broadcasting SSE events.
+
+==== SSE Server
+
+As shown in the following example, a SSE resource method has the text/event-stream produce  media type and an injected context parameter SseEventSink.
+The injected SseEventSink is  the connected SSE stream where events can be sent.
+Another injected context Sse is an  entry point for creating and broadcasting SSE events.
+Here is an example to  demonstrate how to send SSE events every 200ms and close the stream after a "done" event. 
+
+[source,java]
+----
+@Resource
+private ManagedExecutorService executor;
+
+@GET
+@Path("domains/{id}")
+@Produces(MediaType.SERVER_SENT_EVENTS)
+public void startDomain(@PathParam("id") final String id, @Context SseEventSink sink, @Context Sse sse) {
+  executor.execute(() -> {
+        try {
+           sink.send(sse.newEventBuilder().name("domain-progress")
+                 .data(String.class, "starting domain " + id + " ...").build());
+           Thread.sleep(200);
+           sink.send(sse.newEvent("domain-progress", "50%"));
+           Thread.sleep(200);
+           sink.send(sse.newEvent("domain-progress", "60%"));
+           Thread.sleep(200);
+           sink.send(sse.newEvent("domain-progress", "70%"));
+           Thread.sleep(200);
+           sink.send(sse.newEvent("domain-progress", "99%"));
+           Thread.sleep(200);
+           sink.send(sse.newEvent("domain-progress", "Done.")).thenAccept((Object obj) -> {
+              sink.close();
+           });
+        } catch (Exception e) {
+           logger.error(e.getMessage(), e);
+        }
+  });
+}
+----
+
+[NOTE]
+====
+RESTEasy <<_reactive,supports sending SSE events via reactive types>>. 
+====
+
+==== SSE Broadcasting
+
+With SseBroadcaster, SSE events can broadcast to multiple clients simultaneously.
+It will iterate over all registered SseEventSinks and send events to all requested SSE Stream.
+An application can create a SseBroadcaster from an injected context Sse.
+The broadcast  method on a SseBroadcaster is used to send SSE events to all registered clients.
+The following code snippet is an example on how to create SseBroadcaster, subscribe  and broadcast events to all subscribed consumers. 
+
+[source,java]
+----
+@GET
+@Path("/subscribe")
+@Produces(MediaType.SERVER_SENT_EVENTS)
+public void subscribe(@Context SseEventSink sink) throws IOException {
+  if (sink == null) {
+     throw new IllegalStateException("No client connected.");
+  }
+  if (sseBroadcaster == null) {
+     sseBroadcaster = sse.newBroadcaster();
+  }
+  sseBroadcaster.register(sink);
+}
+
+@POST
+@Path("/broadcast")
+public void broadcast(String message) throws IOException {
+  if (sseBroadcaster == null) {
+     sseBroadcaster = sse.newBroadcaster();
+  }
+  sseBroadcaster.broadcast(sse.newEvent(message));
+
+}
+----
+
+==== SSE Client
+
+SseEventSource is the entry point to read and process incoming SSE events.
+A SseEventSource instance can be initialized with a WebTarget.
+Once SseEventSource  is created and connected to a server, registered event consumer will be invoked when  an inbound event arrives.
+In case of errors, an exception will be passed  to a registered consumer so that it can be processed.
+SseEventSource can automatically reconnect the server  and continuously receive pushed events after the connection has been lost.
+SseEventSource  can send lastEventId to the server by default when it is reconnected, and server may use  this id to replay all missed events.
+But reply event is really upon on SSE resource  method implementation.
+If the server responds HTTP 503 with a RETRY_AFTER header,  SseEventSource will automatically schedule a reconnect task with this RETRY_AFTER  value.
+The following code snippet is to create a SseEventSource and print the  inbound event data value and error if it happens. 
+
+[source,java]
+----
+public void printEvent() throws Exception {
+  WebTarget target = client.target("http://localhost:8080/service/server-sent-events");
+  try (SseEventSource eventSource = SseEventSource.target(target).build()) {
+     eventSource.register(event -> System.out.println(event.readData(String.class)),
+            ex -> ex.printStackTrace());
+     eventSource.open();
+  }
+}
+----
+
+=== Java API for JSON Binding
+
+RESTEasy supports both JSON-B and JSON-P.
+In accordance with the specification, entity providers for JSON-B take precedence over those for JSON-P for all types except JsonValue and its sub-types. 
+
+The support for JSON-B is provided by the `JsonBindingProvider` from `resteasy-json-binding-provider` module.
+To satisfy {spec-name}" 2.1 requirements, JsonBindingProvider takes precedence over the other providers for dealing with JSON payloads, in particular the Jackson one.
+The JSON outputs (for the same input) from Jackson and JSON-B reference implementation can be slightly different.
+As a consequence, in order to allow retaining backward compatibility, RESTEasy offers a `resteasy.preferJacksonOverJsonB` context property that can be set to `true` to disable JsonBindingProvider for the current deployment.
+
+WildFly 14 supports specifying the default value for the `resteasy.preferJacksonOverJsonB` context property by setting a system property with the same name.
+Moreover, if no value is set for the context and system properties, it scans {spec-name} deployments for Jackson annotations and sets the property to `true` if any of those annotations is found.
+
+=== JSON Patch and JSON Merge Patch
+
+RESTEasy supports applying partial modifications to target resources with JSON Patch/JSON Merge Patch.
+Instead of sending a json request which represents the whole modified resource with an HTTP PUT method, the json request only contains the modified part with an HTTP PATCH method to do the same job. 
+
+JSON Patch request has an array of json objects and each JSON object gives the operation to execute against the target resource.
+Here is an example to modify the target Student resource which has these fields and values: `\{"firstName":"Alice","id":1,"school":"MiddleWood School"}`:
+[source]
+----
+PATCH /StudentPatchTest/students/1 HTTP/1.1
+Content-Type: application/json-patch+json
+Content-Length: 184
+Host: localhost:8090
+Connection: Keep-Alive
+
+[{"op":"copy","from":"/firstName","path":"/lastName"},
+ {"op":"replace","path":"/firstName","value":"John"},
+ {"op":"remove","path":"/school"},
+ {"op":"add","path":"/gender","value":"male"}]
+----
+This JSON Patch request will copy the firstName to lastName field , then change the firstName value to "John". The next
+operation will remove the school value and add male gender to this "id=1" student resource.
+After this JSON Path is applied.
+The target resource will be modified to: `\{"firstName":"John","gender":"male","id":1,"lastName":"Taylor"}`. The operation
+keyword here can be "add", "remove", "replace", "move", "copy", or "test". The "path" value must be a JSON Pointer
+value that points to the part to apply this JSON Patch.
+
+Unlike using the operation keyword to patch the target resource, JSON Merge Patch request directly sends the expected json change.
+RestEasy merges this change into the target resource which is identified by the request URI.
+Like the JSON Merge Patch request below, it removes the "school" value and changes the "firstName" to "Green". 
+[source]
+----
+ PATCH /StudentPatchTest/students/1 HTTP/1.1
+ Content-Type: application/merge-patch+json
+ Content-Length: 34
+ Host: localhost:8090
+ Connection: Keep-Alive
+ {"firstName":"Green","school":null}
+----
+
+Enabling JSON Patch or JSON Merge Patch only requires correctly annotating the resource method with these mediaTypes.
+`@Consumes(MediaType.APPLICATION_JSON_PATCH_JSON)` enables JSON Patch:
+
+[source,java]
+----
+@GET
+@Path("/{id}")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public Student getStudent(@PathParam("id") long id) {
+    Student student = studentsMap.get(id);
+    if (student == null) {
+        throw new NotFoundException();
+    }
+    return student;
+}
+@PATCH
+@Path("/{id}")
+@Consumes(MediaType.APPLICATION_JSON_PATCH_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+    public Student patchStudent(@PathParam("id") long id, Student student) {
+    if (studentsMap.get(id) == null) {
+        throw new NotFoundException();
+    }
+    studentsMap.put(id, student);
+    return student;
+}
+@PATCH
+@Path("/{id}")
+@Consumes("application/merge-patch+json")
+@Produces(MediaType.APPLICATION_JSON)
+public Student mergePatchStudent(@PathParam("id") long id, Student student) {
+    if (studentsMap.get(id) == null) {
+        throw new NotFoundException();
+    }
+    studentsMap.put(id, student);
+    return student;
+}
+----
+
+[NOTE]
+====
+Before creating a JSON Patch or JSON Merge Patch resource method, there must be a GET method to get the target resource.
+In the above code example, the first resource method is responsible for getting the target resource to apply the patch. 
+
+It requires the patch filter to enable JSON Patch or JSON Merge Patch.
+The RESTEasy `PatchMethodFilter` is enabled by default.
+This filter can be disabled by setting "resteasy.patchfilter.disabled" to true as described in <<_configuration_switches>>. 
+====
+
+The client side needs to create these json objects and send them with a http PATCH method. 
+[source,java]
+----
+//send JSON Patch request
+WebTarget patchTarget = client.target("http://localhost:8090/StudentPatchTest/students/1"));
+JsonArray patchRequest = Json.createArrayBuilder()
+.add(Json.createObjectBuilder().add("op", "copy").add("from", "/firstName").add("path", "/lastName").build())
+.build();
+patchTarget.request().build(HttpMethod.PATCH, Entity.entity(patchRequest, MediaType.APPLICATION_JSON_PATCH_JSON)).invoke();
+//send JSON Merge Patch request
+WebTarget patchTarget = client.target("http://localhost:8090/StudentPatchTest/students/1");
+JsonObject object = Json.createObjectBuilder().add("lastName", "Green").addNull("school").build();
+Response result = patchTarget.request().build(HttpMethod.PATCH, Entity.entity(object, "application/merge-patch+json")).invoke();
+----

@@ -1,0 +1,43 @@
+[[_newparam]]
+== Improved `@...Param` annotations
+
+The {spec-name} specification defines annotations `@PathParam`, `@QueryParam`, `@FormParam`, `@CookieParam`, `@HeaderParam` and `@MatrixParam`.
+Each annotation requires a parameter name.
+RESTEasy provides a parallel set of annotations, <<_pathparam,`@PathParam`>>, <<_queryparam,`@QueryParam`>>, <<_formparam,`@FormParam`>>, <<_cookieparam,`@CookieParam`>>, <<_headerparam,`@HeaderParam`>> and <<_matrixparam,`@MatrixParam`>> which do not require a parameter name.
+To use this RESTEasy feature, replace the annotation's package name, `jakarta.ws.rs` with, ``org.jboss.resteasy.annotations.jaxrs``. 
+
+Note that you can omit the annotation name for annotated method parameters as well as annotated fields or JavaBean properties. 
+
+Usage:
+
+[source,java]
+----
+import org.jboss.resteasy.annotations.jaxrs.*;
+
+@Path("/library")
+public class Library {
+
+   @GET
+   @Path("/book/{isbn}")
+   public String getBook(@PathParam String isbn) {
+      // search my database and get a string representation and return it
+   }
+}
+----
+
+If an annotated variable does not have the same name as the path parameter, the name can still be specified:
+
+[source,java]
+----
+import org.jboss.resteasy.annotations.jaxrs.*;
+
+@Path("/library")
+public class Library {
+
+   @GET
+   @Path("/book/{isbn}")
+   public String getBook(@PathParam("isbn") String id) {
+      // search my database and get a string representation and return it
+   }
+}
+----

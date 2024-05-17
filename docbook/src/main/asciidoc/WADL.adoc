@@ -1,0 +1,230 @@
+[[_wadl]]
+== RESTEasy WADL Support
+
+RESTEasy has support to generate WADL for its resources. It supports several different containers. The following text
+shows how to use this feature in different containers.
+
+=== RESTEasy WADL Support for Servlet Container *(Deprecated)*
+
+[IMPORTANT]
+====
+The content introduced in this section is outdated, and the `ResteasyWadlServlet` class is deprecated because it
+doesn't support the GRAMMAR generation. Please check the `ResteasyWadlDefaultResource` introduced in the later section.
+====
+
+RESTEasy WADL uses `ResteasyWadlServlet` to support servlet container.
+It must be registered in the web.xml to enable WADL feature.
+Here is an example to show the usages of ResteasyWadlServlet in web.xml: 
+
+[source,xml]
+----
+<web-app>
+    <servlet>
+        <servlet-name>RESTEasy WADL</servlet-name>
+        <servlet-class>org.jboss.resteasy.wadl.ResteasyWadlServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>RESTEasy WADL</servlet-name>
+        <url-pattern>/application.xml</url-pattern>
+    </servlet-mapping>
+</web-app>
+----
+
+The preceding configuration in web.xml shows how to enable ResteasyWadlServlet and map it to /application.xml, so then the WADL can be accessed from the configured URL: 
+
+[source]
+----
+/application.xml
+----
+
+=== RESTEasy WADL Support for Servlet Container(Updated)
+
+This section introduces the recommended way to enable WADL support in a Servlet Container.
+First, add a class that extends the `ResteasyWadlDefaultResource` to serve a resource path.
+Here is an example: 
+
+[source,java]
+----
+import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
+import jakarta.ws.rs.Path;
+
+@Path("/")
+public class MyWadlResource extends ResteasyWadlDefaultResource {
+}
+----
+
+As the sample shows above, it implements the `ResteasyWadlDefaultResource` and serves this URL by default:
+
+[source]
+----
+/application.xml
+----
+
+To enable the GRAMMAR generation, extend the `ResteasyWadlDefaultResource` like this:
+
+[source,java]
+----
+import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
+import org.jboss.resteasy.wadl.ResteasyWadlWriter;
+
+import jakarta.ws.rs.Path;
+
+@Path("/")
+public class MyWadlResource extends ResteasyWadlDefaultResource {
+
+    public MyWadlResource() {
+        ResteasyWadlWriter.ResteasyWadlGrammar wadlGrammar = new ResteasyWadlWriter.ResteasyWadlGrammar();
+        wadlGrammar.enableSchemaGeneration();
+        getWadlWriter().setWadlGrammar(wadlGrammar);
+
+    }
+}
+----
+
+With the above setup, the WADL module will generate GRAMMAR automatically and register the service under this url:
+
+[source]
+----
+/wadl-extended/xsd0.xsd
+----
+
+Above is the basic usage of the WADL module under a servlet container deployment.
+
+=== RESTEasy WADL support for Sun JDK HTTP Server
+
+RESTEasy provides a `ResteasyWadlDefaultResource` to generate WADL info for its embedded containers.
+Here is an example to show how to use it with RESTEasy's Sun JDK HTTP Server container: 
+
+[source]
+----
+com.sun.net.httpserver.HttpServer httpServer =
+    com.sun.net.httpserver.HttpServer.create(new InetSocketAddress(port), 10);
+
+org.jboss.resteasy.plugins.server.sun.http.HttpContextBuilder contextBuilder = 
+    new org.jboss.resteasy.plugins.server.sun.http.HttpContextBuilder();
+
+contextBuilder.getDeployment().getActualResourceClasses()
+    .add(ResteasyWadlDefaultResource.class);
+contextBuilder.bind(httpServer);
+
+ResteasyWadlDefaultResource.getServices()
+    .put("/",
+        ResteasyWadlGenerator
+            .generateServiceRegistry(contextBuilder.getDeployment()));
+
+httpServer.start();
+----
+
+From the above code example, we can see how `ResteasyWadlDefaultResource` is registered in the deployment:
+
+[source]
+----
+contextBuilder.getDeployment().getActualResourceClasses()
+    .add(ResteasyWadlDefaultResource.class);
+----
+
+Another important task is to use `ResteasyWadlGenerator` to generate the WADL info for the resources in the deployment:
+
+[source]
+----
+ResteasyWadlDefaultResource.getServices()
+    .put("/",
+        ResteasyWadlGenerator
+            .generateServiceRegistry(contextBuilder.getDeployment()));
+----
+
+After the above configuration is set, users can access "/application.xml" to fetch the WADL info, because
+`ResteasyWadlDefaultResource` has `@Path` set to "/application.xml" as default:
+
+[source]
+----
+@Path("/application.xml")
+public class ResteasyWadlDefaultResource
+----
+
+=== RESTEasy WADL support for Netty Container
+
+RESTEasy WADL support for Netty Container is similar to the support for JDK HTTP Server.
+It uses ResteasyWadlDefaultResource to serve '/application.xml' and ResteasyWadlGenerator to generate WADL info for resources.
+Here is the sample code: 
+
+[source]
+----
+ResteasyDeployment deployment = new ResteasyDeploymentImpl();
+
+netty = new NettyJaxrsServer();
+netty.setDeployment(deployment);
+netty.setPort(port);
+netty.setRootResourcePath("");
+netty.setSecurityDomain(null);
+netty.start();
+
+deployment.getRegistry()
+    .addPerRequestResource(ResteasyWadlDefaultResource.class);
+ResteasyWadlDefaultResource.getServices()
+    .put("/", ResteasyWadlGenerator.generateServiceRegistry(deployment));
+----
+
+Please note for all embedded containers like JDK HTTP Server and Netty Container, if the resources in the deployment changes at runtime, the ResteasyWadlGenerator.generateServiceRegistry() needs to be re-run to refresh the WADL info. 
+
+=== RESTEasy WADL Support for Undertow Container
+
+The RESTEasy Undertow Container is an embedded Servlet Container, and RESTEasy WADL provides a connector to it.
+To use RESTEasy Undertow Container together with WADL support, add these three components into project maven dependencies: 
+
+[source,xml,subs="attributes+"]
+----
+<dependencies>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-wadl</artifactId>
+        <version>{resteasy-version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-wadl-undertow-connector</artifactId>
+        <version>{resteasy-version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-undertow</artifactId>
+        <version>{resteasy-version}</version>
+    </dependency>
+</dependencies>
+----
+
+The resteasy-wadl-undertow-connector provides a WadlUndertowConnector to help use WADL in RESTEasy Undertow Container.
+Here is the code example: 
+
+[source]
+----
+UndertowJaxrsServer server = new UndertowJaxrsServer().start();
+WadlUndertowConnector connector = new WadlUndertowConnector();
+connector.deployToServer(server, MyApp.class);
+----
+
+The MyApp class shown in above code is a standard {spec-name} Application class in your project:
+
+[source,java]
+----
+@ApplicationPath("/base")
+public static class MyApp extends Application {
+    @Override
+    public Set<Class<?>> getClasses() {
+        return Set.of(YourResource.class);
+    }
+}
+----
+
+After the Application is deployed to the `UndertowJaxrsServer` via `WadlUndertowConnector`, the user can access the
+WADL info at "/application.xml" prefixed by the `@ApplicationPath` in the Application class.
+To override the `@ApplicationPath`, use the other method in WadlUndertowConnector:
+
+[source]
+----
+public UndertowJaxrsServer deployToServer(UndertowJaxrsServer server, Class<? extends Application> application, String contextPath)
+----
+
+The "deployToServer" method shown above accepts a "contextPath" parameter, which can be used to override the
+`@ApplicationPath` value in the Application class.

@@ -1,0 +1,68 @@
+[[_optionalparam]]
+== Optional parameter types
+
+RESTEasy offers a mechanism to support a series of `java.util.Optional` types as a wrapper object types.
+This will give users the ability to use optional typed parameters, and eliminate all null checks by using methods like
+`Optional.orElse()`.
+
+Here is the sample:
+
+[source,java]
+----
+@Path("/double")
+@GET
+public String optDouble(@QueryParam("value") OptionalDouble value) {
+    return Double.toString(value.orElse(4242.0));
+}
+----
+
+From the above sample code we can see that the `OptionalDouble` can be used as parameter type, and when users don't
+provide a value in `@QueryParam`, then the default value will be returned.
+
+Here is the list of supported optional parameter types: 
+
+* `@QueryParam`
+* `@FormParam`
+* `@MatrixParam`
+* `@HeaderParam`
+* `@CookieParam`
+
+As the list shown above, those parameter types support the Java-provided `Optional` types.
+Please note that the `@PathParam` is an exception for which `Optional` is not available.
+The reason is that `Optional` for the `@PathParam` use case would just be a NO-OP, since an element of the path cannot be omitted. 
+
+The `Optional` types can also be used as type of the fields of a `@BeanParam`'s class.
+
+Here is an example of endpoint with a `@BeanParam`:
+
+[source,java]
+----
+@Path("/double")
+@GET
+public String optDouble(@BeanParam Bean bean) {
+    return Double.toString(bean.value.orElse(4242.0));
+}
+----
+
+The corresponding class `Bean`:
+
+[source,java]
+----
+public class Bean {
+    @QueryParam("value")
+    OptionalDouble value;
+}
+----
+
+Finally, the `Optional` types can be used directly as type of the fields of a {spec-name} resource class.
+
+Here is an example of a {spec-name} resource class with an `Optional` type:
+
+[source,java]
+----
+@RequestScoped
+public class OptionalResource {
+    @QueryParam("value")
+    Optional<String> value;
+}
+----
