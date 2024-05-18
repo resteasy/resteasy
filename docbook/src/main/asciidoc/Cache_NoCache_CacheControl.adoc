@@ -5,7 +5,7 @@ RESTEasy provides numerous annotations and facilities to support HTTP caching se
 Annotations to make setting Cache-Control headers easier and both server-side and client-side in-memory caches are available. 
 
 [[_cache_annotation]]
-== @Cache and @NoCache Annotations
+=== @Cache and @NoCache Annotations
 
 RESTEasy provides an extension to {spec-name} that allows you to automatically set Cache-Control headers on a successful GET request.
 It can only be used on @GET annotated methods.

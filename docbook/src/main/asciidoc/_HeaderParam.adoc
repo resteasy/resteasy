@@ -33,7 +33,7 @@ public void put(@HeaderParam("Content-Type") MediaType contentType);
 
 
 
-== [class]``HeaderDelegate``s
+=== Header Delegates
 
 In addition to the usual methods for translating parameters to and from strings, parameters annotated with
 `@HeaderParam` have another option: implementations of {jakarta-rest-javadoc}/jakarta/ws/rs/ext/runtimedelegate.headerdelegate[`RuntimeDelegate$HeaderDelegate`].
