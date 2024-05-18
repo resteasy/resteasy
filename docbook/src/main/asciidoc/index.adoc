@@ -23,7 +23,7 @@
 
 // Add a space after each includes, otherwise each include needs to end with two line feeds
 
-include::Overview.adoc[]
+ew.adoc[]
 
 include::License.adoc[]
 
@@ -39,8 +39,6 @@ include::_HeaderParam.adoc[]
 
 include::Links.adoc[]
 
-include::gzip.adoc[]
-
 include::_MatrixParam.adoc[]
 
 include::_CookieParam.adoc[]
@@ -52,8 +50,6 @@ include::_Form.adoc[]
 include::_NewParam.adoc[]
 
 include::_OptionalParam.adoc[]
-
-include::Cache_NoCache_CacheControl.adoc[]
 
 include::_DefaultValue.adoc[]
 
@@ -69,11 +65,33 @@ include::Jakarta_REST_Content_Negotiation.adoc[]
 
 include::Content_Marshalling_Providers.adoc[]
 
+include::xml-binding.adoc[]
+
+include::Atom.adoc[]
+
+include::Json.adoc[]
+
+include::Json-p.adoc[]
+
+include::Multipart.adoc[]
+
+include::Jakarta_REST_2.1_additions.adoc[]
+
 include::StringConverter.adoc[]
 
 include::Responses_using_jakarta.ws.rs.core.Response.adoc[]
 
 include::ExceptionMappers.adoc[]
+
+include::gzip.adoc[]
+
+include::cors.adoc[]
+
+include::content-range.adoc[]
+
+include::Cache_NoCache_CacheControl.adoc[]
+
+include::Interceptors.adoc[]
 
 include::Asynchronous_HTTP.adoc[]
 
@@ -91,9 +109,17 @@ include::RESTEasy_Server-side_Mock_Framework.adoc[]
 
 include::Securing_Jakarta_REST_and_RESTeasy.adoc[]
 
+include::jwt.adoc[]
+
+include::signature.adoc[]
+
+include::smime.adoc[]
+
 include::RESTEasy_Enterprise_Bean_Integration.adoc[]
 
 include::RESTEasy_Spring_Integration.adoc[]
+
+include::CDI.adoc[]
 
 include::RESTEasy_Client_Framework.adoc[]
 
@@ -105,40 +131,12 @@ include::WADL.adoc[]
 
 include::tracing.adoc[]
 
-include::Maven_and_RESTEasy.adoc[]
-
-include::Migration_from_older_versions.adoc[]
-
-include::Multipart.adoc[]
-
-include::Atom.adoc[]
-
-include::content-range.adoc[]
-
-include::Json-p.adoc[]
-
-include::Json.adoc[]
-
-include::xml-binding.adoc[]
-
-include::Interceptors.adoc[]
-
-include::Books.adoc[]
-
-include::CDI.adoc[]
-
-include::signature.adoc[]
-
-include::jwt.adoc[]
-
-include::smime.adoc[]
-
 include::Validation.adoc[]
-
-include::cors.adoc[]
 
 include::I18N.adoc[]
 
-include::Jakarta_REST_2.1_additions.adoc[]
+include::Maven_and_RESTEasy.adoc[]
+
+include::Migration_from_older_versions.adoc[]
 
 include::Books.adoc[]
