@@ -105,7 +105,7 @@ These IDs belong to the following ranges:
 |===
 
 For example, the {xml-binding} provider contains the interface
-`[class]org.jboss.resteasy.plugins.providers.jaxb.i18.Messages`
+`org.jboss.resteasy.plugins.providers.jaxb.i18.Messages`
 which looks like 
 
 [source,java]

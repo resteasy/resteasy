@@ -1,6 +1,6 @@
 == Content Marshalling/Providers
 
-=== Default Providers and default {jakarta-rest-spec} Content Marshalling
+=== Default Providers and default {spec-name} Content Marshalling
 
 RESTEasy can automatically marshal and unmarshal a few different message bodies. 
 

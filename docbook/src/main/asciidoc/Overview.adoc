@@ -1,27 +1,50 @@
 == Overview
 
+NOTE: This version, {resteasy-version}, of RESTEasy supports {jakarta-rest-spec}[{spec-name} {jakarta-rest-version},window=_blank].
+
 Originally released in 2009, RESTEasy has tracked and implemented a series of official specifications that provide a Java API for RESTful Web Services over the HTTP protocol: 
 
-[cols="1,1", frame="topbot", options="header"]
+[cols="1,1,1", frame="topbot", options="header"]
 |===
 | RESTEasy version
 | Specification
+| JavaDoc/Changes
 
+
+|7.0+
+|https://jakarta.ee/specifications/restful-ws/4.0/jakarta-restful-ws-spec-4.0.html[Jakarta RESTful Web Services 4.0,window=_blank]
+a|
+
+* https://jakarta.ee/specifications/restful-ws/4.0/apidocs/[JavaDoc,window=_blank]
+* https://jakarta.ee/specifications/restful-ws/4.0/jakarta-restful-ws-spec-4.0.html#changes-since-3.1-release[Changes,window=_blank]
 
 |6.1+
-|https://jakarta.ee/specifications/restful-ws/3.1/jakarta-restful-ws-spec-3.1.html[Jakarta RESTful Web Services 3.1]
+|https://jakarta.ee/specifications/restful-ws/3.1/jakarta-restful-ws-spec-3.1.html[Jakarta RESTful Web Services 3.1,window=_blank]
+a|
+
+* https://jakarta.ee/specifications/restful-ws/3.1/apidocs/[JavaDoc,window=_blank]
+* https://jakarta.ee/specifications/restful-ws/3.1/jakarta-restful-ws-spec-3.1.html#changes-since-3.0-release[Changes,window=_blank]
 
 |6.0
-|https://jakarta.ee/specifications/restful-ws/3.0/jakarta-restful-ws-spec-3.0.html[Jakarta RESTful Web Services 3.0]
+|https://jakarta.ee/specifications/restful-ws/3.0/jakarta-restful-ws-spec-3.0.html[Jakarta RESTful Web Services 3.0,window=_blank]
+a|
+
+* https://jakarta.ee/specifications/restful-ws/3.0/apidocs/[JavaDoc,window=_blank]
+* https://jakarta.ee/specifications/restful-ws/3.0/jakarta-restful-ws-spec-3.0.html#changes-since-2.1-release[Changes,window=_blank]
 
 |3.5+
-|https://jakarta.ee/specifications/restful-ws/2.1/restful-ws-spec-2.1.html[Jakarta RESTful Web Services 2.1]
+|https://jakarta.ee/specifications/restful-ws/2.1/restful-ws-spec-2.1.html[Jakarta RESTful Web Services 2.1,window=_blank]
+a|
+
+* https://jakarta.ee/specifications/restful-ws/2.1/apidocs/[JavaDoc,window=_blank]
 
 |3+
-|https://jcp.org/en/jsr/detail?id=339[JAX-RS 2.0]
+|https://jcp.org/en/jsr/detail?id=339[JAX-RS 2.0,window=_blank]
+|
 
 |2+
-|https://download.oracle.com/otndocs/jcp/jaxrs-1.0-fr-eval-oth-JSpec/[JAX-RS 1.0]
+|https://download.oracle.com/otndocs/jcp/jaxrs-1.0-fr-eval-oth-JSpec/[JAX-RS 1.0,window=_blank]
+|
 |===
 
 JAX-RS 1.0 (https://download.oracle.com/otndocs/jcp/jaxrs-1.0-fr-eval-oth-JSpec/[JSR-311]), JAX-RS 2.0 (https://jcp.org/en/jsr/detail?id=339[JSR-339]), and JAX-RS 2.1 (https://jcp.org/en/jsr/detail?id=370[JSR-370]) are https://jcp.org/en/procedures/overview[Java Community Process (JCP)] specifications.

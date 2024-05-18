@@ -427,9 +427,8 @@ In this scenario, just have the {spec-name} services implement an annotated inte
 
 [WARNING]
 ====
-WARNING: The Apache HTTP Client support is deprecated in RESTEasy.
-The exposed API's will eventually be removed.
-However, it's still the default client implementation as we prepare for a replacement backing HTTP client. 
+The Apache HTTP Client support is deprecated in RESTEasy. The exposed API's will eventually be removed. However, it's
+still the default client implementation as we prepare for a replacement backing HTTP client.
 ====
 
 Network communication between the client and server is handled by default in RESTEasy.

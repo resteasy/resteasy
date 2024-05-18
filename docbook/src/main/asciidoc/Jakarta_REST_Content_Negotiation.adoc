@@ -88,7 +88,7 @@ Request is injected via `@Context`.
 Read the javadoc for more info on these. 
 
 [[_media_mappings]]
-== URL-based negotiation
+=== URL-based negotiation
 
 Some clients, like browsers, cannot use the Accept and Accept-Language headers to negotiation the representation's media type or language.
 RESTEasy allows the mapping of file name suffixes like (.xml, .txt, .en, .fr) to media types and languages.
@@ -127,7 +127,7 @@ Accept-Language: en-US
 The mapped file suffixes are stripped from the target URL path before the request is dispatched to a corresponding {spec-name} resource.
 
 [[_param_media_mappings]]
-== Query String Parameter-based negotiation
+=== Query String Parameter-based negotiation
 
 RESTEasy can do content negotiation based in a parameter in the query string.
 To enable this, the parameter `resteasy.media.type.param.mapping` should be configured in the web.xml file.
