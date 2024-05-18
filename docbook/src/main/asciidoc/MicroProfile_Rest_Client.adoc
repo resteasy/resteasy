@@ -138,7 +138,7 @@ Naturally, the registered providers should be relevant to the client environment
 [NOTE]
 ====
 So far, the MicroProfile Rest Client should look familiar to anyone who has used the RESTEasy client proxy facility
-(<<_client_proxies,Section ""RESTEasy Proxy Framework">>). The construction in  the previous listing would look like
+(<<_client_proxies,Section "RESTEasy Proxy Framework">>). The construction in  the previous listing would look like
 
 [source,java]
 ----
@@ -176,11 +176,11 @@ These are
 * JSON-P `MessageBodyReader` and `MessageBodyWriter` must be provided.
 * JSON-B `MessageBodyReader` and `MessageBodyWriter` must be provided if the implementation supports JSON-B.
 * `MessageBodyReader` and `MessageBodyWriter`  must be provided for the following types:
-** byte[]
-** String
-** InputStream
-** Reader
-** File
+** `byte[]`
+** `String`
+** `InputStream`
+** `Reader`
+** `File`
 
 
 === Beyond {spec-name} and RESTEasy

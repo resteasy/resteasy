@@ -27,7 +27,10 @@ Here's an example:
 </jboss-deployment-structure>
 ----
 
-The 'services` attribute must be set to "import" for modules that have default providers in a META-INF/services/jakarta.ws.rs.ext.Providers file. 
+The 'services` attribute must be set to "import" for modules that have default providers in a
+`META-INF/services/jakarta.ws.rs.ext.Providers` file.
+
+IMPORTANT: Using the `META-INF/services/jakarta.ws.rs.ext.Providers` is RESTEasy specific and not considered portable.
 
 To get an idea of which RESTEasy modules are loaded by default when  services are deployed, please see the table below, which refers to a recent WildFly ditribution patched with the current RESTEasy distribution.
 Clearly, future and unpatched WildFly distributions might differ a bit in terms of modules enabled by default, as the container actually controls this too.
@@ -166,6 +169,8 @@ RESTEasy is bundled with WildFly and completely integrated as per the requiremen
 application can contain {enterprise-beans} and CDI. WildFly scans the WAR file for the {spec-name} services and
 provider classes packaged in the WAR either as POJOs, CDI beans, or {enterprise-beans}.
 
+The web.xml can supply to RESTEasy init-params and context-params (see <<_configuration_switches>>) if you want to tweak or turn on/off any specific RESTEasy feature.
+
 [source,xml]
 ----
 <?xml version="1.0" encoding="UTF-8"?>
@@ -175,8 +180,6 @@ provider classes packaged in the WAR either as POJOs, CDI beans, or {enterprise-
    version="5.0">
 </web-app>
 ----
-
-The web.xml can supply to RESTEasy init-params and context-params (see <<_configuration_switches>>) if you want to tweak or turn on/off any specific RESTEasy feature.
 
 When a servlet-mapping element is not declared in the web.xml, then a class must be provided that implements `jakarta.ws.rs.core.Application` class (see <<_jakarta.ws.rs.core.application>>). This class must be annotated with the `jakarta.ws.rs.ApplicationPath` annotation.
 If this implementation class returns an empty set for classes and singletons, the WAR will be scanned for resource and provider classes as indicated by the presence of {spec-name} annotations.
@@ -234,9 +237,10 @@ Unzip the file. The resulting directory will contain a lib/ directory that conta
 Copy these, as needed, into your /WEB-INF/lib directory.
 Place your {spec-name} annotated class resources and providers within one or more jars within /WEB-INF/lib or your raw class files within /WEB-INF/classes.
 
-==== Servlet 3.0 containers
+==== Servlet Containers
 
-RESTEasy provides an implementation of the Servlet 3.0 'servletContainerInitializer` integration interface for containers to use in initializing an application.
+RESTEasy provides an implementation of the Servlet `ServletContainerInitializer` integration interface for
+containers to use in initializing an application.
 The container calls this interface during the application's startup phase.
 The RESTEasy implementation performs automatic scanning for resources and providers, and programmatic registration of a servlet.
 RESTEasy's implementation is provided in maven artifact, `resteasy-servlet-initializer`.
@@ -253,7 +257,8 @@ Add this artifact dependency to your project's pom.xml file so the JAR file will
 
 ==== Defining the Servlet in a web.xml
 
-You can manually declare the RESTEasy servlet in the WEB-INF/web.xml file of your WAR project, and provide an `Application` class (see <<_jakarta.ws.rs.core.application>>).
+You can manually declare the RESTEasy servlet in the `WEB-INF/web.xml` file of your WAR project, and provide an
+`Application` class (see <<_jakarta.ws.rs.core.application>>).
 For example: 
 
 [source,xml]
@@ -288,7 +293,7 @@ The RESTEasy servlet is responsible for initializing some basic components of RE
 Initialization of RESTEasy can be performed within a 'servletContextListener` instead of within the Servlet.
 You may need this if you are writing custom Listeners that need to interact with RESTEasy at boot time.
 An example of this is the RESTEasy Spring integration that requires a Spring ServletContextListener.
-The `org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap` class is a 'servletContextListener` that configures an
+The `org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap` class is a `ServletContextListener` that configures an
 instance of an `ResteasyProviderFactory` and Registry. You can obtain instances of a `ResteasyProviderFactory` and
 Registry from the 'servletContext` attributes `org.jboss.resteasy.spi.ResteasyProviderFactory` and
 `org.jboss.resteasy.spi.Registry`. From these instances you can programmatically interact with RESTEasy registration

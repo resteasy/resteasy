@@ -1,6 +1,11 @@
 [[_context]]
 == @Context
 
+WARNING: Support for `@Context` inject has been
+https://jakarta.ee/specifications/restful-ws/3.1/jakarta-restful-ws-spec-3.1.html#context-injection[deprecated,window=_blank].
+RESTEasy supports using the `@Inject` annotation on instance variables. Support for method and constructor injection
+will be available in a future release.
+
 The `@Context` annotation allows the injection of instances of the following types:
 
 * `jakarta.ws.rs.core.HttpHeaders`
