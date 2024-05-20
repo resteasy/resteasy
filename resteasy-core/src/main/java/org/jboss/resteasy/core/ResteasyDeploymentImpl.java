@@ -380,18 +380,19 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
 
     public static Application createApplication(String applicationClass, Dispatcher dispatcher,
             ResteasyProviderFactory providerFactory) {
-        Class<? extends Application> clazz = null;
+        Class<?> clazz = null;
         try {
-            clazz = Thread.currentThread().getContextClassLoader().loadClass(applicationClass).asSubclass(Application.class);
+            clazz = Thread.currentThread().getContextClassLoader().loadClass(applicationClass);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 
-        Application app = providerFactory.createProviderInstance(clazz);
+        Application app = (Application) providerFactory.createProviderInstance(clazz);
         dispatcher.getDefaultContextObjects().put(Application.class, app);
         ResteasyContext.pushContext(Application.class, app);
+        @SuppressWarnings("unchecked")
         final ApplicationDescription applicationDescription = ApplicationDescription.Builder.of(app)
-                .type(clazz)
+                .type((Class<? extends Application>) clazz)
                 .build();
         dispatcher.getDefaultContextObjects().put(ApplicationDescription.class, applicationDescription);
         ResteasyContext.pushContext(ApplicationDescription.class, applicationDescription);
