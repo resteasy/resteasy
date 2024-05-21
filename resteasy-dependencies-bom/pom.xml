@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-dependencies</artifactId>
-    <version>7.0.0.Alpha2</version>
+    <version>7.0.0.Alpha3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>RESTEasy dependencies BOM</name>
     <description>RESTEasy dependencies BOM</description>
