@@ -1,6 +1,8 @@
 package org.jboss.resteasy.test.mapper;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -99,7 +101,12 @@ public class ExceptionHandlerTest {
             Assertions.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, result.getStatusInfo());
             Assertions.assertEquals("SprocketDBException test", result.readEntity(String.class));
         } catch (UnhandledException ue) {
-            Assertions.fail("Test failed to properly handle the exception with the default exception handler");
+            try (
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw)) {
+                ue.printStackTrace(pw);
+                Assertions.fail("An unexpected exception has occured: " + sw);
+            }
         }
     }
 
@@ -146,6 +153,31 @@ public class ExceptionHandlerTest {
 
         Assertions.assertEquals(result.getStatus(), statusCode,
                 "One LoggableFailure: incorrect status code returned");
+    }
+
+    @Test
+    public void testFailureWithNoResponse() throws Exception {
+
+        ResteasyProviderFactory factory = ResteasyProviderFactory.newInstance();
+        HttpRequest request = MockHttpRequest.get("/locating/basic");
+
+        ExceptionHandler eHandler = new ExceptionHandler(factory, unwrappedExceptions);
+
+        // Check that a failure without a response gets a default response of type "text/plain" instead of "text/html"
+        // (RESTEASY-3500)
+        LoggableFailure ApplicationFailure = new LoggableFailure("Random Failure message");
+
+        try {
+            Response result = eHandler.handleException(request, ApplicationFailure);
+            Assertions.assertEquals("text/plain", result.getMetadata().get("Content-Type").get(0));
+        } catch (UnhandledException ue) {
+            try (
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw)) {
+                ue.printStackTrace(pw);
+                Assertions.fail("An unexpected exception has occured: " + sw);
+            }
+        }
     }
 
     @Test
