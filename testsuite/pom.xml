@@ -118,6 +118,11 @@
                         <groupId>javax.inject</groupId>
                         <artifactId>javax.inject</artifactId>
                     </exclusion>
+                    <!-- caused  [CIRCULAR REFERENCE: java.lang.RuntimeException: Could not create new instance of class org.jboss.arquillian.test.impl.EventTestRunnerAdaptor] -->
+                    <exclusion>
+                        <groupId>org.jboss.arquillian.junit</groupId>
+                        <artifactId>arquillian-junit-container</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
