@@ -27,9 +27,9 @@
         <version.org.jboss.shrinkwrap.resolver>3.3.0</version.org.jboss.shrinkwrap.resolver>
 
         <!-- Channel Manifest for Bootable Jar -->
-        <channel-manifest.groupId>org.jboss.eap.channels</channel-manifest.groupId>
-        <channel-manifest.artifactId>eap-8.0-plus-eap-xp-5.0</channel-manifest.artifactId>
-        <channel-manifest.version>1.0.1.GA-redhat-20240229</channel-manifest.version>
+        <channel-manifest.groupId/>
+        <channel-manifest.artifactId/>
+        <channel-manifest.version/>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
