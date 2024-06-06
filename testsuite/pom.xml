@@ -124,6 +124,10 @@
                         <groupId>javax.inject</groupId>
                         <artifactId>javax.inject</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>org.jboss.arquillian.junit</groupId>
+                        <artifactId>arquillian-junit-container</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
