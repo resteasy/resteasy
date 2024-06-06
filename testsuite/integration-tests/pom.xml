@@ -184,35 +184,6 @@
             </build>
         </profile>
         <profile>
-            <id>bootablejar.profile.channel</id>
-            <activation>
-                <property>
-                    <name>ts.bootable.channel</name>
-                </property>
-            </activation>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.wildfly.plugins</groupId>
-                            <artifactId>wildfly-jar-maven-plugin</artifactId>
-                            <configuration>
-                                <channels>
-                                    <channel>
-                                        <manifest>
-                                            <groupId>${channel-manifest.groupId}</groupId>
-                                            <artifactId>${channel-manifest.artifactId}</artifactId>
-                                            <version>${channel-manifest.version}</version>
-                                        </manifest>
-                                    </channel>
-                                </channels>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
-        </profile>
-        <profile>
             <id>bootablejar.profile</id>
             <activation>
                 <property>
@@ -273,6 +244,15 @@
                                         <layer>undertow-https</layer>
                                         <layer>ejb</layer>
                                     </layers>
+                                    <channels>
+                                        <channel>
+                                            <manifest>
+                                                <groupId>${channel-manifest.groupId}</groupId>
+                                                <artifactId>${channel-manifest.artifactId}</artifactId>
+                                                <version>${channel-manifest.version}</version>
+                                            </manifest>
+                                        </channel>
+                                    </channels>
                                 </configuration>
                             </execution>
                         </executions>
