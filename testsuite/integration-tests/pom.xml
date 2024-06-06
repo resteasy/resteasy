@@ -187,11 +187,11 @@
             </activation>
             <properties>
                 <!-- Channel Manifest for Bootable Jar -->
-                <channel-manifest.groupId>org.jboss.eap.channels</channel-manifest.groupId>
-                <channel-manifest.artifactId>eap-8.0-plus-eap-xp-5.0</channel-manifest.artifactId>
-                <channel-manifest.version>1.0.1.GA-redhat-20240229</channel-manifest.version>
+                <channel-manifest.groupId/>
+                <channel-manifest.artifactId/>
+                <channel-manifest.version/>
                 <!--  some incompatible changes between 9.x and 10.x+ : with XP5 we need to use this version -->
-                <version.org.wildfly.jar.plugin>9.0.0.Final</version.org.wildfly.jar.plugin>
+                <version.org.wildfly.jar.plugin>11.0.2.Final</version.org.wildfly.jar.plugin>
             </properties>
             <build>
                 <pluginManagement>
