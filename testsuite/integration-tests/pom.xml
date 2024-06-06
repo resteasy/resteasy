@@ -25,6 +25,11 @@
         <module.jar.path>${jboss.home}${file.separator}modules${file.separator}system${file.separator}layers${file.separator}base</module.jar.path>
 
         <version.org.jboss.shrinkwrap.resolver>3.3.0</version.org.jboss.shrinkwrap.resolver>
+
+        <!-- Channel Manifest for Bootable Jar -->
+        <channel-manifest.groupId/>
+        <channel-manifest.artifactId/>
+        <channel-manifest.version/>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
@@ -179,43 +184,6 @@
             </build>
         </profile>
         <profile>
-            <id>bootablejar.profile.channel</id>
-            <activation>
-                <property>
-                    <name>ts.bootable.channel</name>
-                </property>
-            </activation>
-            <properties>
-                <!-- Channel Manifest for Bootable Jar -->
-                <channel-manifest.groupId/>
-                <channel-manifest.artifactId/>
-                <channel-manifest.version/>
-                <!--  some incompatible changes between 9.x and 10.x+ : with XP5 we need to use this version -->
-                <version.org.wildfly.jar.plugin>11.0.2.Final</version.org.wildfly.jar.plugin>
-            </properties>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.wildfly.plugins</groupId>
-                            <artifactId>wildfly-jar-maven-plugin</artifactId>
-                            <configuration>
-                                <channels>
-                                    <channel>
-                                        <manifest>
-                                            <groupId>${channel-manifest.groupId}</groupId>
-                                            <artifactId>${channel-manifest.artifactId}</artifactId>
-                                            <version>${channel-manifest.version}</version>
-                                        </manifest>
-                                    </channel>
-                                </channels>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
-        </profile>
-        <profile>
             <id>bootablejar.profile</id>
             <activation>
                 <property>
@@ -276,6 +244,15 @@
                                         <layer>undertow-https</layer>
                                         <layer>ejb</layer>
                                     </layers>
+                                    <channels>
+                                        <channel>
+                                            <manifest>
+                                                <groupId>${channel-manifest.groupId}</groupId>
+                                                <artifactId>${channel-manifest.artifactId}</artifactId>
+                                                <version>${channel-manifest.version}</version>
+                                            </manifest>
+                                        </channel>
+                                    </channels>
                                 </configuration>
                             </execution>
                         </executions>
