@@ -218,7 +218,7 @@ public class ExceptionHandler {
         } else {
             Response.ResponseBuilder builder = Response.status(failure.getErrorCode());
             if (failure.getMessage() != null)
-                builder.type(MediaType.TEXT_HTML).entity(failure.getMessage());
+                builder.type(MediaType.TEXT_PLAIN).entity(failure.getMessage());
             Response resp = builder.build();
             return resp;
         }
@@ -244,7 +244,7 @@ public class ExceptionHandler {
             }
 
             if (e.getMessage() != null) {
-                builder.type(MediaType.TEXT_HTML).entity(e.getMessage());
+                builder.type(MediaType.TEXT_PLAIN).entity(e.getMessage());
             }
             Response resp = builder.build();
             return resp;

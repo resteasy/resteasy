@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * @tpSubChapter XXE
@@ -399,6 +400,7 @@ public class SecureProcessing2Test {
      * @tpSince RESTEasy 3.1.0
      */
     @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "7.0.0.Alpha3")
     public void testSecurityDefaultDTDsTrueExpansionTrueWithApacheLinkMessage() throws Exception {
         doTestSkipFailsFailsSkipWithApacheLinkMessage("dtt");
     }
@@ -602,7 +604,7 @@ public class SecureProcessing2Test {
         Assertions.assertTrue(entity.contains("jakarta.xml.bind.UnmarshalException"),
                 "Wrong exception in response");
         Assertions.assertTrue(entity.contains("DOCTYPE"), "Wrong content of response");
-        Assertions.assertTrue(entity.contains("http:&#x2F;&#x2F;apache.org&#x2F;xml&#x2F;features&#x2F;disallow-doctype-decl"),
+        Assertions.assertTrue(entity.contains("http://apache.org/xml/features/disallow-doctype-decl"),
                 "Wrong content of response");
         Assertions.assertTrue(entity.contains("true"), "Wrong content of response");
     }
