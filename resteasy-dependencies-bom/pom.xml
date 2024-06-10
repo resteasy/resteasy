@@ -46,7 +46,7 @@
         <version.org.glassfish.jaxb>4.0.4</version.org.glassfish.jaxb>
         <version.com.sun.istack>4.1.2</version.com.sun.istack>
         <version.com.sun.xml.fastinfoset>2.1.1</version.com.sun.xml.fastinfoset>
-        <version.commons-io.commons-io>2.13.0</version.commons-io.commons-io>
+        <version.commons-io.commons-io>2.16.1</version.commons-io.commons-io>
         <version.commons-codec.commons-codec>1.16.1</version.commons-codec.commons-codec>
         <version.io.netty.netty4>4.1.109.Final</version.io.netty.netty4>
         <version.io.vertx>4.5.7</version.io.vertx>
