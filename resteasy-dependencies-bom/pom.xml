@@ -48,8 +48,8 @@
         <version.com.sun.xml.fastinfoset>2.1.1</version.com.sun.xml.fastinfoset>
         <version.commons-io.commons-io>2.16.1</version.commons-io.commons-io>
         <version.commons-codec.commons-codec>1.16.1</version.commons-codec.commons-codec>
-        <version.io.netty.netty4>4.1.109.Final</version.io.netty.netty4>
-        <version.io.vertx>4.5.7</version.io.vertx>
+        <version.io.netty.netty4>4.1.110.Final</version.io.netty.netty4>
+        <version.io.vertx>4.5.8</version.io.vertx>
         <version.io.undertow>2.3.13.Final</version.io.undertow>
         <version.jakarta.activation>2.1.2</version.jakarta.activation>
         <version.jakarta.enterprise.cdi-api>4.1.0</version.jakarta.enterprise.cdi-api>
