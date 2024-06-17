@@ -19,12 +19,17 @@
 
 package org.jboss.resteasy.test.core.basic;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.ReflectPermission;
 import java.util.PropertyPermission;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -39,24 +44,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
- * Tests that the default {@link ExceptionMapper} is disabled.
+ * Tests that the default {@link ExceptionMapper} is disabled overriding the default exception mapper.
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
 @ExtendWith(ArquillianExtension.class)
 @RequestScoped
-public class DisabledDefaultExceptionNoThrowableMapperMapperTest extends DisabledDefaultExceptionMapperTest {
+public class DisabledDefaultExceptionThrowableMapperTest extends DisabledDefaultExceptionMapperTest {
 
     @Deployment
     public static WebArchive createDeployment() {
         return ShrinkWrap
-                .create(WebArchive.class, DisabledDefaultExceptionNoThrowableMapperMapperTest.class.getSimpleName() + ".war")
+                .create(WebArchive.class, DisabledDefaultExceptionThrowableMapperTest.class.getSimpleName() + ".war")
                 .addClasses(
                         DisabledDefaultExceptionMapperTest.class,
                         ExceptionResource.class,
                         TestUtil.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-                // These can be removed if WFARQ-118 is resolved
+                // This can be removed if WFARQ-118 is resolved
                 .addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
                         // Required for Arquillian
                         new ReflectPermission("suppressAccessChecks"),
@@ -72,27 +77,43 @@ public class DisabledDefaultExceptionNoThrowableMapperMapperTest extends Disable
      */
     @Test
     public void defaultExceptionMapper() {
-        Assertions.assertNull(providers.getExceptionMapper(RuntimeException.class),
-                "Expected not to have a default exception mapper");
+        final ExceptionMapper<?> mapper = providers.getExceptionMapper(RuntimeException.class);
+        Assertions.assertTrue(mapper instanceof ThrowableExceptionMapper,
+                String.format("Expected mapper %s to be instance of %s.", mapper, ThrowableExceptionMapper.class));
     }
 
-    /**
-     * Test that the exception falls through and an UnhandledException is thrown.
-     *
-     * @throws Exception if an exception occurs
-     */
     @Test
-    public void noDefaultExceptionMapper() throws Exception {
+    public void defaultException() throws Exception {
         final Response response = client.target(TestUtil.generateUri(url, "exception"))
                 .request()
                 .get();
-        Assertions.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
-        // We should end up with a stack trace in the response by default. There should be an UnhandledException and the
-        // exception thrown.
+        Assertions.assertEquals(Response.Status.NOT_IMPLEMENTED, response.getStatusInfo());
         final String value = response.readEntity(String.class);
         Assertions.assertTrue(value.contains(ExceptionResource.EXCEPTION_MESSAGE),
-                String.format("Expected %s to be in the result: %s", ExceptionResource.EXCEPTION_MESSAGE, value));
-        Assertions.assertTrue(value.contains("UnhandledException"),
-                String.format("Expected UnhandledException to be in the result: %s", value));
+                String.format("Expected exception message %s in %s", ExceptionResource.EXCEPTION_MESSAGE, value));
+    }
+
+    @Provider
+    public static class ThrowableExceptionMapper implements ExceptionMapper<Throwable> {
+
+        @Override
+        public Response toResponse(final Throwable exception) {
+            return Response.status(Response.Status.NOT_IMPLEMENTED)
+                    .entity(toString(exception))
+                    .type(MediaType.TEXT_PLAIN_TYPE)
+                    .build();
+        }
+
+        private static String toString(final Throwable t) {
+            try (
+                    StringWriter writer = new StringWriter();
+                    PrintWriter pw = new PrintWriter(writer)) {
+                t.printStackTrace(pw);
+                return writer.toString();
+            } catch (IOException ignore) {
+            }
+            return String.format("Failed to print stack trace for %s: %s", t.getClass()
+                    .getName(), t.getLocalizedMessage());
+        }
     }
 }
