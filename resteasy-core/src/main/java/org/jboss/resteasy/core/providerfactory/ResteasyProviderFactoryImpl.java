@@ -147,12 +147,22 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
     protected boolean lockSnapshots;
     protected StatisticsControllerImpl statisticsController = new StatisticsControllerImpl();
 
-    private final boolean defaultExceptionManagerEnabled = getOptionValue(Options.ENABLE_DEFAULT_EXCEPTION_MAPPER);
+    private final boolean defaultExceptionManagerEnabled;
 
     public ResteasyProviderFactoryImpl() {
+        this(getOptionValue(Options.ENABLE_DEFAULT_EXCEPTION_MAPPER));
+    }
+
+    /**
+     * Creates a new factory.
+     *
+     * @param defaultExceptionManagerEnabled {@code true} if the default exception manager should be enabled
+     */
+    public ResteasyProviderFactoryImpl(final boolean defaultExceptionManagerEnabled) {
         // NOTE!!! It is important to put all initialization into initialize() as ThreadLocalResteasyProviderFactory
         // subclasses and delegates to this class.
         initialize();
+        this.defaultExceptionManagerEnabled = defaultExceptionManagerEnabled;
     }
 
     /**
@@ -168,6 +178,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
         initializeCommon(null, true, false);
         // don't know when client will be made shareable so just do it here
         lockSnapshots();
+        this.defaultExceptionManagerEnabled = getOptionValue(Options.ENABLE_DEFAULT_EXCEPTION_MAPPER);
     }
 
     /**
@@ -195,6 +206,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
             serverHelper = new ServerHelper(this, parentImpl.serverHelper);
             initializeCommon(parentImpl, false, true);
         }
+        this.defaultExceptionManagerEnabled = getOptionValue(Options.ENABLE_DEFAULT_EXCEPTION_MAPPER);
     }
 
     protected void registerBuiltin() {
@@ -1014,6 +1026,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
         Class exceptionType = type;
         SortedKey<ExceptionMapper> mapper = null;
         Map<Class<?>, SortedKey<ExceptionMapper>> mappers = getSortedExceptionMappers();
+        final boolean defaultExceptionManagerEnabled = isDefaultExceptionManagerEnabled();
         if (mappers == null && defaultExceptionManagerEnabled) {
             return (ExceptionMapper<T>) DefaultExceptionMapper.INSTANCE;
         }
