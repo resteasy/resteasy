@@ -119,4 +119,4 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
       - name: Build Java Docs with Java 11
-        run: mvn clean site install -B -DskipTests
+        run: mvn clean site install -B -DskipTests -Dmpir.skip=true
