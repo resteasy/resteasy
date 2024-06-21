@@ -89,4 +89,4 @@ jobs:
       - name: Build Java Docs with Java 17
         run: |
           mvn clean install -B -DskipTests
-          mvn clean site -B -DskipTests
+          mvn clean site -B -DskipTests -Dmpir.skip=true
