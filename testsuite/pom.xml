@@ -36,6 +36,7 @@
 
         <wildfly.channel.manifest.groupId>org.wildfly.channels</wildfly.channel.manifest.groupId>
         <wildfly.channel.manifest.artifactId>wildfly-ee</wildfly.channel.manifest.artifactId>
+        <wildfly.channel.manifest.version>${server.version}</wildfly.channel.manifest.version>
 
         <resteasy.channel.manifest.groupId>dev.resteasy.channels</resteasy.channel.manifest.groupId>
         <resteasy.channel.manifest.artifactId>resteasy-${channel.stream.version}</resteasy.channel.manifest.artifactId>
@@ -494,7 +495,7 @@
             </activation>
             <properties>
                 <additional.surefire.excluded.groups>NotForBootableJar</additional.surefire.excluded.groups>
-                <testsuite.wildfly.galleon.pack.group.id>org.wildfly</testsuite.wildfly.galleon.pack.group.id>
+                <!--<testsuite.wildfly.galleon.pack.group.id>org.wildfly</testsuite.wildfly.galleon.pack.group.id>-->
             </properties>
             <modules>
                 <module>arquillian-utils</module>

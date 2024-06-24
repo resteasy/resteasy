@@ -25,11 +25,6 @@
         <module.jar.path>${jboss.home}${file.separator}modules${file.separator}system${file.separator}layers${file.separator}base</module.jar.path>
 
         <version.org.jboss.shrinkwrap.resolver>3.3.0</version.org.jboss.shrinkwrap.resolver>
-
-        <!-- Channel Manifest for Bootable Jar -->
-        <channel-manifest.groupId/>
-        <channel-manifest.artifactId/>
-        <channel-manifest.version/>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
@@ -227,8 +222,13 @@
                                     </plugin-options>
                                     <feature-packs>
                                         <feature-pack>
+                                            <!--
                                             <groupId>${testsuite.wildfly.galleon.pack.group.id}</groupId>
                                             <artifactId>wildfly-galleon-pack</artifactId>
+                                            <version>${server.version}</version>
+                                            -->
+                                            <groupId>${server.test.feature.pack.groupId}</groupId>
+                                            <artifactId>${server.test.feature.pack.artifactId}</artifactId>
                                             <version>${server.version}</version>
                                             <!-- Required for rxjava -->
                                             <includedPackages>
@@ -247,9 +247,21 @@
                                     <channels>
                                         <channel>
                                             <manifest>
-                                                <groupId>${channel-manifest.groupId}</groupId>
+                                                <groupId>${wildfly.channel.manifest.groupId}</groupId>
+                                                <artifactId>${wildfly.channel.manifest.artifactId}</artifactId>
+                                                <version>${wildfly.channel.manifest.version}</version>
+                                            </manifest>
+                                            <!--<manifest>
+                                                <groupId>${wildfly.channel.manifest.groupId}</groupId>
                                                 <artifactId>${channel-manifest.artifactId}</artifactId>
                                                 <version>${channel-manifest.version}</version>
+                                            </manifest>-->
+                                        </channel>
+                                        <channel>
+                                            <manifest>
+                                                <groupId>${resteasy.channel.manifest.groupId}</groupId>
+                                                <artifactId>${resteasy.channel.manifest.artifactId}</artifactId>
+                                                <version>${resteasy.channel.manifest.version}</version>
                                             </manifest>
                                         </channel>
                                     </channels>

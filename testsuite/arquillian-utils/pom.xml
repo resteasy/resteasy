@@ -137,7 +137,7 @@
         </dependency>
     </dependencies>
 
-    <profiles>
+    <!--<profiles>
         <profile>
             <id>bootablejar.profile</id>
             <activation>
@@ -152,7 +152,7 @@
                 </dependency>
             </dependencies>
         </profile>
-    </profiles>
+    </profiles>-->
 
     <build>
         <plugins>
