@@ -179,12 +179,34 @@
             </build>
         </profile>
         <profile>
+            <id>default</id>
+            <activation>
+                <property>
+                    <name>!ts.bootable</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.wildfly.arquillian</groupId>
+                    <artifactId>wildfly-arquillian-container-managed</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>bootablejar.profile</id>
             <activation>
                 <property>
                     <name>ts.bootable</name>
                 </property>
             </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.wildfly.arquillian</groupId>
+                    <artifactId>wildfly-arquillian-container-bootable</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <!-- Disable the standard copy-based provisioning -->
@@ -222,11 +244,6 @@
                                     </plugin-options>
                                     <feature-packs>
                                         <feature-pack>
-                                            <!--
-                                            <groupId>${testsuite.wildfly.galleon.pack.group.id}</groupId>
-                                            <artifactId>wildfly-galleon-pack</artifactId>
-                                            <version>${server.version}</version>
-                                            -->
                                             <groupId>${server.test.feature.pack.groupId}</groupId>
                                             <artifactId>${server.test.feature.pack.artifactId}</artifactId>
                                             <version>${server.version}</version>
@@ -238,7 +255,6 @@
                                     </feature-packs>
                                     <layers>
                                         <layer>jaxrs-server</layer>
-                                        <layer>microprofile-config</layer>
                                         <layer>datasources</layer>
                                         <layer>h2-default-datasource</layer>
                                         <layer>undertow-https</layer>
@@ -250,18 +266,6 @@
                                                 <groupId>${wildfly.channel.manifest.groupId}</groupId>
                                                 <artifactId>${wildfly.channel.manifest.artifactId}</artifactId>
                                                 <version>${wildfly.channel.manifest.version}</version>
-                                            </manifest>
-                                            <!--<manifest>
-                                                <groupId>${wildfly.channel.manifest.groupId}</groupId>
-                                                <artifactId>${channel-manifest.artifactId}</artifactId>
-                                                <version>${channel-manifest.version}</version>
-                                            </manifest>-->
-                                        </channel>
-                                        <channel>
-                                            <manifest>
-                                                <groupId>${resteasy.channel.manifest.groupId}</groupId>
-                                                <artifactId>${resteasy.channel.manifest.artifactId}</artifactId>
-                                                <version>${resteasy.channel.manifest.version}</version>
                                             </manifest>
                                         </channel>
                                     </channels>
@@ -704,11 +708,6 @@
         </dependency>
         <dependency>
             <groupId>org.wildfly.arquillian</groupId>
-            <artifactId>wildfly-arquillian-container-managed</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.wildfly.arquillian</groupId>
             <artifactId>wildfly-arquillian-junit-api</artifactId>
             <scope>test</scope>
         </dependency>
@@ -726,12 +725,14 @@
                 <filtering>true</filtering>
                 <includes>
                     <include>arquillian.xml</include>
+                    <include>arquillian-bootable.xml</include>
                 </includes>
             </testResource>
             <testResource>
                 <directory>src/test/resources</directory>
                 <excludes>
                     <exclude>arquillian.xml</exclude>
+                    <exclude>arquillian-bootable.xml</exclude>
                 </excludes>
             </testResource>
         </testResources>
