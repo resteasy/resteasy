@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * @tpSubChapter Blacklisted media types - RESTEASY-2198
@@ -43,6 +44,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@RequiresModule("org.bouncycastle")
 public class BlacklistedMediaTypeTest {
 
     private static final String APPLICATION_SIGNED_EXCHANGE = "application/signed-exchange";

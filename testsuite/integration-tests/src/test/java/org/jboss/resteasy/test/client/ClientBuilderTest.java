@@ -19,6 +19,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
@@ -29,6 +30,7 @@ import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
  * @tpSince RESTEasy 3.0.17
  */
 @ExtendWith(ArquillianExtension.class)
+@Tag("NotForBootableJar")
 public class ClientBuilderTest {
 
     @SuppressWarnings(value = "unchecked")

@@ -42,6 +42,8 @@
         <wildfly.channel.manifest.groupId>org.wildfly.channels</wildfly.channel.manifest.groupId>
         <!-- WildFly Preview is currently targeting Jakarta EE 11 and we should use it by default
         <wildfly.channel.manifest.artifactId>wildfly-ee</wildfly.channel.manifest.artifactId> -->
+        <wildfly.channel.manifest.version>${server.version}</wildfly.channel.manifest.version>
+
 
         <resteasy.channel.manifest.groupId>dev.resteasy.channels</resteasy.channel.manifest.groupId>
         <resteasy.channel.manifest.artifactId>resteasy-${channel.stream.version}</resteasy.channel.manifest.artifactId>
@@ -123,6 +125,10 @@
                     <exclusion>
                         <groupId>javax.inject</groupId>
                         <artifactId>javax.inject</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.jboss.arquillian.junit</groupId>
+                        <artifactId>arquillian-junit-container</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -477,6 +483,22 @@
             <properties>
                 <wildfly.skip>true</wildfly.skip>
             </properties>
+        </profile>
+
+        <profile>
+            <id>bootablejar.profile</id>
+            <activation>
+                <property>
+                    <name>ts.bootable</name>
+                </property>
+            </activation>
+            <properties>
+                <additional.surefire.excluded.groups>NotForBootableJar,managed-bean-support-required</additional.surefire.excluded.groups>
+            </properties>
+            <modules>
+                <module>arquillian-utils</module>
+                <module>integration-tests</module>
+            </modules>
         </profile>
     </profiles>
 

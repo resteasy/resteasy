@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -75,6 +76,7 @@ public class DynamicFeatureTest {
      *                - dynamic features for filters and interceptors are resolved once for each resource method
      * @tpSince RESTEasy 3.8.0
      */
+    @Tag("NotForBootableJar")
     @Test
     @Order(1)
     public void testDynamicFeatureProcessing() {
