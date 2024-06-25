@@ -493,7 +493,7 @@
                 </property>
             </activation>
             <properties>
-                <additional.surefire.excluded.groups>NotForBootableJar</additional.surefire.excluded.groups>
+                <additional.surefire.excluded.groups>NotForBootableJar,managed-bean-support-required</additional.surefire.excluded.groups>
             </properties>
             <modules>
                 <module>arquillian-utils</module>

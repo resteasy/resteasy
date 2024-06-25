@@ -10,7 +10,7 @@
                 <property name="jarFile">${bootable.jar}</property>
                 <property name="javaVmArguments">-server -Xms256m -Xmx1G -Djboss.bind.address=${node}
                     -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs}
-                    ${modular.jdk.args} ${ipv6ArquillianSettings}
+                    ${ipv6ArquillianSettings}
                     -Djboss.socket.binding.port-offset=${container.offset.managed}
                 </property>
                 <property name="jbossArguments">${securityManagerArg}</property>
@@ -31,7 +31,7 @@
                 <!-- Forcing file.encoding=us-ascii in order to test RESTEASY-2171 -->
                 <property name="javaVmArguments">-Dorg.jboss.resteasy.port=15080 -Dfile.encoding=us-ascii -server
                     -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node}
-                    -Dipv6=${ipv6} ${additionalJvmArgs} ${modular.jdk.args} ${ipv6ArquillianSettings}
+                    -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings}
                     -Djboss.socket.binding.port-offset=7000
                 </property>
                 <property name="jbossArguments">${securityManagerArg}</property>
