@@ -79,6 +79,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
@@ -98,6 +99,7 @@ import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
  */
 @ExtendWith(ArquillianExtension.class)
 @ServerSetup(JmsTestQueueSetupTask.class)
+@Tag("NotForBootableJar")
 public class ReverseInjectionTest {
     private static Logger log = Logger.getLogger(ReverseInjectionTest.class);
 

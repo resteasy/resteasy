@@ -1,0 +1,2 @@
+# Allow TRACE methods in Undertow
+/subsystem=undertow/server=default-server/http-listener=default:list-clear(name=disallowed-methods)

@@ -36,6 +36,7 @@
 
         <wildfly.channel.manifest.groupId>org.wildfly.channels</wildfly.channel.manifest.groupId>
         <wildfly.channel.manifest.artifactId>wildfly-ee</wildfly.channel.manifest.artifactId>
+        <wildfly.channel.manifest.version>${server.version}</wildfly.channel.manifest.version>
 
         <resteasy.channel.manifest.groupId>dev.resteasy.channels</resteasy.channel.manifest.groupId>
         <resteasy.channel.manifest.artifactId>resteasy-${channel.stream.version}</resteasy.channel.manifest.artifactId>
@@ -117,6 +118,11 @@
                     <exclusion>
                         <groupId>javax.inject</groupId>
                         <artifactId>javax.inject</artifactId>
+                    </exclusion>
+                    <!-- caused  [CIRCULAR REFERENCE: java.lang.RuntimeException: Could not create new instance of class org.jboss.arquillian.test.impl.EventTestRunnerAdaptor] -->
+                    <exclusion>
+                        <groupId>org.jboss.arquillian.junit</groupId>
+                        <artifactId>arquillian-junit-container</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -479,6 +485,22 @@
             <properties>
                 <wildfly.skip>true</wildfly.skip>
             </properties>
+        </profile>
+        <profile>
+            <id>bootablejar.profile</id>
+            <activation>
+                <property>
+                    <name>ts.bootable</name>
+                </property>
+            </activation>
+            <properties>
+                <additional.surefire.excluded.groups>NotForBootableJar</additional.surefire.excluded.groups>
+                <!--<testsuite.wildfly.galleon.pack.group.id>org.wildfly</testsuite.wildfly.galleon.pack.group.id>-->
+            </properties>
+            <modules>
+                <module>arquillian-utils</module>
+                <module>integration-tests</module>
+            </modules>
         </profile>
     </profiles>
 
