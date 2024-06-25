@@ -223,6 +223,14 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <!-- Do not provision WildFly for bootable JAR tests -->
+                    <plugin>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-maven-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
                     <plugin>
                         <groupId>org.wildfly.plugins</groupId>
                         <artifactId>wildfly-jar-maven-plugin</artifactId>
@@ -269,6 +277,13 @@
                                             </manifest>
                                         </channel>
                                     </channels>
+                                    <cli-sessions>
+                                        <cli-session>
+                                            <script-files>
+                                                <script>${basedir}/../config/configure-bootable-jar.cli</script>
+                                            </script-files>
+                                        </cli-session>
+                                    </cli-sessions>
                                 </configuration>
                             </execution>
                         </executions>
@@ -277,28 +292,12 @@
                     <plugin>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
-                            <systemPropertyVariables>
+                            <systemPropertyVariables combine.children="append">
                                 <install.dir>${project.build.directory}/wildfly</install.dir>
                                 <bootable.jar>${project.build.directory}/jaxrs-server.jar</bootable.jar>
                                 <arquillian.xml>arquillian-bootable.xml</arquillian.xml>
-                                <container.management.port.managed>${container.management.port.managed}</container.management.port.managed>
-                                <securityManagerArg>${securityManagerArg}</securityManagerArg>
-                                <additionalJvmArgs>${additionalJvmArgs}</additionalJvmArgs>
-                                <ipv6>false</ipv6>
-                                <ipv6ArquillianSettings></ipv6ArquillianSettings>
-                                <node>127.0.0.1</node>
-                                <project.version>${project.version}</project.version>
-                                <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
-                                <security.provider>${security.provider}</security.provider>
-                                <modular.jdk.args>${modular.jdk.args}</modular.jdk.args>
-                                <container.base.dir.managed>${container.base.dir.managed}</container.base.dir.managed>
-                                <container.offset.managed>0</container.offset.managed>
-                                <container.qualifier.managed>${container.qualifier.managed}</container.qualifier.managed>
-                                <container.qualifier.managed.encoding>${container.qualifier.managed.encoding}</container.qualifier.managed.encoding>
-                                <container.offset.managed.encoding>${container.offset.managed.encoding}</container.offset.managed.encoding>
-                                <container.management.port.managed.encoding>${container.management.port.managed.encoding}</container.management.port.managed.encoding>
-                                <resteasy.microprofile.sseclient.buffersize>5</resteasy.microprofile.sseclient.buffersize>
                             </systemPropertyVariables>
+                            <excludedGroups>${additional.surefire.excluded.groups}</excludedGroups>
                         </configuration>
                         <executions>
                             <execution>

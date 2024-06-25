@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -77,6 +78,7 @@ public class DynamicFeatureTest {
      */
     @Test
     @Order(1)
+    @Tag("NotForBootableJar")
     public void testDynamicFeatureProcessing() {
         int counter = logCounter.count();
         Assertions.assertNotEquals(0, counter,
