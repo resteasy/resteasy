@@ -20,7 +20,7 @@
                 <property name="managementAddress">${node}</property>
                 <property name="managementPort">${container.management.port.managed}</property>
                 <!-- AS7-4070 -->
-                <property name="waitForPorts">8787 ${container.management.port.managed}</property>
+                <property name="waitForPorts">${container.management.port.managed}</property>
                 <property name="waitForPortsTimeoutInSeconds">8</property>
             </configuration>
         </container>
@@ -41,7 +41,7 @@
                 <property name="managementAddress">${node}</property>
                 <property name="managementPort">${container.management.port.managed.encoding}</property>
                 <!-- AS7-4070 -->
-                <property name="waitForPorts">8787 ${container.management.port.managed.encoding}</property>
+                <property name="waitForPorts">${container.management.port.managed.encoding}</property>
                 <property name="waitForPortsTimeoutInSeconds">8</property>
             </configuration>
         </container>
