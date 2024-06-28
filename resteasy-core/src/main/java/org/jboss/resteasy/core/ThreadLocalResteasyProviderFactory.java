@@ -59,6 +59,18 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
         this.defaultFactory = defaultFactory;
     }
 
+    /**
+     * Creates a new thread local provider.
+     *
+     * @param defaultFactory                 the delegate provider
+     * @param defaultExceptionManagerEnabled {@code true} if the default exception manager should be enabled
+     */
+    public ThreadLocalResteasyProviderFactory(final ResteasyProviderFactory defaultFactory,
+            final boolean defaultExceptionManagerEnabled) {
+        super(defaultExceptionManagerEnabled);
+        this.defaultFactory = defaultFactory;
+    }
+
     public ResteasyProviderFactory getDelegate() {
         ResteasyProviderFactory factory = delegate.get();
         if (factory == null)
