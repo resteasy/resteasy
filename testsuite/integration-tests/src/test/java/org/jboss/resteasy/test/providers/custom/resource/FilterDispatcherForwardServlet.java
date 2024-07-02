@@ -15,7 +15,7 @@ public class FilterDispatcherForwardServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
-        logger.info("enterng ForwardServlet.service()");
+        logger.info("entering ForwardServlet.service()");
         res.getOutputStream().write("forward".getBytes());
     }
 }
