@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 import jakarta.ws.rs.sse.SseEventSink;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.util.Functions;
 
 /**
@@ -97,6 +98,18 @@ public class Options<T> {
     }
 
     /**
+     * Resolves the value from the configuration
+     *
+     * @param configuration a {@linkplain ResteasyConfiguration configuration} used to resolve default values, if
+     *                      {@code null} a default resolver will be used
+     *
+     * @return the value or the default value which may be {@code null}
+     */
+    public T getValue(final ResteasyConfiguration configuration) {
+        return getProperty(configuration, key, name, dftValue);
+    }
+
+    /**
      * The key for the property.
      *
      * @return the key for the property
@@ -140,12 +153,32 @@ public class Options<T> {
         return getProperty(name, returnType).orElseGet(dft);
     }
 
+    /**
+     * Checks the {@link Configuration} for the property returning the value or the given default.
+     *
+     * @param configuration the optional configuration used for the lookup
+     * @param name          the name of the property
+     * @param returnType    the type of the property
+     * @param dft           the default value if the property was not found
+     *
+     * @return the value found in the configuration or the default value
+     */
+    private static <T> T getProperty(final ResteasyConfiguration configuration, final String name, final Class<T> returnType,
+            final Supplier<T> dft) {
+        return getProperty(configuration, name, returnType).orElseGet(dft);
+    }
+
     private static <T> Optional<T> getProperty(final String name, final Class<T> returnType) {
+        return getProperty(null, name, returnType);
+    }
+
+    private static <T> Optional<T> getProperty(final ResteasyConfiguration configuration, final String name,
+            final Class<T> returnType) {
         // If the MicroProfile Config is available, we might not have Converters for these types. If an error occurs
         // attempting to get the value, log it, but return an empty optional.
         try {
             return ConfigurationFactory.getInstance()
-                    .getConfiguration()
+                    .getConfiguration(configuration)
                     .getOptionalValue(name, returnType);
         } catch (SecurityException e) {
             throw e;
