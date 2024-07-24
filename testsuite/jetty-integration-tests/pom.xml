@@ -20,13 +20,6 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.jboss.arquillian</groupId>
-                <artifactId>arquillian-bom</artifactId>
-                <version>${version.org.jboss.arquillian}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-            <dependency>
                 <groupId>org.jboss.arquillian.container</groupId>
                 <artifactId>arquillian-jetty-embedded-12-ee10</artifactId>
                 <version>${version.arquillian.jetty}</version>
