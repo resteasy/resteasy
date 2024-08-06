@@ -898,4 +898,7 @@ public interface Messages {
     @Message(id = BASE + 2081, value = "File limit of %s has been reached. The entity cannot be processed. Increase the " +
             "size with the configuration property %s.")
     IllegalStateException fileLimitReached(Threshold limit, String propertyName);
+
+    @Message(id = BASE + 2082, value = "The generic type for %s could not be determined based on %s.")
+    IllegalArgumentException couldNotDetermineGenericType(String typeName, String implName);
 }

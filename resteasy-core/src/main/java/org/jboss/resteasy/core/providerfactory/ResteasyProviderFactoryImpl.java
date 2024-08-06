@@ -623,7 +623,25 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
             throw new RuntimeException(Messages.MESSAGES.registeringContextResolverAsLambda());
         }
         copyResolversIfNeeded();
-        Type typeParameter = Types.getActualTypeArgumentsOfAnInterface(providerClass, ContextResolver.class)[0];
+        Type[] typeParameters = Types.getActualTypeArgumentsOfAnInterface(providerClass, ContextResolver.class);
+        Type typeParameter;
+        if (typeParameters.length == 0) {
+            // This may be an indication that this is a CDI client proxy. In some cases, the ContextResolver interface
+            // may appear as implemented by the proxy, in other words providerClass.getGenericTypes() may return the
+            // ContextResolver interface. However, this is not a ParameterizedType, therefore the generic type cannot
+            // be resolved on the client proxy. For this reason, we will check the super class as it should be the
+            // non-proxied type we'd expect and we can get the generic type for the ContextResolver from there.
+            final Class<?> superType = providerClass.getSuperclass();
+            if (superType != null) {
+                typeParameters = Types.getActualTypeArgumentsOfAnInterface(superType, ContextResolver.class);
+            } else {
+                throw Messages.MESSAGES.couldNotDetermineGenericType(providerClass.getName(), ContextResolver.class.getName());
+            }
+            if (typeParameters.length == 0) {
+                throw Messages.MESSAGES.couldNotDetermineGenericType(providerClass.getName(), ContextResolver.class.getName());
+            }
+        }
+        typeParameter = typeParameters[0];
         Utils.injectProperties(this, providerClass, provider);
         Class<?> parameterClass = Types.getRawType(typeParameter);
         MediaTypeMap<SortedKey<ContextResolver>> resolvers = contextResolvers.get(parameterClass);
