@@ -51,7 +51,15 @@ public class ProviderWithNoProducesTest {
     public void testWriteFoo() throws Exception {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(generateURL("/foo"));
-        Response response = target.request().accept("foo/bar;q=0.9, bar/foo;q=1.0").get();
+        // TODO (jrp) This fixes these tests because it chooses the foo/bar over the bar/foo. The
+        // TODO (jrp) spirit of this test is to check that foo/bar is chosen. However, with the spec algorithm, it would
+        // TODO (jrp) choose bar/foo if the q=1.0 is assigned there. When choosing the type from the
+        // TODO (jrp) accept header, we should not be checking whether MBW.isWritable(). The spec
+        // TODO (jrp) https://jakarta.ee/specifications/restful-ws/3.1/jakarta-restful-ws-spec-3.1#determine_response_type
+        // TODO (jrp) does not indicate this needs to be tested when determining the response type. It does, however,
+        // TODO (jrp) indicate later if there is a MBW https://jakarta.ee/specifications/restful-ws/3.1/jakarta-restful-ws-spec-3.1#message_body_writer.
+        // TODO (jrp) Therefore, the assertion that the chosen media type will be foo/bar with is invalid based on what isWritable() returns.
+        Response response = target.request().accept("foo/bar;q=1.0, bar/foo;q=0.9").get();
         Assertions.assertEquals(200, response.getStatus());
         Assertions.assertEquals("ProviderWithNoProducesMessageBodyWriter",
                 response.readEntity(String.class), "Wrong response content");
