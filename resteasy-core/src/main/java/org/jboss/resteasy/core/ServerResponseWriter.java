@@ -11,10 +11,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import jakarta.ws.rs.NotAcceptableException;
 import jakarta.ws.rs.Produces;
@@ -36,8 +38,10 @@ import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.config.Options;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.CommitHeaderAsyncOutputStream;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
@@ -173,7 +177,8 @@ public class ServerResponseWriter {
             });
 
             try {
-                writerAction.toCompletableFuture().getNow(null); // give a chance at non-async exceptions to be propagated up
+                writerAction.toCompletableFuture()
+                        .getNow(null); // give a chance at non-async exceptions to be propagated up
             } catch (CompletionException x) {
                 // make sure we unwrap these horrors
                 SynchronousDispatcher.rethrow(x.getCause());
@@ -259,7 +264,7 @@ public class ServerResponseWriter {
     }
 
     @SuppressWarnings("rawtypes")
-    protected static MediaType getDefaultContentType(HttpRequest request, BuiltResponse jaxrsResponse,
+    private static MediaType getDefaultContentTypeOld(HttpRequest request, BuiltResponse jaxrsResponse,
             ResteasyProviderFactory providerFactory, ResourceMethodInvoker method) {
         // Note. If we get here before the request is executed, e.g., if a ContainerRequestFilter aborts,
         // chosen and method can be null.
@@ -340,7 +345,7 @@ public class ServerResponseWriter {
                 //getPossibleMessageBodyWritersMap to get the viable MBWs for the given type AND accept.
                 Map<MessageBodyWriter<?>, Class<?>> mbws = providerFactory.getPossibleMessageBodyWritersMap(type, generic,
                         annotations, accept);
-                for (Entry<MessageBodyWriter<?>, Class<?>> e : mbws.entrySet()) {
+                for (Map.Entry<MessageBodyWriter<?>, Class<?>> e : mbws.entrySet()) {
                     MessageBodyWriter<?> mbw = e.getKey();
                     Class<?> wt = e.getValue();
                     Produces produces = mbw.getClass().getAnnotation(Produces.class);
@@ -398,14 +403,149 @@ public class ServerResponseWriter {
         return chosen;
     }
 
-    private static MediaType chooseFromM(MediaType currentChoice, List<SortableMediaType> M, boolean hasStarStar,
+    @SuppressWarnings("rawtypes")
+    protected static MediaType getDefaultContentType(final HttpRequest request, final BuiltResponse jaxrsResponse,
+            final ResteasyProviderFactory providerFactory, final ResourceMethodInvoker method) {
+
+        // If we're set to use the previous content type resolution
+        if (Options.USE_OLD_MEDIA_TYPE_RESOLUTION.getValue(providerFactory.getContextData(ResteasyConfiguration.class))) {
+            LogMessages.LOGGER.debugf("Using the old content MediaType discovery.");
+            return getDefaultContentTypeOld(request, jaxrsResponse, providerFactory, method);
+        }
+
+        // Note. If we get here before the request is executed, e.g., if a ContainerRequestFilter aborts,
+        // chosen and method can be null.
+        MediaType chosen = (MediaType) request.getAttribute(SegmentNode.RESTEASY_CHOSEN_ACCEPT);
+        // Get the response type and generic type
+        boolean hasProduces = chosen != null
+                && Boolean.valueOf(chosen.getParameters().get(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES));
+        hasProduces |= method != null && method.getProduces() != null && method.getProduces().length > 0;
+        hasProduces |= method != null && method.getMethod().getDeclaringClass().getAnnotation(Produces.class) != null;
+        Class<?> type = jaxrsResponse.getEntityClass();
+        Type generic = jaxrsResponse.getGenericType();
+        if (generic == null) {
+            if (method != null && !Response.class.isAssignableFrom(method.getMethod().getReturnType()))
+                generic = method.getGenericReturnType();
+            else
+                generic = type;
+        }
+        Annotation[] annotations = jaxrsResponse.getAnnotations();
+        if (annotations == null && method != null) {
+            annotations = method.getMethodAnnotations();
+        }
+        // Gather the producible media types, per Jakarta REST 3.1 section 3.8 item 2
+        // https://jakarta.ee/specifications/restful-ws/3.1/jakarta-restful-ws-spec-3.1#determine_response_type
+        final List<SortableMediaType> P = new ArrayList<>();
+        if (method != null && hasProduces) {
+            if (method.getProduces() != null && method.getProduces().length > 0) {
+                P.addAll(Stream.of(method.getProduces())
+                        .map((m) -> new SortableMediaType(m.getType(), m.getSubtype(), m.getParameters(), null))
+                        .toList());
+            } else if (method.getMethod().getDeclaringClass().getAnnotation(Produces.class) != null) {
+                P.addAll(Stream.of(method.getMethod().getDeclaringClass().getAnnotation(Produces.class).value())
+                        .map(MediaType::valueOf)
+                        .map((m) -> new SortableMediaType(m.getType(), m.getSubtype(), m.getParameters(), null))
+                        .toList());
+            }
+        } else {
+            // The method nor the class have a @Produces, gather the media types the MessageBodyWriter's produce
+            // based on the type, generic type annotations and */*.
+            final var entityProviders = providerFactory.resolveMessageBodyWriters(type, generic, annotations,
+                    MediaType.WILDCARD_TYPE);
+            // First look for exact matches
+            for (var entityProvider : entityProviders) {
+                for (MediaType mediaType : entityProvider.produces()) {
+                    // TODO (jrp) 1) Is this right?
+                    // TODO (jrp) 2) What is the performance like?
+                    if (entityProvider.provider().isWriteable(type, generic, annotations, mediaType)) {
+                        P.add(new SortableMediaType(mediaType.getType(), mediaType.getSubtype(), mediaType.getParameters(),
+                                entityProvider.providerType()));
+                    }
+                }
+            }
+        }
+
+        // P is empty, P={'*/*'}, step 3
+        if (P.isEmpty()) {
+            P.add(new SortableMediaType("*", "*", Map.of(), null));
+        }
+        if (LogMessages.LOGGER.isDebugEnabled()) {
+            LogMessages.LOGGER.debugf("Found %d possible content types: %s", P.size(), P);
+        }
+
+        // Step 4, obtain the acceptable media type defaulting to */* if not found
+        final List<MediaType> accepts = request.getHttpHeaders().getAcceptableMediaTypes();
+        if (accepts.isEmpty()) {
+            accepts.add(MediaType.WILDCARD_TYPE);
+        }
+        // TODO (jrp) the SortableMediaType might need to have the MBW too, not just the generic type
+        final Set<SortableMediaType> M = new TreeSet<>();
+        // Step 5, a must be compatible with p, if so add the most compatible media type to M.
+        for (MediaType accept : accepts) {
+            // TODO (jrp) is this right and if so, how does it perform?
+            final var acceptTypeProviders = providerFactory.resolveMessageBodyWriters(type, generic, annotations, accept);
+            for (SortableMediaType produce : P) {
+                if (accept.isCompatible(produce)) {
+                    // We didn't find a specific MBW for the accept type, but we still need to add the media type
+                    // TODO (jrp) is ^^ right? It's possibly right if @Produces was available. See step 5. The only
+                    // TODO (jrp) reason for the EntityProvider is to get the providerType()
+                    if (acceptTypeProviders.isEmpty()) {
+                        SortableMediaType ms = mostSpecific(produce, produce.writerType, accept, null);
+                        M.add(ms);
+                    } else {
+                        for (var acceptTypeProvider : acceptTypeProviders) {
+                            SortableMediaType ms = mostSpecific(produce, produce.writerType, accept,
+                                    acceptTypeProvider.providerType());
+                            M.add(ms);
+                        }
+                    }
+                }
+            }
+        }
+        if (chosen == null) {
+            chosen = MediaType.WILDCARD_TYPE;
+        }
+        // Step 6, 7 and 8. Checks if M is empty and throws a 406 if it is. Sorts the media types, and selects the
+        // best option
+        chosen = chooseFromM(chosen, M);
+        if (LogMessages.LOGGER.isDebugEnabled()) {
+            LogMessages.LOGGER.debugf("Chosen MediaType for %s is %s", request.getUri().getPath(), chosen);
+        }
+        if (chosen.getParameters().containsKey(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES)) {
+            Map<String, String> map = new HashMap<>(chosen.getParameters());
+            map.remove(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES);
+            map.remove(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES_LC);
+            chosen = new MediaType(chosen.getType(), chosen.getSubtype(), map);
+        }
+        boolean hasQ = chosen.getParameters().containsKey("q");
+        boolean hasQs = chosen.getParameters().containsKey("qs");
+        if (hasQ || hasQs) {
+            Map<String, String> map = new HashMap<>(chosen.getParameters());
+            if (hasQ) {
+                map.remove("q");
+            }
+            if (hasQs) {
+                map.remove("qs");
+            }
+            chosen = new MediaType(chosen.getType(), chosen.getSubtype(), map);
+        }
+        return chosen;
+    }
+
+    private static MediaType chooseFromM(MediaType currentChoice, List<SortableMediaType> M, boolean hasWildcard,
             boolean hasApplicationStar) {
         //JAX-RS 2.0 Section 3.8.6
         if (M.isEmpty()) {
             throw new NotAcceptableException();
         }
+        if (LogMessages.LOGGER.isDebugEnabled()) {
+            LogMessages.LOGGER.debugf("Pre-sort: %s", M);
+        }
         //JAX-RS 2.0 Section 3.8.7
         Collections.sort(M);
+        if (LogMessages.LOGGER.isDebugEnabled()) {
+            LogMessages.LOGGER.debugf("Post-sort: %s", M);
+        }
         //JAX-RS 2.0 Section 3.8.8
         for (SortableMediaType m : M) {
             if (isConcrete(m)) {
@@ -415,7 +555,45 @@ public class ServerResponseWriter {
         }
         if (!isConcrete(currentChoice)) {
             //JAX-RS 2.0 Section 3.8.9
-            if (hasStarStar || hasApplicationStar) {
+            if (hasWildcard || hasApplicationStar) {
+                currentChoice = MediaType.APPLICATION_OCTET_STREAM_TYPE;
+            } else {
+                //JAX-RS 2.0 Section 3.8.10
+                throw new NotAcceptableException();
+            }
+        }
+        return currentChoice;
+    }
+
+    private static MediaType chooseFromM(MediaType currentChoice, Set<SortableMediaType> M) {
+        boolean hasWildcard = false;
+        boolean hasApplicationStar = false;
+        //JAX-RS 2.0 Section 3.8.6
+        if (M.isEmpty()) {
+            throw new NotAcceptableException();
+        }
+        if (LogMessages.LOGGER.isDebugEnabled()) {
+            LogMessages.LOGGER.debugf("Pre-sort: %s", M);
+        }
+        if (LogMessages.LOGGER.isDebugEnabled()) {
+            LogMessages.LOGGER.debugf("Post-sort: %s", M);
+        }
+        //JAX-RS 2.0 Section 3.8.8
+        for (SortableMediaType m : M) {
+            if (m.isWildcardType() && m.isWildcardSubtype()) {
+                hasWildcard = true;
+            }
+            if (m.getType().equalsIgnoreCase("application") && m.isWildcardSubtype()) {
+                hasApplicationStar = true;
+            }
+            if (isConcrete(m)) {
+                currentChoice = m;
+                break;
+            }
+        }
+        if (!isConcrete(currentChoice)) {
+            //JAX-RS 2.0 Section 3.8.9
+            if (hasWildcard || hasApplicationStar) {
                 currentChoice = MediaType.APPLICATION_OCTET_STREAM_TYPE;
             } else {
                 //JAX-RS 2.0 Section 3.8.10

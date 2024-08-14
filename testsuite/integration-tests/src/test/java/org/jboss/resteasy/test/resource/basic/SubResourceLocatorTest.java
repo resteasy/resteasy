@@ -56,7 +56,7 @@ public class SubResourceLocatorTest {
 
         Response response = base.request().get();
         String s = response.readEntity(String.class);
-        Assertions.assertEquals(s, "bill", "Wrong response content");
+        Assertions.assertEquals("bill", s, "Wrong response content");
         response.close();
         client.close();
     }

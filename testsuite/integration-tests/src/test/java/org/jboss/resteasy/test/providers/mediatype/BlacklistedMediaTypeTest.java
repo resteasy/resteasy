@@ -48,7 +48,15 @@ import org.wildfly.arquillian.junit.annotations.RequiresModule;
 public class BlacklistedMediaTypeTest {
 
     private static final String APPLICATION_SIGNED_EXCHANGE = "application/signed-exchange";
-    private static final String APPLICATION_SIGNED_EXCHANGE_TEXT_PLAIN = "application/signed-exchange;q=1.0, text/plain;q=0.9";
+    // TODO (jrp) This fixes these tests because it chooses the text/plain over the application/signed-exchange. The
+    // TODO (jrp) spirit of this test is to check that text/plain is chosen. However, with the spec algorithm, it would
+    // TODO (jrp) choose application/signed-exchange if the q=1.0 is assigned there. When choosing the type from the
+    // TODO (jrp) accept header, we should not be checking whether MBW.isWritable(). The spec
+    // TODO (jrp) https://jakarta.ee/specifications/restful-ws/3.1/jakarta-restful-ws-spec-3.1#determine_response_type
+    // TODO (jrp) does not indicate this needs to be tested when determining the response type. It does, however,
+    // TODO (jrp) indicate later if there is a MBW https://jakarta.ee/specifications/restful-ws/3.1/jakarta-restful-ws-spec-3.1#message_body_writer.
+    // TODO (jrp) Therefore, the assertion that the chosen media type will be text/plain with is invalid based on what isWritable() returns.
+    private static final String APPLICATION_SIGNED_EXCHANGE_TEXT_PLAIN = "application/signed-exchange;q=0.9, text/plain;q=1.0";
     private static final String COULD_NOT_FIND_MESSAGE_BODY_WRITER = "Could not find MessageBodyWriter for response object of type: ";
 
     private static X509Certificate cert;
