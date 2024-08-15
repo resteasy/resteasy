@@ -48,7 +48,6 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        java: ['11', '21']
 
     steps:
       - uses: actions/checkout@v4
@@ -59,35 +58,38 @@ jobs:
       - name: Extract Maven Repo
         shell: bash
         run: tar -xzf wildfly-maven-repository.tar.gz -C ~
-      - name: Set up JDK ${{ matrix.java }}
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.java }}
+          java-version: |
+            11
+            21
           distribution: 'temurin'
           cache: 'maven'
-      - name: Build with Maven Java ${{ matrix.java }}
+      - name: Build with Maven Java 21 and test with 11
+        run: mvn clean install '-Dserver.version=${{needs.wildfly-build.outputs.wildfly-version}}' '-Djvm=${{env.JAVA_HOME_11_X64}}/bin/java'
+      - name: Build with Maven Java 21
         run: mvn clean install '-Dserver.version=${{needs.wildfly-build.outputs.wildfly-version}}'
       - name: Upload surefire reports
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}
+          name: surefire-reports-${{ matrix.os }}
           path: '**/surefire-reports/'
       - name: Upload server logs
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: server-logs-${{ matrix.os }}-${{ matrix.java }}
+          name: server-logs-${{ matrix.os }}
           path: '**/*.log'
 
   additional-profiles:
     runs-on: ubuntu-latest
     needs: wildfly-build
-    timeout-minutes: 90
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
-        java: ['11', '21']
         profile:
           - '-Dsecurity.manager'
           - '-am -Pprovision-without-resteasy,without-jackson -pl wildfly/resteasy-channel,/resteasy-dependencies-bom,testsuite/integration-tests'
@@ -101,54 +103,63 @@ jobs:
       - name: Extract Maven Repo
         shell: bash
         run: tar -xzf wildfly-maven-repository.tar.gz -C ~
-      - name: Set up JDK ${{ matrix.java }}
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.java }}
+          java-version: |
+            11
+            21
           distribution: 'temurin'
           cache: 'maven'
-      - name: Test with ${{ matrix.profile }} - JDK ${{ matrix.java }}
+      - name: Test with ${{ matrix.profile }} - JDK 11
+        run:  |
+          mvn clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{needs.wildfly-build.outputs.wildfly-version}}' '-Djvm=${{env.JAVA_HOME_11_X64}}/bin/java'
+      - name: Test with ${{ matrix.profile }} - JDK 21
         run:  |
           mvn clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{needs.wildfly-build.outputs.wildfly-version}}'
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
+          name: surefire-reports-${{ matrix.os }}-${{ matrix.wildfly-version }}
           path: '**/surefire-reports/'
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
+          name: server-logs-${{ matrix.os }}-${{ matrix.wildfly-version }}
           path: '**/server.log'
 
   legacy-build:
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 90
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest ]
-        java: ['11', '17']
         wildfly-version: ['28.0.1.Final']
 
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK ${{ matrix.java }}
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.java }}
+          java-version: |
+            11
+            17
           distribution: 'temurin'
           cache: 'maven'
-      - name: Build with Maven Java ${{ matrix.java }} on WildFly ${{ matrix.wildfly-version }} - ${{ matrix.os }}
+      - name: Test with Java 11 on WildFly ${{ matrix.wildfly-version }} - ${{ matrix.os }}
+        run:  |
+          mvn clean install -U -B -fae '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions' '-Plegacy-wildfly' '-Djvm=${{env.JAVA_HOME_11_X64}}/bin/java'
+      - name: Test with Java 17 on WildFly ${{ matrix.wildfly-version }} - ${{ matrix.os }}
         run:  |
           mvn clean install -U -B -fae '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions' '-Plegacy-wildfly'
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
+          name: surefire-reports-${{ matrix.os }}}-${{ matrix.wildfly-version }}
           path: '**/surefire-reports/'
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
+          name: server-logs-${{ matrix.os }}-${{ matrix.wildfly-version }}
           path: '**/server.log'

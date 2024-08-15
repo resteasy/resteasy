@@ -46,65 +46,70 @@ jobs:
   build:
 
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 90
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest ]
-        java: ['11', '21']
 
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK ${{ matrix.java }}
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.java }}
+          java-version: |
+            11
+            21
           distribution: 'temurin'
           cache: 'maven'
-      - name: Build with Maven Java ${{ matrix.java }} - ${{ matrix.os }}
+
+      - name: Build with Maven Java 21 test with Java 11 - ${{ matrix.os }}
+        run:  |
+          mvn clean install -U -B -fae '-Dgithub.actions' '-Djvm=${{env.JAVA_HOME_11_X64}}/bin/java'
+
+      - name: Build with Maven Java 21 - ${{ matrix.os }}
         run:  |
           mvn clean install -U -B -fae '-Dgithub.actions'
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}
+          name: surefire-reports-${{ matrix.os }}
           path: '**/surefire-reports/'
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: server-logs-${{ matrix.os }}-${{ matrix.java }}
+          name: server-logs-${{ matrix.os }}
           path: '**/server.log'
 
   additional-profiles:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
-        java: ['11', '21']
         profile:
           - '-Dsecurity.manager'
 
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK ${{ matrix.java }}
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.java }}
+          java-version: 21
           distribution: 'temurin'
           cache: 'maven'
-      - name: Test with ${{ matrix.profile }} - JDK ${{ matrix.java }}
+      - name: Test with ${{ matrix.profile }} - JDK 21
         run:  |
           mvn clean install -U -B -fae ${{ matrix.profile }} '-Dgithub.actions'
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}
+          name: surefire-reports-${{ matrix.os }}
           path: '**/surefire-reports/'
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: server-logs-${{ matrix.os }}-${{ matrix.java }}
+          name: server-logs-${{ matrix.os }}
           path: '**/server.log'
 
   build-java-docs:
@@ -112,11 +117,11 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: 11
+          java-version: 17
           distribution: 'temurin'
           cache: 'maven'
-      - name: Build Java Docs with Java 11
+      - name: Build Java Docs with Java 17
         run: mvn clean site install -B -DskipTests -Dmpir.skip=true

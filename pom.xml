@@ -3,7 +3,7 @@
     <parent>
         <groupId>dev.resteasy.tools</groupId>
         <artifactId>resteasy-parent</artifactId>
-        <version>2.0.4.Final</version>
+        <version>3</version>
         <relativePath/>
     </parent>
 
@@ -340,12 +340,10 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <configuration>
-                        <additionalJOption>--no-module-directories</additionalJOption>
                         <doclint>none</doclint>
                         <minmemory>128m</minmemory>
                         <maxmemory>1024m</maxmemory>
                         <quiet>false</quiet>
-                        <aggregate>true</aggregate>
                         <excludePackageNames>
                             com.restfully.*:org.jboss.resteasy.examples.*:se.unlogic.*:org.jboss.resteasy.tests.*
                         </excludePackageNames>
