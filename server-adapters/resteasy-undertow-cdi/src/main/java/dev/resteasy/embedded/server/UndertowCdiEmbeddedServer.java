@@ -14,7 +14,9 @@ import org.jboss.resteasy.plugins.server.embedded.EmbeddedServers;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.weld.environment.ContainerInstance;
+import org.jboss.weld.environment.servlet.Container;
 import org.jboss.weld.environment.servlet.Listener;
+import org.jboss.weld.environment.undertow.UndertowContainer;
 import org.xnio.Options;
 import org.xnio.SslClientAuthMode;
 
@@ -171,6 +173,8 @@ public class UndertowCdiEmbeddedServer implements EmbeddedServer {
                         .getName(), Map.class.getName());
             }
         }
+        // Ensure the Undertow Weld Container is always the one chosen.
+        deploymentInfo.addInitParameter(Container.CONTEXT_PARAM_CONTAINER_CLASS, UndertowContainer.class.getName());
         // Determine the context path
         final String contextPath = EmbeddedServers.checkContextPath(configuration.rootPath());
 
