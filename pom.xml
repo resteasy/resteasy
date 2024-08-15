@@ -3,7 +3,7 @@
     <parent>
         <groupId>dev.resteasy.tools</groupId>
         <artifactId>resteasy-parent</artifactId>
-        <version>2.0.4.Final</version>
+        <version>3</version>
         <relativePath/>
     </parent>
 
@@ -21,8 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <!-- Require a minimum of Java 17 and make Java 17 the target -->
-        <jdk.min.version>17</jdk.min.version>
+        <!-- Compile to Java 17 -->
         <maven.compiler.release>17</maven.compiler.release>
 
         <!-- Dependency versions -->
