@@ -137,10 +137,6 @@
                 <module>resteasy-core</module>
                 <module>resteasy-client-api</module>
                 <module>resteasy-client</module>
-                <module>resteasy-client-jetty</module>
-                <module>resteasy-client-vertx</module>
-                <module>resteasy-client-reactor-netty</module>
-                <module>resteasy-client-utils</module>
                 <module>providers</module>
                 <module>security</module>
                 <module>resteasy-links</module>
@@ -151,6 +147,10 @@
                 <module>resteasy-rxjava2</module>
                 <module>resteasy-reactor</module>
                 <module>server-adapters</module>
+                <module>resteasy-client-jetty</module>
+                <module>resteasy-client-vertx</module>
+                <module>resteasy-client-reactor-netty</module>
+                <module>resteasy-client-utils</module>
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
                 <module>wildfly/resteasy-feature-pack</module>
