@@ -16,9 +16,13 @@ import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 import io.netty.handler.ssl.ClientAuth;
 
-public class BasicSSLTest extends BasicTest {
+public class BasicSSLTest extends AbstractBasicTest {
 
     private static Client client;
+
+    public BasicSSLTest() {
+        super("https");
+    }
 
     @BeforeAll
     public static void setup() {
@@ -43,14 +47,16 @@ public class BasicSSLTest extends BasicTest {
                 .sslContext(clientContext)
                 .build()
                 .register(JacksonJsonProvider.class);
-
-        BasicTest.setupClient(client);
-        BasicTest.setupBaseUrl("https://%s:%d%s");
     }
 
     @AfterAll
     public static void end() {
         client.close();
         ReactorNettyContainer.stop();
+    }
+
+    @Override
+    protected Client client() {
+        return client;
     }
 }

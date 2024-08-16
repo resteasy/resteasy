@@ -1,5 +1,8 @@
 package org.jboss.resteasy.plugins.server.reactor.netty;
 
+import static org.jboss.resteasy.test.TestPortProvider.getHost;
+import static org.jboss.resteasy.test.TestPortProvider.getPort;
+
 import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 
@@ -62,9 +65,6 @@ public class CleanUpTasksTest {
                 .sslContext(clientContext)
                 .build()
                 .register(JacksonJsonProvider.class);
-
-        BasicTest.setupClient(client);
-        BasicTest.setupBaseUrl("https://%s:%d%s");
     }
 
     /**
@@ -72,7 +72,7 @@ public class CleanUpTasksTest {
      */
     @Test
     public void testCleanUpTasks() {
-        WebTarget target = client.target(BasicTest.generateURL("/basic"));
+        WebTarget target = client.target(String.format("https://%s:%d%s", getHost(), getPort(), "/basic"));
         String val = target.request().get(String.class);
         Assertions.assertEquals("Hello world!", val);
         Assertions.assertEquals(0, TEST_LATCH.getCount());

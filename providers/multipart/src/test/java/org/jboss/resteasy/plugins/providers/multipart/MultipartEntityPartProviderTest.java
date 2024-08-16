@@ -29,9 +29,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -45,10 +45,8 @@ import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.SeBootstrap;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.EntityPart;
 import jakarta.ws.rs.core.GenericEntity;
@@ -58,30 +56,25 @@ import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import dev.resteasy.junit.extension.annotations.RequestPath;
+import dev.resteasy.junit.extension.annotations.RestBootstrap;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
+@RestBootstrap(MultipartEntityPartProviderTest.TestApplication.class)
 public class MultipartEntityPartProviderTest {
 
-    private static SeBootstrap.Instance INSTANCE;
+    @Inject
+    @RequestPath("/test/form")
+    private WebTarget testFormTarget;
 
-    @BeforeAll
-    public static void start() throws Exception {
-        INSTANCE = SeBootstrap.start(TestApplication.class).toCompletableFuture().get(10, TimeUnit.SECONDS);
-    }
-
-    @AfterAll
-    public static void stop() throws Exception {
-        final SeBootstrap.Instance instance = INSTANCE;
-        if (instance != null) {
-            instance.stop().toCompletableFuture().get(10, TimeUnit.SECONDS);
-        }
-    }
+    @Inject
+    @RequestPath("test/multi-injected")
+    private WebTarget testMultiInjectedTarget;
 
     @Test
     public void checkGetContent() throws Exception {
@@ -122,143 +115,135 @@ public class MultipartEntityPartProviderTest {
 
     @Test
     public void checkClosed() throws Exception {
-        try (Client client = ClientBuilder.newClient()) {
-            final CloseTrackingInputStream inputStream = new CloseTrackingInputStream("test content");
-            final List<EntityPart> multipart = List.of(
-                    EntityPart.withName("content")
-                            .content(inputStream)
-                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
-                            .build());
-            try (
-                    Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("test/form"))
-                            .request(MediaType.MULTIPART_FORM_DATA_TYPE)
-                            .post(Entity.entity(new GenericEntity<>(multipart) {
-                            }, MediaType.MULTIPART_FORM_DATA))) {
-                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
-                Assertions.assertTrue(inputStream.isClose(), "Expected the input stream to be closed on a send.");
-                final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
-                });
-                if (entityParts.size() != 2) {
-                    final String msg = "Expected 2 entries got " +
-                            entityParts.size() +
-                            '.' +
-                            System.lineSeparator() +
-                            getMessage(entityParts);
-                    Assertions.fail(msg);
-                }
-                EntityPart part = find(entityParts, "received-content");
-                Assertions.assertEquals("test content", part.getContent(String.class));
+        final CloseTrackingInputStream inputStream = new CloseTrackingInputStream("test content");
+        final List<EntityPart> multipart = List.of(
+                EntityPart.withName("content")
+                        .content(inputStream)
+                        .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                        .build());
+        try (
+                Response response = testFormTarget
+                        .request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                        .post(Entity.entity(new GenericEntity<>(multipart) {
+                        }, MediaType.MULTIPART_FORM_DATA))) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertTrue(inputStream.isClose(), "Expected the input stream to be closed on a send.");
+            final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
+            });
+            if (entityParts.size() != 2) {
+                final String msg = "Expected 2 entries got " +
+                        entityParts.size() +
+                        '.' +
+                        System.lineSeparator() +
+                        getMessage(entityParts);
+                Assertions.fail(msg);
             }
+            EntityPart part = find(entityParts, "received-content");
+            Assertions.assertEquals("test content", part.getContent(String.class));
         }
     }
 
     @Test
     public void checkGetContentResponse() throws Exception {
-        try (Client client = ClientBuilder.newClient()) {
-            final CloseTrackingInputStream inputStream = new CloseTrackingInputStream("test content");
-            final List<EntityPart> multipart = List.of(
-                    EntityPart.withName("content")
-                            .content(inputStream)
-                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
-                            .build());
-            try (
-                    Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("test/form"))
-                            .request(MediaType.MULTIPART_FORM_DATA_TYPE)
-                            .post(Entity.entity(new GenericEntity<>(multipart) {
-                            }, MediaType.MULTIPART_FORM_DATA))) {
-                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
-                Assertions.assertTrue(inputStream.isClose(), "Expected the input stream to be closed on a send.");
-                final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
-                });
-                if (entityParts.size() != 2) {
-                    final String msg = "Expected 2 entries got " +
-                            entityParts.size() +
-                            '.' +
-                            System.lineSeparator() +
-                            getMessage(entityParts);
-                    Assertions.fail(msg);
-                }
-                EntityPart part = find(entityParts, "received-content");
-
-                Assertions.assertEquals("test content", part.getContent(String.class));
-                Assertions.assertEquals("test content", toString(part.getContent()));
-                Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(String.class));
-                Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(new GenericType<>(String.class)));
-                // Should be able to invoke this twice
-                Assertions.assertEquals("test content", toString(part.getContent()));
+        final CloseTrackingInputStream inputStream = new CloseTrackingInputStream("test content");
+        final List<EntityPart> multipart = List.of(
+                EntityPart.withName("content")
+                        .content(inputStream)
+                        .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                        .build());
+        try (
+                Response response = testFormTarget
+                        .request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                        .post(Entity.entity(new GenericEntity<>(multipart) {
+                        }, MediaType.MULTIPART_FORM_DATA))) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertTrue(inputStream.isClose(), "Expected the input stream to be closed on a send.");
+            final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
+            });
+            if (entityParts.size() != 2) {
+                final String msg = "Expected 2 entries got " +
+                        entityParts.size() +
+                        '.' +
+                        System.lineSeparator() +
+                        getMessage(entityParts);
+                Assertions.fail(msg);
             }
+            EntityPart part = find(entityParts, "received-content");
+
+            Assertions.assertEquals("test content", part.getContent(String.class));
+            Assertions.assertEquals("test content", toString(part.getContent()));
+            Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(String.class));
+            Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(new GenericType<>(String.class)));
+            // Should be able to invoke this twice
+            Assertions.assertEquals("test content", toString(part.getContent()));
         }
     }
 
     @Test
     public void checkGetContentClassResponse() throws Exception {
-        try (Client client = ClientBuilder.newClient()) {
-            final CloseTrackingInputStream inputStream = new CloseTrackingInputStream("test content");
-            final List<EntityPart> multipart = List.of(
-                    EntityPart.withName("content")
-                            .content(inputStream)
-                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
-                            .build());
-            try (
-                    Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("test/form"))
-                            .request(MediaType.MULTIPART_FORM_DATA_TYPE)
-                            .post(Entity.entity(new GenericEntity<>(multipart) {
-                            }, MediaType.MULTIPART_FORM_DATA))) {
-                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
-                Assertions.assertTrue(inputStream.isClose(), "Expected the input stream to be closed on a send.");
-                final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
-                });
-                if (entityParts.size() != 2) {
-                    final String msg = "Expected 2 entries got " +
-                            entityParts.size() +
-                            '.' +
-                            System.lineSeparator() +
-                            getMessage(entityParts);
-                    Assertions.fail(msg);
-                }
-                EntityPart part = find(entityParts, "received-content");
-
-                Assertions.assertEquals("test content", part.getContent(String.class));
-                Assertions.assertEquals("test content", toString(part.getContent()));
-                Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(String.class));
-                Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(new GenericType<>(String.class)));
+        final CloseTrackingInputStream inputStream = new CloseTrackingInputStream("test content");
+        final List<EntityPart> multipart = List.of(
+                EntityPart.withName("content")
+                        .content(inputStream)
+                        .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                        .build());
+        try (
+                Response response = testFormTarget
+                        .request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                        .post(Entity.entity(new GenericEntity<>(multipart) {
+                        }, MediaType.MULTIPART_FORM_DATA))) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertTrue(inputStream.isClose(), "Expected the input stream to be closed on a send.");
+            final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
+            });
+            if (entityParts.size() != 2) {
+                final String msg = "Expected 2 entries got " +
+                        entityParts.size() +
+                        '.' +
+                        System.lineSeparator() +
+                        getMessage(entityParts);
+                Assertions.fail(msg);
             }
+            EntityPart part = find(entityParts, "received-content");
+
+            Assertions.assertEquals("test content", part.getContent(String.class));
+            Assertions.assertEquals("test content", toString(part.getContent()));
+            Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(String.class));
+            Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(new GenericType<>(String.class)));
         }
     }
 
     @Test
     public void checkGetContentGenericTypeResponse() throws Exception {
-        try (Client client = ClientBuilder.newClient()) {
-            final CloseTrackingInputStream inputStream = new CloseTrackingInputStream("test content");
-            final List<EntityPart> multipart = List.of(
-                    EntityPart.withName("content")
-                            .content(inputStream)
-                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
-                            .build());
-            try (
-                    Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("test/form"))
-                            .request(MediaType.MULTIPART_FORM_DATA_TYPE)
-                            .post(Entity.entity(new GenericEntity<>(multipart) {
-                            }, MediaType.MULTIPART_FORM_DATA))) {
-                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
-                Assertions.assertTrue(inputStream.isClose(), "Expected the input stream to be closed on a send.");
-                final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
-                });
-                if (entityParts.size() != 2) {
-                    final String msg = "Expected 2 entries got " +
-                            entityParts.size() +
-                            '.' +
-                            System.lineSeparator() +
-                            getMessage(entityParts);
-                    Assertions.fail(msg);
-                }
-                EntityPart part = find(entityParts, "received-content");
-
-                Assertions.assertEquals("test content", part.getContent(new GenericType<>(String.class)));
-                Assertions.assertEquals("test content", toString(part.getContent()));
-                Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(new GenericType<>(String.class)));
-                Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(String.class));
+        final CloseTrackingInputStream inputStream = new CloseTrackingInputStream("test content");
+        final List<EntityPart> multipart = List.of(
+                EntityPart.withName("content")
+                        .content(inputStream)
+                        .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                        .build());
+        try (
+                Response response = testFormTarget
+                        .request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                        .post(Entity.entity(new GenericEntity<>(multipart) {
+                        }, MediaType.MULTIPART_FORM_DATA))) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertTrue(inputStream.isClose(), "Expected the input stream to be closed on a send.");
+            final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
+            });
+            if (entityParts.size() != 2) {
+                final String msg = "Expected 2 entries got " +
+                        entityParts.size() +
+                        '.' +
+                        System.lineSeparator() +
+                        getMessage(entityParts);
+                Assertions.fail(msg);
             }
+            EntityPart part = find(entityParts, "received-content");
+
+            Assertions.assertEquals("test content", part.getContent(new GenericType<>(String.class)));
+            Assertions.assertEquals("test content", toString(part.getContent()));
+            Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(new GenericType<>(String.class)));
+            Assertions.assertThrows(IllegalStateException.class, () -> part.getContent(String.class));
         }
     }
 
@@ -270,34 +255,32 @@ public class MultipartEntityPartProviderTest {
      */
     @Test
     public void form() throws Exception {
-        try (Client client = ClientBuilder.newClient()) {
-            final List<EntityPart> multipart = List.of(
-                    EntityPart.withName("content")
-                            .content("test content".getBytes(StandardCharsets.UTF_8))
-                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
-                            .build());
-            try (
-                    Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("test/form"))
-                            .request(MediaType.MULTIPART_FORM_DATA_TYPE)
-                            .post(Entity.entity(new GenericEntity<>(multipart) {
-                            }, MediaType.MULTIPART_FORM_DATA))) {
-                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
-                final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
-                });
-                if (entityParts.size() != 2) {
-                    final String msg = "Expected 2 entries got " +
-                            entityParts.size() +
-                            '.' +
-                            System.lineSeparator() +
-                            getMessage(entityParts);
-                    Assertions.fail(msg);
-                }
-                EntityPart part = find(entityParts, "received-content");
-                Assertions.assertEquals("test content", part.getContent(String.class));
-
-                part = find(entityParts, "added-content");
-                Assertions.assertEquals("test added content", part.getContent(String.class));
+        final List<EntityPart> multipart = List.of(
+                EntityPart.withName("content")
+                        .content("test content".getBytes(StandardCharsets.UTF_8))
+                        .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                        .build());
+        try (
+                Response response = testFormTarget
+                        .request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                        .post(Entity.entity(new GenericEntity<>(multipart) {
+                        }, MediaType.MULTIPART_FORM_DATA))) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
+            });
+            if (entityParts.size() != 2) {
+                final String msg = "Expected 2 entries got " +
+                        entityParts.size() +
+                        '.' +
+                        System.lineSeparator() +
+                        getMessage(entityParts);
+                Assertions.fail(msg);
             }
+            EntityPart part = find(entityParts, "received-content");
+            Assertions.assertEquals("test content", part.getContent(String.class));
+
+            part = find(entityParts, "added-content");
+            Assertions.assertEquals("test added content", part.getContent(String.class));
         }
     }
 
@@ -314,42 +297,38 @@ public class MultipartEntityPartProviderTest {
      */
     @Test
     public void multiInjection() throws Exception {
-        try (Client client = ClientBuilder.newClient()) {
-            final List<EntityPart> multipart = List.of(
-                    EntityPart.withName("entity-part")
-                            .content("test entity part")
-                            .mediaType(MediaType.TEXT_PLAIN_TYPE)
-                            .build(),
-                    EntityPart.withName("string-part")
-                            .content("test string")
-                            .mediaType(MediaType.TEXT_PLAIN_TYPE)
-                            .build(),
-                    EntityPart.withName("input-stream-part")
-                            .content("test input stream".getBytes(StandardCharsets.UTF_8))
-                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
-                            .build());
-            try (
-                    Response response = client.target(INSTANCE.configuration()
-                            .baseUriBuilder()
-                            .path("test/multi-injected"))
-                            .request(MediaType.MULTIPART_FORM_DATA_TYPE)
-                            .post(Entity.entity(new GenericEntity<>(multipart) {
-                            }, MediaType.MULTIPART_FORM_DATA))) {
-                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
-                final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
-                });
-                if (entityParts.size() != 3) {
-                    final String msg = "Expected 3 entries got " +
-                            entityParts.size() +
-                            '.' +
-                            System.lineSeparator() +
-                            getMessage(entityParts);
-                    Assertions.fail(msg);
-                }
-                checkEntity(entityParts, "received-entity-part", "test entity part");
-                checkEntity(entityParts, "received-string", "test string");
-                checkEntity(entityParts, "received-input-stream", "test input stream");
+        final List<EntityPart> multipart = List.of(
+                EntityPart.withName("entity-part")
+                        .content("test entity part")
+                        .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                        .build(),
+                EntityPart.withName("string-part")
+                        .content("test string")
+                        .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                        .build(),
+                EntityPart.withName("input-stream-part")
+                        .content("test input stream".getBytes(StandardCharsets.UTF_8))
+                        .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                        .build());
+        try (
+                Response response = testMultiInjectedTarget
+                        .request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                        .post(Entity.entity(new GenericEntity<>(multipart) {
+                        }, MediaType.MULTIPART_FORM_DATA))) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
+            });
+            if (entityParts.size() != 3) {
+                final String msg = "Expected 3 entries got " +
+                        entityParts.size() +
+                        '.' +
+                        System.lineSeparator() +
+                        getMessage(entityParts);
+                Assertions.fail(msg);
             }
+            checkEntity(entityParts, "received-entity-part", "test entity part");
+            checkEntity(entityParts, "received-string", "test string");
+            checkEntity(entityParts, "received-input-stream", "test input stream");
         }
     }
 
@@ -366,45 +345,41 @@ public class MultipartEntityPartProviderTest {
      */
     @Test
     public void multiAllFilesInjection() throws Exception {
-        try (Client client = ClientBuilder.newClient()) {
-            final List<EntityPart> multipart = List.of(
-                    EntityPart.withName("entity-part")
-                            .fileName("file1.txt")
-                            .content("test entity part file1.txt")
-                            .mediaType(MediaType.TEXT_PLAIN_TYPE)
-                            .build(),
-                    EntityPart.withName("string-part")
-                            .fileName("file2.txt")
-                            .content("test string file2.txt")
-                            .mediaType(MediaType.TEXT_PLAIN_TYPE)
-                            .build(),
-                    EntityPart.withName("input-stream-part")
-                            .fileName("file3.txt")
-                            .content("test input stream file3.txt".getBytes(StandardCharsets.UTF_8))
-                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
-                            .build());
-            try (
-                    Response response = client.target(INSTANCE.configuration()
-                            .baseUriBuilder()
-                            .path("test/multi-injected"))
-                            .request(MediaType.MULTIPART_FORM_DATA_TYPE)
-                            .post(Entity.entity(new GenericEntity<>(multipart) {
-                            }, MediaType.MULTIPART_FORM_DATA))) {
-                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
-                final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
-                });
-                if (entityParts.size() != 3) {
-                    final String msg = "Expected 3 entries got " +
-                            entityParts.size() +
-                            '.' +
-                            System.lineSeparator() +
-                            getMessage(entityParts);
-                    Assertions.fail(msg);
-                }
-                checkEntity(entityParts, "received-entity-part", "test entity part file1.txt");
-                checkEntity(entityParts, "received-string", "test string file2.txt");
-                checkEntity(entityParts, "received-input-stream", "test input stream file3.txt");
+        final List<EntityPart> multipart = List.of(
+                EntityPart.withName("entity-part")
+                        .fileName("file1.txt")
+                        .content("test entity part file1.txt")
+                        .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                        .build(),
+                EntityPart.withName("string-part")
+                        .fileName("file2.txt")
+                        .content("test string file2.txt")
+                        .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                        .build(),
+                EntityPart.withName("input-stream-part")
+                        .fileName("file3.txt")
+                        .content("test input stream file3.txt".getBytes(StandardCharsets.UTF_8))
+                        .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                        .build());
+        try (
+                Response response = testMultiInjectedTarget
+                        .request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                        .post(Entity.entity(new GenericEntity<>(multipart) {
+                        }, MediaType.MULTIPART_FORM_DATA))) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
+            });
+            if (entityParts.size() != 3) {
+                final String msg = "Expected 3 entries got " +
+                        entityParts.size() +
+                        '.' +
+                        System.lineSeparator() +
+                        getMessage(entityParts);
+                Assertions.fail(msg);
             }
+            checkEntity(entityParts, "received-entity-part", "test entity part file1.txt");
+            checkEntity(entityParts, "received-string", "test string file2.txt");
+            checkEntity(entityParts, "received-input-stream", "test input stream file3.txt");
         }
     }
 
@@ -419,64 +394,60 @@ public class MultipartEntityPartProviderTest {
      * @throws Exception if an error occurs in the test
      */
     @Test
-    public void echo() throws Exception {
-        try (Client client = ClientBuilder.newClient()) {
-            final List<EntityPart> multipart = List.of(
-                    EntityPart.withName("entity-part")
-                            .content("test entity part")
-                            .mediaType(MediaType.TEXT_PLAIN_TYPE)
-                            .header("test-entity-1", "part1")
-                            .header("test-content-type", MediaType.TEXT_PLAIN)
-                            .build(),
-                    EntityPart.withName("string-part")
-                            .content("test string")
-                            .mediaType(MediaType.TEXT_PLAIN_TYPE)
-                            .header("test-entity-2", "part2")
-                            .header("test-content-type", MediaType.TEXT_PLAIN)
-                            .build(),
-                    EntityPart.withName("input-stream-part")
-                            .content("test input stream".getBytes(StandardCharsets.UTF_8))
-                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
-                            .header("test-entity-3", "part3")
-                            .header("test-content-type", MediaType.APPLICATION_OCTET_STREAM)
-                            .build());
-            try (
-                    Response response = client.target(INSTANCE.configuration()
-                            .baseUriBuilder()
-                            .path("test/echo"))
-                            .request(MediaType.MULTIPART_FORM_DATA_TYPE)
-                            .post(Entity.entity(new GenericEntity<>(multipart) {
-                            }, MediaType.MULTIPART_FORM_DATA))) {
-                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
-                final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
-                });
-                if (entityParts.size() != 3) {
-                    final String msg = "Expected 3 entries got " +
-                            entityParts.size() +
-                            '.' +
-                            System.lineSeparator() +
-                            getMessage(entityParts);
-                    Assertions.fail(msg);
-                }
-
-                EntityPart part = find(entityParts, "received-entity-part");
-                checkEntity(part, "test entity part");
-                MultivaluedMap<String, String> headers = part.getHeaders();
-                checkHeader(headers, "test-entity-1", "part1");
-                checkHeader(headers, "test-content-type", MediaType.TEXT_PLAIN);
-
-                part = find(entityParts, "received-string-part");
-                checkEntity(part, "test string");
-                headers = part.getHeaders();
-                checkHeader(headers, "test-entity-2", "part2");
-                checkHeader(headers, "test-content-type", MediaType.TEXT_PLAIN);
-
-                part = find(entityParts, "received-input-stream-part");
-                checkEntity(part, "test input stream");
-                headers = part.getHeaders();
-                checkHeader(headers, "test-entity-3", "part3");
-                checkHeader(headers, "test-content-type", MediaType.APPLICATION_OCTET_STREAM);
+    public void echo(@RequestPath("test/echo") final WebTarget target) throws Exception {
+        final List<EntityPart> multipart = List.of(
+                EntityPart.withName("entity-part")
+                        .content("test entity part")
+                        .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                        .header("test-entity-1", "part1")
+                        .header("test-content-type", MediaType.TEXT_PLAIN)
+                        .build(),
+                EntityPart.withName("string-part")
+                        .content("test string")
+                        .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                        .header("test-entity-2", "part2")
+                        .header("test-content-type", MediaType.TEXT_PLAIN)
+                        .build(),
+                EntityPart.withName("input-stream-part")
+                        .content("test input stream".getBytes(StandardCharsets.UTF_8))
+                        .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                        .header("test-entity-3", "part3")
+                        .header("test-content-type", MediaType.APPLICATION_OCTET_STREAM)
+                        .build());
+        try (
+                Response response = target
+                        .request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                        .post(Entity.entity(new GenericEntity<>(multipart) {
+                        }, MediaType.MULTIPART_FORM_DATA))) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
+            });
+            if (entityParts.size() != 3) {
+                final String msg = "Expected 3 entries got " +
+                        entityParts.size() +
+                        '.' +
+                        System.lineSeparator() +
+                        getMessage(entityParts);
+                Assertions.fail(msg);
             }
+
+            EntityPart part = find(entityParts, "received-entity-part");
+            checkEntity(part, "test entity part");
+            MultivaluedMap<String, String> headers = part.getHeaders();
+            checkHeader(headers, "test-entity-1", "part1");
+            checkHeader(headers, "test-content-type", MediaType.TEXT_PLAIN);
+
+            part = find(entityParts, "received-string-part");
+            checkEntity(part, "test string");
+            headers = part.getHeaders();
+            checkHeader(headers, "test-entity-2", "part2");
+            checkHeader(headers, "test-content-type", MediaType.TEXT_PLAIN);
+
+            part = find(entityParts, "received-input-stream-part");
+            checkEntity(part, "test input stream");
+            headers = part.getHeaders();
+            checkHeader(headers, "test-entity-3", "part3");
+            checkHeader(headers, "test-content-type", MediaType.APPLICATION_OCTET_STREAM);
         }
     }
 
@@ -512,49 +483,45 @@ public class MultipartEntityPartProviderTest {
      * @throws Exception if an error occurs in the test
      */
     @Test
-    public void echoHeaders() throws Exception {
-        try (Client client = ClientBuilder.newClient()) {
-            final List<EntityPart> multipart = List.of(
-                    EntityPart.withName("entity-part")
-                            .content("test entity part")
-                            .mediaType(MediaType.TEXT_PLAIN_TYPE)
-                            .header("test-entity-1", "part1")
-                            .header("test-content-type", MediaType.TEXT_PLAIN, MediaType.APPLICATION_OCTET_STREAM)
-                            .build(),
-                    EntityPart.withName("string-part")
-                            .content("test string")
-                            .mediaType(MediaType.TEXT_PLAIN_TYPE)
-                            .header("test-entity-2", "part2")
-                            .header("test-content-type", MediaType.TEXT_PLAIN)
-                            .build(),
-                    EntityPart.withName("input-stream-part")
-                            .content("test input stream".getBytes(StandardCharsets.UTF_8))
-                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
-                            .header("test-entity-3", "part3")
-                            .header("test-content-type", MediaType.APPLICATION_OCTET_STREAM)
-                            .build());
-            try (
-                    Response response = client.target(INSTANCE.configuration()
-                            .baseUriBuilder()
-                            .path("test/echo-headers"))
-                            .request(MediaType.APPLICATION_JSON_TYPE)
-                            .post(Entity.entity(new GenericEntity<>(multipart) {
-                            }, MediaType.MULTIPART_FORM_DATA))) {
-                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+    public void echoHeaders(@RequestPath("test/echo-headers") final WebTarget target) throws Exception {
+        final List<EntityPart> multipart = List.of(
+                EntityPart.withName("entity-part")
+                        .content("test entity part")
+                        .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                        .header("test-entity-1", "part1")
+                        .header("test-content-type", MediaType.TEXT_PLAIN, MediaType.APPLICATION_OCTET_STREAM)
+                        .build(),
+                EntityPart.withName("string-part")
+                        .content("test string")
+                        .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                        .header("test-entity-2", "part2")
+                        .header("test-content-type", MediaType.TEXT_PLAIN)
+                        .build(),
+                EntityPart.withName("input-stream-part")
+                        .content("test input stream".getBytes(StandardCharsets.UTF_8))
+                        .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                        .header("test-entity-3", "part3")
+                        .header("test-content-type", MediaType.APPLICATION_OCTET_STREAM)
+                        .build());
+        try (
+                Response response = target
+                        .request(MediaType.APPLICATION_JSON_TYPE)
+                        .post(Entity.entity(new GenericEntity<>(multipart) {
+                        }, MediaType.MULTIPART_FORM_DATA))) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
 
-                final JsonObject json = response.readEntity(JsonObject.class);
-                JsonObject part = json.getJsonObject("entity-part");
-                checkHeader(part, "test-entity-1", "part1");
-                checkHeader(part, "test-content-type", MediaType.TEXT_PLAIN, MediaType.APPLICATION_OCTET_STREAM);
+            final JsonObject json = response.readEntity(JsonObject.class);
+            JsonObject part = json.getJsonObject("entity-part");
+            checkHeader(part, "test-entity-1", "part1");
+            checkHeader(part, "test-content-type", MediaType.TEXT_PLAIN, MediaType.APPLICATION_OCTET_STREAM);
 
-                part = json.getJsonObject("string-part");
-                checkHeader(part, "test-entity-2", "part2");
-                checkHeader(part, "test-content-type", MediaType.TEXT_PLAIN);
+            part = json.getJsonObject("string-part");
+            checkHeader(part, "test-entity-2", "part2");
+            checkHeader(part, "test-content-type", MediaType.TEXT_PLAIN);
 
-                part = json.getJsonObject("input-stream-part");
-                checkHeader(part, "test-entity-3", "part3");
-                checkHeader(part, "test-content-type", MediaType.APPLICATION_OCTET_STREAM);
-            }
+            part = json.getJsonObject("input-stream-part");
+            checkHeader(part, "test-entity-3", "part3");
+            checkHeader(part, "test-content-type", MediaType.APPLICATION_OCTET_STREAM);
         }
     }
 

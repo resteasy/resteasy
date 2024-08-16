@@ -20,10 +20,11 @@
 package dev.resteasy.embedded.server;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.concurrent.TimeUnit;
 
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -33,69 +34,59 @@ import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.SeBootstrap;
-import jakarta.ws.rs.SeBootstrap.Instance;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
 
 import org.jboss.jandex.Index;
 import org.jboss.resteasy.core.se.ConfigurationOption;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import dev.resteasy.junit.extension.annotations.RequestPath;
+import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.api.ConfigurationProvider;
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
+@RestBootstrap(value = ServletTest.RootApplication.class, configFactory = ServletTest.InjectionConfiguration.class)
 public class ServletTest {
-
-    private static Instance INSTANCE;
-
-    @BeforeAll
-    public static void start() throws Exception {
-        final Index index = Index.of(TestServlet.class, RootApplication.class, TestResource.class);
-        final DeploymentInfo deploymentInfo = new DeploymentInfo()
-                .addServlet(Servlets.servlet(TestServlet.class)
-                        .addMapping("/test-servlet"));
-        final SeBootstrap.Configuration configuration = SeBootstrap.Configuration.builder()
-                .property(ConfigurationOption.JANDEX_INDEX.key(), index)
-                .property(UndertowConfigurationOptions.DEPLOYMENT_INFO, deploymentInfo)
-                .build();
-        INSTANCE = SeBootstrap.start(new RootApplication(), configuration)
-                .toCompletableFuture()
-                .get(TestEnvironment.TIMEOUT, TimeUnit.SECONDS);
-    }
-
-    @AfterAll
-    public static void shutdown() throws Exception {
-        if (INSTANCE != null) {
-            INSTANCE.stop()
-                    .toCompletableFuture()
-                    .get(TestEnvironment.TIMEOUT, TimeUnit.SECONDS);
+    public static class InjectionConfiguration implements ConfigurationProvider {
+        @Override
+        public SeBootstrap.Configuration getConfiguration() {
+            try {
+                final Index index = Index.of(TestServlet.class, RootApplication.class, TestResource.class);
+                final DeploymentInfo deploymentInfo = new DeploymentInfo()
+                        .addServlet(Servlets.servlet(TestServlet.class)
+                                .addMapping("/test-servlet"));
+                return SeBootstrap.Configuration.builder()
+                        .property(ConfigurationOption.JANDEX_INDEX.key(), index)
+                        .property(UndertowConfigurationOptions.DEPLOYMENT_INFO, deploymentInfo)
+                        .build();
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
         }
     }
 
     @Test
-    public void servlet() throws Exception {
+    public void servlet(final URI uri) throws Exception {
         final HttpClient client = HttpClient.newHttpClient();
         final HttpResponse<String> response = client.send(HttpRequest
-                .newBuilder(INSTANCE.configuration().baseUriBuilder().path("test-servlet").build()).GET().build(),
+                .newBuilder(UriBuilder.fromUri(uri).path("test-servlet").build()).GET().build(),
                 HttpResponse.BodyHandlers.ofString());
         Assertions.assertEquals(200, response.statusCode());
         Assertions.assertEquals("test-servlet", response.body());
     }
 
     @Test
-    public void resource() {
-        try (Client client = ClientBuilder.newClient()) {
-            final Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("/test"))
-                    .request().get();
+    public void resource(@RequestPath("/test") final WebTarget target) {
+        try (Response response = target.request().get()) {
             Assertions.assertEquals(200, response.getStatus());
             Assertions.assertEquals("test-resource", response.readEntity(String.class));
         }
