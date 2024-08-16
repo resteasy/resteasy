@@ -74,6 +74,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>dev.resteasy.junit.extension</groupId>
+            <artifactId>resteasy-junit-extension</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>resteasy-undertow-cdi</artifactId>
             <version>${project.version}</version>
