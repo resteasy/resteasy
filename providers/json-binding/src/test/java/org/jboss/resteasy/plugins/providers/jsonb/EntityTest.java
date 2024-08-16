@@ -21,74 +21,57 @@ package org.jboss.resteasy.plugins.providers.jsonb;
 
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
+import jakarta.inject.Inject;
 import jakarta.json.JsonValue;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.SeBootstrap;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import dev.resteasy.junit.extension.annotations.RequestPath;
+import dev.resteasy.junit.extension.annotations.RestBootstrap;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
+@RestBootstrap(EntityTest.TestApplication.class)
 public class EntityTest {
 
-    private static SeBootstrap.Instance INSTANCE;
-
-    @BeforeAll
-    public static void start() throws Exception {
-        INSTANCE = SeBootstrap.start(TestApplication.class)
-                .toCompletableFuture().get(10, TimeUnit.SECONDS);
-    }
-
-    @AfterAll
-    public static void stop() throws Exception {
-        final SeBootstrap.Instance instance = INSTANCE;
-        if (instance != null) {
-            instance.stop()
-                    .toCompletableFuture().get(10, TimeUnit.SECONDS);
-        }
-    }
+    @Inject
+    @RequestPath("/json")
+    private WebTarget target;
 
     @Test
     public void testNullEntity() {
-        try (Client client = ClientBuilder.newClient()) {
-            try (
-                    Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("json"))
-                            .request(MediaType.APPLICATION_JSON_TYPE)
-                            .post(Entity.json(null))) {
-                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
-                Assertions.assertNull(response.readEntity(JsonValue.class));
-            }
+        try (
+                Response response = target
+                        .request(MediaType.APPLICATION_JSON_TYPE)
+                        .post(Entity.json(null))) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertNull(response.readEntity(JsonValue.class));
         }
     }
 
     @Test
     public void testNonNullEntity() {
-        try (Client client = ClientBuilder.newClient()) {
-            final TestEntity testEntity = new TestEntity();
-            testEntity.setName("Test");
-            try (
-                    Response response = client.target(INSTANCE.configuration().baseUriBuilder().path("json"))
-                            .request(MediaType.APPLICATION_JSON_TYPE)
-                            .post(Entity.json(testEntity))) {
-                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
-                Assertions.assertEquals(testEntity, response.readEntity(TestEntity.class));
-            }
+        final TestEntity testEntity = new TestEntity();
+        testEntity.setName("Test");
+        try (
+                Response response = target
+                        .request(MediaType.APPLICATION_JSON_TYPE)
+                        .post(Entity.json(testEntity))) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals(testEntity, response.readEntity(TestEntity.class));
         }
     }
 
