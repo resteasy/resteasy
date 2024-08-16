@@ -22,7 +22,6 @@
         <ipv6ArquillianSettings/>
         <debugJvmArgs/>
         <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
-        <test.java.home>${java.home}</test.java.home>
 
         <!-- Test dependency versions -->
         <version.org.jboss.shrinkwrap>1.2.6</version.org.jboss.shrinkwrap>
@@ -121,7 +120,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <jvm>${test.java.home}/bin/java</jvm>
                     <failIfNoTests>false</failIfNoTests>
                     <systemPropertyVariables>
                         <securityManagerArg>${securityManagerArg}</securityManagerArg>
