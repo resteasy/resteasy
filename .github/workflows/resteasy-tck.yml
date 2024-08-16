@@ -61,56 +61,73 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  resteasy-build:
-    uses: /.github/workflows/shared-resteasy-build.yml
-    with:
-      resteasy-branch: ${{ inputs.resteasy-branch }}
-      resteasy-repo: ${{ inputs.resteasy-repo }}
-
   run-tck:
+
     runs-on: ubuntu-latest
-    needs: resteasy-build
     timeout-minutes: 90
-    strategy:
-      fail-fast: false
-      matrix:
-        java: ['11', '17', '21']
 
     steps:
-      - uses: actions/download-artifact@v3
+      - name: Checkout RESTEasy
+        uses: actions/checkout@v4
         with:
-          name: resteasy-maven-repository
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: |
-          tar -xzf resteasy-maven-repository.tar.gz -C ~
+          path: resteasy
       - name: Checkout RESTEasy TCK Runner
         uses: actions/checkout@v4
         with:
           repository: resteasy/resteasy-tck-runner
           path: resteasy-tck-runner
           ref: 'jakarta-rest-3.1'
-      - name: Set up JDK ${{ matrix.java }}
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.java }}
+          java-version: |
+            11
+            17
+            21
           distribution: 'temurin'
           cache: 'maven'
-      - name: Run the Jakarta REST TCK - JDK ${{ matrix.java }}
+      - name: Build RESTEasy
+        id: resteasy-build
         run:  |
-          echo "RESTEASY_VERSION=${{ needs.resteasy-build.outputs.resteasy-version }}"
+          cd resteasy
+          mvn clean install -U -B -fae -DskipTests
+          RESTEASY_VERSION="$(mvn -B help:evaluate -Dexpression=project.version -DforceStdout -q)"
+          echo "RESTEASY_VERSION=$RESTEASY_VERSION"
+          echo "RESTEASY_VERSION=$RESTEASY_VERSION" >> "$GITHUB_OUTPUT"
+      - name: Run the Jakarta REST TCK - JDK 11
+        run:  |
+          echo "RESTEASY_VERSION=${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
           cd resteasy-tck-runner
-          mvn clean install -U -B -fae -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ needs.resteasy-build.outputs.resteasy-version }}"
+          JAVA_HOME="${{env.JAVA_HOME_11_X64}}"
+          echo JAVA_HOME="${JAVA_HOME}"
+          export JAVA_HOME
+          mvn -version
+          mvn clean install -U -B -fae -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
+      - name: Run the Jakarta REST TCK - JDK 17
+        run:  |
+          echo "RESTEASY_VERSION=${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
+          cd resteasy-tck-runner
+          JAVA_HOME="${{env.JAVA_HOME_17_X64}}"
+          echo JAVA_HOME="${JAVA_HOME}"
+          export JAVA_HOME
+          mvn -version
+          mvn clean install -U -B -fae -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
+      - name: Run the Jakarta REST TCK - JDK 21
+        run:  |
+          echo "RESTEASY_VERSION=${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
+          cd resteasy-tck-runner
+          java -version
+          mvn -version
+          mvn clean install -U -B -fae -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: test-reports-${{ matrix.os }}-${{ matrix.java }}
+          name: test-reports
           path: |
             '**/surefire-reports/'
             '**/failsafe-reports/'
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: server-logs-${{ matrix.os }}-${{ matrix.java }}
+          name: server-logs
           path: '**/server.log'
