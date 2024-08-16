@@ -1,17 +1,15 @@
 package org.jboss.resteasy.embedded.test.interceptor;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
-
-import java.util.LinkedHashSet;
+import java.net.URI;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.embedded.test.AbstractBootstrapTest;
 import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionClientRequestFilter1;
 import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionClientRequestFilter2;
 import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionClientRequestFilter3;
@@ -34,9 +32,11 @@ import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionCo
 import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionContainerResponseFilterMin;
 import org.jboss.resteasy.embedded.test.interceptor.resource.PriorityExecutionResource;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.utils.TestUtil;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import dev.resteasy.junit.extension.annotations.RestBootstrap;
 
 /**
  * @tpSubChapter
@@ -44,33 +44,28 @@ import org.junit.jupiter.api.Test;
  * @tpSince RESTEasy 4.1.0
  * @tpTestCaseDetails Regression test for RESTEASY-1294
  */
-public class PriorityExecutionTest extends AbstractBootstrapTest {
-    public static volatile Queue<String> interceptors = new ConcurrentLinkedQueue<String>();
+@RestBootstrap(PriorityExecutionTest.PriorityApplication.class)
+public class PriorityExecutionTest {
+    public static volatile Queue<String> interceptors = new ConcurrentLinkedQueue<>();
     public static Logger logger = Logger.getLogger(PriorityExecutionTest.class);
     private static final String WRONG_ORDER_ERROR_MSG = "Wrong order of interceptor execution";
 
-    @BeforeEach
-    public void setup() throws Exception {
-        Set<Class<?>> actualProviderClassList = new LinkedHashSet<>();
-        actualProviderClassList.add(PriorityExecutionResource.class);
-        actualProviderClassList.add(PriorityExecutionContainerResponseFilter2.class);
-        actualProviderClassList.add(PriorityExecutionContainerResponseFilter1.class);
-        actualProviderClassList.add(PriorityExecutionContainerResponseFilter3.class);
-        actualProviderClassList.add(PriorityExecutionContainerResponseFilterMin.class);
-        actualProviderClassList.add(PriorityExecutionContainerResponseFilterMax.class);
-        actualProviderClassList.add(PriorityExecutionContainerRequestFilter2.class);
-        actualProviderClassList.add(PriorityExecutionContainerRequestFilter1.class);
-        actualProviderClassList.add(PriorityExecutionContainerRequestFilter3.class);
-        actualProviderClassList.add(PriorityExecutionContainerRequestFilterMin.class);
-        actualProviderClassList.add(PriorityExecutionContainerRequestFilterMax.class);
-        final Application application = new Application() {
-            @Override
-            public Set<Class<?>> getClasses() {
-                return actualProviderClassList;
-            }
-        };
-
-        start(application);
+    public static class PriorityApplication extends Application {
+        @Override
+        public Set<Class<?>> getClasses() {
+            return Set.of(
+                    PriorityExecutionResource.class,
+                    PriorityExecutionContainerResponseFilter2.class,
+                    PriorityExecutionContainerResponseFilter1.class,
+                    PriorityExecutionContainerResponseFilter3.class,
+                    PriorityExecutionContainerResponseFilterMin.class,
+                    PriorityExecutionContainerResponseFilterMax.class,
+                    PriorityExecutionContainerRequestFilter2.class,
+                    PriorityExecutionContainerRequestFilter1.class,
+                    PriorityExecutionContainerRequestFilter3.class,
+                    PriorityExecutionContainerRequestFilterMin.class,
+                    PriorityExecutionContainerRequestFilterMax.class);
+        }
     }
 
     /**
@@ -78,7 +73,7 @@ public class PriorityExecutionTest extends AbstractBootstrapTest {
      * @tpSince RESTEasy 4.1.0
      */
     @Test
-    public void testPriority() throws Exception {
+    public void testPriority(final Client client, final URI uri) throws Exception {
         client.register(PriorityExecutionClientResponseFilter3.class);
         client.register(PriorityExecutionClientResponseFilter1.class);
         client.register(PriorityExecutionClientResponseFilter2.class);
@@ -90,7 +85,7 @@ public class PriorityExecutionTest extends AbstractBootstrapTest {
         client.register(PriorityExecutionClientRequestFilterMin.class);
         client.register(PriorityExecutionClientRequestFilterMax.class);
 
-        Response response = client.target(generateURL("/test")).request().get();
+        Response response = client.target(TestUtil.generateUri(uri, "test")).request().get();
         response.bufferEntity();
         logger.info(response.readEntity(String.class));
         Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
