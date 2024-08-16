@@ -19,8 +19,9 @@
 
 package dev.resteasy.embedded.server;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
@@ -29,59 +30,47 @@ import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.SeBootstrap;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.jandex.Index;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import dev.resteasy.junit.extension.annotations.RequestPath;
+import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.api.ConfigurationProvider;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
+@RestBootstrap(value = InjectionTest.RootApplication.class, configFactory = InjectionTest.InjectionConfiguration.class)
 public class InjectionTest {
-    private static SeBootstrap.Instance INSTANCE;
-    private static Client CLIENT;
-
-    @BeforeAll
-    public static void setup() throws Exception {
-        final Index index = Index.of(Greeter.class, RootApplication.class, GreeterResource.class);
-        INSTANCE = SeBootstrap.start(RootApplication.class, TestEnvironment.createConfig(index))
-                .toCompletableFuture()
-                .get(TestEnvironment.TIMEOUT, TimeUnit.SECONDS);
-        CLIENT = ClientBuilder.newClient();
-    }
-
-    @AfterAll
-    public static void shutdown() throws Exception {
-        if (INSTANCE != null) {
-            INSTANCE.stop().toCompletableFuture().get(TestEnvironment.TIMEOUT, TimeUnit.SECONDS);
-        }
-        if (CLIENT != null) {
-            CLIENT.close();
+    public static class InjectionConfiguration implements ConfigurationProvider {
+        @Override
+        public SeBootstrap.Configuration getConfiguration() {
+            try {
+                final Index index = Index.of(Greeter.class, RootApplication.class, GreeterResource.class);
+                return TestEnvironment.createConfig(index);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
         }
     }
 
     @Test
-    public void application() {
-        try (Response response = CLIENT.target(INSTANCE.configuration().baseUriBuilder().path("/inject/greet/app"))
-                .request()
-                .get()) {
+    public void application(@RequestPath("inject/greet/app") final WebTarget target) {
+        try (Response response = target.request().get()) {
             Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
             Assertions.assertEquals("Hello App", response.readEntity(String.class));
         }
     }
 
     @Test
-    public void resource() {
-        try (Response response = CLIENT.target(INSTANCE.configuration().baseUriBuilder().path("/inject/greet/Violet"))
-                .request()
-                .get()) {
+    public void resource(@RequestPath("inject/greet/Violet") final WebTarget target) {
+        try (Response response = target.request().get()) {
             Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
             Assertions.assertEquals("Hello Violet", response.readEntity(String.class));
         }
