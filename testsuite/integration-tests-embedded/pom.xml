@@ -18,6 +18,11 @@
 
    <dependencies>
        <dependency>
+           <groupId>dev.resteasy.junit.extension</groupId>
+           <artifactId>resteasy-junit-extension</artifactId>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
            <groupId>org.junit.jupiter</groupId>
            <artifactId>junit-jupiter</artifactId>
            <scope>test</scope>
