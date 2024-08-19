@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>security-pom</artifactId>
-        <version>7.0.0.Alpha3-SNAPSHOT</version>
+        <version>7.0.0.Alpha3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
