@@ -39,6 +39,7 @@ import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.config.ConfigurationFactory;
+import org.jboss.resteasy.spi.config.Options;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.util.GetRestful;
 
@@ -287,17 +288,21 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
     }
 
     protected void initializeFactory() {
+        // Get the ResteasyConfiguration if it exists
+        Object context = getDefaultContextObjects() == null ? null
+                : getDefaultContextObjects().get(ResteasyConfiguration.class);
+        // Check if the efault exception manager is enabled
+        final boolean defaultExceptionManagerEnabled = getOptionValue(Options.ENABLE_DEFAULT_EXCEPTION_MAPPER,
+                (ResteasyConfiguration) context);
         // it is very important that each deployment create their own provider factory
         // this allows each WAR to have their own set of providers
         if (providerFactory == null)
-            providerFactory = new ResteasyProviderFactoryImpl();
+            providerFactory = new ResteasyProviderFactoryImpl(defaultExceptionManagerEnabled);
         providerFactory.setRegisterBuiltins(registerBuiltin);
         providerFactory.getStatisticsController().setEnabled(statisticsEnabled);
 
         Object tracingText;
         Object thresholdText;
-        Object context = getDefaultContextObjects() == null ? null
-                : getDefaultContextObjects().get(ResteasyConfiguration.class);
 
         org.jboss.resteasy.spi.config.Configuration config = ConfigurationFactory.getInstance()
                 .getConfiguration((ResteasyConfiguration) context);
@@ -338,7 +343,8 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
                 if (ResteasyProviderFactory.peekInstance() == null
                         || !(ResteasyProviderFactory.peekInstance() instanceof ThreadLocalResteasyProviderFactory)) {
 
-                    threadLocalProviderFactory = new ThreadLocalResteasyProviderFactory(providerFactory);
+                    threadLocalProviderFactory = new ThreadLocalResteasyProviderFactory(providerFactory,
+                            defaultExceptionManagerEnabled);
                     ResteasyProviderFactory.setInstance(threadLocalProviderFactory);
                 } else {
                     ThreadLocalResteasyProviderFactory.push(providerFactory);
@@ -1044,5 +1050,13 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
             return (Boolean) value;
         }
         return !String.valueOf(value).equalsIgnoreCase("false");
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static <T> T getOptionValue(final Options<T> option, final ResteasyConfiguration config) {
+        if (System.getSecurityManager() == null) {
+            return option.getValue(config);
+        }
+        return AccessController.doPrivileged((PrivilegedAction<T>) option::getValue);
     }
 }
