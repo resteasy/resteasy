@@ -30,8 +30,6 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Providers;
 
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.as.arquillian.api.ServerSetup;
-import org.jboss.resteasy.setup.DisableDefaultExceptionMapperSetupTask;
 import org.jboss.resteasy.test.core.basic.resource.ExceptionResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.junit.jupiter.api.Assertions;
@@ -42,7 +40,6 @@ import org.junit.jupiter.api.Test;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@ServerSetup(DisableDefaultExceptionMapperSetupTask.class)
 public abstract class DisabledDefaultExceptionMapperTest {
 
     @Inject
