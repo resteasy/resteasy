@@ -153,8 +153,7 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                     }
                 };
             } else {
-                final SSLContext tlsContext = SSLContext.getInstance(SSLConnectionSocketFactory.TLS);
-                tlsContext.init(null, null, null);
+                final SSLContext tlsContext = SSLContext.getDefault();
                 sslsf = new SSLConnectionSocketFactory(tlsContext, verifier);
             }
 
