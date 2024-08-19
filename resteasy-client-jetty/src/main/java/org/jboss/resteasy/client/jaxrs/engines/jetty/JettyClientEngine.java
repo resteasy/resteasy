@@ -2,8 +2,12 @@ package org.jboss.resteasy.client.jaxrs.engines.jetty;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.time.Duration;
+import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -20,6 +24,8 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.InvocationCallback;
 import jakarta.ws.rs.client.ResponseProcessingException;
+import jakarta.ws.rs.core.EntityPart;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 
@@ -29,11 +35,29 @@ import org.eclipse.jetty.client.OutputStreamRequestContent;
 import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.http.HttpFields;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 
 public class JettyClientEngine implements AsyncClientHttpEngine {
+
+    private static final Logger LOGGER = Logger.getLogger(JettyClientEngine.class);
+    private static final MediaType MULTIPART_WILDCARD = new MediaType("multipart", "*");
+    private static final Class<?> MULTIPART_OUTPUT;
+
+    static {
+        // Check if the org.jboss.resteasy.plugins.providers.multipart.MultipartOutput is on the class path
+        final String className = "org.jboss.resteasy.plugins.providers.multipart.MultipartOutput";
+        Class<?> multipartOutput = null;
+        try {
+            multipartOutput = Class.forName(className, false, resolveClassLoader());
+        } catch (ClassNotFoundException e) {
+            LOGGER.tracef(e, "Failed to load %s", className);
+        }
+
+        MULTIPART_OUTPUT = multipartOutput;
+    }
     public static final String REQUEST_TIMEOUT_MS = JettyClientEngine.class + "$RequestTimeout";
     public static final String IDLE_TIMEOUT_MS = JettyClientEngine.class + "$IdleTimeout";
     // Yeah, this is the Jersey one, but there's no standard one and it makes more sense to reuse than make our own...
@@ -106,16 +130,32 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
         final Request request = client.newRequest(invocation.getUri());
         final CompletableFuture<T> future = new RequestFuture<T>(request);
 
+        // Determine if this is a multipart request
+        final Object entity = invocation.getEntity();
+        final boolean addBoundary = isMultipart(invocation) && canSetBoundary(entity);
+
         invocation.getMutableProperties().forEach(request::attribute);
         request.method(invocation.getMethod());
         request.headers(mutableHeaders -> invocation.getHeaders().asMap()
-                .forEach((h, vs) -> vs.forEach(v -> mutableHeaders.add(h, v))));
+                .forEach((h, vs) -> vs.forEach(v -> {
+                    String headerValue = v;
+                    if (addBoundary && h.equalsIgnoreCase("content-type")) {
+                        final MediaType mediaType = MediaType.valueOf(v);
+                        // Set the boundary if needed
+                        if (mediaType.getParameters().get("boundary") == null) {
+                            headerValue = headerValue + "; boundary=" + UUID.randomUUID();
+                            // Replace the MediaType on the invocation if we've added a boundary
+                            invocation.getHeaders().setMediaType(MediaType.valueOf(headerValue));
+                        }
+                    }
+                    mutableHeaders.add(h, headerValue);
+                })));
         configureTimeout(request);
         if (request.getAttributes().get(FOLLOW_REDIRECTS) == Boolean.FALSE) {
             request.followRedirects(false);
         }
 
-        if (invocation.getEntity() != null) {
+        if (entity != null) {
             final OutputStreamRequestContent contentOut = new OutputStreamRequestContent(
                     Objects.toString(invocation.getHeaders().getMediaType(), null));
             asyncExecutor.execute(() -> {
@@ -246,6 +286,43 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
         }
         ret.fillInStackTrace();
         return ret;
+    }
+
+    private static ClassLoader resolveClassLoader() {
+        if (System.getSecurityManager() == null) {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            if (cl == null) {
+                cl = JettyClientEngine.class.getClassLoader();
+            }
+            return cl == null ? ClassLoader.getSystemClassLoader() : cl;
+        }
+        return AccessController.doPrivileged((PrivilegedAction<ClassLoader>) () -> {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            if (cl == null) {
+                cl = JettyClientEngine.class.getClassLoader();
+            }
+            return cl == null ? ClassLoader.getSystemClassLoader() : cl;
+        });
+    }
+
+    private static boolean isMultipart(final ClientInvocation invocation) {
+        return MULTIPART_WILDCARD.isCompatible(invocation.getHeaders().getMediaType());
+    }
+
+    private static boolean canSetBoundary(final Object entity) {
+        if (MULTIPART_OUTPUT != null && MULTIPART_OUTPUT.isInstance(entity)) {
+            return true;
+        }
+        if (entity instanceof EntityPart) {
+            return true;
+        }
+        if (entity instanceof final List<?> list) {
+            // We're a list, if we're not empty check the first type to see if it's an entity part
+            if (!list.isEmpty()) {
+                return list.get(0) instanceof EntityPart;
+            }
+        }
+        return false;
     }
 
     static class RequestFuture<T> extends CompletableFuture<T> {
