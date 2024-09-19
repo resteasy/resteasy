@@ -84,7 +84,7 @@
         <version.jakarta.el.el-api>4.0.0</version.jakarta.el.el-api>
         <version.jakarta.ejb.ejb-api>4.0.1</version.jakarta.ejb.ejb-api>
         <version.jakarta.enterprise.concurrent>3.0.4</version.jakarta.enterprise.concurrent>
-        <version.jakarta.interceptor.interceptor-api>2.1.0</version.jakarta.interceptor.interceptor-api>
+        <version.jakarta.interceptor.interceptor-api>2.2.0</version.jakarta.interceptor.interceptor-api>
         <version.jakarta.jms.jms-api>3.1.0</version.jakarta.jms.jms-api>
         <version.jakarta.ws.rs>3.1.0</version.jakarta.ws.rs>
         <version.jakarta.xml.bind.bind-api>3.0.1</version.jakarta.xml.bind.bind-api>
