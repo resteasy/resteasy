@@ -1,11 +1,14 @@
 package org.jboss.resteasy.test.providers.jackson2.multipart;
 
+import java.util.Map;
+
 import jakarta.ws.rs.client.ClientBuilder;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -36,7 +39,9 @@ public class Jackson2MultipartFormTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(Jackson2MultipartFormTest.class.getSimpleName());
         war.addClass(Jackson2MultipartFormTest.class);
-        return TestUtil.finishContainerPrepare(war, null, JsonFormResource.class, JsonUser.class);
+        return TestUtil.finishContainerPrepare(war,
+                Map.of(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true"), JsonFormResource.class,
+                JsonUser.class);
     }
 
     private String generateURL(String path) {

@@ -807,6 +807,11 @@ RESTEasy can receive the following configuration options from any ConfigSource's
 | Setting this value to true will throw a `org.jboss.resteasy.spi.DefaultOptionsMethodException` if the HTTP method
   "OPTIONS" is sent and the matching method is not annotated with `@OPTIONS`. This is the original behavior of RESTEasy.
   However, this has been changed to return the response so that its processed with an `ExceptionMapper`.
+
+| dev.resteasy.provider.jackson.disable.default.object.mapper
+| false
+| Setting this value to true will disable RESTEasy creating a `com.fasterxml.jackson.databind.ObjectMapper` if the
+  Jackson Provider is being used and there is no `jakarta.ws.rs.ext.ContextResolver` for an `ObjectMapper`.
 |===
 
 NOTE: The resteasy.servlet.mapping.prefix context param variable must be set if the servlet-mapping for the RESTEasy
