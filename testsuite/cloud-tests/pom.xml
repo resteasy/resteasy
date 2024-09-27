@@ -58,19 +58,23 @@
     </properties>
 
     <modules>
+        <module>test-utils</module>
         <!-- Images must be built first -->
         <module>images</module>
         <module>client-tests</module>
     </modules>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.jboss.resteasy.test</groupId>
-            <artifactId>test-utils</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.wildfly.cloud-tests</groupId>
+                <artifactId>bom</artifactId>
+                <version>${version.org.wildfly.cloud-tests}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <pluginManagement>
