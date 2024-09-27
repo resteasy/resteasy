@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * @tpSubChapter Jackson2 provider
@@ -109,9 +110,10 @@ public class JacksonDatatypeTest {
      * @tpSince RESTEasy 3.1.0.CR3
      */
     @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "6.2.11.Final")
     public void testDatatypeNotSupportedOptionalNull() throws Exception {
         String strResponse = requestHelper("optional/true", DEFAULT_DEPLOYMENT);
-        Assertions.assertFalse(strResponse.contains("null"), "Wrong conversion of Optional (null)");
+        Assertions.assertTrue(strResponse.contains("null"), "Wrong conversion of Optional (null)");
     }
 
     /**
@@ -119,9 +121,10 @@ public class JacksonDatatypeTest {
      * @tpSince RESTEasy 3.1.0.CR3
      */
     @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "6.2.11.Final")
     public void testDatatypeNotSupportedOptionalNotNull() throws Exception {
         String strResponse = requestHelper("optional/false", DEFAULT_DEPLOYMENT);
-        Assertions.assertFalse(strResponse.contains("info@example.com"),
+        Assertions.assertTrue(strResponse.contains("info@example.com"),
                 "Wrong conversion of Optional (not null)");
     }
 
