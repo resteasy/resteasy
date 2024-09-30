@@ -370,7 +370,6 @@ public class ResteasyJackson2Provider extends JacksonJsonProvider implements Asy
 
     private static boolean useDefaultObjectMapper() {
         if (System.getSecurityManager() == null) {
-            final boolean test = JacksonOptions.DISABLE_DEFAULT_OBJECT_MAPPER.getValue();
             return !JacksonOptions.DISABLE_DEFAULT_OBJECT_MAPPER.getValue();
         }
         return AccessController
