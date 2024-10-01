@@ -73,6 +73,10 @@
             <groupId>org.wildfly.arquillian</groupId>
             <artifactId>wildfly-arquillian-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wildfly.arquillian</groupId>
+            <artifactId>wildfly-testing-tools</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.maven</groupId>

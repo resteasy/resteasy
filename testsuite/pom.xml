@@ -82,13 +82,6 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>org.wildfly.cloud-tests</groupId>
-                <artifactId>bom</artifactId>
-                <version>${version.org.wildfly.cloud-tests}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.jboss.arquillian.container</groupId>
                 <artifactId>arquillian-weld-embedded</artifactId>
                 <version>${version.org.jboss.arquillian.container.arquillian-weld-embedded}</version>
@@ -97,11 +90,6 @@
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>arquillian-utils</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy.test</groupId>
-                <artifactId>test-utils</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- Used for surefire logging -->
@@ -168,7 +156,6 @@
                 </property>
             </activation>
             <modules>
-                <module>test-utils</module>
                 <module>arquillian-utils</module>
                 <module>unit-tests</module>
                 <module>integration-tests</module>

@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.providers.jackson2;
 
+import java.util.Map;
+
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
@@ -10,6 +12,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenceJacksonResource;
 import org.jboss.resteasy.test.providers.jackson2.resource.JacksonJaxbCoexistenceJacksonXmlResource;
@@ -23,7 +26,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -32,7 +34,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpChapter Integration tests
  * @tpSince RESTEasy 3.0.16
  */
-@Disabled
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class JacksonJaxbCoexistenceTest {
@@ -43,7 +44,9 @@ public class JacksonJaxbCoexistenceTest {
     @Deployment(name = "default")
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(JacksonJaxbCoexistenceTest.class.getSimpleName());
-        return TestUtil.finishContainerPrepare(war, null, JacksonJaxbCoexistenceJacksonResource.class,
+        return TestUtil.finishContainerPrepare(war,
+                Map.of(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true"),
+                JacksonJaxbCoexistenceJacksonResource.class,
                 JacksonJaxbCoexistenceJacksonXmlResource.class, JacksonJaxbCoexistenceXmlResource.class,
                 JacksonJaxbCoexistenceProduct2.class,
                 JacksonJaxbCoexistenceXmlProduct.class);
@@ -76,8 +79,8 @@ public class JacksonJaxbCoexistenceTest {
         String entity = response.readEntity(String.class);
         logger.info(entity);
         Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assertions.assertEquals("The response entity content doesn't match the expected",
-                "{\"name\":\"Iphone\",\"id\":333}", entity);
+        Assertions.assertEquals("{\"name\":\"Iphone\",\"id\":333}", entity,
+                "The response entity content doesn't match the expected");
 
         response.close();
 
@@ -86,8 +89,8 @@ public class JacksonJaxbCoexistenceTest {
         entity = response.readEntity(String.class);
         logger.info(entity);
         Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assertions.assertEquals("The response entity content doesn't match the expected",
-                "[{\"name\":\"Iphone\",\"id\":333},{\"name\":\"macbook\",\"id\":44}]", entity);
+        Assertions.assertEquals("[{\"name\":\"Iphone\",\"id\":333},{\"name\":\"macbook\",\"id\":44}]", entity,
+                "The response entity content doesn't match the expected");
         response.close();
     }
 
@@ -102,8 +105,8 @@ public class JacksonJaxbCoexistenceTest {
         String entity = response.readEntity(String.class);
         logger.info(entity);
         Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assertions.assertEquals("The response entity content doesn't match the expected",
-                "{\"name\":\"Iphone\",\"id\":333}", entity);
+        Assertions.assertEquals("{\"name\":\"Iphone\",\"id\":333}", entity,
+                "The response entity content doesn't match the expected");
         response.close();
 
         target = client.target(generateURL("/jxml/products"));
@@ -111,8 +114,8 @@ public class JacksonJaxbCoexistenceTest {
         entity = response.readEntity(String.class);
         logger.info(entity);
         Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assertions.assertEquals("The response entity content doesn't match the expected",
-                "[{\"name\":\"Iphone\",\"id\":333},{\"name\":\"macbook\",\"id\":44}]", entity);
+        Assertions.assertEquals("[{\"name\":\"Iphone\",\"id\":333},{\"name\":\"macbook\",\"id\":44}]", entity,
+                "The response entity content doesn't match the expected");
         response.close();
     }
 

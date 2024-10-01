@@ -1,9 +1,13 @@
 package org.jboss.resteasy.extension.systemproperties.client;
 
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.ReflectPermission;
+import java.security.Permission;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.PropertyPermission;
+import java.util.Set;
 
 import org.jboss.arquillian.config.descriptor.api.ArquillianDescriptor;
 import org.jboss.arquillian.config.descriptor.api.ExtensionDef;
@@ -12,9 +16,13 @@ import org.jboss.arquillian.core.api.Instance;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.test.spi.TestClass;
 import org.jboss.resteasy.extension.systemproperties.SystemProperties;
+import org.jboss.resteasy.utils.TestConfiguration;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.Node;
+import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.container.ResourceContainer;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * ArchiveProcessor
@@ -37,6 +45,22 @@ public class ArchiveProcessor implements ApplicationArchiveProcessor {
                         toString(filterSystemProperties(prefix))),
                         SystemProperties.FILE_NAME);
             }
+        }
+        // Add a permissions.xml file if the security manager is enabled in the server
+        if (TestConfiguration.isSecurityManagerEnabled()) {
+            final Set<Permission> requirePermissions = Set.of(
+                    new ReflectPermission("suppressAccessChecks"),
+                    new PropertyPermission("arquillian.*", "read"),
+                    new PropertyPermission("junit.platform.reflection.search.useLegacySemantics", "read"));
+            final Node node = applicationArchive.delete("/META-INF/permissions.xml");
+            final Asset permissionsXml;
+            if (node != null) {
+                final Asset currentPermissions = node.getAsset();
+                permissionsXml = DeploymentDescriptors.appendPermissions(currentPermissions, requirePermissions);
+            } else {
+                permissionsXml = DeploymentDescriptors.createPermissionsXmlAsset(requirePermissions);
+            }
+            applicationArchive.add(permissionsXml, "/META-INF/permissions.xml");
         }
     }
 
