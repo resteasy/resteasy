@@ -48,7 +48,7 @@
         <version.com.sun.xml.fastinfoset>2.1.1</version.com.sun.xml.fastinfoset>
         <version.commons-io.commons-io>2.16.1</version.commons-io.commons-io>
         <version.commons-codec.commons-codec>1.16.1</version.commons-codec.commons-codec>
-        <version.dev.resteasy.junit.extension>1.0.0.Alpha1</version.dev.resteasy.junit.extension>
+        <version.dev.resteasy.junit.extension>1.0.0.Alpha2</version.dev.resteasy.junit.extension>
         <version.io.netty.netty4>4.1.114.Final</version.io.netty.netty4>
         <version.io.vertx>4.5.10</version.io.vertx>
         <version.io.undertow>2.3.17.Final</version.io.undertow>
