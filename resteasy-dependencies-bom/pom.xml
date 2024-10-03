@@ -49,8 +49,8 @@
         <version.commons-io.commons-io>2.16.1</version.commons-io.commons-io>
         <version.commons-codec.commons-codec>1.16.1</version.commons-codec.commons-codec>
         <version.dev.resteasy.junit.extension>1.0.0.Alpha1</version.dev.resteasy.junit.extension>
-        <version.io.netty.netty4>4.1.112.Final</version.io.netty.netty4>
-        <version.io.vertx>4.5.9</version.io.vertx>
+        <version.io.netty.netty4>4.1.114.Final</version.io.netty.netty4>
+        <version.io.vertx>4.5.10</version.io.vertx>
         <version.io.undertow>2.3.17.Final</version.io.undertow>
         <version.jakarta.activation>2.1.3</version.jakarta.activation>
         <version.jakarta.enterprise.cdi-api>4.1.0</version.jakarta.enterprise.cdi-api>
