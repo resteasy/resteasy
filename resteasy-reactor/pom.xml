@@ -36,13 +36,6 @@
         <scope>provided</scope>
         <optional>true</optional>
     </dependency>
-    <dependency>
-        <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging-processor</artifactId>
-        <!-- This is a compile time only requirement -->
-        <scope>provided</scope>
-        <optional>true</optional>
-    </dependency>
       <dependency>
           <groupId>org.jboss.resteasy</groupId>
           <artifactId>resteasy-netty4</artifactId>
