@@ -84,6 +84,18 @@
                     <artifactId>docker-maven-plugin</artifactId>
                     <version>${version.io.fabric8.docker-maven-plugin}</version>
                 </plugin>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.wildfly.cloud-tests</groupId>
+                                <artifactId>annotation-processor</artifactId>
+                                <version>${version.org.wildfly.cloud-tests}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>

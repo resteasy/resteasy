@@ -24,6 +24,7 @@
         <version.org.jboss.arquillian.core>1.9.1.Final</version.org.jboss.arquillian.core>
         <version.org.jboss.arquillian.jakarta>10.0.0.Final</version.org.jboss.arquillian.jakarta>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>3.0.2.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
+        <version.org.jboss.logging.jboss-logging-processor>3.0.2.Final</version.org.jboss.logging.jboss-logging-processor>
         <version.org.wildfly>32.0.1.Final</version.org.wildfly>
         <version.org.wildfly.arquillian.wildfly-arquillian>5.1.0.Beta6</version.org.wildfly.arquillian.wildfly-arquillian>
         <version.org.wildfly.wildfly-channel-maven-plugin>1.0.19</version.org.wildfly.wildfly-channel-maven-plugin>
@@ -327,6 +328,15 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.jboss.logging</groupId>
+                                <artifactId>jboss-logging-processor</artifactId>
+                                <version>${version.org.jboss.logging.jboss-logging-processor}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

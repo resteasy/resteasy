@@ -97,10 +97,6 @@
          <artifactId>jboss-logging-annotations</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.jboss.logging</groupId>
-         <artifactId>jboss-logging-processor</artifactId>
-      </dependency>
-      <dependency>
           <groupId>org.jboss.resteasy</groupId>
           <artifactId>arquillian-utils</artifactId>
           <scope>test</scope>
