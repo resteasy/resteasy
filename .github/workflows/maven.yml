@@ -58,14 +58,14 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: |
-            11
+            17
             21
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Build with Maven Java 21 test with Java 11 - ${{ matrix.os }}
+      - name: Build with Maven Java 21 test with Java 17 - ${{ matrix.os }}
         run:  |
-          mvn clean install -U -B -fae '-Dgithub.actions' '-Djvm=${{env.JAVA_HOME_11_X64}}/bin/java'
+          mvn clean install -U -B -fae '-Dgithub.actions' '-Djvm=${{env.JAVA_HOME_17_X64}}/bin/java'
 
       - name: Build with Maven Java 21 - ${{ matrix.os }}
         run:  |
@@ -110,6 +110,38 @@ jobs:
         if: failure()
         with:
           name: server-logs-${{ matrix.os }}
+          path: '**/server.log'
+
+  java-11-build:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: |
+            11
+            17
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: Test with Java 11 on WildFly 34 - ${{ matrix.os }}
+        run:  |
+          mvn clean install -U -B -fae '-Dserver.version=34.0.0.Final' '-Dgithub.actions' '-Djvm=${{env.JAVA_HOME_11_X64}}/bin/java'
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: surefire-reports-${{ matrix.os }}}-34
+          path: '**/surefire-reports/'
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: server-logs-${{ matrix.os }}-34
           path: '**/server.log'
 
   build-java-docs:

@@ -33,10 +33,10 @@
 #      - name: Set up JDK ${{ inputs.javaVersion }}
 #        uses: actions/setup-java@v4
 #        with:
-#          java-version: 11
+#          java-version: 17
 #          distribution: 'temurin'
 #          cache: 'maven'
-#      - name: Build on Linux with Java 11 using RESTEasy ${{ needs.resteasy-build.outputs.resteasy-version }}
+#      - name: Build on Linux with Java 17 using RESTEasy ${{ needs.resteasy-build.outputs.resteasy-version }}
 #        run: mvn clean verify '-Dversion.dev.resteasy=${{ needs.resteasy-build.outputs.resteasy-version }}'
 
 name: Build RESTEasy Upstream - 6.2
