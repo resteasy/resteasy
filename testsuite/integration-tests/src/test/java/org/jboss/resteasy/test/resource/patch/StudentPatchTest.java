@@ -91,13 +91,13 @@ public class StudentPatchTest {
 
     @Test
     @OperateOnDeployment(LEGACY_PATCH_DEPLOYMENT)
-    public void testJSONPPatchStudent() throws Exception {
+    public void testJackson2PatchStudent() throws Exception {
         testPatch(LEGACY_PATCH_DEPLOYMENT);
     }
 
     @Test
     @OperateOnDeployment(LEGACY_PATCH_DEPLOYMENT)
-    public void testJSONPMergePatchStudent() throws Exception {
+    public void testJackson2MergePatchStudent() throws Exception {
         testMergePatch(LEGACY_PATCH_DEPLOYMENT);
     }
 
