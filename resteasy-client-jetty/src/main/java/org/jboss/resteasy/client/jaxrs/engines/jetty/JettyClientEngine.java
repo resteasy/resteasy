@@ -74,8 +74,14 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
     };
 
     private final HttpClient client;
+    private final long idleTimeout;
+    private final long readTimeout;
 
     public JettyClientEngine(final HttpClient client) {
+        this(client, -1, -1);
+    }
+
+    public JettyClientEngine(final HttpClient client, final long idleTimeout, final long readTimeout) {
         if (!client.isStarted()) {
             try {
                 client.start();
@@ -84,6 +90,8 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
             }
         }
         this.client = client;
+        this.idleTimeout = idleTimeout;
+        this.readTimeout = readTimeout;
     }
 
     @Override
@@ -233,10 +241,14 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
         final long idleTimeoutMs = parseTimeoutMs(idleTimeout);
         if (timeoutMs > 0) {
             request.timeout(timeoutMs, TimeUnit.MILLISECONDS);
+        } else if (readTimeout > 0L) {
+            request.timeout(readTimeout, TimeUnit.MILLISECONDS);
         }
 
         if (idleTimeoutMs > 0) {
             request.idleTimeout(idleTimeoutMs, TimeUnit.MILLISECONDS);
+        } else if (this.idleTimeout > 0L) {
+            request.idleTimeout(this.idleTimeout, TimeUnit.MILLISECONDS);
         }
     }
 

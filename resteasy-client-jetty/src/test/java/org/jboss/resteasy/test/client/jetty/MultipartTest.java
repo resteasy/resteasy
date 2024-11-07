@@ -40,7 +40,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.ServerErrorException;
 import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.core.Application;
@@ -51,16 +50,12 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 
-import org.eclipse.jetty.client.HttpClient;
-import org.jboss.resteasy.client.jaxrs.engines.jetty.JettyClientEngine;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
-import dev.resteasy.junit.extension.annotations.RestClientConfig;
-import dev.resteasy.junit.extension.api.RestClientBuilderProvider;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -68,15 +63,7 @@ import dev.resteasy.junit.extension.api.RestClientBuilderProvider;
 @RestBootstrap(MultipartTest.TestApplication.class)
 public class MultipartTest {
 
-    public static class JettyClientBuilder implements RestClientBuilderProvider {
-        @Override
-        public ClientBuilder getClientBuilder() {
-            return ClientBuilder.newBuilder().register(new JettyClientEngine(new HttpClient()));
-        }
-    }
-
     @Inject
-    @RestClientConfig(JettyClientBuilder.class)
     private Client client;
 
     @Test
