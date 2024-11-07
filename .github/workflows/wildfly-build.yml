@@ -35,15 +35,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  wildfly-build:
-    uses: wildfly/wildfly/.github/workflows/shared-wildfly-build.yml@main
-    with:
-      wildfly-branch: "main"
-      wildfly-repo: "wildfly/wildfly"
 
   resteasy-build:
     runs-on: ${{ matrix.os }}
-    needs: wildfly-build
     strategy:
       fail-fast: false
       matrix:
@@ -52,13 +46,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: wildfly-maven-repository
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: tar -xzf wildfly-maven-repository.tar.gz -C ~
+      - uses: wildfly-extras/wildfly-nightly-download@v1
+        id: wildfly-nightly
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
@@ -66,7 +55,7 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
       - name: Build with Maven Java ${{ matrix.java }}
-        run: mvn clean install '-Dserver.version=${{needs.wildfly-build.outputs.wildfly-version}}'
+        run: mvn clean install '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
       - name: Upload surefire reports
         uses: actions/upload-artifact@v4
         if: failure()
@@ -82,7 +71,6 @@ jobs:
 
   additional-profiles:
     runs-on: ubuntu-latest
-    needs: wildfly-build
     timeout-minutes: 90
     strategy:
       fail-fast: false
@@ -93,13 +81,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: wildfly-maven-repository
-          path: .
-      - name: Extract Maven Repo
-        shell: bash
-        run: tar -xzf wildfly-maven-repository.tar.gz -C ~
+      - uses: wildfly-extras/wildfly-nightly-download@v1
+        id: wildfly-nightly
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
@@ -108,7 +91,7 @@ jobs:
           cache: 'maven'
       - name: Test with ${{ matrix.profile }} - JDK ${{ matrix.java }}
         run:  |
-          mvn clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{needs.wildfly-build.outputs.wildfly-version}}'
+          mvn clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
