@@ -59,7 +59,7 @@ public class UndertowJaxrsServer implements EmbeddedJaxrsServer<UndertowJaxrsSer
     @Override
     public UndertowJaxrsServer deploy() {
         serverHelper.checkDeployment(deployment);
-        return deploy(deployment, serverHelper.checkContextPath(rootResourcePath),
+        return deploy(deployment, "/",
                 deployment.getClass().getClassLoader());
     }
 
@@ -231,7 +231,13 @@ public class UndertowJaxrsServer implements EmbeddedJaxrsServer<UndertowJaxrsSer
     }
 
     public DeploymentInfo undertowDeployment(ResteasyDeployment resteasyDeployment) {
-        return undertowDeployment(resteasyDeployment, serverHelper.checkAppDeployment(resteasyDeployment));
+        String mapping;
+        if (rootResourcePath != null) {
+            mapping = serverHelper.checkContextPath(rootResourcePath);
+        } else {
+            mapping = serverHelper.checkAppDeployment(resteasyDeployment);
+        }
+        return undertowDeployment(resteasyDeployment, mapping);
     }
 
     public DeploymentInfo undertowDeployment(Class<? extends Application> application) {

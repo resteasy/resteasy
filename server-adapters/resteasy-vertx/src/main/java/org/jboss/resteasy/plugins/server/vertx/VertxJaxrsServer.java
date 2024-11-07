@@ -41,7 +41,7 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer<VertxJaxrsServer> {
     protected Vertx vertx;
     protected HttpServerOptions serverOptions = new HttpServerOptions();
     protected VertxResteasyDeployment deployment;
-    protected String root = "";
+    protected String root;
     protected SecurityDomain domain;
     private String deploymentID;
     private EmbeddedServerHelper serverHelper = new EmbeddedServerHelper();
@@ -67,9 +67,14 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer<VertxJaxrsServer> {
             deployment.start();
         }
 
-        String aPath = serverHelper.checkAppDeployment(deployment);
-        if (aPath == null) {
+        String aPath;
+        if (root != null) {
             aPath = root;
+        } else {
+            aPath = serverHelper.checkAppDeployment(deployment);
+        }
+        if (aPath == null) {
+            aPath = "";
         }
         setRootResourcePath(serverHelper.checkContextPath(aPath));
 

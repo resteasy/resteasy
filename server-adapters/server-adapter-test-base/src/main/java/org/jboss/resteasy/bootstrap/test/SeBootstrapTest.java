@@ -20,6 +20,7 @@
 package org.jboss.resteasy.bootstrap.test;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -85,7 +86,7 @@ public abstract class SeBootstrapTest {
         try (Client client = ClientBuilder.newClient()) {
             final Response response = client.target(instance.configuration()
                     .baseUriBuilder()
-                    .path("default/test/constructed"))
+                    .path("test/constructed"))
                     .request()
                     .get();
             Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
@@ -110,7 +111,7 @@ public abstract class SeBootstrapTest {
         try (Client client = ClientBuilder.newClient()) {
             Response response = client.target(instance.configuration()
                     .baseUriBuilder()
-                    .path("setest1/no-index/defined"))
+                    .path("no-index/defined"))
                     .request()
                     .get();
             Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
@@ -131,7 +132,7 @@ public abstract class SeBootstrapTest {
         try (Client client = ClientBuilder.newClient()) {
             final Response response = client.target(instance.configuration()
                     .baseUriBuilder()
-                    .path("setest2/test/scanned"))
+                    .path("test/scanned"))
                     .request()
                     .get();
             Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
@@ -145,7 +146,7 @@ public abstract class SeBootstrapTest {
         try (Client client = ClientBuilder.newClient()) {
             final Response response = client.target(instance.configuration()
                     .baseUriBuilder()
-                    .path("noscan/test/skipped"))
+                    .path("test/skipped"))
                     .request()
                     .get();
             Assertions.assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
@@ -164,12 +165,31 @@ public abstract class SeBootstrapTest {
         try (Client client = ClientBuilder.newBuilder().sslContext(TestSslUtil.createClientSslContext()).build()) {
             final Response response = client.target(instance.configuration()
                     .baseUriBuilder()
-                    .path("default/test/secure"))
+                    .path("test/secure"))
                     .request()
                     .get();
             Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
             Assertions.assertEquals("Hello secure", response.readEntity(String.class));
         }
+    }
+
+    @Test
+    public void overrideApplicationPath() throws Exception {
+        final Index index = Index.of(TestResource.class);
+        instance = SeBootstrap.start(DefaultApplication.class, SeBootstrap.Configuration.builder().rootPath("override")
+                .property(ConfigurationOption.JANDEX_INDEX.key(), index).build())
+                .toCompletableFuture().get(60, TimeUnit.SECONDS);
+        try (Client client = ClientBuilder.newClient()) {
+            final URI uri = instance.configuration()
+                    .baseUriBuilder()
+                    .path("test/constructed").build();
+            final Response response = client.target(uri)
+                    .request()
+                    .get();
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo(), () -> String.format("Failure at %s", uri));
+            Assertions.assertEquals("Hello constructed", response.readEntity(String.class));
+        }
+
     }
 
     protected abstract Class<? extends EmbeddedServer> getEmbeddedServerClass();

@@ -22,17 +22,19 @@ package org.jboss.resteasy.core.se;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLContext;
 
+import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.SeBootstrap.Configuration;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
@@ -45,6 +47,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
  * @since 6.1
  */
 public class ResteasySeConfiguration implements Configuration {
+    private final ReadWriteLock configLock = new ReentrantReadWriteLock();
     private final Map<String, Object> properties;
 
     private ResteasySeConfiguration(final Map<String, Object> properties) {
@@ -69,7 +72,31 @@ public class ResteasySeConfiguration implements Configuration {
      * @return a new configuration
      */
     public static Configuration from(final Configuration configuration) {
+        return from(configuration, null);
+    }
+
+    /**
+     * Creates a new configuration which delegates to the configuration passed in. If the configuration does not
+     * contain certain properties required by this implementation, default values are returned.
+     *
+     * @param configuration   the delegate configuration
+     * @param applicationPath the path from the {@link ApplicationPath#value()} annotation
+     *
+     * @return a new configuration
+     */
+    static Configuration from(final Configuration configuration, final String applicationPath) {
         if (configuration instanceof ResteasySeConfiguration) {
+            if (applicationPath != null) {
+                final ResteasySeConfiguration resteasyConfiguration = (ResteasySeConfiguration) configuration;
+                try {
+                    resteasyConfiguration.configLock.writeLock().lock();
+                    if (!resteasyConfiguration.properties.containsKey(ROOT_PATH)) {
+                        resteasyConfiguration.properties.put(ROOT_PATH, applicationPath);
+                    }
+                } finally {
+                    resteasyConfiguration.configLock.writeLock().unlock();
+                }
+            }
             return configuration;
         }
         return new DelegateConfiguration(configuration, new Builder().build());
@@ -77,7 +104,16 @@ public class ResteasySeConfiguration implements Configuration {
 
     @Override
     public Object property(final String name) {
-        final Object value = properties.get(name);
+        final Object value;
+        try {
+            configLock.readLock().lock();
+            value = properties.get(name);
+        } finally {
+            configLock.readLock().unlock();
+        }
+        if (value == null && name.equals(ROOT_PATH)) {
+            return "/";
+        }
         if (value instanceof LazyValue) {
             return ((LazyValue) value).get();
         }
@@ -86,7 +122,12 @@ public class ResteasySeConfiguration implements Configuration {
 
     @Override
     public boolean hasProperty(final String name) {
-        return properties.containsKey(name);
+        try {
+            configLock.readLock().lock();
+            return properties.containsKey(name);
+        } finally {
+            configLock.readLock().unlock();
+        }
     }
 
     private static class Builder implements Configuration.Builder {
@@ -121,7 +162,6 @@ public class ResteasySeConfiguration implements Configuration {
             } else {
                 properties.put(PORT, ConfigurationOption.PORT.defaultValue());
             }
-            properties.putIfAbsent(ROOT_PATH, "/");
             properties.putIfAbsent(SSL_CONTEXT, LazyValue.of(() -> {
                 try {
                     return SSLContext.getDefault();
@@ -130,7 +170,7 @@ public class ResteasySeConfiguration implements Configuration {
                 }
             }));
             properties.putIfAbsent(SSL_CLIENT_AUTHENTICATION, ConfigurationOption.SSL_CLIENT_AUTHENTICATION.defaultValue());
-            return new ResteasySeConfiguration(Collections.unmodifiableMap(properties));
+            return new ResteasySeConfiguration(new HashMap<>(properties));
         }
 
         @Override
@@ -160,7 +200,13 @@ public class ResteasySeConfiguration implements Configuration {
         @Override
         public Configuration.Builder from(final Object externalConfig) {
             if (externalConfig instanceof ResteasySeConfiguration) {
-                this.properties.putAll(((ResteasySeConfiguration) externalConfig).properties);
+                final ResteasySeConfiguration configuration = (ResteasySeConfiguration) externalConfig;
+                try {
+                    configuration.configLock.readLock().lock();
+                    this.properties.putAll(configuration.properties);
+                } finally {
+                    configuration.configLock.readLock().unlock();
+                }
             } else if (externalConfig instanceof ResteasySeConfiguration.Builder) {
                 this.properties.putAll(((ResteasySeConfiguration.Builder) externalConfig).properties);
             } else if (externalConfig instanceof Configuration) {
