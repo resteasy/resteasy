@@ -163,4 +163,7 @@ public interface Messages {
     @Message(id = BASE + 194, value = "No content type found in response. Cannot extract the response value.")
     @Signature(messageIndex = 1, value = { Response.class, String.class })
     ResponseProcessingException noContentTypeFound(@Param Response response);
+
+    @Message(id = BASE + 195, value = "Expected type %s, but found type %s for the configuration.")
+    IllegalStateException invalidClientBuilderConfiguration(Class<?> found, Class<?> expected);
 }

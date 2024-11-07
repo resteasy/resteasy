@@ -41,6 +41,7 @@ import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.nio.ContentDecoder;
 import org.apache.http.nio.IOControl;
@@ -98,6 +99,10 @@ import org.jboss.resteasy.util.CaseInsensitiveMap;
 public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Closeable {
     protected final CloseableHttpAsyncClient client;
     protected final boolean closeHttpClient;
+
+    public ApacheHttpAsyncClient4Engine(final boolean closeHttpClient) {
+        this(HttpAsyncClients.createSystem(), closeHttpClient);
+    }
 
     public ApacheHttpAsyncClient4Engine(final CloseableHttpAsyncClient client, final boolean closeHttpClient) {
         if (client == null)

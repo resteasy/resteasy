@@ -502,6 +502,12 @@ ClientHttpEngine myEngine = new ClientHttpEngine() {
 Client client = ClientBuilder.newBuilder().register(myEngine).build();
 ----
 
+NOTE: If you include a `META-INF/services/org.jboss.resteasy.client.jaxrs.engine.ClientHttpEngineFactory` and an implementation
+      of the interface, you do not need to register your engine in the `ClientBuilder`. You can simply do
+      `Client client = ClientBuilder.newClient()` and your backing engine will be used.
+
+NOTE: You can also add a `jakarta.annotations.Priority` annotation on your `org.jboss.resteasy.client.jaxrs.engine.ClientHttpEngineFactory` implementation to rank the priorities.
+
 RESTEasy and `HttpClient` make reasonable default decisions so that it is possible to use the client framework without ever referencing `HttpClient`.
 For some applications it may be necessary to drill down into the `HttpClient` details. `ApacheHttpClient43Engine` can be supplied with an instance of `org.apache.http.client.HttpClient` and an instance of `org.apache.http.protocol.HttpContext`, which can carry additional configuration details into the `HttpClient` layer.
 
@@ -785,18 +791,12 @@ When using InvocationCallbacks, the response is always fully buffered in memory.
 [[_jetty_client]]
 ==== Jetty Client Engine
 
-As a drop in replacement, RESTEasy allows selecting a Jetty 9.4+ based HTTP engine.
+As a drop in replacement, RESTEasy allows selecting a Jetty 12 based HTTP engine.
 The Jetty implementation is newer and less tested, but it may end up being a good choice when relying on Jetty as server side already.
 The Jetty Server can even share execution resources with Client libraries if configured to use e.g.
 the same QueuedThreadPool. 
 
-The Jetty engine is enabled by adding a dependency to the `org.jboss.resteasy:resteasy-client-jetty` artifact to the Maven project; then the client can be built as follows:
-
-[source,java]
-----
-ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).clientEngine(
-   new JettyClientEngine(new HttpClient())).build();
-----
+The Jetty engine is enabled by adding a dependency to the `org.jboss.resteasy:resteasy-client-jetty` artifact to your runtime environment.
 
 [[_vertx_client]]
 ==== Vertx Client Engine
@@ -813,14 +813,7 @@ It provides the following features:
 * Domain sockets
 * HTTP Metrics with Dropwizard or Micrometer
 
-The Vert.x engine is enabled by adding a dependency to the `org.jboss.resteasy:resteasy-client-vertx` artifact to the Maven project; then the client can be built as follows:
-
-[source,java]
-----
-VertxClientHttpEngine engine = new VertxClientHttpEngine();
-ResteasyClient client = ((ResteasyClientBuilder)ClientBuilder.newBuilder())
-  .clientEngine(engine).build();
-----
+The Vert.x engine is enabled by adding a dependency to the `org.jboss.resteasy:resteasy-client-vertx` artifact to your runtime environment.
 
 A Vert.x instance can also be provided when creating the client engine, as well as options configuration: 
 
