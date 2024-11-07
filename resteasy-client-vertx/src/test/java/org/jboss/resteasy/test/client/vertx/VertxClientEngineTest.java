@@ -36,8 +36,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.engines.vertx.VertxClientHttpEngine;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -91,6 +93,15 @@ public class VertxClientEngineTest {
                     .build();
         }
         return client;
+    }
+
+    @Test
+    public void checkClientEngine() {
+        final Client client = ClientBuilder.newClient();
+        Assertions.assertInstanceOf(ResteasyClient.class, client,
+                () -> String.format("Expected the client to be an instance of %s", ResteasyClient.class));
+        final ResteasyClient resteasyClient = (ResteasyClient) client;
+        Assertions.assertInstanceOf(VertxClientHttpEngine.class, resteasyClient.httpEngine());
     }
 
     @Test

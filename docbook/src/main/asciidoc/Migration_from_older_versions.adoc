@@ -142,6 +142,8 @@ The public classes from the former `resteasy-client` module, basically whatever 
 * `ResteasyClientBuilder`
 * `ResteasyWebTarget`
 
+IMPORTANT: The `ClientHttpEngineBuilder` has been deprecated and the `ClientHttpEngineFactory` should be used instead.
+
 
 ===== resteasy-client
 

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -22,13 +23,10 @@ import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.RuntimeType;
 import jakarta.ws.rs.core.Configuration;
 
-import org.apache.http.HttpHost;
-import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpAsyncClient4Engine;
-import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
+import org.jboss.resteasy.client.jaxrs.engine.ClientHttpEngineFactory;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.spi.ClientConfigProvider;
@@ -47,6 +45,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
  * @version $Revision: 1 $
  */
 public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
+    private final ClientHttpEngineFactory clientHttpEngineFactory;
     protected KeyStore truststore;
     protected KeyStore clientKeyStore;
     protected String clientPrivateKeyPassword;
@@ -69,13 +68,14 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
     protected TimeUnit establishConnectionTimeoutUnits = TimeUnit.MILLISECONDS;
     protected int connectionCheckoutTimeoutMs = -1;
     protected HostnameVerifier verifier = null;
-    protected HttpHost defaultProxy;
+    private ProxyInfo defaultProxy;
     protected int responseBufferSize;
     protected List<String> sniHostNames = new ArrayList<>();
     protected boolean trustSelfSignedCertificates = true;
     protected boolean cookieManagementEnabled;
     protected boolean disableAutomaticRetries = false;
     protected boolean followRedirects;
+    private boolean useAsyncHttpClient;
 
     static ResteasyProviderFactory PROVIDER_FACTORY;
 
@@ -91,6 +91,8 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
             }
             providerFactory = localProviderFactory;
         }
+        this.clientHttpEngineFactory = SecurityActions.findFirstService(ClientHttpEngineFactory.class)
+                .orElse(new DefaultClientHttpEngineFactory());
     }
 
     /**
@@ -248,7 +250,9 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
     }
 
     public ResteasyClientBuilderImpl useAsyncHttpEngine() {
-        this.httpEngine = new ApacheHttpAsyncClient4Engine(HttpAsyncClients.createSystem(), true);
+        // Attempt to find the AsyncHttpEngine
+        this.httpEngine = clientHttpEngineFactory.asyncHttpClientEngine(this);
+        useAsyncHttpClient = true;
         return this;
     }
 
@@ -325,7 +329,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
      * @return the updated client builder instance
      */
     public ResteasyClientBuilderImpl defaultProxy(String hostname, int port, final String scheme) {
-        this.defaultProxy = hostname != null ? new HttpHost(hostname, port, scheme) : null;
+        this.defaultProxy = hostname != null ? new ProxyInfo(scheme, hostname, port) : null;
         return this;
     }
 
@@ -388,8 +392,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
             this.followRedirects = Boolean.parseBoolean(String.valueOf(localFollowRedirects));
         }
 
-        ClientHttpEngine engine = httpEngine != null ? httpEngine
-                : new ClientHttpEngineBuilder43().resteasyClientBuilder(this).build();
+        ClientHttpEngine engine = httpEngine != null ? httpEngine : clientHttpEngineFactory.httpClientEngine(this);
         if (resetProxy) {
             this.defaultProxy = null;
         }
@@ -585,7 +588,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
 
     @Override
     public boolean isUseAsyncHttpEngine() {
-        return httpEngine != null && (httpEngine instanceof ApacheHttpAsyncClient4Engine);
+        return useAsyncHttpClient;
     }
 
     @Override
@@ -595,17 +598,17 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
 
     @Override
     public String getDefaultProxyHostname() {
-        return defaultProxy != null ? defaultProxy.getHostName() : null;
+        return defaultProxy != null ? defaultProxy.host() : null;
     }
 
     @Override
     public int getDefaultProxyPort() {
-        return defaultProxy != null ? defaultProxy.getPort() : -1;
+        return defaultProxy != null ? defaultProxy.port() : -1;
     }
 
     @Override
     public String getDefaultProxyScheme() {
-        return defaultProxy != null ? defaultProxy.getSchemeName() : null;
+        return defaultProxy != null ? defaultProxy.scheme() : null;
     }
 
     @Override
@@ -677,10 +680,44 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
         return followRedirects;
     }
 
+    @Override
+    public Optional<ExecutorService> executorService() {
+        return Optional.ofNullable(asyncExecutor);
+    }
+
+    @Override
+    public Optional<ScheduledExecutorService> scheduledExecutorService() {
+        return Optional.ofNullable(scheduledExecutorService);
+    }
+
     private ContextualExecutorService getExecutorService() {
         if (asyncExecutor != null) {
             return ContextualExecutors.wrap(asyncExecutor, !cleanupExecutor);
         }
         return ContextualExecutors.threadPool();
+    }
+
+    private static class ProxyInfo {
+        final String scheme;
+        final String host;
+        final int port;
+
+        ProxyInfo(final String scheme, final String host, final int port) {
+            this.scheme = scheme;
+            this.host = host;
+            this.port = port;
+        }
+
+        String scheme() {
+            return scheme;
+        }
+
+        String host() {
+            return host;
+        }
+
+        int port() {
+            return port;
+        }
     }
 }
