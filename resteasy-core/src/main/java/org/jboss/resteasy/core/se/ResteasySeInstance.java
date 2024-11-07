@@ -30,6 +30,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
+import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.SeBootstrap.Configuration;
 import jakarta.ws.rs.SeBootstrap.Instance;
 import jakarta.ws.rs.core.Application;
@@ -84,7 +85,12 @@ public class ResteasySeInstance implements Instance {
         final ExecutorService executor = ContextualExecutors.threadPool();
         return CompletableFuture.supplyAsync(() -> {
             try {
-                final Configuration config = ResteasySeConfiguration.from(configuration);
+                final Class<?> applicationClass = application.getClass();
+                String applicationPath = null;
+                if (applicationClass.isAnnotationPresent(ApplicationPath.class)) {
+                    applicationPath = applicationClass.getAnnotation(ApplicationPath.class).value();
+                }
+                final Configuration config = ResteasySeConfiguration.from(configuration, applicationPath);
                 final EmbeddedServer server = EmbeddedServers.findServer(config);
                 final ResteasyDeployment deployment = server.getDeployment();
                 deployment.setRegisterBuiltin(ConfigurationOption.REGISTER_BUILT_INS.getValue(config));
@@ -131,7 +137,11 @@ public class ResteasySeInstance implements Instance {
         final ExecutorService executor = ContextualExecutors.threadPool();
         return CompletableFuture.supplyAsync(() -> {
             try {
-                final Configuration config = ResteasySeConfiguration.from(configuration);
+                String applicationPath = null;
+                if (applicationClass.isAnnotationPresent(ApplicationPath.class)) {
+                    applicationPath = applicationClass.getAnnotation(ApplicationPath.class).value();
+                }
+                final Configuration config = ResteasySeConfiguration.from(configuration, applicationPath);
                 final EmbeddedServer server = EmbeddedServers.findServer(config);
                 final ResteasyDeployment deployment = server.getDeployment();
                 deployment.setRegisterBuiltin(ConfigurationOption.REGISTER_BUILT_INS.getValue(config));

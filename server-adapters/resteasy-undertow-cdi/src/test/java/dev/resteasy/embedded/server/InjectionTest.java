@@ -61,7 +61,7 @@ public class InjectionTest {
     }
 
     @Test
-    public void application(@RequestPath("inject/greet/app") final WebTarget target) {
+    public void application(@RequestPath("greet/app") final WebTarget target) {
         try (Response response = target.request().get()) {
             Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
             Assertions.assertEquals("Hello App", response.readEntity(String.class));
@@ -69,7 +69,7 @@ public class InjectionTest {
     }
 
     @Test
-    public void resource(@RequestPath("inject/greet/Violet") final WebTarget target) {
+    public void resource(@RequestPath("greet/Violet") final WebTarget target) {
         try (Response response = target.request().get()) {
             Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
             Assertions.assertEquals("Hello Violet", response.readEntity(String.class));

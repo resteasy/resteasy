@@ -99,6 +99,19 @@ public class ConfigurationTest {
                 () -> "Expected test.from.config to not be defined");
     }
 
+    @Test
+    public void rootPathNotSet() {
+        final Configuration.Builder builder = Configuration.builder();
+        Assertions.assertEquals("/", builder.build().rootPath());
+    }
+
+    @Test
+    public void rootPathSet() {
+        final Configuration.Builder builder = Configuration.builder()
+                .rootPath("root-path");
+        Assertions.assertEquals("root-path", builder.build().rootPath());
+    }
+
     private static class TestConfiguration implements Configuration {
         private final Map<String, Object> properties = new HashMap<>();
 

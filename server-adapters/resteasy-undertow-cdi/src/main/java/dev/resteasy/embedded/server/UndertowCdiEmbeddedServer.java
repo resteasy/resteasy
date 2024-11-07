@@ -138,7 +138,12 @@ public class UndertowCdiEmbeddedServer implements EmbeddedServer {
         EmbeddedServers.validateDeployment(deployment);
 
         // Determine the servlet mapping name
-        String mapping = EmbeddedServers.checkContextPath(deployment);
+        String mapping;
+        if (configuration.hasProperty(Configuration.ROOT_PATH)) {
+            mapping = configuration.rootPath();
+        } else {
+            mapping = EmbeddedServers.checkContextPath(deployment);
+        }
         if (!mapping.endsWith("/")) {
             mapping += "/";
         }
@@ -175,8 +180,6 @@ public class UndertowCdiEmbeddedServer implements EmbeddedServer {
         }
         // Ensure the Undertow Weld Container is always the one chosen.
         deploymentInfo.addInitParameter(Container.CONTEXT_PARAM_CONTAINER_CLASS, UndertowContainer.class.getName());
-        // Determine the context path
-        final String contextPath = EmbeddedServers.checkContextPath(configuration.rootPath());
 
         if (deploymentInfo.getDefaultMultipartConfig() == null) {
             final Application application = deployment.getApplication();
@@ -188,8 +191,8 @@ public class UndertowCdiEmbeddedServer implements EmbeddedServer {
         return deploymentInfo
                 // Set up deployment specific info
                 .setClassLoader(deployment.getApplication().getClass().getClassLoader())
-                .setContextPath(contextPath)
-                .setDeploymentName("RESTEasy-" + contextPath)
+                .setContextPath("/")
+                .setDeploymentName("RESTEasy-SeBootstrap")
                 // Set up the RESTEasy Servlet
                 .addServletContextAttribute(ResteasyDeployment.class.getName(), deployment)
                 .addServlet(resteasyServlet)

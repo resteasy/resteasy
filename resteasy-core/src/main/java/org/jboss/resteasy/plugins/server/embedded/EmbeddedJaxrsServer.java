@@ -16,7 +16,9 @@ public interface EmbeddedJaxrsServer<T extends EmbeddedServer> extends EmbeddedS
         final Configuration config = ResteasySeConfiguration.from(configuration);
         setHostname(config.host());
         setPort(config.port());
-        setRootResourcePath(config.rootPath());
+        if (config.hasProperty(Configuration.ROOT_PATH)) {
+            setRootResourcePath(config.rootPath());
+        }
         start();
     }
 
