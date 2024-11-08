@@ -18,13 +18,11 @@
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core-spi</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <!-- jakarta.xml.bind.JAXBElement provider is required by spec -->
         <dependency>
