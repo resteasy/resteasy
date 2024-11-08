@@ -40,6 +40,7 @@ import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 
+@Deprecated(forRemoval = true, since = "6.2")
 public class JettyClientEngine implements AsyncClientHttpEngine {
 
     private static final Logger LOGGER = Logger.getLogger(JettyClientEngine.class);
