@@ -702,8 +702,9 @@ The form-data format is the same as other multi-part formats, except that each i
 In {spec-name} 3.1 the `jakarta.ws.rs.core.EntityPart` API was introduced.
 This can be used to read and write `multipart/form-data` with a standardized API. 
 
-The content of the `EntityPart` has two definable size limits.
-These can be set as system properties, servlet context properties or a MicroProfile Config compatible value. 
+The content of the `EntityPart` has two definable size limits. It also allows you to override the temporary directory
+where files will be written to. These can be set as system properties, servlet context properties or a MicroProfile
+Config compatible value.
 
 [cols="1,1,1,1", options="header"]
 |===
@@ -711,7 +712,6 @@ These can be set as system properties, servlet context properties or a MicroProf
 | Description
 | Default Value
 | Example
-
 
 | `dev.resteasy.entity.memory.threshold`
 | The threshold to use for the amount of data to store in memory for entities.
@@ -723,6 +723,13 @@ These can be set as system properties, servlet context properties or a MicroProf
   `IllegalStateException` will be thrown. A value of -1 means no limit.
 |50MB
 |1GB is equivalent to 1 Gigabyte
+
+| `dev.resteasy.entity.tmpdir`
+| The temporary directory to use when the `dev.resteasy.entity.memory.threshold` was reached and the entity must be
+  written to a file. Note that the directory must already exist.
+`IllegalStateException` will be thrown. A value of -1 means no limit.
+| The value of the `java.io.tmpdir` system property.
+| `/tmp/entity`
 |===
 
 You can read, write and inject (with `@FormParam`) an `EntityPart` in the following forms; 

@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,6 +36,7 @@ import org.apache.james.mime4j.stream.BodyDescriptorBuilder;
 import org.apache.james.mime4j.stream.MimeConfig;
 import org.jboss.resteasy.plugins.providers.multipart.i18n.LogMessages;
 import org.jboss.resteasy.spi.config.ConfigurationFactory;
+import org.jboss.resteasy.spi.config.Options;
 
 /**
  * Copy code from org.apache.james.mime4j.message.DefaultMessageBuilder.parseMessage().
@@ -123,43 +123,32 @@ public class Mime4JWorkaround {
     private static class CustomTempFileStorageProvider extends AbstractStorageProvider {
 
         private static final String DEFAULT_PREFIX = "m4j";
+        private static final String suffix = ".tmp";
 
-        private final String prefix;
-
-        private final String suffix;
-
-        private final File directory;
+        private final Path directory;
 
         CustomTempFileStorageProvider() {
-            this(DEFAULT_PREFIX, null, null);
+            this.directory = (System.getSecurityManager() == null) ? Options.ENTITY_TMP_DIR.getValue()
+                    : AccessController.doPrivileged((PrivilegedAction<Path>) Options.ENTITY_TMP_DIR::getValue);
         }
 
-        CustomTempFileStorageProvider(final String prefix, final String suffix, final File directory) {
-            if (prefix == null || prefix.length() < 3)
-                throw new IllegalArgumentException("invalid prefix");
-
-            if (directory != null && !directory.isDirectory() && !directory.mkdirs())
-                throw new IllegalArgumentException("invalid directory");
-
-            this.prefix = prefix;
-            this.suffix = suffix;
-            this.directory = directory;
-        }
-
+        @Override
         public StorageOutputStream createStorageOutputStream() throws IOException {
-            return new TempFileStorageOutputStream(createTempFile(prefix, suffix, directory));
+            return new TempFileStorageOutputStream(createTempFile(directory));
         }
 
-        private static Path createTempFile(String prefix, String suffix, File directory) throws IOException {
+        private static Path createTempFile(final Path directory) throws IOException {
             boolean java2SecurityEnabled = System.getSecurityManager() != null;
             if (java2SecurityEnabled) {
                 try {
                     return AccessController.doPrivileged(
                             (PrivilegedExceptionAction<Path>) () -> {
                                 if (directory == null) {
-                                    return Files.createTempFile(prefix, suffix);
+                                    return Files.createTempFile(CustomTempFileStorageProvider.DEFAULT_PREFIX,
+                                            CustomTempFileStorageProvider.suffix);
                                 }
-                                return Files.createTempFile(directory.toPath(), prefix, suffix);
+                                return Files.createTempFile(directory, CustomTempFileStorageProvider.DEFAULT_PREFIX,
+                                        CustomTempFileStorageProvider.suffix);
                             });
                 } catch (PrivilegedActionException pae) {
                     Throwable cause = pae.getCause();
@@ -170,9 +159,10 @@ public class Mime4JWorkaround {
                 }
             }
             if (directory == null) {
-                return Files.createTempFile(prefix, suffix);
+                return Files.createTempFile(CustomTempFileStorageProvider.DEFAULT_PREFIX, CustomTempFileStorageProvider.suffix);
             }
-            return Files.createTempFile(directory.toPath(), prefix, suffix);
+            return Files.createTempFile(directory, CustomTempFileStorageProvider.DEFAULT_PREFIX,
+                    CustomTempFileStorageProvider.suffix);
         }
 
         private static OutputStream createFileOutputStream(final Path file) throws IOException {
