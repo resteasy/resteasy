@@ -30,14 +30,12 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
-import org.jboss.resteasy.spi.config.ConfigurationFactory;
 import org.jboss.resteasy.spi.config.Options;
 import org.jboss.resteasy.spi.config.SizeUnit;
 import org.jboss.resteasy.spi.config.Threshold;
@@ -328,23 +326,7 @@ public class EntityOutputStream extends OutputStream {
     }
 
     private static Path getTempDir() {
-        return Path.of(getProperty("java.io.tmpdir", String.class, () -> System.getProperty("java.io.tmpdir")));
-    }
-
-    private static <T> Optional<T> getProperty(final String name, final Class<T> returnType) {
-        if (System.getSecurityManager() == null) {
-            return ConfigurationFactory.getInstance()
-                    .getConfiguration()
-                    .getOptionalValue(name, returnType);
-        }
-        return AccessController.doPrivileged((PrivilegedAction<Optional<T>>) () -> ConfigurationFactory.getInstance()
-                .getConfiguration()
-                .getOptionalValue(name, returnType));
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static <T> T getProperty(final String name, final Class<T> returnType, final Supplier<T> dft) {
-        return getProperty(name, returnType).orElseGet(dft);
+        return getOptionValue(Options.ENTITY_TMP_DIR);
     }
 
     private static <T> T getOptionValue(final Options<T> option) {

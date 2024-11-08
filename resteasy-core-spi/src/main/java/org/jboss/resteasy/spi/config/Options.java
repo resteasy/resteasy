@@ -19,6 +19,9 @@
 
 package org.jboss.resteasy.spi.config;
 
+import java.nio.file.Path;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -65,6 +68,17 @@ public class Options<T> {
     public static final Options<Threshold> ENTITY_FILE_THRESHOLD = new Options<>("dev.resteasy.entity.file.threshold",
             Threshold.class,
             Functions.singleton(() -> Threshold.of(50L, SizeUnit.MEGABYTE)));
+
+    /**
+     * An option used to override the temporary directory where entities that exceed the {@link #ENTITY_MEMORY_THRESHOLD}
+     * are stored.
+     * <p>
+     * The default is the {@code java.io.tmpdir} system property.
+     * </p>
+     */
+    public static final Options<Path> ENTITY_TMP_DIR = new Options<>("dev.resteasy.entity.tmpdir",
+            Path.class,
+            Functions.singleton(() -> Path.of(defaultTmpDir()).toAbsolutePath()));
 
     /**
      * An option which allows which HTTP status code should be sent when the {@link SseEventSink#close()} is invoked.
@@ -186,5 +200,12 @@ public class Options<T> {
             LogMessages.LOGGER.tracef(e, "Failed to get property for %s of type %s.", name, returnType);
         }
         return Optional.empty();
+    }
+
+    private static String defaultTmpDir() {
+        if (System.getSecurityManager() == null) {
+            return System.getProperty("java.io.tmpdir");
+        }
+        return AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty("java.io.tmpdir"));
     }
 }

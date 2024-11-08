@@ -295,4 +295,37 @@ public class EntityOutputStreamTestCase {
 
         }
     }
+
+    @Test
+    public void overrideTmpDir() throws Exception {
+        final Path tmpDir = Path.of("target", "entity-output", "tmp");
+        Files.createDirectories(tmpDir);
+        System.setProperty(Options.ENTITY_TMP_DIR.name(), tmpDir.toString());
+        System.setProperty(Options.ENTITY_MEMORY_THRESHOLD.name(), "10B");
+        try (EntityOutputStream out = new EntityOutputStream()) {
+            final int len = 20;
+            final byte[] bytes = new byte[len];
+            Arrays.fill(bytes, (byte) 'a');
+            out.write(bytes);
+            // We should have been written to a file
+            final Path file = out.getFile();
+            Assertions.assertNotNull(file, "Expected data to be written to a file.");
+            Assertions.assertEquals(0, out.getAndClearMemory().length, "Expected the memory to be cleared");
+            Assertions.assertEquals(Files.size(file), out.getContentLength(), "File size differs from from the output size.");
+            Assertions.assertTrue(file.startsWith(tmpDir),
+                    () -> String.format("Expected the temporary directory to be overridden for %s", file));
+            // Check the input stream, should contain all "a"'s
+            try (InputStream in = out.toInputStream()) {
+                int b;
+                int i = 0;
+                while ((b = in.read()) != -1) {
+                    Assertions.assertEquals('a', (char) b, String.format("Byte at %d was not 'a', but '%s'.", i, b));
+                    i++;
+                }
+                Assertions.assertEquals(len, i, String.format("Expected %d bytes to be read, but %d were read.", len, i));
+            }
+            // The InputStream for the entity is closed, the file should be deleted
+            Assertions.assertTrue(Files.notExists(file), "Expected the file to be deleted");
+        }
+    }
 }
