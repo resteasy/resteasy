@@ -439,7 +439,10 @@ The default implementation is `ApacheHttpClient43Engine`, which uses version 4.3
 
 `ApacheHttpAsyncClient4Engine`, instead, is built on top of _HttpAsyncClient_ (still from the Apache _HttpComponents_ project) with internally dispatches requests using a non-blocking IO model. 
 
-`JettyClientEngine` is built on top of _Eclipse Jetty_ HTTP engine, which is possibly an interesting option for those already running on the Jetty server. 
+`JettyClientEngine` is built on top of _Eclipse Jetty_ HTTP engine, which is possibly an interesting option for those already running on the Jetty server.
+
+IMPORTANT: This project has moved to a new repository https://github.com/resteasy/resteasy-jetty. The dependency GAV and
+           package names have changed, but it should still operate the same.
 
 `VertxClientHttpEngine` is built on top of __Eclipse Vert.x__, which provides a non-blocking HTTP client based on Vert.x framework. 
 
@@ -791,12 +794,15 @@ When using InvocationCallbacks, the response is always fully buffered in memory.
 [[_jetty_client]]
 ==== Jetty Client Engine
 
+IMPORTANT: This project has moved to a new repository https://github.com/resteasy/resteasy-jetty. The dependency GAV and
+package names have changed, but it should still operate the same.
+
 As a drop in replacement, RESTEasy allows selecting a Jetty 12 based HTTP engine.
 The Jetty implementation is newer and less tested, but it may end up being a good choice when relying on Jetty as server side already.
 The Jetty Server can even share execution resources with Client libraries if configured to use e.g.
 the same QueuedThreadPool. 
 
-The Jetty engine is enabled by adding a dependency to the `org.jboss.resteasy:resteasy-client-jetty` artifact to your runtime environment.
+The Jetty engine is enabled by adding a dependency to the `dev.resteasy.jetty:resteasy-client-jetty` artifact to your runtime environment.
 
 [[_vertx_client]]
 ==== Vertx Client Engine
