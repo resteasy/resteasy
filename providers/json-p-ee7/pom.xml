@@ -15,15 +15,13 @@
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-core-spi</artifactId>
+            <artifactId>resteasy-core</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-client</artifactId>
+            <artifactId>resteasy-core-spi</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
@@ -36,7 +34,6 @@
         <dependency>
             <groupId>org.eclipse.parsson</groupId>
             <artifactId>parsson</artifactId>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>

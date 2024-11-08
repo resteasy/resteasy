@@ -20,12 +20,12 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-core-spi</artifactId>
+            <artifactId>resteasy-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-client</artifactId>
+            <artifactId>resteasy-core-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -61,6 +61,12 @@
         </dependency>
 
         <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-netty4</artifactId>
