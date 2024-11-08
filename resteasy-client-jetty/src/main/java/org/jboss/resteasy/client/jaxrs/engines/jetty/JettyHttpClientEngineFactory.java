@@ -40,6 +40,7 @@ import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine;
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
+@Deprecated(forRemoval = true, since = "6.2")
 public class JettyHttpClientEngineFactory implements ClientHttpEngineFactory {
     @Override
     public AsyncClientHttpEngine asyncHttpClientEngine(final ClientBuilderConfiguration configuration) {
