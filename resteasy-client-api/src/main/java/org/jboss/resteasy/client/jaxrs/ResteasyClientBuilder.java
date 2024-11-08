@@ -2,6 +2,7 @@ package org.jboss.resteasy.client.jaxrs;
 
 import java.security.KeyStore;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -12,6 +13,7 @@ import javax.net.ssl.SSLContext;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Configuration;
 
+import org.jboss.resteasy.client.jaxrs.api.ClientBuilderConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 /**
@@ -21,7 +23,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public abstract class ResteasyClientBuilder extends ClientBuilder {
+public abstract class ResteasyClientBuilder extends ClientBuilder implements ClientBuilderConfiguration {
     public enum HostnameVerificationPolicy {
         /**
          * Hostname verification is not done on the server's certificate
@@ -71,6 +73,7 @@ public abstract class ResteasyClientBuilder extends ClientBuilder {
      */
     public abstract ResteasyClientBuilder connectionTTL(long ttl, TimeUnit unit);
 
+    @Override
     public abstract long getConnectionTTL(TimeUnit unit);
 
     /**
@@ -172,6 +175,7 @@ public abstract class ResteasyClientBuilder extends ClientBuilder {
      */
     public abstract ResteasyClientBuilder sniHostNames(String... sniHostNames);
 
+    @Override
     public abstract List<String> getSniHostNames();
 
     /**
@@ -182,10 +186,13 @@ public abstract class ResteasyClientBuilder extends ClientBuilder {
      */
     public abstract ResteasyClientBuilder defaultProxy(String hostname);
 
+    @Override
     public abstract String getDefaultProxyHostname();
 
+    @Override
     public abstract int getDefaultProxyPort();
 
+    @Override
     public abstract String getDefaultProxyScheme();
 
     /**
@@ -214,8 +221,10 @@ public abstract class ResteasyClientBuilder extends ClientBuilder {
      */
     public abstract ResteasyClientBuilder enableCookieManagement();
 
+    @Override
     public abstract boolean isCookieManagementEnabled();
 
+    @Override
     public abstract SSLContext getSSLContext();
 
     public abstract KeyStore getKeyStore();
@@ -226,8 +235,10 @@ public abstract class ResteasyClientBuilder extends ClientBuilder {
 
     public abstract HostnameVerifier getHostnameVerifier();
 
+    @Override
     public abstract long getReadTimeout(TimeUnit unit);
 
+    @Override
     public abstract long getConnectionTimeout(TimeUnit unit);
 
     /**
@@ -235,6 +246,7 @@ public abstract class ResteasyClientBuilder extends ClientBuilder {
      */
     public abstract ResteasyClientBuilder disableAutomaticRetries();
 
+    @Override
     public abstract boolean isDisableAutomaticRetries();
 
     public abstract ResteasyClientBuilder executorService(ExecutorService executorService, boolean cleanupExecutor);
@@ -281,5 +293,16 @@ public abstract class ResteasyClientBuilder extends ClientBuilder {
      */
     public abstract ResteasyClientBuilder setFollowRedirects(boolean followRedirects);
 
+    @Override
     public abstract boolean isFollowRedirects();
+
+    @Override
+    public Optional<ScheduledExecutorService> scheduledExecutorService() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<ExecutorService> executorService() {
+        return Optional.empty();
+    }
 }

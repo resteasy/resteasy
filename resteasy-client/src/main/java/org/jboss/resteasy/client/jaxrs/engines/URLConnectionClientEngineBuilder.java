@@ -6,6 +6,7 @@ import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngineBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 
+@Deprecated(forRemoval = true, since = "6.2")
 public class URLConnectionClientEngineBuilder implements ClientHttpEngineBuilder {
 
     private ResteasyClientBuilder resteasyClientBuilder;
