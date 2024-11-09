@@ -812,6 +812,20 @@ RESTEasy can receive the following configuration options from any ConfigSource's
 | false
 | Setting this value to true will disable RESTEasy creating a `com.fasterxml.jackson.databind.ObjectMapper` if the
   Jackson Provider is being used and there is no `jakarta.ws.rs.ext.ContextResolver` for an `ObjectMapper`.
+
+| `dev.resteasy.entity.memory.threshold`
+| 5MB
+| The threshold to use for the amount of data to store in memory for entities.
+
+| `dev.resteasy.entity.file.threshold`
+|50MB
+| The threshold to use for the amount of data that can be stored in a file for entities. If the threshold is reached an
+`IllegalStateException` will be thrown. A value of -1 means no limit.
+
+| `dev.resteasy.entity.tmpdir`
+| The value of the `java.io.tmpdir` system property.
+| The temporary directory to use when the `dev.resteasy.entity.memory.threshold` was reached and the entity must be
+written to a file. Note that the directory must already exist.
 |===
 
 NOTE: The resteasy.servlet.mapping.prefix context param variable must be set if the servlet-mapping for the RESTEasy
