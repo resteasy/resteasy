@@ -20,11 +20,13 @@ import jakarta.ws.rs.client.InvocationCallback;
 import jakarta.ws.rs.client.ResponseProcessingException;
 import jakarta.ws.rs.core.Response;
 
+import org.jboss.resteasy.client.jaxrs.api.ClientBuilderConfiguration;
 import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.client.jaxrs.internal.FinalizedClientResponse;
+import org.jboss.resteasy.concurrent.ContextualExecutors;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
@@ -49,15 +51,16 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
 
     private final Vertx vertx;
     private final HttpClient httpClient;
+    private final ClientBuilderConfiguration configuration;
 
     public VertxClientHttpEngine() {
         this.vertx = Vertx.vertx();
         this.httpClient = vertx.createHttpClient();
+        this.configuration = null;
     }
 
     public VertxClientHttpEngine(final Vertx vertx, final HttpClientOptions options) {
-        this.vertx = vertx;
-        this.httpClient = vertx.createHttpClient(options);
+        this(vertx, options, null);
     }
 
     public VertxClientHttpEngine(final Vertx vertx) {
@@ -67,6 +70,14 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
     public VertxClientHttpEngine(final HttpClient client) {
         this.vertx = null;
         this.httpClient = client;
+        this.configuration = null;
+    }
+
+    public VertxClientHttpEngine(final Vertx vertx, final HttpClientOptions options,
+            final ClientBuilderConfiguration configuration) {
+        this.vertx = vertx;
+        this.httpClient = vertx.createHttpClient(options);
+        this.configuration = configuration;
     }
 
     @Override
@@ -76,15 +87,14 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
             final ResultExtractor<T> extractor) {
         CompletableFuture<T> future = submit(request).thenCompose(response -> {
             CompletableFuture<T> tmp = new CompletableFuture<>();
-            vertx.executeBlocking(promise -> {
+            final ExecutorService executor = resolveExecutor(null);
+            executor.execute(() -> {
                 try {
                     T result = extractor.extractResult(response);
                     tmp.complete(result);
                 } catch (Exception e) {
                     tmp.completeExceptionally(e);
                 }
-            }, ar -> {
-                //
             });
             return tmp;
         });
@@ -107,27 +117,15 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
             final ExecutorService executorService) {
         return submit(request).thenCompose(response -> {
             CompletableFuture<T> tmp = new CompletableFuture<>();
-            if (executorService == null) {
-                vertx.executeBlocking(promise -> {
-                    try {
-                        T result = extractor.extractResult(response);
-                        tmp.complete(result);
-                    } catch (Exception e) {
-                        tmp.completeExceptionally(e);
-                    }
-                }, ar -> {
-                    //
-                });
-            } else {
-                executorService.execute(() -> {
-                    try {
-                        T result = extractor.extractResult(response);
-                        tmp.complete(result);
-                    } catch (Exception e) {
-                        tmp.completeExceptionally(e);
-                    }
-                });
-            }
+            final ExecutorService executor = resolveExecutor(executorService);
+            executor.execute(() -> {
+                try {
+                    T result = extractor.extractResult(response);
+                    tmp.complete(result);
+                } catch (Exception e) {
+                    tmp.completeExceptionally(e);
+                }
+            });
             return tmp;
         });
     }
@@ -144,6 +142,9 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
 
         RequestOptions options = new RequestOptions();
         options.setMethod(method);
+        if (configuration != null) {
+            options.setFollowRedirects(configuration.isFollowRedirects());
+        }
         MultiMap headers = MultiMap.caseInsensitiveMultiMap();
         request.getHeaders().asMap().forEach(headers::add);
         options.setHeaders(headers);
@@ -251,6 +252,14 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
         } else {
             httpClient.close();
         }
+    }
+
+    private ExecutorService resolveExecutor(final ExecutorService executorService) {
+        if (configuration == null) {
+            return executorService == null ? ContextualExecutors.threadPool() : executorService;
+        }
+        return executorService == null ? configuration.executorService().orElse(ContextualExecutors.threadPool())
+                : ContextualExecutors.wrap(executorService);
     }
 
     static RuntimeException clientException(Throwable ex, Response clientResponse) {
