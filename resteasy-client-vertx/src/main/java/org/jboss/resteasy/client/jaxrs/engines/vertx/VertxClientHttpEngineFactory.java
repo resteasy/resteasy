@@ -41,28 +41,28 @@ public class VertxClientHttpEngineFactory implements ClientHttpEngineFactory {
         final HttpClientOptions options = new HttpClientOptions();
 
         configuration.executorService();
-        configuration.getConfiguration();
+        configuration.configuration();
 
-        final long connectionTimeout = configuration.getConnectionTimeout(TimeUnit.MILLISECONDS);
+        final long connectionTimeout = configuration.connectionTimeout(TimeUnit.MILLISECONDS);
         if (connectionTimeout > 0L) {
             options.setConnectTimeout(Math.toIntExact(connectionTimeout));
         }
 
-        final long idleTimeout = configuration.getConnectionTTL(TimeUnit.SECONDS);
+        final long idleTimeout = configuration.connectionIdleTime(TimeUnit.SECONDS);
         if (idleTimeout > 0L) {
             options.setIdleTimeout(Math.toIntExact(idleTimeout));
         }
 
-        final String proxyHostname = configuration.getDefaultProxyHostname();
+        final String proxyHostname = configuration.defaultProxyHostname();
         if (proxyHostname != null) {
             final ProxyOptions proxyOptions = new ProxyOptions();
             proxyOptions.setHost(proxyHostname);
-            proxyOptions.setPort(configuration.getDefaultProxyPort());
+            proxyOptions.setPort(configuration.defaultProxyPort());
             proxyOptions.setType(ProxyType.HTTP);
             options.setProxyOptions(proxyOptions);
         }
 
-        final long readTimeout = configuration.getReadTimeout(TimeUnit.SECONDS);
+        final long readTimeout = configuration.readTimeout(TimeUnit.SECONDS);
         if (readTimeout > 0L) {
             options.setReadIdleTimeout(Math.toIntExact(readTimeout));
         }
