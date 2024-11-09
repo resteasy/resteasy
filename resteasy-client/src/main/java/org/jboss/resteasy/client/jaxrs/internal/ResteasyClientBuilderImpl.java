@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -27,6 +26,8 @@ import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engine.ClientHttpEngineFactory;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpAsyncClient4Engine;
+import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.spi.ClientConfigProvider;
@@ -92,7 +93,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
             providerFactory = localProviderFactory;
         }
         this.clientHttpEngineFactory = SecurityActions.findFirstService(ClientHttpEngineFactory.class)
-                .orElse(new DefaultClientHttpEngineFactory());
+                .orElse(null);
     }
 
     /**
@@ -251,7 +252,8 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
 
     public ResteasyClientBuilderImpl useAsyncHttpEngine() {
         // Attempt to find the AsyncHttpEngine
-        this.httpEngine = clientHttpEngineFactory.asyncHttpClientEngine(this);
+        this.httpEngine = clientHttpEngineFactory == null ? new ApacheHttpAsyncClient4Engine(true)
+                : clientHttpEngineFactory.asyncHttpClientEngine(DefaultClientBuilderConfiguration.create(this));
         useAsyncHttpClient = true;
         return this;
     }
@@ -392,7 +394,17 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
             this.followRedirects = Boolean.parseBoolean(String.valueOf(localFollowRedirects));
         }
 
-        ClientHttpEngine engine = httpEngine != null ? httpEngine : clientHttpEngineFactory.httpClientEngine(this);
+        final ClientHttpEngine engine;
+        if (this.httpEngine != null) {
+            engine = this.httpEngine;
+        } else {
+            // We currently do not have a default factory, continue using the builder
+            if (clientHttpEngineFactory == null) {
+                engine = new ClientHttpEngineBuilder43().resteasyClientBuilder(this).build();
+            } else {
+                engine = clientHttpEngineFactory.httpClientEngine(DefaultClientBuilderConfiguration.create(this));
+            }
+        }
         if (resetProxy) {
             this.defaultProxy = null;
         }
@@ -678,16 +690,6 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
     @Override
     public boolean isFollowRedirects() {
         return followRedirects;
-    }
-
-    @Override
-    public Optional<ExecutorService> executorService() {
-        return Optional.ofNullable(asyncExecutor);
-    }
-
-    @Override
-    public Optional<ScheduledExecutorService> scheduledExecutorService() {
-        return Optional.ofNullable(scheduledExecutorService);
     }
 
     private ContextualExecutorService getExecutorService() {

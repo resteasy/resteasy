@@ -103,7 +103,7 @@ public class CustomHttpClientEngineFactory implements ClientHttpEngineFactory {
 
         @Override
         public SSLContext getSslContext() {
-            return configuration.getSSLContext();
+            return configuration.sslContext();
         }
 
         @Override
@@ -158,11 +158,11 @@ public class CustomHttpClientEngineFactory implements ClientHttpEngineFactory {
             if (configuration.isCookieManagementEnabled()) {
                 builder.cookieHandler(cookieManager);
             }
-            if (configuration.getDefaultProxyHostname() != null) {
-                builder.proxy(ProxySelector.of(InetSocketAddress.createUnresolved(configuration.getDefaultProxyHostname(),
-                        configuration.getDefaultProxyPort())));
+            if (configuration.defaultProxyHostname() != null) {
+                builder.proxy(ProxySelector.of(InetSocketAddress.createUnresolved(configuration.defaultProxyHostname(),
+                        configuration.defaultProxyPort())));
             }
-            final long connectionTimeout = configuration.getConnectionTimeout(TimeUnit.MILLISECONDS);
+            final long connectionTimeout = configuration.connectionTimeout(TimeUnit.MILLISECONDS);
             if (connectionTimeout > 1) {
                 builder.connectTimeout(Duration.ofMillis(connectionTimeout));
             }
@@ -172,7 +172,7 @@ public class CustomHttpClientEngineFactory implements ClientHttpEngineFactory {
 
         private HttpRequest createRequest(final ClientInvocation clientInvocation) throws IOException {
             final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(clientInvocation.getUri());
-            final long readTimeout = configuration.getReadTimeout(TimeUnit.MILLISECONDS);
+            final long readTimeout = configuration.readTimeout(TimeUnit.MILLISECONDS);
             if (readTimeout > 1) {
                 requestBuilder.timeout(Duration.ofMillis(readTimeout));
             }
