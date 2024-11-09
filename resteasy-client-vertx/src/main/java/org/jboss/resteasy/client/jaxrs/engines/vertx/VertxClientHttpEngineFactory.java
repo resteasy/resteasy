@@ -40,9 +40,6 @@ public class VertxClientHttpEngineFactory implements ClientHttpEngineFactory {
 
         final HttpClientOptions options = new HttpClientOptions();
 
-        configuration.executorService();
-        configuration.configuration();
-
         final long connectionTimeout = configuration.connectionTimeout(TimeUnit.MILLISECONDS);
         if (connectionTimeout > 0L) {
             options.setConnectTimeout(Math.toIntExact(connectionTimeout));
@@ -67,6 +64,6 @@ public class VertxClientHttpEngineFactory implements ClientHttpEngineFactory {
             options.setReadIdleTimeout(Math.toIntExact(readTimeout));
         }
 
-        return new VertxClientHttpEngine(vertx, options);
+        return new VertxClientHttpEngine(vertx, options, configuration);
     }
 }
