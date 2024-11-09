@@ -45,16 +45,16 @@ public class JettyHttpClientEngineFactory implements ClientHttpEngineFactory {
         final HttpClient httpClient = new HttpClient();
         configuration.executorService().ifPresent(httpClient::setExecutor);
 
-        configuration.getConfiguration();
-        final long connectionTimeout = configuration.getConnectionTimeout(TimeUnit.MILLISECONDS);
+        configuration.configuration();
+        final long connectionTimeout = configuration.connectionTimeout(TimeUnit.MILLISECONDS);
         if (connectionTimeout >= 0L) {
             httpClient.setConnectTimeout(connectionTimeout);
         }
 
-        final String proxyHost = configuration.getDefaultProxyHostname();
+        final String proxyHost = configuration.defaultProxyHostname();
         if (proxyHost != null) {
-            final String proxyProtocol = configuration.getDefaultProxyScheme();
-            final int proxyPort = configuration.getDefaultProxyPort();
+            final String proxyProtocol = configuration.defaultProxyScheme();
+            final int proxyPort = configuration.defaultProxyPort();
             final Origin.Address address = new Origin.Address(proxyHost, proxyPort);
             final HttpProxy proxy = new HttpProxy(address, proxyProtocol.equalsIgnoreCase("https"));
             httpClient.getProxyConfiguration().addProxy(proxy);
@@ -66,14 +66,14 @@ public class JettyHttpClientEngineFactory implements ClientHttpEngineFactory {
 
         httpClient.setFollowRedirects(configuration.isFollowRedirects());
 
-        if (configuration.getSSLContext() != null) {
+        if (configuration.sslContext() != null) {
             final SslContextFactory.Client sslClient = new SslContextFactory.Client();
-            sslClient.setSslContext(configuration.getSSLContext());
+            sslClient.setSslContext(configuration.sslContext());
 
-            if (!configuration.getSniHostNames().isEmpty()) {
+            if (!configuration.sniHostNames().isEmpty()) {
                 final SslContextFactory.Client.SniProvider provider = (sslEngine, serverNames) -> {
                     final List<SNIServerName> sniServerNames = new ArrayList<>();
-                    for (String name : configuration.getSniHostNames()) {
+                    for (String name : configuration.sniHostNames()) {
                         sniServerNames.add(new SNIHostName(name));
                     }
                     return List.copyOf(sniServerNames);
@@ -84,7 +84,7 @@ public class JettyHttpClientEngineFactory implements ClientHttpEngineFactory {
 
             httpClient.setSslContextFactory(sslClient);
         }
-        return new JettyClientEngine(httpClient, configuration.getConnectionTTL(TimeUnit.MILLISECONDS),
-                configuration.getReadTimeout(TimeUnit.MILLISECONDS));
+        return new JettyClientEngine(httpClient, configuration.connectionIdleTime(TimeUnit.MILLISECONDS),
+                configuration.readTimeout(TimeUnit.MILLISECONDS));
     }
 }

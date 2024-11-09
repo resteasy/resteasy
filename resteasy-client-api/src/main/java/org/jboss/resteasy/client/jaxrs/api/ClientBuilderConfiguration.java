@@ -45,35 +45,35 @@ public interface ClientBuilderConfiguration {
      *
      * @return the time to live or {@code -1} if not set
      */
-    long getConnectionTTL(TimeUnit unit);
+    long connectionIdleTime(TimeUnit unit);
 
     /**
      * Returns a list of SNI host names for authentication.
      *
      * @return the SNI host names or an empty list
      */
-    List<String> getSniHostNames();
+    List<String> sniHostNames();
 
     /**
      * Returns the default proxy host name if configured.
      *
      * @return the default proxy host name or {@code null}
      */
-    String getDefaultProxyHostname();
+    String defaultProxyHostname();
 
     /**
      * Returns the default proxy port if configured.
      *
      * @return the default proxy port or {@code -1} if not set
      */
-    int getDefaultProxyPort();
+    int defaultProxyPort();
 
     /**
      * The default proxy scheme, the default is {@code http}.
      *
      * @return the proxy scheme
      */
-    String getDefaultProxyScheme();
+    String defaultProxyScheme();
 
     /**
      * Indicates whether cookie management should be used or not.
@@ -87,7 +87,7 @@ public interface ClientBuilderConfiguration {
      *
      * @return the {@link SSLContext} or {@code null} if one was not configured
      */
-    SSLContext getSSLContext();
+    SSLContext sslContext();
 
     /**
      * Returns the read timeout converted in the time unit provided.
@@ -96,7 +96,7 @@ public interface ClientBuilderConfiguration {
      *
      * @return the read timeout or {@code -1} if no read timeout configured
      */
-    long getReadTimeout(TimeUnit unit);
+    long readTimeout(TimeUnit unit);
 
     /**
      * Returns the connection timeout converted in the time unit provided.
@@ -105,14 +105,7 @@ public interface ClientBuilderConfiguration {
      *
      * @return the connection timeout or {@code -1} if no connection timeout configured
      */
-    long getConnectionTimeout(TimeUnit unit);
-
-    /**
-     * Indicates if automatic retries should be disabled.
-     *
-     * @return {@code true} if automatic retries should be disabled
-     */
-    boolean isDisableAutomaticRetries();
+    long connectionTimeout(TimeUnit unit);
 
     /**
      * Indicates if redirects should be followed.
@@ -142,5 +135,5 @@ public interface ClientBuilderConfiguration {
      *
      * @return the configuration
      */
-    Configuration getConfiguration();
+    Configuration configuration();
 }
