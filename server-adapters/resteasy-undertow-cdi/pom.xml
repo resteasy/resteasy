@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-http-adapter-pom</artifactId>
-        <version>6.2.11.Final-SNAPSHOT</version>
+        <version>6.2.11.Final</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
