@@ -51,7 +51,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
 @ExtendWith(ArquillianExtension.class)
-@RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "7.0.0.Beta1")
+@RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "7.0.0.Alpha4")
 abstract class AbstractObjectMapperTest {
 
     private final boolean expectUserAddFailure;

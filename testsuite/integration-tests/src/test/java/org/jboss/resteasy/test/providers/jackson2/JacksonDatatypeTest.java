@@ -110,7 +110,7 @@ public class JacksonDatatypeTest {
      * @tpSince RESTEasy 3.1.0.CR3
      */
     @Test
-    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "7.0.0.Beta1")
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "7.0.0.Alpha4")
     public void testDatatypeNotSupportedOptionalNull() throws Exception {
         String strResponse = requestHelper("optional/true", DEFAULT_DEPLOYMENT);
         Assertions.assertTrue(strResponse.contains("null"), "Wrong conversion of Optional (null)");
@@ -121,7 +121,7 @@ public class JacksonDatatypeTest {
      * @tpSince RESTEasy 3.1.0.CR3
      */
     @Test
-    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "7.0.0.Beta1")
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "7.0.0.Alpha4")
     public void testDatatypeNotSupportedOptionalNotNull() throws Exception {
         String strResponse = requestHelper("optional/false", DEFAULT_DEPLOYMENT);
         Assertions.assertTrue(strResponse.contains("info@example.com"),

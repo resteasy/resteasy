@@ -28,7 +28,7 @@ import org.wildfly.arquillian.junit.annotations.RequiresModule;
  * @tpSince RESTEasy 3.0.24
  */
 @ExtendWith(ArquillianExtension.class)
-@RequiresModule(value = "org.jboss.resteasy.resteasy-client-api", minVersion = "7.0.0.Beta1")
+@RequiresModule(value = "org.jboss.resteasy.resteasy-client-api", minVersion = "7.0.0.Alpha4")
 public class CustomHttpClientEngineTest {
 
     @ArquillianResource

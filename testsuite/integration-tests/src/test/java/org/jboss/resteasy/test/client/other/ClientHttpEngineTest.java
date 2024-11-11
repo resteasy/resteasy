@@ -58,7 +58,7 @@ import org.wildfly.arquillian.junit.annotations.RequiresModule;
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
 @ExtendWith(ArquillianExtension.class)
-@RequiresModule(value = "org.jboss.resteasy.resteasy-client-api", minVersion = "7.0.0.Beta1")
+@RequiresModule(value = "org.jboss.resteasy.resteasy-client-api", minVersion = "7.0.0.Alpha4")
 abstract class ClientHttpEngineTest {
 
     private final String agentName;
