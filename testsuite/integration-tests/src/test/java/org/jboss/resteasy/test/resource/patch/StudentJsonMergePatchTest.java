@@ -35,7 +35,6 @@ import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.logging.Logger;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -58,8 +57,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @RunAsClient
 public class StudentJsonMergePatchTest {
 
-    private static final Logger log = Logger.getLogger(StudentJsonMergePatchTest.class);
-
     @ArquillianResource
     private Deployer deployer;
 
@@ -68,7 +65,11 @@ public class StudentJsonMergePatchTest {
     private static final Student testStudentEntity = new Student()
             .setId(2L)
             .setFirstName("Alice")
-            .setSchool("school2");
+            .setSchool("school2")
+            .setMentor(new Student()
+                    .setFirstName("mentor_firstname")
+                    .setLastName("mentor_lastname")
+                    .setSchool("mentor_school"));
 
     @BeforeAll
     public static void setup() {
@@ -108,7 +109,7 @@ public class StudentJsonMergePatchTest {
      * </p>
      * Test procedure:
      * <ul>
-     * <li>Create a {@link Student} entity with ID, first name and school.</li>
+     * <li>Create a {@link Student} entity with ID, first name, school and mentor.</li>
      * <li>Verify the entity has expected form.</li>
      * <li>Send a merge-patch+json request with {"lastName": "Green", "school": null} value</li>
      * <li>Verify that value for school got removed, last name got set from null to "Green" and other values were
@@ -136,7 +137,7 @@ public class StudentJsonMergePatchTest {
      * </p>
      * Test procedure:
      * <ul>
-     * <li>Create a {@link Student} entity with ID, first name and school.</li>
+     * <li>Create a {@link Student} entity with ID, first name, school and mentor.</li>
      * <li>Verify the entity has expected form.</li>
      * <li>Send a merge-patch+json request with {"nonMappableKey": "Foo"} value</li>
      * <li>Verify that nothing was changed in the entity.</li>
@@ -159,7 +160,7 @@ public class StudentJsonMergePatchTest {
      * </p>
      * Test procedure:
      * <ul>
-     * <li>Create a {@link Student} entity with ID, first name and school.</li>
+     * <li>Create a {@link Student} entity with ID, first name, school and mentor.</li>
      * <li>Verify the entity has expected form.</li>
      * <li>Send a merge-patch+json request with {"nonMappableKey": null} value</li>
      * <li>Verify that nothing was changed in the entity.</li>
@@ -183,7 +184,7 @@ public class StudentJsonMergePatchTest {
      * </p>
      * Test procedure:
      * <ul>
-     * <li>Create a {@link Student} entity with ID, first name and school.</li>
+     * <li>Create a {@link Student} entity with ID, first name, school and mentor.</li>
      * <li>Verify the entity has expected form.</li>
      * <li>Send a merge-patch+json request with {"school": {"foo": "bar"}} value</li>
      * <li>Verify that the response had status 500</li>
@@ -205,6 +206,37 @@ public class StudentJsonMergePatchTest {
                 .get()
                 .readEntity(Student.class);
         Assertions.assertEquals(testStudentEntity, serverSideStudent, "Server side entity got edited!");
+    }
+
+    /**
+     * <p>
+     * Test patching nested object works as expected and is working the same as with the parent.
+     * </p>
+     * Test procedure:
+     * <ul>
+     * <li>Create a {@link Student} entity with ID, first name, school and mentor.</li>
+     * <li>Verify the entity has expected form.</li>
+     * <li>Send a merge-patch+json request with {"mentor": {"firstName": "foo", "lastName": "bar"}} value</li>
+     * <li>Verify that the mentor field in the entity in the response is not null/li>
+     * <li>Verify that only firstName and lastName fields in the mentor field were affected</li>
+     * </ul>
+     */
+    @Test
+    @OperateOnDeployment(PATCH_DEPLOYMENT)
+    public void testJSONMergePatchStudentNestedObject() {
+        final Student serverSideStudent = mergePatchJsonStudentEntity(testStudentEntity.getId(),
+                Json.createObjectBuilder()
+                        .add("mentor", Json.createObjectBuilder()
+                                .add("firstName", "foo")
+                                .add("lastName", "bar")
+                                .build())
+                        .build(),
+                PATCH_DEPLOYMENT);
+
+        Assertions.assertNotNull(serverSideStudent.getMentor());
+        Assertions.assertEquals("foo", serverSideStudent.getMentor().getFirstName());
+        Assertions.assertEquals("bar", serverSideStudent.getMentor().getLastName());
+        Assertions.assertEquals(testStudentEntity.getMentor().getSchool(), serverSideStudent.getMentor().getSchool());
     }
 
     private Student mergePatchJsonStudentEntity(final Long id, final JsonObject patch, final String deploymentName) {
