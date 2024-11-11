@@ -57,6 +57,9 @@ public class StudentPatchTest {
         return TestUtil.finishContainerPrepare(war, null, StudentResource.class, Student.class);
     }
 
+    /**
+     * Deployment using resteasy.patchfilter.legacy. This will enable the Jackson PATCH filter, otherwise not used.
+     */
     @Deployment(name = LEGACY_PATCH_DEPLOYMENT, order = 2)
     public static Archive<?> deployLegacyFilter() {
         WebArchive war = TestUtil.prepareArchive(LEGACY_PATCH_DEPLOYMENT);
@@ -84,17 +87,18 @@ public class StudentPatchTest {
     }
 
     @Test
-    @OperateOnDeployment(PATCH_DEPLOYMENT)
-    public void testMergePatchStudent() throws Exception {
-        testMergePatch(PATCH_DEPLOYMENT);
-    }
-
-    @Test
     @OperateOnDeployment(LEGACY_PATCH_DEPLOYMENT)
     public void testJSONPPatchStudent() throws Exception {
         testPatch(LEGACY_PATCH_DEPLOYMENT);
     }
 
+    /**
+     * Test JSON Merge patch on deployment with resteasy.patchfilter.legacy option enabled.
+     * This covers the same scenario as {@link StudentJsonMergePatchTest#testJSONPMergePatchStudent()}
+     *
+     * @see <a href="https://tools.ietf.org/html/rfc7386">JSON Merge Patch</a>
+     * @see StudentJsonMergePatchTest for rest of the JSON Merge Patch test coverage
+     */
     @Test
     @OperateOnDeployment(LEGACY_PATCH_DEPLOYMENT)
     public void testJSONPMergePatchStudent() throws Exception {
