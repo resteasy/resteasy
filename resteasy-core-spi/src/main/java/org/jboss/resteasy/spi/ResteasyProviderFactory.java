@@ -33,6 +33,7 @@ import jakarta.ws.rs.ext.WriterInterceptor;
 
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
+import org.jboss.resteasy.spi.model.EntityProvider;
 import org.jboss.resteasy.spi.statistics.StatisticsController;
 
 /**
@@ -271,6 +272,22 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate
 
     public abstract Map<MessageBodyWriter<?>, Class<?>> getPossibleMessageBodyWritersMap(Class type, Type genericType,
             Annotation[] annotations, MediaType accept);
+
+    /**
+     * Find all supported media types for the {@link MessageBodyWriter}'s included in this application.
+     *
+     * @param type        the type of the entity
+     * @param genericType the generic type for the entity, if applicable
+     * @param annotations any qualifying annotations
+     * @param accept      the accept type
+     *
+     * @return a list of supported media types
+     */
+    public List<EntityProvider<MessageBodyWriter<?>>> resolveMessageBodyWriters(Class<?> type, Type genericType,
+            Annotation[] annotations,
+            MediaType accept) {
+        return List.of();
+    }
 
     // use the tracingLogger enabled version please
     @Deprecated
