@@ -32,6 +32,7 @@ import org.jboss.resteasy.client.jaxrs.engines.AsyncClientHttpEngine;
  * </p>
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
+ * @since 6.2.11
  */
 @FunctionalInterface
 public interface ClientHttpEngineFactory {

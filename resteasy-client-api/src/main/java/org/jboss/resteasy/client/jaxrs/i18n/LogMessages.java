@@ -30,4 +30,9 @@ public interface LogMessages extends BasicLogger {
     @LogMessage(level = Level.WARN)
     @Message(id = Messages.BASE + 187, value = "Closing a %s instance for you. Please close clients yourself.")
     void closingForYou(Class<?> clazz);
+
+    @LogMessage(level = Level.WARN)
+    @Message(id = Messages.BASE + 300, value = "Could not determine the protocol from %s. Defaulting to %s.")
+    void invalidProtocol(Object found, String defaultValue);
+
 }

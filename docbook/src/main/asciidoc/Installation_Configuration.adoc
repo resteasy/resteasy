@@ -826,6 +826,12 @@ RESTEasy can receive the following configuration options from any ConfigSource's
 | The value of the `java.io.tmpdir` system property.
 | The temporary directory to use when the `dev.resteasy.entity.memory.threshold` was reached and the entity must be
 written to a file. Note that the directory must already exist.
+
+| `dev.resteasy.client.ssl.context.algorithm`
+| `TLS`
+| When a `ClientBuilder.keyStore()` or `ClientBuilder.trustStore()` is set and no `SSLContext` is set on a client builder
+  this value is used to set the `SSLContext` algorithm to use when invoking `SSLContext.getInstance()` for client
+  connections.
 |===
 
 NOTE: The resteasy.servlet.mapping.prefix context param variable must be set if the servlet-mapping for the RESTEasy
