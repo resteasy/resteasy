@@ -53,20 +53,24 @@ public class RestEasyHttpRequestDecoder extends MessageToMessageDecoder<io.netty
     @Override
     protected void decode(ChannelHandlerContext ctx, io.netty.handler.codec.http.HttpRequest request, List<Object> out)
             throws Exception {
-        boolean keepAlive = HttpUtil.isKeepAlive(request);
-        final NettyHttpResponse response = new NettyHttpResponse(ctx, keepAlive, dispatcher.getProviderFactory(),
-                request.method());
 
         DecoderResult decoderResult = request.decoderResult();
         if (decoderResult.isFailure()) {
+            final NettyHttpResponse response = new NettyHttpResponse(ctx, false, dispatcher.getProviderFactory(),
+                    request.method());
             Throwable t = decoderResult.cause();
             if (t != null && t.getLocalizedMessage() != null) {
                 response.sendError(400, t.getLocalizedMessage());
             } else {
                 response.sendError(400);
             }
+            ctx.close();
             return;
         }
+
+        boolean keepAlive = HttpUtil.isKeepAlive(request);
+        final NettyHttpResponse response = new NettyHttpResponse(ctx, keepAlive, dispatcher.getProviderFactory(),
+                request.method());
 
         final ResteasyHttpHeaders headers;
         final ResteasyUriInfo uriInfo;

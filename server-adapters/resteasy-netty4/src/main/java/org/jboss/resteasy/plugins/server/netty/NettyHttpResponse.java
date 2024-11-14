@@ -20,7 +20,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
@@ -98,32 +97,20 @@ public class NettyHttpResponse implements HttpResponse {
             throw new IllegalStateException();
         }
 
-        final HttpResponseStatus responseStatus;
-        if (message != null) {
-            responseStatus = new HttpResponseStatus(status, message);
-            setStatus(status);
-        } else {
-            responseStatus = HttpResponseStatus.valueOf(status);
-            setStatus(status);
-        }
+        setStatus(status);
         io.netty.handler.codec.http.HttpResponse response = null;
         if (message != null) {
+            byte[] messageBytes = message.getBytes();
             ByteBuf byteBuf = ctx.alloc().buffer();
-            byteBuf.writeBytes(message.getBytes());
-
-            response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, responseStatus, byteBuf);
+            byteBuf.writeBytes(messageBytes);
+            response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, new HttpResponseStatus(status, message), byteBuf);
+            response.headers().add(HttpHeaderNames.CONTENT_LENGTH, messageBytes.length);
         } else {
-            response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, responseStatus);
-
+            response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status));
+            response.headers().add(HttpHeaderNames.CONTENT_LENGTH, 0);
         }
-        if (keepAlive) {
-            // Add keep alive and content length if needed
-            response.headers().add(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-            if (message == null)
-                response.headers().add(HttpHeaderNames.CONTENT_LENGTH, 0);
-            else
-                response.headers().add(HttpHeaderNames.CONTENT_LENGTH, message.getBytes().length);
-        }
+        // Add keep alive or connection close header
+        transformResponseHeaders(response);
         ctx.writeAndFlush(response);
         committed = true;
     }
