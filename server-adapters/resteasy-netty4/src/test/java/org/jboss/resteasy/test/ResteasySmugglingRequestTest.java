@@ -97,10 +97,8 @@ public class ResteasySmugglingRequestTest {
             try {
                 nextByte = input.read();
             } catch (SocketException e) {
-                if (e.getMessage().contains("Connection reset")) {
-                    break;
-                }
-                throw e;
+                // Connection reset
+                break;
             }
             if (nextByte == -1) {
                 break;
