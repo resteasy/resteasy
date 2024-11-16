@@ -19,6 +19,7 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -91,6 +92,6 @@ public class HeadersInViewResponseTest {
 
         // If not found in target, try repository
         String version = System.getProperty("project.version");
-        return TestUtil.resolveDependency("org.jboss.resteasy:resteasy-html:" + version);
+        return Maven.resolver().resolve("org.jboss.resteasy:resteasy-html:" + version).withoutTransitivity().asSingleFile();
     }
 }
