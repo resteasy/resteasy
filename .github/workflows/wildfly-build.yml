@@ -81,7 +81,7 @@ jobs:
       matrix:
         profile:
           - '-Dsecurity.manager'
-          - '-am -Pprovision-without-resteasy,without-jackson -pl wildfly/resteasy-channel,/resteasy-dependencies-bom,testsuite/integration-tests'
+          - '-am -Pprovision-without-resteasy,without-jackson -pl resteasy-client-jetty,resteasy-client-vertx,wildfly/resteasy-channel,/resteasy-dependencies-bom,testsuite/integration-tests'
 
     steps:
       - uses: actions/checkout@v4
