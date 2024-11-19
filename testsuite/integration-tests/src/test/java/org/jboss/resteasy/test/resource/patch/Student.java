@@ -32,6 +32,8 @@ public class Student {
 
     private String gender;
 
+    private Student mentor;
+
     public Long getId() {
         return id;
     }
@@ -77,6 +79,15 @@ public class Student {
         return this;
     }
 
+    public Student getMentor() {
+        return mentor;
+    }
+
+    public Student setMentor(Student mentor) {
+        this.mentor = mentor;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -84,12 +95,13 @@ public class Student {
         if (o == null || getClass() != o.getClass())
             return false;
         Student student = (Student) o;
-        return Objects.equals(firstName, student.firstName) && Objects.equals(lastName, student.lastName)
-                && Objects.equals(school, student.school) && Objects.equals(gender, student.gender);
+        return Objects.equals(id, student.id) && Objects.equals(firstName, student.firstName)
+                && Objects.equals(lastName, student.lastName) && Objects.equals(school, student.school)
+                && Objects.equals(gender, student.gender) && Objects.equals(mentor, student.mentor);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstName, lastName, school, gender);
+        return Objects.hash(id, firstName, lastName, school, gender, mentor);
     }
 }
