@@ -621,10 +621,16 @@
             <scope>test</scope>
         </dependency>
 
+        <!--
+            WildFly and WildFly Arquillian both require this newer version of JBoss Logging. RESTEasy still uses
+            the older version for backwards compatibility issues. For now, we will need override the dependency for
+            the test suite.
+        -->
         <dependency>
             <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging-annotations</artifactId>
-            <scope>provided</scope>
+            <artifactId>jboss-logging</artifactId>
+            <version>3.6.1.Final</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
