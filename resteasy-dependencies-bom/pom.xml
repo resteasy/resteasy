@@ -38,7 +38,7 @@
 
     <properties>
         <version.com.fasterxml.classmate>1.5.1</version.com.fasterxml.classmate>
-        <version.com.fasterxml.jackson>2.18.1</version.com.fasterxml.jackson>
+        <version.com.fasterxml.jackson>2.18.2</version.com.fasterxml.jackson>
         <version.com.google.guava>31.0.1-jre</version.com.google.guava>
         <version.com.google.guava.failureaccess>1.0.2</version.com.google.guava.failureaccess>
         <version.com.io7m.xom>1.2.10</version.com.io7m.xom>
