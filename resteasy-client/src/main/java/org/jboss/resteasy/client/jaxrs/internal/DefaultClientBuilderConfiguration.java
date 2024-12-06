@@ -19,17 +19,30 @@
 
 package org.jboss.resteasy.client.jaxrs.internal;
 
+import java.security.AccessController;
+import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivilegedAction;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import jakarta.ws.rs.core.Configuration;
 
 import org.jboss.resteasy.client.jaxrs.api.ClientBuilderConfiguration;
+import org.jboss.resteasy.client.jaxrs.engines.PassthroughTrustManager;
+import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.config.Options;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -56,7 +69,7 @@ class DefaultClientBuilderConfiguration implements ClientBuilderConfiguration {
         this.proxyPort = builder.getDefaultProxyPort();
         this.proxyScheme = builder.getDefaultProxyScheme();
         this.cookieManagementEnabled = builder.isCookieManagementEnabled();
-        this.sslContext = builder.getSSLContext();
+        this.sslContext = resolveSslContext(builder);
         this.readTimeout = builder.getReadTimeout(TimeUnit.MILLISECONDS);
         this.connectionTimeout = builder.getConnectionTimeout(TimeUnit.MILLISECONDS);
         this.isFollowRedirect = builder.isFollowRedirects();
@@ -132,5 +145,93 @@ class DefaultClientBuilderConfiguration implements ClientBuilderConfiguration {
     @Override
     public Configuration configuration() {
         return configuration;
+    }
+
+    private SSLContext resolveSslContext(final ResteasyClientBuilderImpl resteasyClientBuilder) {
+        try {
+            SSLContext sslContext = null;
+            if (resteasyClientBuilder.isTrustManagerDisabled()) {
+                sslContext = resolveSslContext(resteasyClientBuilder.getConfiguration());
+                sslContext.init(null, new TrustManager[] { new PassthroughTrustManager() }, null);
+            } else if (resteasyClientBuilder.getSSLContext() != null) {
+                sslContext = resteasyClientBuilder.getSSLContext();
+            } else if (resteasyClientBuilder.getKeyStore() != null || resteasyClientBuilder.getTrustStore() != null) {
+                final KeyStore keyStore = resteasyClientBuilder.getKeyStore();
+                final KeyStore trustStore = resteasyClientBuilder.getTrustStore();
+                sslContext = resolveSslContext(resteasyClientBuilder.getConfiguration());
+                final KeyManager[] keyManagers;
+                if (keyStore != null) {
+                    keyManagers = new KeyManager[] {
+                            SslUtils.getKeyManager(keyStore, resteasyClientBuilder.getKeyStorePassword()) };
+                } else {
+                    keyManagers = SslUtils.getKeyManagers(null, resteasyClientBuilder.getKeyStorePassword());
+                }
+                final TrustManager[] trustManagers;
+                if (trustStore != null) {
+                    final X509TrustManager trustManager;
+                    if (resteasyClientBuilder.isTrustSelfSignedCertificates()) {
+                        trustManager = new TrustSelfSignedTrustManager(SslUtils.getTrustManager(trustStore));
+                        trustManagers = new TrustManager[] { trustManager };
+                    } else {
+                        trustManagers = SslUtils.getTrustManagers(trustStore);
+                    }
+                } else {
+                    trustManagers = SslUtils.getTrustManagers(null);
+                }
+                sslContext.init(keyManagers, trustManagers, null);
+            }
+            return sslContext;
+        } catch (Exception e) {
+            throw Messages.MESSAGES.failedToResolveSSLContext(e);
+        }
+    }
+
+    private static SSLContext resolveSslContext(final Configuration configuration) throws NoSuchAlgorithmException {
+        // https://docs.oracle.com/en/java/javase/11/docs/specs/security/standard-names.html#sslcontext-algorithms
+        final Object protocolObject = configuration.getProperty(Options.CLIENT_SSL_CONTEXT_ALGORITHM.name());
+        final String protocol;
+        if (protocolObject == null) {
+            protocol = getOptionValue(Options.CLIENT_SSL_CONTEXT_ALGORITHM);
+        } else {
+            if (protocolObject instanceof String) {
+                protocol = (String) protocolObject;
+            } else {
+                protocol = getOptionValue(Options.CLIENT_SSL_CONTEXT_ALGORITHM);
+                LogMessages.LOGGER.invalidProtocol(protocolObject, protocol);
+            }
+        }
+        return SSLContext.getInstance(protocol);
+    }
+
+    private static <T> T getOptionValue(final Options<T> option) {
+        if (System.getSecurityManager() == null) {
+            return option.getValue();
+        }
+        return AccessController.doPrivileged((PrivilegedAction<T>) option::getValue);
+    }
+
+    private static class TrustSelfSignedTrustManager implements X509TrustManager {
+        private final X509TrustManager delegate;
+
+        TrustSelfSignedTrustManager(final X509TrustManager delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public void checkClientTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
+            delegate.checkClientTrusted(chain, authType);
+        }
+
+        @Override
+        public void checkServerTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
+            if (chain.length != 1) {
+                delegate.checkServerTrusted(chain, authType);
+            }
+        }
+
+        @Override
+        public X509Certificate[] getAcceptedIssuers() {
+            return delegate.getAcceptedIssuers();
+        }
     }
 }

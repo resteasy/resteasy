@@ -35,6 +35,7 @@ import jakarta.ws.rs.core.Configuration;
  * {@link org.jboss.resteasy.client.jaxrs.ClientHttpEngine}.
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
+ * @since 6.2.11
  */
 public interface ClientBuilderConfiguration {
 
