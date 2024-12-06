@@ -901,4 +901,7 @@ public interface Messages {
 
     @Message(id = BASE + 2082, value = "The generic type for %s could not be determined based on %s.")
     IllegalArgumentException couldNotDetermineGenericType(String typeName, String implName);
+
+    @Message(id = BASE + 2085, value = "Failed to resolve the SSLContext for the client.")
+    RuntimeException failedToResolveSSLContext(@Cause Throwable cause);
 }
