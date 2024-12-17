@@ -81,6 +81,20 @@ public class Options<T> {
             Functions.singleton(() -> Path.of(defaultTmpDir()).toAbsolutePath()));
 
     /**
+     * An option for defining the {@link javax.net.ssl.SSLContext#getInstance(String) SSLContext} algorithm for the
+     * {@linkplain jakarta.ws.rs.client.Client REST client}.
+     * <p>
+     * The default is TLS.
+     * </p>
+     *
+     * @since 6.2.12
+     */
+    public static final Options<String> CLIENT_SSL_CONTEXT_ALGORITHM = new Options<>(
+            "dev.resteasy.client.ssl.context.algorithm",
+            String.class,
+            () -> "TLS");
+
+    /**
      * An option which allows which HTTP status code should be sent when the {@link SseEventSink#close()} is invoked.
      * In some implementations 200 (OK) is the default. However, RESTEasy prefers 204 (No Content) as no content has
      * been sent the response.
