@@ -454,6 +454,49 @@ public class MultipartEntityPartProviderTest {
     }
 
     /**
+     * Tests sending {@code multipart/form-data} content as a {@link EntityPart List<EntityPart>}. Two parts are sent
+     * with no content and processed by the resource returning all the headers from the request.
+     *
+     * @throws Exception if an error occurs in the test
+     */
+    @Test
+    public void echoEmptyContent(@RequestPath("/test/echo") final WebTarget target) throws Exception {
+        final List<EntityPart> multipart = List.of(
+                EntityPart.withName("entity-part")
+                        .content("test.txt", new ByteArrayInputStream(new byte[0]))
+                        .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                        .build(),
+                EntityPart.withName("input-stream-part")
+                        .content("test.csv", new ByteArrayInputStream(new byte[0]))
+                        .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                        .build());
+        try (
+                Response response = target
+                        .request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                        .post(Entity.entity(new GenericEntity<>(multipart) {
+                        }, MediaType.MULTIPART_FORM_DATA))) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
+            });
+            if (entityParts.size() != 2) {
+                final String msg = "Expected 2 entries got " +
+                        entityParts.size() +
+                        '.' +
+                        System.lineSeparator() +
+                        getMessage(entityParts);
+                Assertions.fail(msg);
+            }
+
+            EntityPart part = find(entityParts, "received-entity-part");
+            checkEntity(part, "");
+
+            // Empty input stream
+            part = find(entityParts, "received-input-stream-part");
+            checkEntity(part, "");
+        }
+    }
+
+    /**
      * Tests sending {@code multipart/form-data} content as a {@link EntityPart List<EntityPart>}. Three parts are sent
      * and processed by the resource returning all the headers from the request.
      * <p>
