@@ -19,6 +19,8 @@
 
 package org.jboss.resteasy.core.providerfactory;
 
+import java.lang.invoke.MethodHandles;
+
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Request;
@@ -37,7 +39,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
 class DefaultExceptionMapper implements ExceptionMapper<Throwable> {
-    private static final LogMessages LOGGER = Logger.getMessageLogger(LogMessages.class,
+    private static final LogMessages LOGGER = Logger.getMessageLogger(MethodHandles.lookup(), LogMessages.class,
             DefaultExceptionMapper.class.getName());
     static final DefaultExceptionMapper INSTANCE = new DefaultExceptionMapper();
 

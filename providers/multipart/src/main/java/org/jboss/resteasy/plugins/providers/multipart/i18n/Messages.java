@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.multipart.i18n;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Type;
 
 import jakarta.ws.rs.core.MediaType;
@@ -21,7 +22,7 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
  */
 @MessageBundle(projectCode = "RESTEASY")
 public interface Messages {
-    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
+    Messages MESSAGES = org.jboss.logging.Messages.getBundle(MethodHandles.lookup(), Messages.class);
     int BASE = 7500;
 
     @Message(id = BASE + 0, value = "Could find no Content-Disposition header within part")

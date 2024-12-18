@@ -1,5 +1,6 @@
 package org.jboss.resteasy.resteasy_jaxrs.i18n;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.AccessibleObject;
 import java.net.URL;
 
@@ -23,7 +24,8 @@ import org.jboss.logging.annotations.MessageLogger;
  */
 @MessageLogger(projectCode = "RESTEASY")
 public interface LogMessages extends BasicLogger {
-    LogMessages LOGGER = Logger.getMessageLogger(LogMessages.class, LogMessages.class.getPackage().getName());
+    LogMessages LOGGER = Logger.getMessageLogger(MethodHandles.lookup(), LogMessages.class,
+            LogMessages.class.getPackage().getName());
 
     int BASE = 2000;
 

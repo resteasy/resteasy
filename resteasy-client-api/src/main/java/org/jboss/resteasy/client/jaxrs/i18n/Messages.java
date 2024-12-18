@@ -1,6 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.i18n;
 
 import java.io.OutputStream;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 import java.util.function.Supplier;
@@ -24,7 +25,7 @@ import org.jboss.logging.annotations.Signature;
  */
 @MessageBundle(projectCode = "RESTEASY")
 public interface Messages {
-    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
+    Messages MESSAGES = org.jboss.logging.Messages.getBundle(MethodHandles.lookup(), Messages.class);
 
     int BASE = 4500;
 

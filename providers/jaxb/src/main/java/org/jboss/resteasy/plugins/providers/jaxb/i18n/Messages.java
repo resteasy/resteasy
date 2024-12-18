@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.providers.jaxb.i18n;
 
+import java.lang.invoke.MethodHandles;
+
 import jakarta.ws.rs.core.MediaType;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.PropertyException;
@@ -18,7 +20,7 @@ import org.jboss.logging.annotations.MessageBundle;
  */
 @MessageBundle(projectCode = "RESTEASY")
 public interface Messages {
-    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
+    Messages MESSAGES = org.jboss.logging.Messages.getBundle(MethodHandles.lookup(), Messages.class);
     int BASE = 6500;
 
     @Message(id = BASE

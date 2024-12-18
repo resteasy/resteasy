@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.providers.jsonb.i18n;
 
+import java.lang.invoke.MethodHandles;
+
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.Message.Format;
 import org.jboss.logging.annotations.MessageBundle;
@@ -8,7 +10,7 @@ import org.jboss.logging.annotations.MessageBundle;
  */
 @MessageBundle(projectCode = "RESTEASY")
 public interface Messages {
-    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
+    Messages MESSAGES = org.jboss.logging.Messages.getBundle(MethodHandles.lookup(), Messages.class);
     int BASE = 8200;
 
     @Message(id = BASE + 00, value = "JSON Binding deserialization error: {0}", format = Format.MESSAGE_FORMAT)

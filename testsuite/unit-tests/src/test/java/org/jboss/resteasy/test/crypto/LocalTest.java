@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.crypto;
 
+import java.lang.invoke.MethodHandles;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -28,7 +29,8 @@ import org.junit.jupiter.api.Test;
  * @tpSince RESTEasy 3.0.16
  */
 public class LocalTest {
-    protected static final LogMessages logger = Logger.getMessageLogger(LogMessages.class, LocalTest.class.getName());
+    protected static final LogMessages logger = Logger.getMessageLogger(MethodHandles.lookup(), LogMessages.class,
+            LocalTest.class.getName());
     public static KeyPair keys;
     public static DosetaKeyRepository repository;
     static final String filePath = TestUtil.getResourcePath(LocalTest.class, "LocalTest.jks");
