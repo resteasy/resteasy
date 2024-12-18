@@ -19,6 +19,8 @@
 
 package dev.resteasy.embedded.server;
 
+import java.lang.invoke.MethodHandles;
+
 import org.jboss.logging.Logger;
 import org.jboss.logging.annotations.Cause;
 import org.jboss.logging.annotations.LogMessage;
@@ -31,7 +33,7 @@ import org.jboss.logging.annotations.MessageLogger;
 @MessageLogger(projectCode = "RESTEASY")
 interface LogMessages {
 
-    LogMessages LOGGER = Logger.getMessageLogger(LogMessages.class, LogMessages.class.getPackageName());
+    LogMessages LOGGER = Logger.getMessageLogger(MethodHandles.lookup(), LogMessages.class, LogMessages.class.getPackageName());
 
     @LogMessage(level = Logger.Level.WARN)
     @Message(id = 900001, value = "Property %s is of type %s and expected to be of type %s")

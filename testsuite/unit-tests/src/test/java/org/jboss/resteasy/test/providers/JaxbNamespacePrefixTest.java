@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.providers;
 
 import java.io.ByteArrayOutputStream;
+import java.lang.invoke.MethodHandles;
 import java.math.BigDecimal;
 
 import jakarta.xml.bind.JAXBContext;
@@ -25,7 +26,7 @@ import org.junit.jupiter.api.Test;
  */
 public class JaxbNamespacePrefixTest {
 
-    private static final LogMessages logger = Logger.getMessageLogger(LogMessages.class,
+    private static final LogMessages logger = Logger.getMessageLogger(MethodHandles.lookup(), LogMessages.class,
             JaxbNamespacePrefixTest.class.getName());
 
     /**

@@ -19,6 +19,8 @@
 
 package org.jboss.resteasy.plugins.providers.jackson._private;
 
+import java.lang.invoke.MethodHandles;
+
 import org.jboss.logging.Logger;
 import org.jboss.logging.annotations.Cause;
 import org.jboss.logging.annotations.LogMessage;
@@ -31,7 +33,8 @@ import org.jboss.logging.annotations.MessageLogger;
 @MessageLogger(projectCode = "RESTEASY-JACKSON")
 public interface JacksonLogger {
 
-    JacksonLogger LOGGER = Logger.getMessageLogger(JacksonLogger.class, "org.jboss.resteasy.plugins.providers.jackson");
+    JacksonLogger LOGGER = Logger.getMessageLogger(MethodHandles.lookup(), JacksonLogger.class,
+            "org.jboss.resteasy.plugins.providers.jackson");
 
     /**
      * Returns a message indicating the data could not be deserialized.

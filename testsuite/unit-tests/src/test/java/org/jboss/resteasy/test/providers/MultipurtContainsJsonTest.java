@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.providers;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +32,7 @@ import org.junit.jupiter.api.Test;
  * @tpSince RESTEasy 3.0.14
  */
 public class MultipurtContainsJsonTest {
-    private static final LogMessages logger = Logger.getMessageLogger(LogMessages.class,
+    private static final LogMessages logger = Logger.getMessageLogger(MethodHandles.lookup(), LogMessages.class,
             MultipurtContainsJsonTest.class.getName());
     private static final Annotation[] EMPTY_ANNOTATION = new Annotation[0];
 

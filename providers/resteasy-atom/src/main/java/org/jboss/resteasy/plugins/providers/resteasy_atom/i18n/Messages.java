@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.providers.resteasy_atom.i18n;
 
+import java.lang.invoke.MethodHandles;
+
 import jakarta.ws.rs.core.MediaType;
 
 import org.jboss.logging.annotations.Message;
@@ -14,7 +16,7 @@ import org.jboss.logging.annotations.MessageBundle;
  */
 @MessageBundle(projectCode = "RESTEASY")
 public interface Messages {
-    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
+    Messages MESSAGES = org.jboss.logging.Messages.getBundle(MethodHandles.lookup(), Messages.class);
     int BASE = 5000;
 
     @Message(id = BASE + 0, value = "This constructor must be called in the context of a request")

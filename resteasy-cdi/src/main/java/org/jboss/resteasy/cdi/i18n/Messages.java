@@ -1,6 +1,7 @@
 package org.jboss.resteasy.cdi.i18n;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Type;
 import java.util.Set;
 
@@ -19,7 +20,7 @@ import org.jboss.logging.annotations.MessageBundle;
  */
 @MessageBundle(projectCode = "RESTEASY")
 public interface Messages {
-    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
+    Messages MESSAGES = org.jboss.logging.Messages.getBundle(MethodHandles.lookup(), Messages.class);
     int BASE = 10500;
 
     @Message(id = BASE

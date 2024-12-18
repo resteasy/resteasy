@@ -1,5 +1,7 @@
 package org.jboss.resteasy.links.i18n;
 
+import java.lang.invoke.MethodHandles;
+
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.Message.Format;
 import org.jboss.logging.annotations.MessageBundle;
@@ -13,7 +15,7 @@ import org.jboss.logging.annotations.MessageBundle;
  */
 @MessageBundle(projectCode = "RESTEASY")
 public interface Messages {
-    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
+    Messages MESSAGES = org.jboss.logging.Messages.getBundle(MethodHandles.lookup(), Messages.class);
     int BASE = 12000;
 
     @Message(id = BASE + 0, value = "Cannot guess collection type for service discovery")
