@@ -55,7 +55,7 @@
         <!-- Plugins versions -->
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
         <version.org.jacoco.plugin>0.8.12</version.org.jacoco.plugin>
-        <version.org.wildfly.galleon-plugins>7.2.1.Final</version.org.wildfly.galleon-plugins>
+        <version.org.wildfly.galleon-plugins>7.3.1.Final</version.org.wildfly.galleon-plugins>
         <version.org.wildfly.plugins.wildfly-maven-plugin>5.1.0.Alpha2</version.org.wildfly.plugins.wildfly-maven-plugin>
         <version.org.wildfly.jar.plugin>11.0.2.Final</version.org.wildfly.jar.plugin>
 
