@@ -34,7 +34,7 @@
 
     <properties>
         <skip.image>false</skip.image>
-        <wildfly.cloud.test.base.image.name>resteasy-cloud-test-image/cloud-server:latest</wildfly.cloud.test.base.image.name>
+        <wildfly.cloud.test.base.image.name>quay.io/resteasy-cloud-test-image/cloud-server:latest</wildfly.cloud.test.base.image.name>
     </properties>
 
     <dependencies>
