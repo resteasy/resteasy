@@ -88,7 +88,7 @@
                     <skip>${skipTests}</skip>
                     <images>
                         <image>
-                            <name>resteasy-test/resteasy-cloud-test-image/${project.artifactId}:latest</name>
+                            <name>quay.io/resteasy-cloud-test-image/${project.artifactId}:latest</name>
                             <alias>server</alias>
                             <build>
                                 <from>${image.name.wildfly.runtime}</from>
