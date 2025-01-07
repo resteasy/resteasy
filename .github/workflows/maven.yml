@@ -33,6 +33,7 @@ on:
       - 'security/**'
       - 'server-adapters/**'
       - 'testsuite/**'
+      - '!testsuite/cloud-tests/**'
       - 'wildfly/**'
   schedule:
     - cron: '0 0 * * *' # Every day at 00:00 UTC
