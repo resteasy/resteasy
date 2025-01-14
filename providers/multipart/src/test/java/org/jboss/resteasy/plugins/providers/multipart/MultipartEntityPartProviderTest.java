@@ -333,6 +333,50 @@ public class MultipartEntityPartProviderTest {
     }
 
     /**
+     * Tests sending {@code multipart/form-data} content as a {@link EntityPart List<EntityPart>}. Two parts are sent
+     * and injected as {@link FormParam @FormParam} method parameters. Each part send is different and injected as a
+     * specific type.
+     * <p>
+     * The result from the REST endpoint is {@code multipart/form-data} content with a new name and the content for the
+     * injected field.
+     * </p>
+     *
+     * @throws Exception if an error occurs in the test
+     */
+    @Test
+    public void multiInjectionNoEntityPart(@RequestPath("test/multi-injected-no-entity-part") final WebTarget target)
+            throws Exception {
+        final List<EntityPart> multipart = List.of(
+                EntityPart.withName("string-part")
+                        .content("test string")
+                        .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                        .build(),
+                EntityPart.withName("input-stream-part")
+                        .content("test input stream".getBytes(StandardCharsets.UTF_8))
+                        .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                        .build());
+        try (
+                Response response = target
+                        .request(MediaType.MULTIPART_FORM_DATA_TYPE)
+                        .post(Entity.entity(new GenericEntity<>(multipart) {
+                        }, MediaType.MULTIPART_FORM_DATA))) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            final List<EntityPart> entityParts = response.readEntity(new GenericType<>() {
+            });
+            if (entityParts.size() != 2) {
+                final String msg = "Expected 2 entries got " +
+                        entityParts.size() +
+                        '.' +
+                        System.lineSeparator() +
+                        getMessage(entityParts);
+                Assertions.fail(msg);
+            }
+            checkEntity(entityParts, "received-string", "test string");
+            checkEntity(entityParts, "received-input-stream", "test input stream");
+        }
+    }
+
+    /**
      * Tests sending {@code multipart/form-data} content as a {@link EntityPart List<EntityPart>}. Three parts are sent
      * and injected as {@link FormParam @FormParam} method parameters. Each part send is different and injected as a
      * specific type.
@@ -700,6 +744,25 @@ public class MultipartEntityPartProviderTest {
                             .mediaType(entityPart.getMediaType())
                             .fileName(entityPart.getFileName().orElse(null))
                             .build(),
+                    EntityPart.withName("received-input-stream")
+                            .content(MultipartEntityPartProviderTest.toString(in).getBytes(StandardCharsets.UTF_8))
+                            .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                            .build(),
+                    EntityPart.withName("received-string")
+                            .content(string)
+                            .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                            .build());
+            return Response.ok(new GenericEntity<>(multipart) {
+            }, MediaType.MULTIPART_FORM_DATA).build();
+        }
+
+        @POST
+        @Consumes(MediaType.MULTIPART_FORM_DATA)
+        @Produces(MediaType.MULTIPART_FORM_DATA)
+        @Path("/multi-injected-no-entity-part")
+        public Response multipleInjectableNoEntityPart(@FormParam("string-part") final String string,
+                @FormParam("input-stream-part") final InputStream in) throws IOException {
+            final List<EntityPart> multipart = List.of(
                     EntityPart.withName("received-input-stream")
                             .content(MultipartEntityPartProviderTest.toString(in).getBytes(StandardCharsets.UTF_8))
                             .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
