@@ -25,7 +25,7 @@
         <maven.compiler.release>17</maven.compiler.release>
 
         <!-- Dependency versions -->
-        <version.org.jboss.arquillian.core>1.9.2.Final</version.org.jboss.arquillian.core>
+        <version.org.jboss.arquillian.core>1.9.3.Final</version.org.jboss.arquillian.core>
         <version.org.jboss.arquillian.jakarta>10.0.0.Final</version.org.jboss.arquillian.jakarta>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>4.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <version.org.jboss.logging.jboss-logging-processor>3.0.3.Final</version.org.jboss.logging.jboss-logging-processor>
