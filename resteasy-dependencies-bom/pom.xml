@@ -63,7 +63,7 @@
         <version.org.apache.httpcomponents.httpclient>4.5.14</version.org.apache.httpcomponents.httpclient>
         <version.org.apache.httpcomponents.httpcore>4.4.16</version.org.apache.httpcomponents.httpcore>
         <version.org.apache.httpcomponents.httpasyncclient>4.1.4</version.org.apache.httpcomponents.httpasyncclient>
-        <version.org.apache.james.apache-mime4j>0.8.11</version.org.apache.james.apache-mime4j>
+        <version.org.apache.james.apache-mime4j>0.8.12</version.org.apache.james.apache-mime4j>
         <version.org.bouncycastle>1.79</version.org.bouncycastle>
         <version.org.eclipse.angus.angus-activation>2.0.2</version.org.eclipse.angus.angus-activation>
         <version.org.eclipse.angus.angus-mail>2.0.3</version.org.eclipse.angus.angus-mail>
