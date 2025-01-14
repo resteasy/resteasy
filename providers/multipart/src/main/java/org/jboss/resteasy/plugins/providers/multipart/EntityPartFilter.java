@@ -42,7 +42,6 @@ import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.server.Cleanables;
 import org.jboss.resteasy.spi.EntityOutputStream;
 import org.jboss.resteasy.spi.multipart.MultipartContent;
-import org.jboss.resteasy.spi.util.Types;
 
 /**
  * Checks the method found to see if it as a {@link FormParam} or {@link org.jboss.resteasy.annotations.jaxrs.FormParam}
@@ -98,12 +97,7 @@ public class EntityPartFilter implements ContainerRequestFilter {
         for (Parameter parameter : parameters) {
             if (parameter.isAnnotationPresent(FormParam.class)
                     || parameter.isAnnotationPresent(org.jboss.resteasy.annotations.jaxrs.FormParam.class)) {
-                if (parameter.getType().isAssignableFrom(EntityPart.class)) {
-                    return true;
-                } else if (parameter.getType().isAssignableFrom(List.class)
-                        && Types.isGenericTypeInstanceOf(EntityPart.class, parameter.getParameterizedType())) {
-                    return true;
-                }
+                return true;
             }
         }
         return false;
