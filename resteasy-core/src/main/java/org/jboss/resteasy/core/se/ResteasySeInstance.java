@@ -20,14 +20,16 @@
 package org.jboss.resteasy.core.se;
 
 import java.io.IOException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import jakarta.ws.rs.SeBootstrap.Configuration;
@@ -41,6 +43,7 @@ import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.core.scanner.ResourceScanner;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedServer;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedServers;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
@@ -55,12 +58,26 @@ public class ResteasySeInstance implements Instance {
     private final EmbeddedServer server;
     private final Configuration configuration;
     private final ExecutorService executor;
+    private final AtomicBoolean shutdownHookRegistered;
+    private final List<Consumer<StopResult>> onShutdownCallbacks;
+    private final StopResult stopResult;
 
     private ResteasySeInstance(final EmbeddedServer server, final Configuration configuration,
             final ExecutorService executor) {
         this.server = server;
         this.configuration = configuration;
         this.executor = executor;
+        this.shutdownHookRegistered = new AtomicBoolean(false);
+        this.onShutdownCallbacks = new CopyOnWriteArrayList<>();
+        stopResult = new StopResult() {
+            @Override
+            public <T> T unwrap(final Class<T> nativeClass) {
+                if (nativeClass != null && nativeClass.isInstance(server)) {
+                    return nativeClass.cast(server);
+                }
+                return null;
+            }
+        };
     }
 
     /**
@@ -172,15 +189,7 @@ public class ResteasySeInstance implements Instance {
         executor.submit(() -> {
             try {
                 server.stop();
-                cf.complete(new StopResult() {
-                    @Override
-                    public <T> T unwrap(final Class<T> nativeClass) {
-                        if (nativeClass != null && nativeClass.isInstance(server)) {
-                            return nativeClass.cast(server);
-                        }
-                        return null;
-                    }
-                });
+                cf.complete(stopResult);
             } catch (Throwable t) {
                 cf.completeExceptionally(t);
             }
@@ -196,6 +205,27 @@ public class ResteasySeInstance implements Instance {
         return null;
     }
 
+    @Override
+    public void stopOnShutdown(final Consumer<StopResult> consumer) {
+        onShutdownCallbacks.add(consumer);
+        if (shutdownHookRegistered.compareAndSet(false, true)) {
+            SecurityActions.addShutdownHook(new Thread(() -> {
+                try {
+                    server.stop();
+                } catch (Throwable t) {
+                    LogMessages.LOGGER.failedStopOnShutdown(t);
+                }
+                for (var callback : onShutdownCallbacks) {
+                    try {
+                        callback.accept(stopResult);
+                    } catch (Throwable t) {
+                        LogMessages.LOGGER.failedToExecuteCallback(t, callback);
+                    }
+                }
+            }, "resteasy-se-shutdown-hook"));
+        }
+    }
+
     @SuppressWarnings("deprecation")
     private static void scanForResources(final ResteasyDeployment deployment, final Application application,
             final Configuration configuration)
@@ -209,7 +239,7 @@ public class ResteasySeInstance implements Instance {
         final Index index = ConfigurationOption.JANDEX_INDEX.getValue(configuration);
         final ResourceScanner resourceScanner;
         if (index == null) {
-            resourceScanner = ResourceScanner.fromClassPath(classLoader(application.getClass()),
+            resourceScanner = ResourceScanner.fromClassPath(SecurityActions.resolveClassLoader(application.getClass()),
                     ConfigurationOption.JANDEX_CLASS_PATH_FILTER.getValue(configuration));
         } else {
             resourceScanner = ResourceScanner.of(index);
@@ -223,39 +253,6 @@ public class ResteasySeInstance implements Instance {
             deployment.getScannedResourceClasses().addAll(resources);
             deployment.getScannedProviderClasses().addAll(resourceScanner.getProviders());
         }
-    }
-
-    private static ClassLoader classLoader() {
-        if (System.getSecurityManager() == null) {
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            if (cl == null) {
-                cl = ResteasySeInstance.class.getClassLoader();
-            }
-            if (cl == null) {
-                cl = ClassLoader.getSystemClassLoader();
-            }
-            return cl;
-        }
-        return AccessController.doPrivileged((PrivilegedAction<ClassLoader>) () -> {
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            if (cl == null) {
-                cl = ResteasySeInstance.class.getClassLoader();
-            }
-            if (cl == null) {
-                cl = ClassLoader.getSystemClassLoader();
-            }
-            return cl;
-        });
-    }
-
-    private static ClassLoader classLoader(final Class<?> c) {
-        if (c == null) {
-            return classLoader();
-        }
-        if (System.getSecurityManager() == null) {
-            return c.getClassLoader();
-        }
-        return AccessController.doPrivileged((PrivilegedAction<ClassLoader>) c::getClassLoader);
     }
 
     private static boolean loadServices(final Map<String, Object> props) {
