@@ -25,29 +25,32 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-class GlobalContextualExecutorService extends ContextualExecutorService implements AutoCloseable {
+class GlobalContextualExecutorService extends ContextualExecutorService {
     static final GlobalContextualExecutorService INSTANCE = new GlobalContextualExecutorService();
     private final Thread shutdownHook;
+    private final AtomicBoolean shutdown = new AtomicBoolean(false);
 
-    private volatile ExecutorService delegate;
+    private final ExecutorService delegate;
 
     private GlobalContextualExecutorService() {
         super(null, true);
+        final int poolSize = SecurityActions.getCoreThreads("dev.resteasy.concurrent.core.pool.size");
+        delegate = new ThreadPoolExecutor(poolSize, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(), new ContextualThreadFactory("contextual-pool"));
         shutdownHook = new Thread("resteasy-shutdown") {
             @Override
             public void run() {
-                synchronized (GlobalContextualExecutorService.this) {
-                    if (delegate != null) {
-                        delegate.shutdown();
-                        delegate = null;
-                    }
+                if (shutdown.compareAndSet(false, true)) {
+                    delegate.shutdownNow();
                 }
             }
         };
+        SecurityActions.registerShutdownHook(shutdownHook);
     }
 
     @Override
@@ -62,37 +65,16 @@ class GlobalContextualExecutorService extends ContextualExecutorService implemen
 
     @Override
     public boolean isShutdown() {
-        return false;
+        return shutdown.get();
     }
 
     @Override
     public boolean isTerminated() {
-        return false;
+        return delegate.isTerminated();
     }
 
     @Override
     ExecutorService getDelegate() {
-        if (delegate == null) {
-            synchronized (this) {
-                if (delegate == null) {
-                    final int poolSize = SecurityActions.getCoreThreads("dev.resteasy.concurrent.core.pool.size");
-                    delegate = new ThreadPoolExecutor(poolSize, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS,
-                            new LinkedBlockingQueue<>(), new ContextualThreadFactory("contextual-pool"));
-                    SecurityActions.registerShutdownHook(shutdownHook);
-                }
-            }
-        }
         return delegate;
-    }
-
-    @Override
-    public void close() {
-        synchronized (this) {
-            SecurityActions.removeShutdownHook(shutdownHook);
-            if (delegate != null) {
-                delegate.shutdown();
-                delegate = null;
-            }
-        }
     }
 }
