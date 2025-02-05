@@ -3,6 +3,7 @@ package org.jboss.resteasy.resteasy_jaxrs.i18n;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.AccessibleObject;
 import java.net.URL;
+import java.util.function.Consumer;
 
 import jakarta.ws.rs.core.MediaType;
 
@@ -336,6 +337,14 @@ public interface LogMessages extends BasicLogger {
     @LogMessage(level = Level.ERROR)
     @Message("Error processing request %s")
     void defaultExceptionMapper(@Cause Throwable cause, CharSequence resourceInfo);
+
+    @LogMessage(level = Level.ERROR)
+    @Message(id = BASE + 385, value = "Failed to stop the SeBootstrap instance.")
+    void failedStopOnShutdown(@Cause Throwable cause);
+
+    @LogMessage(level = Level.ERROR)
+    @Message(id = BASE + 386, value = "Failed to execute shutdown call back %s")
+    void failedToExecuteCallback(@Cause Throwable cause, Consumer<?> callback);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                                                  TRACE                                                //
