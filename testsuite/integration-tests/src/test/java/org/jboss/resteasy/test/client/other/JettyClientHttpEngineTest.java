@@ -40,7 +40,7 @@ public class JettyClientHttpEngineTest extends ClientHttpEngineTest {
     @Deployment
     public static WebArchive deployment() {
         final File[] libs = Maven.resolver()
-                .resolve("org.jboss.resteasy:resteasy-client-jetty:" + System.getProperty("version.resteasy.testsuite"))
+                .resolve("org.jboss.resteasy:resteasy-client-jetty:" + System.getProperty("project.version"))
                 .withTransitivity()
                 .asList(File.class)
                 .stream()
