@@ -95,7 +95,7 @@
         <version.com.github.java-json-tools.jackson-coreutils>2.0</version.com.github.java-json-tools.jackson-coreutils>
         <version.com.github.java-json-tools.json-patch>1.13</version.com.github.java-json-tools.json-patch>
         <version.com.github.java-json-tools.msg-simple>1.2</version.com.github.java-json-tools.msg-simple>
-        <version.io.smallrye.jandex>3.2.3</version.io.smallrye.jandex>
+        <version.io.smallrye.jandex>3.2.7</version.io.smallrye.jandex>
 
         <version.io.reactivex.rxjava2-rxjava>2.2.21</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.4</version.org.reactivestreams>
