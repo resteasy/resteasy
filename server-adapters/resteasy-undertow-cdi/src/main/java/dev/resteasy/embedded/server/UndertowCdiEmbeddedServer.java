@@ -12,6 +12,7 @@ import jakarta.ws.rs.core.Application;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedServer;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedServers;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
+import org.jboss.resteasy.spi.PriorityServiceLoader;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.weld.environment.ContainerInstance;
 import org.jboss.weld.environment.servlet.Container;
@@ -68,6 +69,11 @@ public class UndertowCdiEmbeddedServer implements EmbeddedServer {
             case MANDATORY:
                 builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.REQUIRED);
                 break;
+        }
+        PriorityServiceLoader<UndertowBuilderConfigurator> undertowBuilderConfigurators = PriorityServiceLoader.load(
+                UndertowBuilderConfigurator.class);
+        for (UndertowBuilderConfigurator undertowBuilderConfigurator : undertowBuilderConfigurators) {
+            undertowBuilderConfigurator.configure(builder);
         }
         final Undertow server = builder.build();
         server.start();
