@@ -5,12 +5,14 @@ import java.io.DataOutputStream;
 import java.lang.reflect.Method;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 public final class MethodHashing {
+
     public static long methodHash(Method method)
             throws Exception {
         Class<?>[] parameterTypes = method.getParameterTypes();
@@ -26,7 +28,7 @@ public final class MethodHashing {
             throws Exception {
         long hash = 0;
         ByteArrayOutputStream bytearrayoutputstream = new ByteArrayOutputStream(512);
-        MessageDigest messagedigest = MessageDigest.getInstance("SHA");
+        MessageDigest messagedigest = getMessageDigest();
         DataOutputStream dataoutputstream = new DataOutputStream(new DigestOutputStream(bytearrayoutputstream, messagedigest));
         dataoutputstream.writeUTF(methodDesc);
         dataoutputstream.flush();
@@ -61,5 +63,13 @@ public final class MethodHashing {
         } else {
             return "L" + cl.getName().replace('.', '/') + ";";
         }
+    }
+
+    private static MessageDigest getMessageDigest() throws NoSuchAlgorithmException {
+        try {
+            return MessageDigest.getInstance("SHA-1");
+        } catch (Throwable ignore) {
+        }
+        return MessageDigest.getInstance("SHA-256");
     }
 }
