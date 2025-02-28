@@ -1,15 +1,11 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.security.DigestOutputStream;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +16,7 @@ import jakarta.ws.rs.client.WebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.spi.LoggableFailure;
+import org.jboss.resteasy.spi.util.MethodHashing;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -48,32 +45,25 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor {
         populateMap(clazz, configuration, defaultFormName);
     }
 
+    /**
+     * @deprecated use {@link MethodHashing#methodHash(Method)}
+     */
+    @Deprecated(forRemoval = true, since = "6.2.12.Final")
     public static long methodHash(Method method)
             throws Exception {
-        Class[] parameterTypes = method.getParameterTypes();
-        StringBuilder methodDesc = new StringBuilder(method.getName()).append("(");
-        for (int j = 0; j < parameterTypes.length; j++) {
-            methodDesc.append(getTypeString(parameterTypes[j]));
-        }
-        methodDesc.append(")").append(getTypeString(method.getReturnType()));
-        return createHash(methodDesc.toString());
+        return MethodHashing.methodHash(method);
     }
 
+    /**
+     * @deprecated use {@link MethodHashing#createHash(String)}
+     */
+    @Deprecated(forRemoval = true, since = "6.2.12.Final")
     public static long createHash(String methodDesc)
             throws Exception {
-        long hash = 0;
-        ByteArrayOutputStream bytearrayoutputstream = new ByteArrayOutputStream(512);
-        MessageDigest messagedigest = MessageDigest.getInstance("SHA");
-        DataOutputStream dataoutputstream = new DataOutputStream(new DigestOutputStream(bytearrayoutputstream, messagedigest));
-        dataoutputstream.writeUTF(methodDesc);
-        dataoutputstream.flush();
-        byte[] abyte0 = messagedigest.digest();
-        for (int j = 0; j < Math.min(8, abyte0.length); j++)
-            hash += (long) (abyte0[j] & 0xff) << j * 8;
-        return hash;
-
+        return MethodHashing.createHash(methodDesc);
     }
 
+    @Deprecated(forRemoval = true, since = "6.2.12.Final")
     static String getTypeString(Class cl) {
         if (cl == Byte.TYPE) {
             return "B";
@@ -136,7 +126,7 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor {
             if (processor != null) {
                 long hash = 0;
                 try {
-                    hash = methodHash(method);
+                    hash = MethodHashing.methodHash(method);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
