@@ -9,7 +9,7 @@
 <dependency>
    <groupId>org.jboss.resteasy</groupId>
    <artifactId>resteasy-json-p-provider</artifactId>
-   <version>4.7.10.Final</version>
+   <version>4.7.11.Final-SNAPSHOT</version>
 </dependency>
 ]]></programlisting>
     <para>

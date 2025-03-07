@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-misc-arquillian-tests</artifactId>
-    <version>4.7.10.Final</version>
+    <version>4.7.11.Final-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>RESTEASY-1630-jetty-resteasy-servlet-initializer</artifactId>

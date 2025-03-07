@@ -13,7 +13,7 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-bom</artifactId>
-    <version>4.7.10.Final</version>
+    <version>4.7.11.Final-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>RESTEasy Maven Import (BOM)</name>
