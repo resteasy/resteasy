@@ -138,7 +138,7 @@ public class UndertowTest
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jdk-http</artifactId>
-      <version>4.7.10.Final-SNAPSHOT</version>
+      <version>4.7.10.Final</version>
   </dependency>
 ]]></programlisting>
 
@@ -167,7 +167,7 @@ public class UndertowTest
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-netty4</artifactId>
-      <version>4.7.10.Final-SNAPSHOT</version>
+      <version>4.7.10.Final</version>
   </dependency>
 ]]></programlisting>
 
@@ -200,7 +200,7 @@ public class UndertowTest
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-reactor-netty</artifactId>
-      <version>4.7.10.Final-SNAPSHOT</version>
+      <version>4.7.10.Final</version>
   </dependency>
 ]]></programlisting>
 
@@ -227,7 +227,7 @@ public class UndertowTest
   <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-vertx</artifactId>
-      <version>4.7.10.Final-SNAPSHOT</version>
+      <version>4.7.10.Final</version>
   </dependency>
     ]]></programlisting>
 

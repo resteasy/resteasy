@@ -1,5 +1,5 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
-               "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"
+               "https://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"
         [
                 <!ENTITY Overview SYSTEM "modules/Overview.xml">
                 <!ENTITY License SYSTEM "modules/License.xml">
@@ -68,7 +68,7 @@
    <bookinfo>
       <title>RESTEasy JAX-RS</title>
       <subtitle>RESTFul Web Services for Java</subtitle>
-      <releaseinfo>4.7.10.Final-SNAPSHOT</releaseinfo>
+      <releaseinfo>4.7.10.Final</releaseinfo>
    </bookinfo>
 
    <toc/>

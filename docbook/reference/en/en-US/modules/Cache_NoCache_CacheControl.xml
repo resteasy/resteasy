@@ -139,7 +139,7 @@ String rtn = target.resolveTemplate("id", "1").request().get(String.class);
 <dependency>
    <groupId>org.jboss.resteasy</groupId>
    <artifactId>resteasy-cache-core</artifactId>
-   <version>4.7.10.Final-SNAPSHOT</version>
+   <version>4.7.10.Final</version>
 </dependency>
 ]]>
 </programlisting>

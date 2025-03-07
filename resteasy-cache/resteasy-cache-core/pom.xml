@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-cache-pom</artifactId>
-        <version>4.7.10.Final-SNAPSHOT</version>
+        <version>4.7.10.Final</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>resteasy-cache-core</artifactId>
