@@ -70,11 +70,14 @@ public class UndertowCdiEmbeddedServer implements EmbeddedServer {
                 builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.REQUIRED);
                 break;
         }
-        PriorityServiceLoader<UndertowBuilderConfigurator> undertowBuilderConfigurators = PriorityServiceLoader.load(
+
+        // Check for configurators and allow them to configure the server before starting
+        final PriorityServiceLoader<UndertowBuilderConfigurator> undertowBuilderConfigurators = PriorityServiceLoader.load(
                 UndertowBuilderConfigurator.class);
         for (UndertowBuilderConfigurator undertowBuilderConfigurator : undertowBuilderConfigurators) {
             undertowBuilderConfigurator.configure(builder);
         }
+
         final Undertow server = builder.build();
         server.start();
         this.server = server;
