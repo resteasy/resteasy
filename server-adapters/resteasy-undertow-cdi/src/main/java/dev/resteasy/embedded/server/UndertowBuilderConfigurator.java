@@ -21,9 +21,19 @@ package dev.resteasy.embedded.server;
 import io.undertow.Undertow;
 
 /**
- * This interface is discovered as a {@link org.jboss.resteasy.spi.PriorityServiceLoader} for configuring the
- * {@link Undertow.Builder} before it builds the {@link Undertow} and starts it.
+ * This interface is discovered as a {@linkplain org.jboss.resteasy.spi.PriorityServiceLoader service provider} for
+ * configuring the {@link Undertow.Builder} before it builds the {@linkplain Undertow server} and starts it.
+ * <p>
+ * Implementations of this service will be executed after the {@link Undertow.Builder} is initialized, but before the
+ * server starts. You can optionally use the {@link jakarta.annotation.Priority} annotation for ordered execution.
+ * </p>
  */
 public interface UndertowBuilderConfigurator {
+
+    /**
+     * Allows configuring a {@link Undertow.Builder} before the {@linkplain Undertow server} is built.
+     *
+     * @param builder the builder used for configuring the server
+     */
     void configure(Undertow.Builder builder);
 }
