@@ -1,5 +1,5 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
-               "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"
+               "https://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"
         [
                 <!ENTITY Overview SYSTEM "modules/Overview.xml">
                 <!ENTITY License SYSTEM "modules/License.xml">
@@ -70,7 +70,7 @@
    <bookinfo>
       <title>RESTEasy</title>
       <subtitle>Jakarta RESTFul Web Services</subtitle>
-      <releaseinfo>5.0.10.Final-SNAPSHOT</releaseinfo>
+      <releaseinfo>5.0.10.Final</releaseinfo>
    </bookinfo>
 
    <toc/>
