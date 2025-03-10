@@ -6,7 +6,7 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-upgrade-guide-${translation}</artifactId>
-    <version>7.0.0.Beta1-SNAPSHOT</version>
+    <version>7.0.0.Beta1</version>
     <packaging>jdocbook</packaging>
     <name>RESTEasy Upgrade Guide (${translation})</name>
     <description/>
