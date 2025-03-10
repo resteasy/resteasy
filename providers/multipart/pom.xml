@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>providers-pom</artifactId>
-        <version>7.0.0.Beta1</version>
+        <version>7.0.0.Final-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>resteasy-multipart-provider</artifactId>
