@@ -42,11 +42,14 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import reactor.core.publisher.Mono;
+import reactor.netty.ReactorNetty;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.HttpClientResponse;
 import reactor.netty.resources.ConnectionProvider;
 
 public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
+
+    public static final String REQUEST_TIMEOUT_MS = ReactorNetty.class + "$RequestTimeout";
     private static final Logger log = Logger.getLogger(ReactorNettyClientHttpEngine.class);
 
     private final HttpClient httpClient;
@@ -143,7 +146,7 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
                         })
                         .doOnDiscard(RestEasyClientResponse.class, RestEasyClientResponse::close));
 
-        return requestTimeout
+        return unwrapTimeout(request.getClientConfiguration().getProperty(REQUEST_TIMEOUT_MS))
                 .map(responseMono::timeout)
                 .orElse(responseMono)
                 .<T> handle((response, sink) -> {
@@ -165,6 +168,25 @@ public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
                         sink.error(e);
                     }
                 }).onErrorMap(err -> clientException(err, null));
+    }
+
+    /**
+     * Request level request timeout configuration to over-ride the global response timeout
+     *
+     * @param timeout request level request timeout
+     * @return Valid request timeout between global and request level
+     */
+    private Optional<Duration> unwrapTimeout(final Object timeout) {
+        if (timeout == null) {
+            return requestTimeout;
+        } else if (timeout instanceof Duration) {
+            return ((Duration) timeout).toMillis() > 0 ? Optional.of((Duration) timeout) : requestTimeout;
+        } else if (timeout != null) {
+            final long millis = Long.parseLong(timeout.toString());
+            return millis > 0 ? Optional.of(Duration.ofMillis(millis)) : requestTimeout;
+        } else {
+            return Optional.empty();
+        }
     }
 
     /**
