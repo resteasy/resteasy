@@ -26,15 +26,15 @@ import jakarta.ws.rs.core.Application;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.junit5.container.annotation.ArquillianTest;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.wildfly.arquillian.junit.annotations.WildFlyArquillian;
 
 /**
  * Tests an {@link Application} annotated with {@link ApplicationPath} with a leading slash.
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@WildFlyArquillian
+@ArquillianTest
 @RunAsClient
 public class UriInfoMatchedResourceTemplateAppSlashPathTest extends UriInfoMatchedResourceTemplateTest {
 

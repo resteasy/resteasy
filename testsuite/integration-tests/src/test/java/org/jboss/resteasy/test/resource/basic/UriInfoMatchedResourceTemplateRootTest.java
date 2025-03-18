@@ -26,8 +26,8 @@ import jakarta.ws.rs.core.Application;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.junit5.container.annotation.ArquillianTest;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.wildfly.arquillian.junit.annotations.WildFlyArquillian;
 
 /**
  * Tests that an application registered with a path of {@code /} and the resource registered with a path of {@code /}
@@ -35,7 +35,7 @@ import org.wildfly.arquillian.junit.annotations.WildFlyArquillian;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@WildFlyArquillian
+@ArquillianTest
 @RunAsClient
 public class UriInfoMatchedResourceTemplateRootTest extends UriInfoMatchedResourceTemplateTest {
 
