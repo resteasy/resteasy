@@ -28,10 +28,10 @@ import jakarta.ws.rs.core.Application;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.junit5.container.annotation.ArquillianTest;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Disabled;
-import org.wildfly.arquillian.junit.annotations.WildFlyArquillian;
 
 /**
  * Tests that an {@link Application} without a {@link jakarta.ws.rs.ApplicationPath} annotation present. The application
@@ -39,7 +39,7 @@ import org.wildfly.arquillian.junit.annotations.WildFlyArquillian;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@WildFlyArquillian
+@ArquillianTest
 @RunAsClient
 @Disabled("RESTEASY-3485")
 public class UriInfoMatchedResourceTemplateAppMappingTest extends UriInfoMatchedResourceTemplateTest {

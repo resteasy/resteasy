@@ -27,9 +27,9 @@ import jakarta.ws.rs.core.Application;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.junit5.container.annotation.ArquillianTest;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.wildfly.arquillian.junit.annotations.WildFlyArquillian;
 
 /**
  * Tests a deployment without an {@link Application} with the REST activation happening in a {@code web.xml} file with
@@ -37,7 +37,7 @@ import org.wildfly.arquillian.junit.annotations.WildFlyArquillian;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@WildFlyArquillian
+@ArquillianTest
 @RunAsClient
 public class UriInfoMatchedResourceTemplateNoAppMappingTest extends UriInfoMatchedResourceTemplateTest {
 
