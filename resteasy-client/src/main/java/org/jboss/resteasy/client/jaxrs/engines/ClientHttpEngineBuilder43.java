@@ -24,6 +24,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
+import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
@@ -162,7 +163,16 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                     .register("https", sslsf)
                     .build();
 
-            HttpClientConnectionManager cm = null;
+            final HttpClientConnectionManager cm;
+            final long readTimeout = that.getReadTimeout(TimeUnit.MILLISECONDS);
+            final SocketConfig socketConfig;
+            if (readTimeout > 0) {
+                socketConfig = SocketConfig.custom()
+                        .setSoTimeout(Math.toIntExact(readTimeout))
+                        .build();
+            } else {
+                socketConfig = SocketConfig.DEFAULT;
+            }
             if (that.getConnectionPoolSize() > 0) {
                 PoolingHttpClientConnectionManager tcm = new PoolingHttpClientConnectionManager(
                         registry, null, null, null, that.getConnectionTTL(TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS);
@@ -171,15 +181,17 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
                     that.maxPooledPerRoute(that.getConnectionPoolSize());
                 }
                 tcm.setDefaultMaxPerRoute(that.getMaxPooledPerRoute());
+                tcm.setDefaultSocketConfig(socketConfig);
                 cm = tcm;
-
             } else {
-                cm = new BasicHttpClientConnectionManager(registry);
+                BasicHttpClientConnectionManager bcm = new BasicHttpClientConnectionManager(registry);
+                bcm.setSocketConfig(socketConfig);
+                cm = bcm;
             }
 
             RequestConfig.Builder rcBuilder = RequestConfig.custom();
-            if (that.getReadTimeout(TimeUnit.MILLISECONDS) > -1) {
-                rcBuilder.setSocketTimeout((int) that.getReadTimeout(TimeUnit.MILLISECONDS));
+            if (readTimeout > -1) {
+                rcBuilder.setSocketTimeout((int) readTimeout);
             }
             if (that.getConnectionTimeout(TimeUnit.MILLISECONDS) > -1) {
                 rcBuilder.setConnectTimeout((int) that.getConnectionTimeout(TimeUnit.MILLISECONDS));
