@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.client.other;
 
 import java.net.URI;
+import java.net.URLPermission;
 
 import jakarta.ws.rs.client.ClientBuilder;
 
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.wildfly.arquillian.junit.annotations.RequiresModule;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -40,7 +42,9 @@ public class CustomHttpClientEngineTest {
                 .addClasses(CustomHttpClientEngineFactory.class,
                         CustomHttpClientEngineFactory.CustomAsyncHttpClientEngine.class)
                 .addAsServiceProvider(ClientHttpEngineFactory.class, CustomHttpClientEngineFactory.class);
-        war.addClass(ApacheHttpClient4Resource.class);
+        war.addClass(ApacheHttpClient4Resource.class)
+                .addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
+                        new URLPermission("http://127.0.0.1:8080/-")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, ApacheHttpClient4ResourceImpl.class);
     }
 

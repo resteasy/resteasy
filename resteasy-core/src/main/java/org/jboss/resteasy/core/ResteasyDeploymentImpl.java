@@ -1045,6 +1045,6 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
         if (System.getSecurityManager() == null) {
             return option.getValue(config);
         }
-        return AccessController.doPrivileged((PrivilegedAction<T>) option::getValue);
+        return AccessController.doPrivileged((PrivilegedAction<T>) () -> option.getValue(config));
     }
 }
