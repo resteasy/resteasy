@@ -20,12 +20,16 @@
 package org.jboss.resteasy.test.client.other;
 
 import java.io.File;
+import java.io.FilePermission;
+import java.net.SocketPermission;
+import java.util.PropertyPermission;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -46,6 +50,15 @@ public class VertxClientHttpEngineTest extends ClientHttpEngineTest {
                 .stream()
                 .filter(f -> f.getName().matches(".*vertx.*\\.jar") || f.getName().matches(".*netty.*\\.jar"))
                 .toArray(File[]::new);
-        return createDeployment(VertxClientHttpEngineTest.class, libs);
+        return createDeployment(VertxClientHttpEngineTest.class, libs)
+                .addAsManifestResource(
+                        DeploymentDescriptors.createPermissionsXmlAsset(new PropertyPermission("*", "read"),
+                                new FilePermission(System.getProperty("java.io.tmpdir") + "/-", "read,write"),
+                                new RuntimePermission("shutdownHooks"),
+                                new RuntimePermission("setContextClassLoader"),
+                                new RuntimePermission("modifyThread"),
+                                new RuntimePermission("getStackTrace"),
+                                new SocketPermission("127.0.0.1:8080", "connect,resolve")),
+                        "permissions.xml");
     }
 }

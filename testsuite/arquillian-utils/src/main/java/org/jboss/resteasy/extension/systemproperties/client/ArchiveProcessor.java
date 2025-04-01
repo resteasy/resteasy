@@ -1,6 +1,8 @@
 package org.jboss.resteasy.extension.systemproperties.client;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FilePermission;
 import java.lang.reflect.ReflectPermission;
 import java.security.Permission;
 import java.util.HashMap;
@@ -48,9 +50,16 @@ public class ArchiveProcessor implements ApplicationArchiveProcessor {
         }
         // Add a permissions.xml file if the security manager is enabled in the server
         if (TestConfiguration.isSecurityManagerEnabled()) {
+            final String jbossHome = resolveJBossHome();
             final Set<Permission> requirePermissions = Set.of(
+                    new FilePermission(jbossHome + "*", "read"),
+                    new FilePermission(jbossHome + "modules" + File.separatorChar + "-", "read"),
                     new ReflectPermission("suppressAccessChecks"),
+                    new RuntimePermission("accessDeclaredMembers"),
+                    new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
                     new PropertyPermission("arquillian.*", "read"),
+                    new PropertyPermission("module.path", "read"),
+                    new PropertyPermission("jboss.home.*", "read"),
                     new PropertyPermission("junit.platform.reflection.search.useLegacySemantics", "read"));
             final Node node = applicationArchive.delete("/META-INF/permissions.xml");
             final Asset permissionsXml;
@@ -97,5 +106,20 @@ public class ArchiveProcessor implements ApplicationArchiveProcessor {
         } catch (Exception e) {
             throw new RuntimeException("Could not store properties", e);
         }
+    }
+
+    private static String resolveJBossHome() {
+        final String value = System.getProperty("jboss.home");
+        String jbossHome;
+        if (value == null) {
+            // Default provisioning directory
+            jbossHome = "target/server";
+        } else {
+            jbossHome = value;
+        }
+        if (jbossHome.endsWith("/") || jbossHome.endsWith("\\")) {
+            return jbossHome;
+        }
+        return jbossHome + File.separatorChar;
     }
 }

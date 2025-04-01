@@ -20,12 +20,15 @@
 package org.jboss.resteasy.test.client.other;
 
 import java.io.File;
+import java.net.SocketPermission;
+import java.util.PropertyPermission;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -46,6 +49,16 @@ public class JettyClientHttpEngineTest extends ClientHttpEngineTest {
                 .stream()
                 .filter(f -> f.getName().matches(".*jetty.*\\.jar"))
                 .toArray(File[]::new);
-        return createDeployment(JettyClientHttpEngineTest.class, libs);
+        return createDeployment(JettyClientHttpEngineTest.class, libs)
+                .addAsManifestResource(
+                        DeploymentDescriptors.createPermissionsXmlAsset(
+                                new PropertyPermission("jetty.*", "read,write"),
+                                new PropertyPermission("org.eclipse.*", "read"),
+                                new PropertyPermission("JETTY_AVAILABLE_PROCESSORS", "read"),
+                                new RuntimePermission("getenv.*", "read"),
+                                new RuntimePermission("modifyThread"),
+                                new RuntimePermission("setContextClassLoader"),
+                                new SocketPermission("127.0.0.1:8080", "connect,resolve")),
+                        "permissions.xml");
     }
 }
