@@ -187,6 +187,7 @@ public class Jackson2JsonpInterceptor implements AsyncWriterInterceptor {
                 writer.flush();
             } finally {
                 context.setOutputStream(old);
+                old.close();
             }
         } else {
             context.proceed();
