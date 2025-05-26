@@ -50,8 +50,14 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 public class SseEventSourceImpl implements SseEventSource {
     public static final long RECONNECT_DEFAULT = 500;
+    private static final String HTTP_REQUEST_TYPE_GET = "GET";
+    private static final String HTTP_REQUEST_TYPE_POST = "POST";
 
     private final WebTarget target;
+
+    private String requestType;
+
+    private Entity<?> requestBody;
 
     private final long reconnectDelay;
 
@@ -79,6 +85,10 @@ public class SseEventSourceImpl implements SseEventSource {
     public static class SourceBuilder extends Builder {
         private WebTarget target = null;
 
+        private String requestType = HTTP_REQUEST_TYPE_GET; // By default the request Type will be set to GET
+
+        private Entity<?> requestBody;
+
         private long reconnect = RECONNECT_DEFAULT;
 
         private String name = null;
@@ -98,7 +108,7 @@ public class SseEventSourceImpl implements SseEventSource {
         }
 
         public SseEventSource build() {
-            return new SseEventSourceImpl(target, name, reconnect, false, executor, alwaysReconnect);
+            return new SseEventSourceImpl(target, name, reconnect, false, executor, alwaysReconnect, requestType, requestBody);
         }
 
         @Override
@@ -121,6 +131,18 @@ public class SseEventSourceImpl implements SseEventSource {
             return this;
         }
 
+        public Builder requestType(String requestType) {
+            this.requestType = requestType;
+
+            return this;
+        }
+
+        public Builder requestBody(Entity<?> requestBody) {
+            this.requestBody = requestBody;
+
+            return this;
+        }
+
         public Builder alwaysReconnect(boolean alwaysReconnect) {
             this.alwaysReconnect = alwaysReconnect;
             return this;
@@ -132,15 +154,18 @@ public class SseEventSourceImpl implements SseEventSource {
     }
 
     public SseEventSourceImpl(final WebTarget target, final boolean open) {
-        this(target, null, RECONNECT_DEFAULT, open, null, true);
+        this(target, null, RECONNECT_DEFAULT, open, null, true, HTTP_REQUEST_TYPE_GET, null);
     }
 
     private SseEventSourceImpl(final WebTarget target, final String name, final long reconnectDelay, final boolean open,
-            final ScheduledExecutorService executor, final boolean alwaysReconnect) {
+            final ScheduledExecutorService executor, final boolean alwaysReconnect, final String requestType,
+            final Entity<?> requestBody) {
         if (target == null) {
             throw new IllegalArgumentException(Messages.MESSAGES.webTargetIsNotSetForEventSource());
         }
         this.target = target;
+        this.requestType = requestType;
+        this.requestBody = requestBody;
         this.reconnectDelay = reconnectDelay;
         this.alwaysReconnect = alwaysReconnect;
 
@@ -316,6 +341,11 @@ public class SseEventSourceImpl implements SseEventSource {
                 } else {
                     request = requestBuilder.build(verb, entity);
                 }
+
+                if (HTTP_REQUEST_TYPE_POST.equalsIgnoreCase(requestType)) {
+                    request = requestBuilder.buildPost(requestBody);
+                }
+
                 final ClientResponse clientResponse = (ClientResponse) request.invoke();
                 response = clientResponse;
                 if (Family.SUCCESSFUL.equals(clientResponse.getStatusInfo().getFamily())) {
