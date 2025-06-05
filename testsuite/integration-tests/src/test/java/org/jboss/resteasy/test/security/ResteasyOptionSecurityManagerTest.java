@@ -10,6 +10,8 @@ import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.config.Options;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,6 +27,25 @@ public class ResteasyOptionSecurityManagerTest {
     private static SecurityManager originalSecurityManager;
     private static final String TEST_OPTION_KEY = "org.jboss.resteasy.test.security.option";
     private static final String TEST_OPTION_VALUE = "test-value";
+
+    @BeforeAll
+    public static void checkSecurityManagerSupport() {
+        // SecurityManager was deprecated in JDK 17 and removed in JDK 21
+        int javaVersion = getJavaVersion();
+        Assumptions.assumeTrue(javaVersion < 21,
+                "SecurityManager is not supported in JDK 21+. This test requires JDK 8-20.");
+    }
+
+    private static int getJavaVersion() {
+        String version = System.getProperty("java.version");
+        if (version.startsWith("1.")) {
+            // Java 8 or earlier
+            return Integer.parseInt(version.substring(2, 3));
+        } else {
+            // Java 9 or later
+            return Integer.parseInt(version.split("\\.")[0]);
+        }
+    }
 
     /**
      * Custom Options class for testing
