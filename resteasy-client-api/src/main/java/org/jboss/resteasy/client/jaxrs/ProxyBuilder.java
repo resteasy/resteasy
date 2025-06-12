@@ -29,7 +29,19 @@ public abstract class ProxyBuilder<T> {
                 }
             }
 
-            Class clazz = loader.loadClass("org.jboss.resteasy.client.jaxrs.internal.proxy.ProxyBuilderImpl");
+            if (loader == null) {
+                loader = ProxyBuilder.class.getClassLoader();
+            }
+
+            Class clazz;
+            try {
+                clazz = loader.loadClass("org.jboss.resteasy.client.jaxrs.internal.proxy.ProxyBuilderImpl");
+            } catch (ClassNotFoundException ignore) {
+                // The class was not found on the default, potentially modular, class loader. Attempt to load this
+                // from this builders class loader.
+                clazz = ProxyBuilder.class.getClassLoader()
+                        .loadClass("org.jboss.resteasy.client.jaxrs.internal.proxy.ProxyBuilderImpl");
+            }
             Constructor c = clazz.getConstructor(Class.class, WebTarget.class);
             return (ProxyBuilder<T>) c.newInstance(iface, webTarget);
         } catch (Exception e) {
