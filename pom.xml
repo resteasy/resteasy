@@ -31,7 +31,7 @@
         <version.org.jboss.logging.jboss-logging-processor>3.0.4.Final</version.org.jboss.logging.jboss-logging-processor>
         <version.org.wildfly>35.0.1.Final</version.org.wildfly>
         <version.org.wildfly.arquillian.wildfly-arquillian>5.1.0.Beta11</version.org.wildfly.arquillian.wildfly-arquillian>
-        <version.org.wildfly.wildfly-channel-maven-plugin>1.0.19</version.org.wildfly.wildfly-channel-maven-plugin>
+        <version.org.wildfly.wildfly-channel-maven-plugin>1.0.27</version.org.wildfly.wildfly-channel-maven-plugin>
 
         <jboss.home/>
         <!-- print logs to file by default -->
