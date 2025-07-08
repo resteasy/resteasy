@@ -82,7 +82,7 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer<VertxJaxrsServer> {
         DeploymentOptions deploymentOptions = new DeploymentOptions()
                 .setInstances(vertxOptions.getEventLoopPoolSize())
                 .setConfig(new JsonObject().put("helper", key));
-        vertx.deployVerticle(Verticle.class.getName(), deploymentOptions, ar -> {
+        vertx.deployVerticle(Verticle.class.getName(), deploymentOptions).onComplete(ar -> {
             deploymentMap.remove(key);
             if (ar.succeeded()) {
                 fut.complete(ar.result());
@@ -106,7 +106,7 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer<VertxJaxrsServer> {
     public void stop() {
         if (deploymentID != null) {
             CompletableFuture<Void> fut = new CompletableFuture<>();
-            vertx.close(ar -> {
+            vertx.close().onComplete(ar -> {
                 fut.complete(null);
             });
             deploymentID = null;
@@ -229,7 +229,7 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer<VertxJaxrsServer> {
             Helper helper = deploymentMap.get(config().getString("helper"));
             server = vertx.createHttpServer(helper.serverOptions);
             server.requestHandler(new VertxRequestHandler(vertx, helper.deployment, helper.root, helper.domain));
-            server.listen(ar -> {
+            server.listen().onComplete(ar -> {
                 if (ar.succeeded()) {
                     startPromise.complete();
                 } else {
