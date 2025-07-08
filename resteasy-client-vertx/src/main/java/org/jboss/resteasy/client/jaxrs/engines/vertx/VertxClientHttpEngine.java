@@ -197,9 +197,9 @@ public class VertxClientHttpEngine implements AsyncClientHttpEngine {
                         }
                     };
                     if (body != null) {
-                        httpClientRequest.send(body, handler);
+                        httpClientRequest.send(body).onComplete(handler);
                     } else {
-                        httpClientRequest.send(handler);
+                        httpClientRequest.send().onComplete(handler);
                     }
                     return null;
                 })

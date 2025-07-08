@@ -71,7 +71,7 @@ public class VertxSslClientEngineTest {
         });
         if (server.actualPort() == 0) {
             CompletableFuture<Void> fut = new CompletableFuture<>();
-            server.listen(0, ar -> {
+            server.listen(0).onComplete(ar -> {
                 if (ar.succeeded()) {
                     fut.complete(null);
                 } else {
@@ -85,7 +85,7 @@ public class VertxSslClientEngineTest {
     @AfterEach
     public void stop() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
-        vertx.close(ar -> latch.countDown());
+        vertx.close().onComplete(ar -> latch.countDown());
         latch.await(2, TimeUnit.MINUTES);
         executorService.shutdownNow();
         if (certificate != null) {

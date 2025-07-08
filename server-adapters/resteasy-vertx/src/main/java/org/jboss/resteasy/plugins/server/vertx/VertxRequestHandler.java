@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.server.vertx;
 
 import java.io.IOException;
 
+import io.vertx.core.internal.buffer.BufferInternal;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.vertx.i18n.LogMessages;
@@ -57,7 +58,8 @@ public class VertxRequestHandler implements Handler<HttpServerRequest> {
             VertxHttpRequest vertxRequest = new VertxHttpRequest(ctx, request, uriInfo, dispatcher.getDispatcher(),
                     vertxResponse, false);
             if (buff.length() > 0) {
-                ByteBufInputStream in = new ByteBufInputStream(buff.getByteBuf());
+                BufferInternal buffInternal = (BufferInternal) buff;
+                ByteBufInputStream in = new ByteBufInputStream(buffInternal.getByteBuf());
                 vertxRequest.setInputStream(in);
             }
 

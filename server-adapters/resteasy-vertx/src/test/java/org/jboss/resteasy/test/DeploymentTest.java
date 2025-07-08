@@ -86,7 +86,7 @@ public class DeploymentTest {
             server = vertx.createHttpServer();
             server.requestHandler(new VertxRequestHandler(vertx, deployment));
             CompletableFuture<Void> listenLatch = new CompletableFuture<>();
-            server.listen(TestPortProvider.getPort(), ar -> {
+            server.listen(TestPortProvider.getPort()).onComplete(ar -> {
                 if (ar.succeeded()) {
                     listenLatch.complete(null);
                 } else {

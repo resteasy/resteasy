@@ -33,7 +33,7 @@ public class VertxUtil {
         if (uri.startsWith(protocol + "://")) {
             uriString = uri;
         } else {
-            String host = req.host();
+            String host = req.authority().host();
             if (host == null) {
                 host = "unknown";
             }
