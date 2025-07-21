@@ -27,7 +27,6 @@ import java.util.function.Function;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.config.security.ConfigPropertyPermission;
 
 /**
  * A default configuration which searches for a property in the following order:
@@ -69,10 +68,6 @@ public class DefaultConfiguration implements Configuration {
     @Override
     @SuppressWarnings("unchecked")
     public <T> Optional<T> getOptionalValue(final String name, final Class<T> type) {
-        final SecurityManager sm = System.getSecurityManager();
-        if (sm != null) {
-            sm.checkPermission(new ConfigPropertyPermission(name));
-        }
         final String value = resolver.apply(name);
         if (value == null) {
             return Optional.empty();
@@ -115,10 +110,6 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public <T> T getValue(final String name, final Class<T> type) {
-        final SecurityManager sm = System.getSecurityManager();
-        if (sm != null) {
-            sm.checkPermission(new ConfigPropertyPermission(name));
-        }
         return getOptionalValue(name, type).orElseThrow(() -> Messages.MESSAGES.propertyNotFound(name));
     }
 

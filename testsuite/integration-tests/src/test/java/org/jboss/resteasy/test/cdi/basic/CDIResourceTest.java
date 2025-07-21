@@ -32,7 +32,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter CDI
@@ -71,9 +70,6 @@ public class CDIResourceTest {
         war.addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
         war.addAsWebInfResource(CDIResourceTest.class.getPackage(),
                 "web-resteasy1082.xml", "web.xml");
-
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new RuntimePermission("accessDeclaredMembers")), "permissions.xml");
         //write file to disk
         war.as(ZipExporter.class).exportTo(exportFile, true);
     }

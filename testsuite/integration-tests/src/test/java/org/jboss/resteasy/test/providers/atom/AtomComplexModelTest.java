@@ -4,11 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.DataOutputStream;
-import java.io.FilePermission;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.lang.reflect.ReflectPermission;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -53,7 +51,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Atom provider
@@ -84,12 +81,6 @@ public class AtomComplexModelTest {
                 AtomComplexModelState.class,
                 AtomComplexModelUuid.class,
                 AtomComplexModelVersionNumber.class);
-
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new FilePermission("<<ALL FILES>>", "read"),
-                new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers")),
-                "permissions.xml");
 
         return TestUtil.finishContainerPrepare(war, null, AtomComplexModelEntryResource.class);
     }

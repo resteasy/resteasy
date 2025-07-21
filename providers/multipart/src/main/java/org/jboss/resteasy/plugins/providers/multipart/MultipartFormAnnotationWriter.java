@@ -9,7 +9,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.security.AccessController;
 import java.util.concurrent.CompletionStage;
 
 import jakarta.ws.rs.FormParam;
@@ -116,7 +115,7 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
             if ((field.isAnnotationPresent(FormParam.class)
                     || field.isAnnotationPresent(org.jboss.resteasy.annotations.jaxrs.FormParam.class))
                     && field.isAnnotationPresent(PartType.class)) {
-                AccessController.doPrivileged(new FieldEnablerPrivilegedAction(field));
+                field.setAccessible(true);
                 FormParam param = field.getAnnotation(FormParam.class);
                 String name;
                 if (param != null) {

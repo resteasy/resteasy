@@ -20,8 +20,6 @@
 package org.jboss.resteasy.plugins.server.embedded;
 
 import java.lang.annotation.Annotation;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Optional;
 
 import jakarta.ws.rs.ApplicationPath;
@@ -148,15 +146,8 @@ public class EmbeddedServers {
             LogMessages.LOGGER.invalidPropertyType(instance, ConfigurationOption.EMBEDDED_SERVER.key(),
                     EmbeddedServer.class.getName());
         }
-        final Optional<EmbeddedServer> found;
-        if (System.getSecurityManager() == null) {
-            found = PriorityServiceLoader.load(EmbeddedServer.class)
-                    .first();
-        } else {
-            found = AccessController.doPrivileged(
-                    (PrivilegedAction<Optional<EmbeddedServer>>) () -> PriorityServiceLoader.load(EmbeddedServer.class)
-                            .first());
-        }
+        final Optional<EmbeddedServer> found = PriorityServiceLoader.load(EmbeddedServer.class)
+                .first();
         return found.orElseThrow(() -> Messages.MESSAGES.noImplementationFound(EmbeddedServer.class.getName()));
     }
 

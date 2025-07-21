@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Publisher response type
@@ -46,14 +45,7 @@ public class PublisherResponseNoStreamTest {
 
     @Deployment
     public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(PublisherResponseNoStreamTest.class.getSimpleName())
-                .addAsManifestResource(
-                        // Required until WFLY-17051 is resolved
-                        DeploymentDescriptors.createPermissionsXmlAsset(
-                                DeploymentDescriptors.addModuleFilePermission("org.eclipse.yasson"),
-                                // Required for RxJava SingleScheduler which in a static block creates and shuts down an executor
-                                new RuntimePermission("modifyThread")),
-                        "permissions.xml");
+        WebArchive war = TestUtil.prepareArchive(PublisherResponseNoStreamTest.class.getSimpleName());
         war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
                 + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.reactivestreams\n"));
         return TestUtil.finishContainerPrepare(war, null, PublisherResponseNoStreamResource.class,

@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.nio.charset.StandardCharsets;
-import java.util.PropertyPermission;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -34,7 +33,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter DataSource provider
@@ -52,11 +50,6 @@ public class CleanFilesDataSourceProviderTest {
     @Deployment()
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(CleanFilesDataSourceProviderTest.class.getSimpleName());
-        // DataSource provider creates tmp file in the filesystem
-        war.addAsManifestResource(
-                DeploymentDescriptors.createPermissionsXmlAsset(DeploymentDescriptors.createTempDirPermission("read"),
-                        new PropertyPermission("java.io.tmpdir", "read")),
-                "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, CleanFilesDataSourceProviderResource.class);
     }
 

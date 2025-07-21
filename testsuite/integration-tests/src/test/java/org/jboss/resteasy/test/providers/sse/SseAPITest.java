@@ -24,7 +24,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
@@ -33,8 +32,6 @@ public class SseAPITest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(SseAPITest.class.getSimpleName());
         war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(new RuntimePermission("modifyThread")),
-                "permissions.xml");
         List<Class<?>> singletons = new ArrayList<Class<?>>();
         singletons.add(SseAPIImpl.class);
         return TestUtil.finishContainerPrepare(war, null, singletons, SseAPI.class);

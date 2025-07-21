@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.cdi.injection;
 
-import java.net.SocketPermission;
 import java.net.URI;
 
 import jakarta.annotation.Resource;
@@ -10,7 +9,6 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 
-import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -50,7 +48,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter CDI
@@ -89,10 +86,6 @@ public class MDBInjectionTest {
         if (PortProviderUtil.isIpv6()) {
             host = String.format("[%s]", host);
         }
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new HibernateValidatorPermission("accessPrivateMembers"),
-                new SocketPermission(host, "resolve")),
-                "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 

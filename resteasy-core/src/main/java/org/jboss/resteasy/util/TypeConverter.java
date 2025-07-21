@@ -6,9 +6,6 @@ package org.jboss.resteasy.util;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,8 +22,6 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
  */
 public final class TypeConverter {
     private static final String VALUE_OF_METHOD = "valueOf";
-
-    private static final boolean java2SecurityEnabled = System.getSecurityManager() != null;
 
     /**
      * A map of primitive to objects.
@@ -260,35 +255,11 @@ public final class TypeConverter {
 
     private static Method getDeclaredMethod(Class<?> type, String name, Class<?>... parameterTypes)
             throws NoSuchMethodException {
-        if (java2SecurityEnabled) {
-            try {
-                return AccessController.doPrivileged((PrivilegedExceptionAction<Method>) () -> {
-                    return type.getDeclaredMethod(name, parameterTypes);
-                });
-            } catch (PrivilegedActionException pae) {
-                Throwable cause = pae.getCause();
-                if (cause instanceof NoSuchMethodException)
-                    throw (NoSuchMethodException) cause;
-                throw new RuntimeException(cause);
-            }
-        }
         return type.getDeclaredMethod(name, parameterTypes);
     }
 
     private static <T> Constructor<T> getDeclaredConstructor(Class<T> type, Class<?>... parameterTypes)
             throws NoSuchMethodException {
-        if (java2SecurityEnabled) {
-            try {
-                return AccessController.doPrivileged((PrivilegedExceptionAction<Constructor<T>>) () -> {
-                    return type.getDeclaredConstructor(parameterTypes);
-                });
-            } catch (PrivilegedActionException pae) {
-                Throwable cause = pae.getCause();
-                if (cause instanceof NoSuchMethodException)
-                    throw (NoSuchMethodException) cause;
-                throw new RuntimeException(cause);
-            }
-        }
         return type.getDeclaredConstructor(parameterTypes);
     }
 }

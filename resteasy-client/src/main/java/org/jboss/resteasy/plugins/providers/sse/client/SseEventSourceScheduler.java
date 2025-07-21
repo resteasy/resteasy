@@ -1,7 +1,5 @@
 package org.jboss.resteasy.plugins.providers.sse.client;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -30,8 +28,7 @@ class SseEventSourceScheduler {
         private final String namePrefix;
 
         DaemonThreadFactory(final String name) {
-            SecurityManager s = System.getSecurityManager();
-            group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
+            group = Thread.currentThread().getThreadGroup();
             namePrefix = name + "-thread-";
         }
 
@@ -118,14 +115,7 @@ class SseEventSourceScheduler {
         if (this.closed.compareAndSet(false, true)) {
             this.phaser.arriveAndDeregister();
             if (!scheduledExecutorService.isManaged()) {
-                if (System.getSecurityManager() == null) {
-                    this.scheduledExecutorService.shutdownNow();
-                } else {
-                    AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
-                        scheduledExecutorService.shutdownNow();
-                        return null;
-                    });
-                }
+                this.scheduledExecutorService.shutdownNow();
             }
         }
     }

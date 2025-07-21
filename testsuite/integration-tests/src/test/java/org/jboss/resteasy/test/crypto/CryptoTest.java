@@ -50,7 +50,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Crypto
@@ -82,13 +81,7 @@ public class CryptoTest {
 
     @Deployment
     public static Archive<?> deploy() throws IOException {
-        WebArchive war = TestUtil.prepareArchive(CryptoTest.class.getSimpleName())
-                .addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                        // Can be removed when WFLY-17061 is resolved
-                        DeploymentDescriptors.addModuleFilePermission("org.eclipse.angus.activation", "org.eclipse.angus.mail"),
-                        // Can be removed when WFLY-17061 is resolved
-                        new RuntimePermission("getClassLoader")),
-                        "permissions.xml");
+        WebArchive war = TestUtil.prepareArchive(CryptoTest.class.getSimpleName());
         try {
             BouncyCastleProvider bouncyCastleProvider = new BouncyCastleProvider();
             Security.addProvider(bouncyCastleProvider);

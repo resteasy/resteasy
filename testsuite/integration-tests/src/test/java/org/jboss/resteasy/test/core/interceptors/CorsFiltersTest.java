@@ -1,10 +1,7 @@
 package org.jboss.resteasy.test.core.interceptors;
 
-import java.lang.reflect.ReflectPermission;
-import java.net.SocketPermission;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PropertyPermission;
 
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
@@ -26,7 +23,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Interceptors
@@ -41,15 +37,6 @@ public class CorsFiltersTest {
     public static Archive<?> deploySimpleResource() {
         WebArchive war = TestUtil.prepareArchive(CorsFiltersTest.class.getSimpleName());
         war.addClass(PortProviderUtil.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
-                new PropertyPermission("arquillian.*", "read"),
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")), "permissions.xml");
         List<Class<?>> singletons = new ArrayList<>();
         singletons.add(CorsFilter.class);
         return TestUtil.finishContainerPrepare(war, null, singletons, CorsFiltersResource.class);

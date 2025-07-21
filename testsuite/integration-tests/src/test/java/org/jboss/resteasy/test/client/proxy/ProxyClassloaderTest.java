@@ -17,7 +17,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
@@ -27,10 +26,6 @@ public class ProxyClassloaderTest {
     public static Archive<?> deploySimpleResource() {
         WebArchive war = TestUtil.prepareArchive(ProxyClassloaderTest.class.getSimpleName());
         war.addClass(ResourceWithInterfaceSimpleClient.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new RuntimePermission("setContextClassLoader"),
-                new RuntimePermission("createClassLoader"),
-                new RuntimePermission("getClassLoader")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, ClientSmokeResource.class, ClassloaderResource.class);
     }
 

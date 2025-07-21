@@ -1,9 +1,7 @@
 package org.jboss.resteasy.test.crypto;
 
 import java.io.FileInputStream;
-import java.lang.reflect.ReflectPermission;
 import java.security.PrivateKey;
-import java.security.SecurityPermission;
 import java.security.cert.X509Certificate;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -30,7 +28,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Crypto
@@ -75,17 +72,6 @@ public class VerifyDecryptTest {
         WebArchive war = TestUtil.prepareArchive(VerifyDecryptTest.class.getSimpleName());
         war.addAsResource(VerifyDecryptTest.class.getPackage(), "VerifyDecryptMycert.pem", "mycert.pem");
         war.addAsResource(VerifyDecryptTest.class.getPackage(), "VerifyDecryptMycertPrivate.pem", "mycert-private.pem");
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                // Can be removed when WFLY-17061 is resolved
-                DeploymentDescriptors.addModuleFilePermission("org.eclipse.angus.activation", "org.eclipse.angus.mail"),
-                // Can be removed when WFLY-17061 is resolved
-                new RuntimePermission("getClassLoader"),
-                new RuntimePermission("getenv.org.apache.james.mime4j.defaultStorageProvider"),
-                new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers"),
-                // These two can be removed once RESTEASY-3344 is resolved and the WildFly upgrade (WFLY-18231) is done
-                new SecurityPermission("removeProviderProperty.BC"),
-                new SecurityPermission("putProviderProperty.BC")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, VerifyDecryptResource.class);
     }
 

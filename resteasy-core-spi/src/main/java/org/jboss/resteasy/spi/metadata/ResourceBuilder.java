@@ -9,9 +9,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -915,21 +912,7 @@ public class ResourceBuilder {
     }
 
     protected void processDeclaredFields(ResourceClassBuilder resourceClassBuilder, final Class<?> root) {
-        Field[] fieldList = new Field[0];
-        try {
-            if (System.getSecurityManager() == null) {
-                fieldList = root.getDeclaredFields();
-            } else {
-                fieldList = AccessController.doPrivileged(new PrivilegedExceptionAction<Field[]>() {
-                    @Override
-                    public Field[] run() throws Exception {
-                        return root.getDeclaredFields();
-                    }
-                });
-            }
-        } catch (PrivilegedActionException pae) {
-
-        }
+        Field[] fieldList = root.getDeclaredFields();
 
         for (Field field : fieldList) {
             FieldParameterBuilder builder = resourceClassBuilder.field(field).fromAnnotations();
@@ -943,21 +926,7 @@ public class ResourceBuilder {
 
     protected void processDeclaredSetters(ResourceClassBuilder resourceClassBuilder, final Class<?> root,
             Set<Long> visitedHashes) {
-        Method[] methodList = new Method[0];
-        try {
-            if (System.getSecurityManager() == null) {
-                methodList = root.getDeclaredMethods();
-            } else {
-                methodList = AccessController.doPrivileged(new PrivilegedExceptionAction<Method[]>() {
-                    @Override
-                    public Method[] run() throws Exception {
-                        return root.getDeclaredMethods();
-                    }
-                });
-            }
-        } catch (PrivilegedActionException pae) {
-
-        }
+        Method[] methodList = root.getDeclaredMethods();
 
         for (Method method : methodList) {
             if (!method.getName().startsWith("set"))

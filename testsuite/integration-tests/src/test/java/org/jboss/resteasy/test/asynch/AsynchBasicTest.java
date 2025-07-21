@@ -2,15 +2,11 @@ package org.jboss.resteasy.test.asynch;
 
 import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
 
-import java.lang.reflect.ReflectPermission;
-import java.net.SocketPermission;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PropertyPermission;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.LoggingPermission;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -31,7 +27,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Asynchronous RESTEasy
@@ -53,25 +48,12 @@ public class AsynchBasicTest {
         WebArchive war = TestUtil.prepareArchive(deploymentName);
         war.addClass(PortProviderUtil.class);
         war.addClass(TestUtil.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks")), "permissions.xml");
 
         Map<String, String> contextParam = new HashMap<>();
         contextParam.put("resteasy.async.job.service.enabled", "true");
         if (maxSize != null) {
             contextParam.put("resteasy.async.job.service.max.job.results", maxSize);
         }
-        // Arquillian in the deployment
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
-                new LoggingPermission("control", ""),
-                new PropertyPermission("arquillian.*", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, contextParam, AsynchBasicResource.class);
     }
 

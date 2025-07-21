@@ -1,8 +1,5 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
-import java.lang.reflect.ReflectPermission;
-import java.util.PropertyPermission;
-
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.ext.ContextResolver;
 import jakarta.ws.rs.ext.Providers;
@@ -23,7 +20,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -40,12 +36,6 @@ public class JaxbCacheTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(JaxbCacheTest.class.getSimpleName());
         war.addClass(JaxbCacheTest.class);
-        // Arquillian in the deployment
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new PropertyPermission("*", "read")),
-                "permissions.xml");
 
         return TestUtil.finishContainerPrepare(war, null, JaxbCacheParent.class, JaxbCacheChild.class);
     }

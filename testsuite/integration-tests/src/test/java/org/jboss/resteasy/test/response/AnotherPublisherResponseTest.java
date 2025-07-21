@@ -1,10 +1,7 @@
 package org.jboss.resteasy.test.response;
 
-import java.lang.reflect.ReflectPermission;
-import java.net.SocketPermission;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PropertyPermission;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -28,7 +25,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Publisher response type
@@ -45,17 +41,6 @@ public class AnotherPublisherResponseTest {
         war.addClass(AnotherPublisherResponseTest.class);
         war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
                 + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services, org.reactivestreams\n"));
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new RuntimePermission("modifyThread"),
-                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve"),
-                new PropertyPermission("arquillian.*", "read"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new ReflectPermission("suppressAccessChecks"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new PropertyPermission("ipv6", "read"),
-                new PropertyPermission("node", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, PublisherResponseResource.class,
                 AsyncResponseCallback.class, AsyncResponseExceptionMapper.class, AsyncResponseException.class,
                 PortProviderUtil.class);

@@ -1,11 +1,7 @@
 package org.jboss.resteasy.test.interceptor;
 
-import java.lang.reflect.ReflectPermission;
-import java.net.SocketPermission;
-import java.util.PropertyPermission;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.LoggingPermission;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -45,7 +41,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Interceptors
@@ -73,18 +68,6 @@ public class PriorityExecutionTest {
                 PriorityExecutionClientResponseFilter3.class,
                 PriorityExecutionClientResponseFilterMax.class,
                 PriorityExecutionClientRequestFilterMin.class);
-        // Arquillian in the deployment
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks"),
-                new LoggingPermission("control", ""),
-                new PropertyPermission("arquillian.*", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")), "permissions.xml");
         // finish preparation of war container, define end-point and filters
         return TestUtil.finishContainerPrepare(war, null,
                 // end-point

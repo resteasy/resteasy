@@ -19,9 +19,7 @@
 
 package org.jboss.resteasy.test.webtarget;
 
-import java.lang.reflect.ReflectPermission;
 import java.net.URI;
-import java.util.PropertyPermission;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -52,7 +50,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * Tests the "content-type" HTTP header is correctly set for entities.
@@ -66,16 +63,7 @@ public class ContentTypeTest {
     public static WebArchive deployment() {
         return ShrinkWrap.create(WebArchive.class, ContentTypeTest.class.getSimpleName() + ".war")
                 .addClasses(TestUtil.class, EchoHeaders.class, RestActivator.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-                // This can be removed if WFARQ-118 is resolved
-                .addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                        // Required for Arquillian
-                        new ReflectPermission("suppressAccessChecks"),
-                        new PropertyPermission("arquillian.*", "read"),
-                        new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
-                        // Required for JUnit
-                        new RuntimePermission("accessDeclaredMembers")),
-                        "permissions.xml");
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject

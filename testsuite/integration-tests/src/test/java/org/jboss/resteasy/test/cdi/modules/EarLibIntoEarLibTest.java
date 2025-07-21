@@ -30,7 +30,6 @@ import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter CDI
@@ -56,13 +55,9 @@ public class EarLibIntoEarLibTest {
                 .addClasses(CDIModulesModulesResourceIntf.class, CDIModulesModulesResource.class)
                 .addClasses(TestApplication.class, PortProviderUtil.class)
                 .add(TestUtil.createBeansXml(), "META-INF/beans.xml");
-        EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
+        return ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
                 .addAsLibrary(fromJar)
                 .addAsLibrary(toJar);
-        // This is needed, because we don't use TestUtil.finishContainerPrepare(...) so TestApplication calls getContextClassLoader() directly.
-        ear.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new RuntimePermission("getClassLoader")), "permissions.xml");
-        return ear;
     }
 
     /**

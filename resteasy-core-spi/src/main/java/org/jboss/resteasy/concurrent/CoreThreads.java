@@ -1,7 +1,7 @@
 /*
  * JBoss, Home of Professional Open Source.
  *
- * Copyright 2022 Red Hat, Inc., and individual contributors
+ * Copyright 2023 Red Hat, Inc., and individual contributors
  * as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,24 +17,18 @@
  * limitations under the License.
  */
 
-package org.jboss.resteasy.spi.config.security;
-
-import java.security.BasicPermission;
+package org.jboss.resteasy.concurrent;
 
 /**
- * A configuration property permission which, when the security manager is present, limits access to configuration
- * properties.
- *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-public class ConfigPropertyPermission extends BasicPermission {
+class CoreThreads {
 
-    /**
-     * Creates a permission for reading a configuration property.
-     *
-     * @param name the configuration property name
-     */
-    public ConfigPropertyPermission(final String name) {
-        super(name);
+    static int getCoreThreads(final String name) {
+        final var value = System.getProperty(name);
+        if (value == null) {
+            return Math.max(5, Runtime.getRuntime().availableProcessors());
+        }
+        return Integer.parseInt(value);
     }
 }

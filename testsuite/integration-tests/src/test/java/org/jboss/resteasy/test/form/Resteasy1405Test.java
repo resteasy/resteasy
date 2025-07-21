@@ -6,7 +6,6 @@ import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.FilePermission;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 
@@ -37,7 +36,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Form tests
@@ -53,12 +51,6 @@ public class Resteasy1405Test {
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(Resteasy1405Test.class.getSimpleName());
         war.addClasses(ByFieldForm.class, BySetterForm.class, InputData.class, OutputData.class);
-
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new FilePermission("<<ALL FILES>>", "read"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new RuntimePermission("getClassLoader")),
-                "permissions.xml");
 
         return TestUtil.finishContainerPrepare(war, null, MyResource.class);
     }

@@ -1,11 +1,8 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
 import java.io.ByteArrayInputStream;
-import java.lang.reflect.ReflectPermission;
-import java.net.SocketPermission;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PropertyPermission;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,7 +34,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -78,22 +74,6 @@ public class JaxbMarshallingSoakTest {
         war.addClasses(JaxbMarshallingSoakItem.class, TestUtil.class, PortProviderUtil.class, TimeoutUtil.class);
         Map<String, String> contextParam = new HashMap<>();
         contextParam.put("resteasy.async.job.service.enabled", "true");
-        // Arquillian in the deployment use if TimeoutUtil in the deployment
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                // Can be removed when WFLY-17065 is resolved
-                DeploymentDescriptors.addModuleFilePermission("org.glassfish.jaxb"),
-                new RuntimePermission("getClassLoader"),
-                new RuntimePermission("modifyThread"),
-                new ReflectPermission("suppressAccessChecks"),
-                new PropertyPermission("arquillian.*", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("ts.timeout.factor", "read"),
-                new PropertyPermission("quarkus.tester", "read"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, contextParam, JaxbMarshallingSoakAsyncService.class);
     }
 

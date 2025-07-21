@@ -5,7 +5,6 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.PropertyPermission;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jakarta.ws.rs.client.Client;
@@ -31,7 +30,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter DataSource provider
@@ -49,11 +47,6 @@ public class ReadDataSourceTwiceCountTempFileTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ReadDataSourceTwiceCountTempFileResource.class.getSimpleName());
-        // DataSource provider creates tmp file in the filesystem
-        war.addAsManifestResource(
-                DeploymentDescriptors.createPermissionsXmlAsset(DeploymentDescriptors.createTempDirPermission("read"),
-                        new PropertyPermission("java.io.tmpdir", "read")),
-                "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, ReadDataSourceTwiceCountTempFileResource.class);
     }
 

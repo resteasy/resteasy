@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Multipart provider used to send and receive XOP messages. RESTEASY-2127.
@@ -45,10 +44,7 @@ public class XOPMultipartProxyTest {
 
     @Deployment
     public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(XOPMultipartProxyTest.class.getSimpleName())
-                .addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                        // Required as XOPMultipartProxyResource.getResponse() creates a temporary file.
-                        DeploymentDescriptors.createTempDirPermission("delete,read,write")), "permissions.xml");
+        WebArchive war = TestUtil.prepareArchive(XOPMultipartProxyTest.class.getSimpleName());
         war.addClass(XOPMultipartProxyGetFileResponse.class);
         war.addClass(XOPMultipartProxyPutFileRequest.class);
         war.addClass(XOPMultipartProxy.class);

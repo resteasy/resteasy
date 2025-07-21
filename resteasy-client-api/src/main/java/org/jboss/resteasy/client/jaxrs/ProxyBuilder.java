@@ -1,9 +1,6 @@
 package org.jboss.resteasy.client.jaxrs;
 
 import java.lang.reflect.Constructor;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
@@ -13,21 +10,7 @@ public abstract class ProxyBuilder<T> {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> ProxyBuilder<T> builder(Class<T> iface, WebTarget webTarget) {
         try {
-            ClassLoader loader = null;
-            if (System.getSecurityManager() == null) {
-                loader = Thread.currentThread().getContextClassLoader();
-            } else {
-                try {
-                    loader = AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>() {
-                        @Override
-                        public ClassLoader run() throws Exception {
-                            return Thread.currentThread().getContextClassLoader();
-                        }
-                    });
-                } catch (PrivilegedActionException pae) {
-                    throw new RuntimeException(pae);
-                }
-            }
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
             if (loader == null) {
                 loader = ProxyBuilder.class.getClassLoader();

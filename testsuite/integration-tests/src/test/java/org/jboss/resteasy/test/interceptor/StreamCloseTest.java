@@ -1,9 +1,5 @@
 package org.jboss.resteasy.test.interceptor;
 
-import java.lang.reflect.ReflectPermission;
-import java.net.SocketPermission;
-import java.util.PropertyPermission;
-
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -23,7 +19,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Interceptors
@@ -36,16 +31,6 @@ public class StreamCloseTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(StreamCloseTest.class.getSimpleName());
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve"),
-                new PropertyPermission("arquillian.*", "read"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new ReflectPermission("suppressAccessChecks"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new PropertyPermission("ipv6", "read"),
-                new PropertyPermission("node", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, InterceptorStreamResource.class, TestInterceptor.class,
                 PortProviderUtil.class);
     }

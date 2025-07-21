@@ -5,10 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -164,43 +160,20 @@ public class ResteasyJackson2Provider extends JacksonJsonProvider implements Asy
             _readers.put(key, endpoint);
         }
         final ObjectReader reader = endpoint.getReader();
-        final JsonParser jp = _createParser(reader, entityStream);
-        // If null is returned, considered to be empty stream
-        if (jp == null) {
-            return null;
-        } else if (jp.nextToken() == null) {
-            jp.close();
-            return null;
-        }
-
-        // [Issue#1]: allow 'binding' to JsonParser
-        if (((Class<?>) type) == JsonParser.class) {
-            return jp;
-        }
-
-        Object result = null;
-        try {
-            if (System.getSecurityManager() == null) {
-                result = reader.forType(reader.getTypeFactory().constructType(genericType)).readValue(jp);
-            } else {
-                result = AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
-                    @Override
-                    public Object run() throws Exception {
-                        return reader.forType(reader.getTypeFactory().constructType(genericType)).readValue(jp);
-                    }
-                });
+        try (JsonParser jp = _createParser(reader, entityStream)) {
+            // If null is returned, considered to be empty stream
+            if (jp == null) {
+                return null;
+            } else if (jp.nextToken() == null) {
+                return null;
             }
-        } catch (PrivilegedActionException pae) {
-            final Exception thrown = pae.getException();
-            // If the thrown exception was an IOException, re-throw it and not the wrapped exception
-            if (thrown instanceof IOException) {
-                throw (IOException) thrown;
+
+            // [Issue#1]: allow 'binding' to JsonParser
+            if (((Class<?>) type) == JsonParser.class) {
+                return jp;
             }
-            throw new IOException(pae);
-        } finally {
-            jp.close();
+            return reader.forType(reader.getTypeFactory().constructType(genericType)).readValue(jp);
         }
-        return result;
     }
 
     protected final ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig> _writers = new ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig>();
@@ -254,10 +227,9 @@ public class ResteasyJackson2Provider extends JacksonJsonProvider implements Asy
          * HTTP headers?
          */
         JsonEncoding enc = findEncoding(mediaType, httpHeaders);
-        final JsonGenerator jg = writer.getFactory().createGenerator(entityStream, enc);
-        jg.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
 
-        try {
+        try (JsonGenerator jg = writer.getFactory().createGenerator(entityStream, enc)) {
+            jg.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
             // Want indentation?
             if (writer.isEnabled(SerializationFeature.INDENT_OUTPUT) || withIndentOutput) {
                 jg.useDefaultPrettyPrinter();
@@ -298,17 +270,7 @@ public class ResteasyJackson2Provider extends JacksonJsonProvider implements Asy
             value = endpoint.modifyBeforeWrite(value);
             ObjectWriterModifier mod = ObjectWriterInjector.getAndClear();
             if (mod == null) {
-                ClassLoader tccl;
-                if (System.getSecurityManager() == null) {
-                    tccl = Thread.currentThread().getContextClassLoader();
-                } else {
-                    tccl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-                        @Override
-                        public ClassLoader run() {
-                            return Thread.currentThread().getContextClassLoader();
-                        }
-                    });
-                }
+                final ClassLoader tccl = Thread.currentThread().getContextClassLoader();
                 mod = ResteasyObjectWriterInjector.get(tccl);
             }
             if (mod != null) {
@@ -333,29 +295,7 @@ public class ResteasyJackson2Provider extends JacksonJsonProvider implements Asy
                                     mediaType);
                 }
             }
-            if (System.getSecurityManager() == null) {
-                writer.writeValue(jg, value);
-            } else {
-                final ObjectWriter smWriter = writer;
-                final Object smValue = value;
-                AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
-                    @Override
-                    public Object run() throws Exception {
-
-                        smWriter.writeValue(jg, smValue);
-                        return null;
-                    }
-                });
-            }
-        } catch (PrivilegedActionException pae) {
-            final Exception thrown = pae.getException();
-            // If the thrown exception was an IOException, re-throw it and not the wrapped exception
-            if (thrown instanceof IOException) {
-                throw (IOException) thrown;
-            }
-            throw new IOException(pae);
-        } finally {
-            jg.close();
+            writer.writeValue(jg, value);
         }
     }
 
@@ -369,10 +309,6 @@ public class ResteasyJackson2Provider extends JacksonJsonProvider implements Asy
     }
 
     private static boolean useDefaultObjectMapper() {
-        if (System.getSecurityManager() == null) {
-            return !JacksonOptions.DISABLE_DEFAULT_OBJECT_MAPPER.getValue();
-        }
-        return AccessController
-                .doPrivileged((PrivilegedAction<Boolean>) () -> !JacksonOptions.DISABLE_DEFAULT_OBJECT_MAPPER.getValue());
+        return !JacksonOptions.DISABLE_DEFAULT_OBJECT_MAPPER.getValue();
     }
 }

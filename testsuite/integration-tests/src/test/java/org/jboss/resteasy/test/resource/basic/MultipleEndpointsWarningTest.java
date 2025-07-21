@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.resource.basic;
 
-import java.util.logging.LoggingPermission;
-
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.MediaType;
@@ -21,7 +19,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resources
@@ -38,11 +35,6 @@ public class MultipleEndpointsWarningTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(MultipleEndpointsWarningTest.class.getSimpleName());
         war.addClass(LogHandler.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new LoggingPermission("control", "")), "permissions.xml");
-        // Test registers it's own LogHandler
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(new LoggingPermission("control", "")),
-                "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, MultipleEndpointsWarningResource.class);
     }
 

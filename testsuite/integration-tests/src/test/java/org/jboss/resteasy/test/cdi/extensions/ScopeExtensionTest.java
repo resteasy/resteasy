@@ -2,11 +2,7 @@ package org.jboss.resteasy.test.cdi.extensions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.lang.reflect.ReflectPermission;
-import java.net.SocketPermission;
-import java.util.PropertyPermission;
 import java.util.logging.Logger;
-import java.util.logging.LoggingPermission;
 
 import jakarta.enterprise.inject.spi.Extension;
 import jakarta.inject.Inject;
@@ -34,7 +30,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter CDI
@@ -60,18 +55,6 @@ public class ScopeExtensionTest {
                         ScopeExtensionObsolescentAfterThreeUses.class)
                 .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml")
                 .addAsServiceProvider(Extension.class, ScopeExtensionPlannedObsolescenceExtension.class);
-        // Arquillian in the deployment
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new LoggingPermission("control", ""),
-                new PropertyPermission("arquillian.*", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read"),
-                new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")), "permissions.xml");
         return war;
     }
 

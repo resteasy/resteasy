@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Reactive classes
@@ -33,12 +32,7 @@ public class NoStreamRx2Test {
 
     @Deployment
     public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(NoStreamRx2Test.class.getSimpleName())
-                .addAsManifestResource(
-                        // Required until WFLY-17051 is resolved
-                        DeploymentDescriptors
-                                .createPermissionsXmlAsset(DeploymentDescriptors.addModuleFilePermission("org.eclipse.yasson")),
-                        "permissions.xml");
+        WebArchive war = TestUtil.prepareArchive(NoStreamRx2Test.class.getSimpleName());
         war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
                 + "Dependencies: org.jboss.resteasy.resteasy-rxjava2 services\n"));
         return TestUtil.finishContainerPrepare(war, null, NoStreamRx2Resource.class);

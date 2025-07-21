@@ -1,7 +1,5 @@
 package org.jboss.resteasy.plugins.providers.jackson;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.StringTokenizer;
 
 import org.jboss.resteasy.spi.config.Configuration;
@@ -37,17 +35,9 @@ public class WhiteListPolymorphicTypeValidatorBuilder extends BasicPolymorphicTy
     }
 
     private static String getProperty(final String name) {
-        if (System.getSecurityManager() == null) {
-            final Configuration config = ConfigurationFactory.getInstance().getConfiguration();
-            return config.getOptionalValue(name, String.class)
-                    .or(() -> config.getOptionalValue(name + ".prefix", String.class))
-                    .orElse(null);
-        }
-        return AccessController.doPrivileged((PrivilegedAction<String>) () -> {
-            final Configuration config = ConfigurationFactory.getInstance().getConfiguration();
-            return config.getOptionalValue(name, String.class)
-                    .or(() -> config.getOptionalValue(name + ".prefix", String.class))
-                    .orElse(null);
-        });
+        final Configuration config = ConfigurationFactory.getInstance().getConfiguration();
+        return config.getOptionalValue(name, String.class)
+                .or(() -> config.getOptionalValue(name + ".prefix", String.class))
+                .orElse(null);
     }
 }

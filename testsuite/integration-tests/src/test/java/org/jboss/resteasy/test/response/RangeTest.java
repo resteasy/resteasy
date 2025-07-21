@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -49,9 +48,6 @@ public class RangeTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(RangeTest.class.getSimpleName());
-        // Deployment creates file in the filesystem
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                DeploymentDescriptors.createTempDirPermission("read,write,delete")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, RangeResource.class);
     }
 

@@ -2,11 +2,8 @@ package org.jboss.resteasy.security.doseta;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.AccessController;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
@@ -66,21 +63,7 @@ public class DosetaKeyRepository implements KeyRepository {
                 }
             } else {
                 if (keyStorePath != null) {
-                    ClassLoader loader = null;
-                    if (System.getSecurityManager() == null) {
-                        loader = Thread.currentThread().getContextClassLoader();
-                    } else {
-                        try {
-                            loader = AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>() {
-                                @Override
-                                public ClassLoader run() throws Exception {
-                                    return Thread.currentThread().getContextClassLoader();
-                                }
-                            });
-                        } catch (PrivilegedActionException pae) {
-                            throw new RuntimeException(pae);
-                        }
-                    }
+                    final ClassLoader loader = Thread.currentThread().getContextClassLoader();
                     InputStream is = loader.getResourceAsStream(keyStorePath.trim());
                     if (is == null)
                         throw new RuntimeException(Messages.MESSAGES.unableToFindKeyStore(keyStorePath));

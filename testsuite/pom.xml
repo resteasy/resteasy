@@ -17,8 +17,6 @@
         <version.resteasy.testsuite>${project.version}</version.resteasy.testsuite>
         <!-- Currently WildFly Preview does not include MBean support as it was removed from Jakarta EE 11 -->
         <additional.surefire.excluded.groups>managed-bean-support-required</additional.surefire.excluded.groups>
-        <!-- default value required for cmd-line -->
-        <securityManagerArg>-DSECMGR="false"</securityManagerArg>
         <jacoco.agent/>
         <ipv6ArquillianSettings/>
         <debugJvmArgs/>
@@ -119,7 +117,6 @@
                     <jvm>${test.java.home}/bin/java</jvm>
                     <failIfNoTests>false</failIfNoTests>
                     <systemPropertyVariables>
-                        <securityManagerArg>${securityManagerArg}</securityManagerArg>
                         <additionalJvmArgs>${additionalJvmArgs}</additionalJvmArgs>
                         <ipv6>false</ipv6>
                         <ipv6ArquillianSettings></ipv6ArquillianSettings>
@@ -235,7 +232,6 @@
                         <configuration>
                             <testFailureIgnore>true</testFailureIgnore>
                             <systemPropertyVariables>
-                                <securityManagerArg>${securityManagerArg}</securityManagerArg>
                                 <additionalJvmArgs>${additionalJvmArgs}</additionalJvmArgs>
                                 <ipv6>true</ipv6>
                                 <ipv6ArquillianSettings>-Djava.net.preferIPv4Stack=false -Djava.net.preferIPv6Addresses=true</ipv6ArquillianSettings>
@@ -248,18 +244,6 @@
 
                 </plugins>
             </build>
-        </profile>
-        <!-- This profile starts server with security manager -->
-        <profile>
-            <id>security.manager</id>
-            <activation>
-                <property>
-                    <name>security.manager</name>
-                </property>
-            </activation>
-            <properties>
-                <securityManagerArg>-secmgr</securityManagerArg>
-            </properties>
         </profile>
         <!-- This profile generates jacoco coverage files. To generate html report use "-Djacoco.generate.report" -->
         <profile>

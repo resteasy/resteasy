@@ -6,7 +6,6 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Invocation;
 
-import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -28,7 +27,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Response
@@ -45,9 +43,6 @@ public class CDIValidationCoreTest {
                 .addClass(CDIValidationCoreSubResource.class)
                 .addClasses(CDIValidationCoreSumConstraint.class, CDIValidationCoreSumValidator.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(
-                DeploymentDescriptors.createPermissionsXmlAsset(new HibernateValidatorPermission("accessPrivateMembers")),
-                "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, CDIValidationCoreResource.class);
     }
 

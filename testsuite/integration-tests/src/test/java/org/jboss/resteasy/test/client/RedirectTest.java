@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.client;
 
-import java.util.PropertyPermission;
-
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -22,7 +20,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -37,12 +34,6 @@ public class RedirectTest extends ClientTestBase {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(RedirectTest.class.getSimpleName());
         war.addClasses(PortProviderUtil.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new PropertyPermission("ipv6", "read"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read"),
-                new PropertyPermission("node", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, RedirectResource.class);
     }
 

@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URL;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.security.SecureClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,16 +48,7 @@ public class ProxyBuilderImpl<T> extends ProxyBuilder<T> {
     }
 
     public ProxyBuilderImpl(final Class<T> iface, final WebTarget webTarget) {
-        if (System.getSecurityManager() == null) {
-            this.loader = Thread.currentThread().getContextClassLoader();
-        } else {
-            this.loader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-                @Override
-                public ClassLoader run() {
-                    return Thread.currentThread().getContextClassLoader();
-                }
-            });
-        }
+        this.loader = Thread.currentThread().getContextClassLoader();
         this.iface = iface;
         this.webTarget = webTarget;
     }

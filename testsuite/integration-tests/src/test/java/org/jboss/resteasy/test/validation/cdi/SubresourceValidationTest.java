@@ -6,7 +6,6 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Invocation;
 
-import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -24,7 +23,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Response
@@ -38,9 +36,6 @@ public class SubresourceValidationTest {
     @Deployment
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(SubresourceValidationTest.class.getSimpleName())
-                .addAsManifestResource(
-                        DeploymentDescriptors.createPermissionsXmlAsset(HibernateValidatorPermission.ACCESS_PRIVATE_MEMBERS),
-                        "permissions.xml")
                 .addClasses(SubresourceValidationResource.class, SubresourceValidationSubResource.class,
                         SubresourceValidationQueryBeanParam.class)
                 .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");

@@ -9,9 +9,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
@@ -228,17 +225,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object> {
     public static JAXBElement<?> wrapInJAXBElement(Object t, Class<?> type) {
         try {
             final Object factory = findObjectFactory(type);
-            Method[] method;
-            if (System.getSecurityManager() == null) {
-                method = factory.getClass().getDeclaredMethods();
-            } else {
-                method = AccessController.doPrivileged(new PrivilegedExceptionAction<Method[]>() {
-                    @Override
-                    public Method[] run() throws Exception {
-                        return factory.getClass().getDeclaredMethods();
-                    }
-                });
-            }
+            final Method[] method = factory.getClass().getDeclaredMethods();
 
             for (Method current : method) {
                 if (current.getParameterCount() == 1 && current.getParameterTypes()[0].equals(type)
@@ -248,7 +235,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object> {
                 }
             }
             throw new JAXBMarshalException(Messages.MESSAGES.createMethodNotFound(type));
-        } catch (IllegalArgumentException | IllegalAccessException | PrivilegedActionException e) {
+        } catch (IllegalArgumentException | IllegalAccessException e) {
             throw new JAXBMarshalException(e);
         } catch (InvocationTargetException e) {
             throw new JAXBMarshalException(e.getCause());

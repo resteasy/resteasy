@@ -1,8 +1,6 @@
 package org.jboss.resteasy.test.client;
 
-import java.lang.reflect.ReflectPermission;
 import java.util.Iterator;
-import java.util.PropertyPermission;
 import java.util.Set;
 
 import jakarta.ws.rs.container.DynamicFeature;
@@ -23,7 +21,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -50,11 +47,6 @@ public class ClientDynamicFeaturesTest {
                 ClientDynamicFeaturesDualFeature1.class,
                 ClientDynamicFeaturesServerFeature2.class,
                 ClientDynamicFeaturesServerFeature1.class);
-        // Arquillian in the deployment
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new PropertyPermission("arquillian.*", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 

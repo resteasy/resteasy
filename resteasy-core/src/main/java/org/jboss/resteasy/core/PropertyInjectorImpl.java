@@ -8,8 +8,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +55,7 @@ public class PropertyInjectorImpl implements PropertyInjector {
     }
 
     protected void populateMap(Class<?> clazz, ResteasyProviderFactory factory) {
-        for (Field field : getDeclaredFields(clazz)) {
+        for (Field field : clazz.getDeclaredFields()) {
             Annotation[] annotations = field.getAnnotations();
             if (annotations == null || annotations.length == 0)
                 continue;
@@ -68,12 +66,12 @@ public class PropertyInjectorImpl implements PropertyInjector {
                     genericType);
             if (extractor != null) {
                 if (!Modifier.isPublic(field.getModifiers())) {
-                    setAccessible(field);
+                    field.setAccessible(true);
                 }
                 fieldMap.put(field, extractor);
             }
         }
-        for (Method method : getDeclaredMethods(clazz)) {
+        for (Method method : clazz.getDeclaredMethods()) {
             if (!method.getName().startsWith("set"))
                 continue;
             if (method.getParameterCount() != 1)
@@ -104,7 +102,7 @@ public class PropertyInjectorImpl implements PropertyInjector {
                 }
 
                 if (!Modifier.isPublic(method.getModifiers())) {
-                    setAccessible(method);
+                    method.setAccessible(true);
                 }
                 setters.add(new SetterMethod(method, extractor));
                 setterhashes.put(hash, method);
@@ -236,46 +234,5 @@ public class PropertyInjectorImpl implements PropertyInjector {
             }
         }
         return ret;
-    }
-
-    private Field[] getDeclaredFields(final Class<?> clazz) {
-        final SecurityManager sm = System.getSecurityManager();
-        if (sm != null) {
-            return AccessController.doPrivileged(new PrivilegedAction<Field[]>() {
-                @Override
-                public Field[] run() {
-                    return clazz.getDeclaredFields();
-                }
-            });
-        }
-        return clazz.getDeclaredFields();
-    }
-
-    private Method[] getDeclaredMethods(final Class<?> clazz) {
-        final SecurityManager sm = System.getSecurityManager();
-        if (sm != null) {
-            return AccessController.doPrivileged(new PrivilegedAction<Method[]>() {
-                @Override
-                public Method[] run() {
-                    return clazz.getDeclaredMethods();
-                }
-            });
-        }
-        return clazz.getDeclaredMethods();
-    }
-
-    private void setAccessible(final AccessibleObject member) {
-        final SecurityManager sm = System.getSecurityManager();
-        if (sm != null) {
-            AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                @Override
-                public Void run() {
-                    member.setAccessible(true);
-                    return null;
-                }
-            });
-        } else {
-            member.setAccessible(true);
-        }
     }
 }

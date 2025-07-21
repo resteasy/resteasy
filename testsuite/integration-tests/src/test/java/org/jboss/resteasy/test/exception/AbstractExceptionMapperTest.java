@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.exception;
 
-import java.lang.reflect.ReflectPermission;
 import java.lang.reflect.Type;
 
 import jakarta.ws.rs.client.Client;
@@ -27,7 +26,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -46,8 +44,6 @@ public class AbstractExceptionMapperTest {
         WebArchive war = TestUtil.prepareArchive(AbstractExceptionMapperTest.class.getSimpleName());
         war.addClass(PortProviderUtil.class);
         war.addClasses(AbstractMapper.class, AbstractMapperException.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, AbstractMapperDefault.class,
                 AbstractMapperMyCustom.class, AbstractMapperResource.class);
     }

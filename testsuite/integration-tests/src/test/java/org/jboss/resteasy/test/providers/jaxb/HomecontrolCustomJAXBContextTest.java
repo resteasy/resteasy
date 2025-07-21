@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
-import java.lang.reflect.ReflectPermission;
-
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.Response;
@@ -33,7 +31,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -62,11 +59,6 @@ public class HomecontrolCustomJAXBContextTest {
                 UserType.class,
                 IDType.class,
                 ErrorMessageType.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                // Can be removed when WFLY-17065 is resolved
-                DeploymentDescriptors.addModuleFilePermission("org.glassfish.jaxb"),
-                new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers")), "permissions.xml");
         war.addAsWebInfResource(HomecontrolCustomJAXBContextTest.class.getPackage(), "homecontrol/web.xml");
         return TestUtil.finishContainerPrepare(war, null, HomecontrolCustomJAXBContextTest.class);
     }

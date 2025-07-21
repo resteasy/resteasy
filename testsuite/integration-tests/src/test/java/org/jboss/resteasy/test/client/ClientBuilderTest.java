@@ -2,12 +2,6 @@ package org.jboss.resteasy.test.client;
 
 import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
 
-import java.io.File;
-import java.io.FilePermission;
-import java.lang.reflect.ReflectPermission;
-import java.util.PropertyPermission;
-import java.util.logging.LoggingPermission;
-
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Feature;
@@ -22,7 +16,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -38,15 +31,6 @@ public class ClientBuilderTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ClientBuilderTest.class.getSimpleName());
         war.addClass(TestUtil.class);
-        // Arquillian in the deployment and use of TestUtil
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
-                new FilePermission(TestUtil.getStandaloneDir(DEFAULT_CONTAINER_QUALIFIER) + File.separator + "log" +
-                        File.separator + "server.log", "read"),
-                new LoggingPermission("control", ""),
-                new PropertyPermission("arquillian.*", "read"),
-                new PropertyPermission("jboss.home.dir", "read"),
-                new PropertyPermission("jboss.server.base.dir", "read"),
-                new RuntimePermission("accessDeclaredMembers")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 

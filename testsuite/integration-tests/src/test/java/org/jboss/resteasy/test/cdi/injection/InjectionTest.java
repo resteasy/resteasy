@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.SocketPermission;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -17,7 +16,6 @@ import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -56,7 +54,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter CDI
@@ -128,11 +125,6 @@ public class InjectionTest {
                 .addClasses(Resource.class, CDIInjectionResourceProducer.class, PersistenceUnitProducer.class)
                 .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml")
                 .addAsResource(InjectionTest.class.getPackage(), "persistence.xml", "META-INF/persistence.xml");
-
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new HibernateValidatorPermission("accessPrivateMembers"),
-                new SocketPermission(PortProviderUtil.getHost(), "resolve")),
-                "permissions.xml");
 
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }

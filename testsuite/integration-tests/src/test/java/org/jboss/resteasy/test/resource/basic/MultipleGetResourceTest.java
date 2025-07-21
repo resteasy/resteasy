@@ -1,14 +1,7 @@
 package org.jboss.resteasy.test.resource.basic;
 
-import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
-
-import java.io.File;
-import java.io.FilePermission;
-import java.lang.reflect.ReflectPermission;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PropertyPermission;
-import java.util.logging.LoggingPermission;
 
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
@@ -29,7 +22,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * Verify that setting resteasy config flag, resteasy_fail_fast to 'true' causes
@@ -46,15 +38,6 @@ public class MultipleGetResourceTest {
         WebArchive war = TestUtil.prepareArchive(MultipleGetResourceTest.class.getSimpleName());
         Map<String, String> contextParam = new HashMap<>();
         contextParam.put(ResteasyContextParameters.RESTEASY_FAIL_FAST_ON_MULTIPLE_RESOURCES_MATCHING, "true");
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks"),
-                new FilePermission(TestUtil.getStandaloneDir(DEFAULT_CONTAINER_QUALIFIER) + File.separator + "log" +
-                        File.separator + "server.log", "read"),
-                new LoggingPermission("control", ""),
-                new PropertyPermission("arquillian.*", "read"),
-                new PropertyPermission("jboss.home.dir", "read"),
-                new PropertyPermission("jboss.server.base.dir", "read"),
-                new RuntimePermission("accessDeclaredMembers")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, contextParam, MultipleGetResource.class);
     }
 
