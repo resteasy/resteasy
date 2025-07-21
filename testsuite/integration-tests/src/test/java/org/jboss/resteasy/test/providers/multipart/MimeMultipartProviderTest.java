@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.lang.reflect.ReflectPermission;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -44,7 +43,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Multipart provider
@@ -78,14 +76,6 @@ public class MimeMultipartProviderTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(MimeMultipartProviderTest.class.getSimpleName());
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                // Can be removed when WFLY-17061 is resolved
-                DeploymentDescriptors.addModuleFilePermission("org.eclipse.angus.activation", "org.eclipse.angus.mail"),
-                // Can be removed when WFLY-17061 is resolved
-                new RuntimePermission("getClassLoader"),
-                // Can be removed when WFLY-17061 is resolved
-                new RuntimePermission("accessDeclaredMembers"),
-                new ReflectPermission("suppressAccessChecks")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, MimeMultipartProviderResource.class,
                 MimeMultipartProviderCustomer.class);
     }

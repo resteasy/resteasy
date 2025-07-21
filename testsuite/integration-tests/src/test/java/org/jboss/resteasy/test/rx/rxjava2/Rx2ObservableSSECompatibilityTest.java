@@ -33,7 +33,6 @@ import org.junit.jupiter.api.MethodOrderer.MethodName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 import io.reactivex.Observable;
 
@@ -61,12 +60,7 @@ public class Rx2ObservableSSECompatibilityTest {
 
     @Deployment
     public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(Rx2ObservableSSECompatibilityTest.class.getSimpleName())
-                .addAsManifestResource(
-                        // Required until WFLY-17051 is resolved
-                        DeploymentDescriptors
-                                .createPermissionsXmlAsset(DeploymentDescriptors.addModuleFilePermission("org.eclipse.yasson")),
-                        "permissions.xml");
+        WebArchive war = TestUtil.prepareArchive(Rx2ObservableSSECompatibilityTest.class.getSimpleName());
         war.addClass(Thing.class);
         war.addClass(Rx2ObservableSSECompatibilityResource.class);
         war.setManifest(new StringAsset("Manifest-Version: 1.0\n"

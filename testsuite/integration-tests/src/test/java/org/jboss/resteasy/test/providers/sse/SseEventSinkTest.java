@@ -27,7 +27,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
@@ -39,8 +38,6 @@ public class SseEventSinkTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(SseEventSinkTest.class.getSimpleName());
         war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new RuntimePermission("modifyThread")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, Arrays.asList(SseResource.class),
                 ExecutorServletContextListener.class);
     }

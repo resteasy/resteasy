@@ -19,9 +19,6 @@
 
 package org.jboss.resteasy.test.cdi.injection;
 
-import java.lang.reflect.ReflectPermission;
-import java.util.PropertyPermission;
-
 import jakarta.inject.Inject;
 import jakarta.ws.rs.client.Client;
 
@@ -37,7 +34,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -52,15 +48,7 @@ public class OverriddenInjectableContextTest {
     public static Archive<?> deployment() {
         return ShrinkWrap.create(WebArchive.class, RequiredInjectableContextTest.class.getSimpleName() + ".war")
                 .addClasses(RequiredInjectableContextResource.class, RootApplication.class, TestProducer.class)
-                .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml")
-                // This can be removed if WFARQ-118 is resolved
-                .addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                        // Required for Arquillian
-                        new ReflectPermission("suppressAccessChecks"),
-                        new PropertyPermission("arquillian.debug", "read"),
-                        // Required for JUnit
-                        new RuntimePermission("accessDeclaredMembers")),
-                        "permissions.xml");
+                .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
     }
 
     @Test

@@ -1,8 +1,5 @@
 package org.jboss.resteasy.test.providers.jackson2;
 
-import java.lang.reflect.ReflectPermission;
-import java.util.PropertyPermission;
-
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
@@ -12,7 +9,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.spi.config.security.ConfigPropertyPermission;
 import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2ProviderApplication;
 import org.jboss.resteasy.test.providers.jackson2.resource.CustomJackson2ProviderResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -26,7 +22,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Jackson2 provider
@@ -45,15 +40,6 @@ public class CustomJackson2ProviderTest {
         war.addClasses(CustomJackson2ProviderApplication.class, CustomJackson2ProviderResource.class);
         war.addAsWebInfResource(CustomJackson2ProviderTest.class.getPackage(), "jboss-deployment-structure-exclude-jaxrs.xml",
                 "jboss-deployment-structure.xml");
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new RuntimePermission("getProtectionDomain"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new ReflectPermission("suppressAccessChecks"),
-                // Allow reading all properties and environment variables from the deployment since RESTEasy is in the
-                // deployment.
-                new ConfigPropertyPermission("*"),
-                new PropertyPermission("*", "read"),
-                new RuntimePermission("getenv.*")), "permissions.xml");
         final PomEquippedResolveStage resolver = Maven.resolver().loadPomFromFile("pom.xml");
         war.addAsLibraries(resolver.resolve(
                 "org.jboss.resteasy:resteasy-servlet-initializer",

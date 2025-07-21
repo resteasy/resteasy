@@ -39,7 +39,7 @@ class GlobalContextualExecutorService extends ContextualExecutorService {
 
     private GlobalContextualExecutorService() {
         super(null, true);
-        final int poolSize = SecurityActions.getCoreThreads("dev.resteasy.concurrent.core.pool.size");
+        final int poolSize = CoreThreads.getCoreThreads("dev.resteasy.concurrent.core.pool.size");
         delegate = new ThreadPoolExecutor(poolSize, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>(), new ContextualThreadFactory("contextual-pool"));
         shutdownHook = new Thread("resteasy-shutdown") {
@@ -50,7 +50,7 @@ class GlobalContextualExecutorService extends ContextualExecutorService {
                 }
             }
         };
-        SecurityActions.registerShutdownHook(shutdownHook);
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
 
     @Override

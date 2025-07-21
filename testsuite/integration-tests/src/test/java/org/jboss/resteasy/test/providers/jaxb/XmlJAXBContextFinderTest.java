@@ -1,8 +1,5 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
-import java.io.FilePermission;
-import java.lang.reflect.ReflectPermission;
-
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -30,7 +27,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -44,11 +40,6 @@ public class XmlJAXBContextFinderTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(XmlJAXBContextFinderTest.class.getSimpleName());
-
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new FilePermission("<<ALL FILES>>", "read"),
-                new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers")), "permissions.xml");
 
         return TestUtil.finishContainerPrepare(war, null, BeanWrapper.class,
                 FirstBean.class, SecondBean.class,

@@ -8,7 +8,6 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -27,7 +26,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter CDI
@@ -49,8 +47,6 @@ public class EJBCDIValidationTest {
                 .addClasses(EJBCDIValidationStatefulResource.class)
                 .addClasses(EJBCDIValidationSingletonResource.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new HibernateValidatorPermission("accessPrivateMembers")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null);
     }
 

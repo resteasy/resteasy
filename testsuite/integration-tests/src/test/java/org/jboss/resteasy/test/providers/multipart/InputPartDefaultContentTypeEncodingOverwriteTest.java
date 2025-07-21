@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.providers.multipart;
 
-import java.lang.reflect.ReflectPermission;
-
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -23,7 +21,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Multipart provider
@@ -42,8 +39,6 @@ public class InputPartDefaultContentTypeEncodingOverwriteTest {
         WebArchive war = TestUtil.prepareArchive(InputPartDefaultContentTypeEncodingOverwriteTest.class.getSimpleName());
         war.addClasses(InputPartDefaultContentTypeEncodingOverwriteTest.class);
         war.addClasses(TestUtil.class, PortProviderUtil.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null,
                 InputPartDefaultContentTypeEncodingOverwriteSetterContainerRequestFilter.class,
                 InputPartDefaultContentTypeEncodingOverwriteService.class);

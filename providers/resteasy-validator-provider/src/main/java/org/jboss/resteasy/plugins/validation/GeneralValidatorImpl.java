@@ -3,9 +3,6 @@ package org.jboss.resteasy.plugins.validation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -370,21 +367,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI {
      * is a super method of itself.
      */
     protected Method getSuperMethod(Method method, final Class<?> clazz) {
-        Method[] methods = new Method[0];
-        try {
-            if (System.getSecurityManager() == null) {
-                methods = clazz.getDeclaredMethods();
-            } else {
-                methods = AccessController.doPrivileged(new PrivilegedExceptionAction<Method[]>() {
-                    @Override
-                    public Method[] run() throws Exception {
-                        return clazz.getDeclaredMethods();
-                    }
-                });
-            }
-        } catch (PrivilegedActionException pae) {
-
-        }
+        final Method[] methods = clazz.getDeclaredMethods();
 
         for (int i = 0; i < methods.length; i++) {
             if (overrides(method, methods[i])) {
@@ -438,21 +421,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI {
         MemberResolver memberResolver = new MemberResolver(typeResolver);
         memberResolver.setMethodFilter(new SimpleMethodFilter(subTypeMethod, superTypeMethod));
         final ResolvedTypeWithMembers typeWithMembers = memberResolver.resolve(resolvedSubType, null, null);
-        ResolvedMethod[] resolvedMethods = new ResolvedMethod[0];
-        try {
-            if (System.getSecurityManager() == null) {
-                resolvedMethods = typeWithMembers.getMemberMethods();
-            } else {
-                resolvedMethods = AccessController.doPrivileged(new PrivilegedExceptionAction<ResolvedMethod[]>() {
-                    @Override
-                    public ResolvedMethod[] run() throws Exception {
-                        return typeWithMembers.getMemberMethods();
-                    }
-                });
-            }
-        } catch (PrivilegedActionException pae) {
-
-        }
+        ResolvedMethod[] resolvedMethods = typeWithMembers.getMemberMethods();
 
         // The ClassMate doc says that overridden methods are flattened to one
         // resolved method. But that is the case only for methods without any

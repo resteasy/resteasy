@@ -28,8 +28,6 @@ import java.lang.ref.Cleaner;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
@@ -88,7 +86,7 @@ public class EntityOutputStream extends OutputStream {
      * Creates a new entity stream with the maximum in memory threshold of a default value.
      */
     public EntityOutputStream() {
-        this(getOptionValue(Options.ENTITY_MEMORY_THRESHOLD), getTempDir(), () -> "resteasy-entity");
+        this(Options.ENTITY_MEMORY_THRESHOLD.getValue(), getTempDir(), () -> "resteasy-entity");
     }
 
     /**
@@ -120,7 +118,7 @@ public class EntityOutputStream extends OutputStream {
      * @param filePrefix      the file prefix if a file is created
      */
     public EntityOutputStream(final Threshold memoryThreshold, final Path tmpDir, final Supplier<String> filePrefix) {
-        this(memoryThreshold, tmpDir, getOptionValue(Options.ENTITY_FILE_THRESHOLD), filePrefix);
+        this(memoryThreshold, tmpDir, Options.ENTITY_FILE_THRESHOLD.getValue(), filePrefix);
     }
 
     /**
@@ -326,14 +324,7 @@ public class EntityOutputStream extends OutputStream {
     }
 
     private static Path getTempDir() {
-        return getOptionValue(Options.ENTITY_TMP_DIR);
-    }
-
-    private static <T> T getOptionValue(final Options<T> option) {
-        if (System.getSecurityManager() == null) {
-            return option.getValue();
-        }
-        return AccessController.doPrivileged((PrivilegedAction<T>) option::getValue);
+        return Options.ENTITY_TMP_DIR.getValue();
     }
 
     private static class EntityInputStream extends InputStream {

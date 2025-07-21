@@ -2,8 +2,6 @@ package org.jboss.resteasy.client.jaxrs.engines.jetty;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
@@ -302,20 +300,11 @@ public class JettyClientEngine implements AsyncClientHttpEngine {
     }
 
     private static ClassLoader resolveClassLoader() {
-        if (System.getSecurityManager() == null) {
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            if (cl == null) {
-                cl = JettyClientEngine.class.getClassLoader();
-            }
-            return cl == null ? ClassLoader.getSystemClassLoader() : cl;
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        if (cl == null) {
+            cl = JettyClientEngine.class.getClassLoader();
         }
-        return AccessController.doPrivileged((PrivilegedAction<ClassLoader>) () -> {
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            if (cl == null) {
-                cl = JettyClientEngine.class.getClassLoader();
-            }
-            return cl == null ? ClassLoader.getSystemClassLoader() : cl;
-        });
+        return cl == null ? ClassLoader.getSystemClassLoader() : cl;
     }
 
     private static boolean isMultipart(final ClientInvocation invocation) {

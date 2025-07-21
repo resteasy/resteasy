@@ -42,7 +42,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -61,8 +60,6 @@ public class SseTest {
                 "org/jboss/resteasy/test/providers/sse/bigmsg.json");
         war.addAsWebInfResource("org/jboss/resteasy/test/providers/sse/web.xml", "web.xml");
         war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new RuntimePermission("modifyThread")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, SseApplication.class, SseResource.class,
                 AnotherSseResource.class, EscapingSseResource.class, ExecutorServletContextListener.class);
 

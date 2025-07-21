@@ -2,8 +2,6 @@ package org.jboss.resteasy.test.cdi.basic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.lang.reflect.ReflectPermission;
-import java.util.PropertyPermission;
 import java.util.logging.Logger;
 
 import jakarta.inject.Inject;
@@ -24,7 +22,6 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter CDI
@@ -49,10 +46,6 @@ public class EJBEventsTest {
                 .addClasses(EJBEventsProcessRead.class, EJBEventsProcessReadWrite.class)
                 .setWebXML(EJBEventsTest.class.getPackage(), "ejbtest_web.xml")
                 .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
-        // Arquillian in the deployment
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new PropertyPermission("arquillian.*", "read")), "permissions.xml");
         return war;
     }
 

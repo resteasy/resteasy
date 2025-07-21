@@ -37,7 +37,6 @@ import org.junit.jupiter.api.MethodOrderer.MethodName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Reactive classes
@@ -101,12 +100,7 @@ public class Rx2ObservableServerAsyncTest {
 
     @Deployment
     public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(Rx2ObservableServerAsyncTest.class.getSimpleName())
-                .addAsManifestResource(
-                        // Required until WFLY-17051 is resolved
-                        DeploymentDescriptors
-                                .createPermissionsXmlAsset(DeploymentDescriptors.addModuleFilePermission("org.eclipse.yasson")),
-                        "permissions.xml");
+        WebArchive war = TestUtil.prepareArchive(Rx2ObservableServerAsyncTest.class.getSimpleName());
         war.addClass(Thing.class);
         war.addClass(Bytes.class);
         war.addClass(TRACE.class);

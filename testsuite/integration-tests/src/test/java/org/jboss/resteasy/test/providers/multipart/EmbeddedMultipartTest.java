@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.providers.multipart;
 
-import java.lang.reflect.ReflectPermission;
-
 import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -24,7 +22,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Multipart provider
@@ -42,8 +39,6 @@ public class EmbeddedMultipartTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(EmbeddedMultipartTest.class.getSimpleName());
         war.addClass(EmbeddedMultipartCustomer.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, EmbeddedMultipartResource.class);
     }
 

@@ -20,7 +20,6 @@ import org.jboss.resteasy.test.xxe.resource.xxeJaxb.XxeJaxbFavoriteMovie;
 import org.jboss.resteasy.test.xxe.resource.xxeJaxb.XxeJaxbFavoriteMovieXmlRootElement;
 import org.jboss.resteasy.test.xxe.resource.xxeJaxb.XxeJaxbFavoriteMovieXmlType;
 import org.jboss.resteasy.test.xxe.resource.xxeJaxb.XxeJaxbMovieResource;
-import org.jboss.resteasy.utils.AssumeUtils;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -159,7 +158,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("f")
     public void testXmlRootElementDefaultFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestXmlRootElementDefault("f");
     }
 
@@ -185,7 +183,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("ff")
     public void testXmlRootElementWithoutExpansionFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestXmlRootElementWithoutExpansion("ff");
     }
 
@@ -212,7 +209,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("tf")
     public void testXmlRootElementWithExpansionFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestXmlRootElementWithExpansion("tf");
     }
 
@@ -238,7 +234,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("f")
     public void testXmlTypeDefaultFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestXmlTypeDefault("f");
     }
 
@@ -264,7 +259,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("ff")
     public void testXmlTypeWithoutExpansionFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestXmlTypeWithoutExpansion("ff");
     }
 
@@ -291,7 +285,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("tf")
     public void testXmlTypeWithExpansionFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestXmlTypeWithExpansion("tf");
     }
 
@@ -317,7 +310,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("f")
     public void testJAXBElementDefaultFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestJAXBElementDefault("f");
     }
 
@@ -343,7 +335,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("ff")
     public void testJAXBElementWithoutExpansionFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestJAXBElementWithoutExpansion("ff");
     }
 
@@ -370,7 +361,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("tf")
     public void testJAXBElementWithExpansionFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestJAXBElementWithExpansion("tf");
     }
 
@@ -398,7 +388,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("f")
     public void testListDefaultFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doCollectionTestWithoutExpansion("f", "list");
     }
 
@@ -428,7 +417,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("ff")
     public void testListWithoutExpansionFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doCollectionTestWithoutExpansion("ff", "list");
     }
 
@@ -459,7 +447,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("tf")
     public void testListWithExpansionFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doCollectionTestWithExpansion("tf", "list");
     }
 
@@ -489,7 +476,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("f")
     public void testSetDefaultFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doCollectionTestWithoutExpansion("f", "set");
     }
 
@@ -519,7 +505,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("ff")
     public void testSetWithoutExpansionFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doCollectionTestWithoutExpansion("ff", "set");
     }
 
@@ -550,7 +535,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("tf")
     public void testSetWithExpansionFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doCollectionTestWithExpansion("tf", "set");
     }
 
@@ -580,7 +564,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("f")
     public void testArrayDefaultFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doCollectionTestWithoutExpansion("f", "array");
     }
 
@@ -610,7 +593,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("ff")
     public void testArrayWithoutExpansionFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doCollectionTestWithoutExpansion("ff", "array");
     }
 
@@ -641,7 +623,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("tf")
     public void testArrayWithExpansionFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doCollectionTestWithExpansion("tf", "array");
     }
 
@@ -670,7 +651,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("f")
     public void testMapDefaultFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doMapTestWithoutExpansion("f");
     }
 
@@ -698,7 +678,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("ff")
     public void testMapWithoutExpansionFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doMapTestWithoutExpansion("ff");
     }
 
@@ -727,7 +706,6 @@ public class XxeJaxbTest {
     @Test
     @OperateOnDeployment("tf")
     public void testMapWithExpansionFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doMapTestWithExpansion("tf");
     }
 

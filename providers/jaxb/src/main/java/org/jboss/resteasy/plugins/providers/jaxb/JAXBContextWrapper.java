@@ -2,9 +2,6 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,20 +67,7 @@ public class JAXBContextWrapper extends JAXBContext {
     public JAXBContextWrapper(final Class<?>[] classes, final Map<String, Object> properties, final JAXBConfig config)
             throws JAXBException {
         processConfig(config);
-        try {
-            if (System.getSecurityManager() == null) {
-                wrappedContext = JAXBContext.newInstance(classes, properties);
-            } else {
-                wrappedContext = AccessController.doPrivileged(new PrivilegedExceptionAction<JAXBContext>() {
-                    @Override
-                    public JAXBContext run() throws JAXBException {
-                        return JAXBContext.newInstance(classes, properties);
-                    }
-                });
-            }
-        } catch (PrivilegedActionException paex) {
-            throw new JAXBException(paex.getMessage());
-        }
+        wrappedContext = JAXBContext.newInstance(classes, properties);
     }
 
     /**
@@ -95,20 +79,7 @@ public class JAXBContextWrapper extends JAXBContext {
      */
     public JAXBContextWrapper(final String contextPath, final JAXBConfig config) throws JAXBException {
         processConfig(config);
-        try {
-            if (System.getSecurityManager() == null) {
-                wrappedContext = JAXBContext.newInstance(contextPath);
-            } else {
-                wrappedContext = AccessController.doPrivileged(new PrivilegedExceptionAction<JAXBContext>() {
-                    @Override
-                    public JAXBContext run() throws JAXBException {
-                        return JAXBContext.newInstance(contextPath);
-                    }
-                });
-            }
-        } catch (PrivilegedActionException paex) {
-            throw new JAXBException(paex.getMessage());
-        }
+        wrappedContext = JAXBContext.newInstance(contextPath);
     }
 
     /**

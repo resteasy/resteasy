@@ -1,9 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
-import java.security.AccessController;
 import java.security.KeyStore;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,6 +33,7 @@ import org.jboss.resteasy.concurrent.ContextualExecutors;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryDelegate;
 import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.spi.PriorityServiceLoader;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 /**
@@ -92,7 +90,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
             }
             providerFactory = localProviderFactory;
         }
-        this.clientHttpEngineFactory = SecurityActions.findFirstService(ClientHttpEngineFactory.class)
+        this.clientHttpEngineFactory = PriorityServiceLoader.load(ClientHttpEngineFactory.class).first()
                 .orElse(null);
     }
 
@@ -337,21 +335,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
 
     public ResteasyProviderFactory getProviderFactory() {
         if (providerFactory == null) {
-            ClassLoader loader = null;
-            if (System.getSecurityManager() == null) {
-                loader = Thread.currentThread().getContextClassLoader();
-            } else {
-                try {
-                    loader = AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>() {
-                        @Override
-                        public ClassLoader run() throws Exception {
-                            return Thread.currentThread().getContextClassLoader();
-                        }
-                    });
-                } catch (PrivilegedActionException pae) {
-                    throw new RuntimeException(pae);
-                }
-            }
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
             // create a new one
             providerFactory = new LocalResteasyProviderFactory(
                     RegisterBuiltin.getClientInitializedResteasyProviderFactory(loader));

@@ -20,8 +20,6 @@
 package org.jboss.resteasy.spi.config;
 
 import java.nio.file.Path;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -78,7 +76,7 @@ public class Options<T> {
      */
     public static final Options<Path> ENTITY_TMP_DIR = new Options<>("dev.resteasy.entity.tmpdir",
             Path.class,
-            Functions.singleton(() -> Path.of(defaultTmpDir()).toAbsolutePath()));
+            Functions.singleton(() -> Path.of(System.getProperty("java.io.tmpdir")).toAbsolutePath()));
 
     /**
      * An option for defining the {@link javax.net.ssl.SSLContext#getInstance(String) SSLContext} algorithm for the
@@ -208,18 +206,9 @@ public class Options<T> {
             return ConfigurationFactory.getInstance()
                     .getConfiguration(configuration)
                     .getOptionalValue(name, returnType);
-        } catch (SecurityException e) {
-            throw e;
         } catch (Exception e) {
             LogMessages.LOGGER.tracef(e, "Failed to get property for %s of type %s.", name, returnType);
         }
         return Optional.empty();
-    }
-
-    private static String defaultTmpDir() {
-        if (System.getSecurityManager() == null) {
-            return System.getProperty("java.io.tmpdir");
-        }
-        return AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty("java.io.tmpdir"));
     }
 }

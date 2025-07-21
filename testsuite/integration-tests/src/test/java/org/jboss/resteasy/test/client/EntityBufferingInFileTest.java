@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -44,10 +43,6 @@ public class EntityBufferingInFileTest extends ClientTestBase {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(EntityBufferingInFileTest.class.getSimpleName());
         war.addClass(EntityBufferingInFileTest.class);
-        // DataSource provider creates tmp file in the filesystem
-        war.addAsManifestResource(
-                DeploymentDescriptors.createPermissionsXmlAsset(DeploymentDescriptors.createTempDirPermission("read")),
-                "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, EntityBufferingInFileResource.class);
     }
 

@@ -1,10 +1,7 @@
 package org.jboss.resteasy.test.providers.jsonb.basic;
 
-import java.io.FilePermission;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.ReflectPermission;
-import java.util.PropertyPermission;
 
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -34,7 +31,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Interceptors
@@ -57,18 +53,6 @@ public class JsonBindingDebugLoggingTest {
         war.addClass(JsonBindingDebugLoggingItemCorruptedGet.class);
         war.addClass(JsonBindingDebugLoggingItemCorruptedSet.class);
         war.addClasses(LogCounter.class, PortProviderUtil.class, TestUtil.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new PropertyPermission("arquillian.debug", "read"),
-                new PropertyPermission("user.dir", "read"),
-                new FilePermission("<<ALL FILES>>", "read"), // required to read jbossas-managed/log/server.log file
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read"),
-                new PropertyPermission("jboss.server.base.dir", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, JsonBindingDebugLoggingEndPoint.class);
     }
 

@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.resource.basic;
 
-import java.util.PropertyPermission;
-
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
@@ -21,7 +19,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resource
@@ -48,14 +45,6 @@ public class ReponseInfoTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ReponseInfoTest.class.getSimpleName());
         war.addClasses(PortProviderUtil.class, ReponseInfoTest.class);
-
-        // Use of PortProviderUtil in the deployment
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, ReponseInfoResource.class);
     }
 

@@ -7,7 +7,6 @@
         <container qualifier="${container.qualifier.managed}" default="true">
             <configuration>
                 <property name="jbossHome">${jboss.home}</property>
-                <property name="jbossArguments">${securityManagerArg}</property>
                 <property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
                 <property name="javaVmArguments">${debugJvmArgs} -server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.managed} -Djboss.server.base.dir=${container.base.dir.managed}
                 </property>
@@ -18,7 +17,6 @@
         <container qualifier="${container.qualifier.managed.encoding}">
             <configuration>
                 <property name="jbossHome">${jboss.home}</property>
-                <property name="jbossArguments">${securityManagerArg}</property>
                 <property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
                 <!-- Forcing file.encoding=us-ascii in order to test RESTEASY-2171 -->
                 <property name="javaVmArguments">-Dorg.jboss.resteasy.port=15080 -Dfile.encoding=us-ascii -server -Xms256m -Xmx1G -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.managed.encoding} -Djboss.server.base.dir=${container.base.dir.managed.encoding}

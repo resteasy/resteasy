@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.core.basic;
 
-import java.io.FilePermission;
-
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 
@@ -24,7 +22,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -46,9 +43,6 @@ public class ContextTest {
                 ContextEncoderInterceptor.class, ContextEndInterceptor.class);
         war.addAsWebInfResource(ContextTest.class.getPackage(), "ContextIndex.txt", "index.txt");
         war.addAsWebInfResource(ContextTest.class.getPackage(), "ContextWeb.xml", "web.xml");
-        // undertow requires read permission in order to perform forward request.
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new FilePermission("<<ALL FILES>>", "read")), "permissions.xml");
         return war;
     }
 

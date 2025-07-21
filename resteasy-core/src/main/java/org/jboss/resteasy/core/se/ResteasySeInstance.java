@@ -209,7 +209,7 @@ public class ResteasySeInstance implements Instance {
     public void stopOnShutdown(final Consumer<StopResult> consumer) {
         onShutdownCallbacks.add(consumer);
         if (shutdownHookRegistered.compareAndSet(false, true)) {
-            SecurityActions.addShutdownHook(new Thread(() -> {
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 try {
                     server.stop();
                 } catch (Throwable t) {
@@ -239,7 +239,7 @@ public class ResteasySeInstance implements Instance {
         final Index index = ConfigurationOption.JANDEX_INDEX.getValue(configuration);
         final ResourceScanner resourceScanner;
         if (index == null) {
-            resourceScanner = ResourceScanner.fromClassPath(SecurityActions.resolveClassLoader(application.getClass()),
+            resourceScanner = ResourceScanner.fromClassPath(resolveClassLoader(application.getClass()),
                     ConfigurationOption.JANDEX_CLASS_PATH_FILTER.getValue(configuration));
         } else {
             resourceScanner = ResourceScanner.of(index);
@@ -261,5 +261,23 @@ public class ResteasySeInstance implements Instance {
             return (Boolean) value;
         }
         return true;
+    }
+
+    static ClassLoader resolveClassLoader(final Class<?> c) {
+        if (c == null) {
+            return currentClassLoader();
+        }
+        return c.getClassLoader();
+    }
+
+    private static ClassLoader currentClassLoader() {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        if (cl == null) {
+            cl = ResteasySeInstance.class.getClassLoader();
+        }
+        if (cl == null) {
+            cl = ClassLoader.getSystemClassLoader();
+        }
+        return cl;
     }
 }

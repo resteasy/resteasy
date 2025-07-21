@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.validation;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.ReflectPermission;
 import java.lang.reflect.Type;
 
 import jakarta.ws.rs.client.Client;
@@ -29,7 +28,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Multipart provider
@@ -47,8 +45,6 @@ public class ContextProvidersNewClientTest extends ContextProvidersTestBase {
                         ContextProvidersName.class, ContextProvidersXop.class)
                 .addClass(ContextProvidersTestBase.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, ContextProvidersResource.class);
     }
 

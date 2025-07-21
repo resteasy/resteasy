@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.resource.basic;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PropertyPermission;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -32,7 +31,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resources
@@ -64,14 +62,6 @@ public class UriInfoTest {
     public static Archive<?> deployUriInfoSimpleResource() {
         WebArchive war = TestUtil.prepareArchive(UriInfoSimpleResource.class.getSimpleName());
         war.addClass(PortProviderUtil.class);
-
-        // Use of PortProviderUtil in the deployment
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, UriInfoSimpleResource.class);
     }
 
@@ -89,11 +79,6 @@ public class UriInfoTest {
     public static Archive<?> deployUriInfoSimpleResourceAsSingleton() {
         WebArchive war = TestUtil.prepareArchive(UriInfoSimpleSingletonResource.class.getSimpleName());
         war.addClass(PortProviderUtil.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(new PropertyPermission("node", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read")), "permissions.xml");
         List<Class<?>> singletons = new ArrayList<>();
         singletons.add(UriInfoSimpleSingletonResource.class);
         return TestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);

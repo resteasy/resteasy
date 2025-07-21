@@ -36,6 +36,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.config.ConfigurationFactory;
 
 /**
  * An interface which allows a {@link WebApplicationException} to be unwrapped.
@@ -56,8 +57,10 @@ public interface WebApplicationExceptionWrapper<T extends WebApplicationExceptio
      *         wrapping feature is turned off
      */
     static WebApplicationException wrap(final WebApplicationException e) {
-        final boolean originalBehavior = SecurityActions.getConfigValue("resteasy.original.webapplicationexception.behavior",
-                boolean.class, false);
+        final boolean originalBehavior = ConfigurationFactory.getInstance().getConfiguration()
+                .getOptionalValue("resteasy.original.webapplicationexception.behavior",
+                        boolean.class)
+                .orElse(false);
         final boolean serverSide = ResteasyDeployment.onServer();
         if (originalBehavior || !serverSide) {
             return e;

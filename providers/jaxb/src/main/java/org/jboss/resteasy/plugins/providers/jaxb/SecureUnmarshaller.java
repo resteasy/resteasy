@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -57,21 +54,7 @@ public class SecureUnmarshaller implements Unmarshaller {
         }
 
         public static SAXParserProvider getInstance() {
-            final SecurityManager sm = System.getSecurityManager();
-            ClassLoader tccl = null;
-            if (sm == null) {
-                tccl = Thread.currentThread().getContextClassLoader();
-            } else {
-                try {
-                    tccl = AccessController.doPrivileged(new PrivilegedExceptionAction<ClassLoader>() {
-                        public ClassLoader run() throws Exception {
-                            return Thread.currentThread().getContextClassLoader();
-                        }
-                    });
-                } catch (PrivilegedActionException e) {
-                    throw new SecurityException(e);
-                }
-            }
+            final ClassLoader tccl = Thread.currentThread().getContextClassLoader();
 
             SAXParserProvider spp;
             spp = saxParserProviders.get(tccl);
@@ -91,15 +74,15 @@ public class SecureUnmarshaller implements Unmarshaller {
             SAXParserFactory f = factories[index];
             if (f == null) {
                 // Get the current context class loader
-                final ClassLoader current = SecurityActions.getContextClassLoader();
+                final ClassLoader current = Thread.currentThread().getContextClassLoader();
                 try {
                     // Set the current context class loader to the class loader for this type
-                    SecurityActions.setContextClassLoader();
+                    Thread.currentThread().setContextClassLoader(SecureUnmarshaller.class.getClassLoader());
                     f = SAXParserFactory.newInstance();
                     configureParserFactory(f, disableExternalEntities, enableSecureProcessingFeature, disableDTDs);
                 } finally {
                     // Reset the current context class loader
-                    SecurityActions.setContextClassLoader(current);
+                    Thread.currentThread().setContextClassLoader(current);
                 }
                 factories[index] = f;
             }
@@ -226,22 +209,9 @@ public class SecureUnmarshaller implements Unmarshaller {
                     disableDTDs);
             XMLReader xmlReader = sp.getXMLReader();
             final SAXSource saxSource = new SAXSource(xmlReader, source);
-            if (System.getSecurityManager() == null) {
-                return delegate.unmarshal(saxSource);
-            } else {
-                return AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
-                    @Override
-                    public Object run() throws JAXBException {
-                        return delegate.unmarshal(saxSource);
-                    }
-                });
-            }
-        } catch (SAXException e) {
+            return delegate.unmarshal(saxSource);
+        } catch (SAXException | ParserConfigurationException e) {
             throw new JAXBException(e);
-        } catch (ParserConfigurationException e) {
-            throw new JAXBException(e);
-        } catch (PrivilegedActionException pae) {
-            throw new JAXBException(pae);
         }
     }
 

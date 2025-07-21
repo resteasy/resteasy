@@ -36,9 +36,6 @@ public interface Configuration {
      * @return the resolved optional value
      *
      * @throws IllegalArgumentException if the type is not supported
-     * @throws SecurityException        if the security manager is present and the
-     *                                  {@link org.jboss.resteasy.spi.config.security.ConfigPropertyPermission} for
-     *                                  the property is not allowed
      */
     <T> Optional<T> getOptionalValue(String name, Class<T> type);
 
@@ -53,9 +50,6 @@ public interface Configuration {
      *
      * @throws IllegalArgumentException         if the type is not supported
      * @throws java.util.NoSuchElementException if there is no property associated with the name
-     * @throws SecurityException                if the security manager is present and the
-     *                                          {@link org.jboss.resteasy.spi.config.security.ConfigPropertyPermission} for
-     *                                          the property is not allowed
      */
     <T> T getValue(String name, Class<T> type);
 }

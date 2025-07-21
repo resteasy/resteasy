@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy server
@@ -75,10 +74,7 @@ public class MediaTypeFromMessageBodyWriterTest {
 
     @Deployment(name = "multiple")
     public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(MediaTypeFromMessageBodyWriterTest.class.getSimpleName())
-                .addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                        // Required for MediaTypeFromMessageBodyWriterResource.hello
-                        new RuntimePermission("accessDeclaredMembers")), "permissions.xml");
+        WebArchive war = TestUtil.prepareArchive(MediaTypeFromMessageBodyWriterTest.class.getSimpleName());
         return TestUtil.finishContainerPrepare(war, null,
                 MediaTypeFromMessageBodyWriterListAsText.class,
                 MediaTypeFromMessageBodyWriterListAsXML.class,

@@ -22,8 +22,6 @@ package org.jboss.resteasy.test.core.basic;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.ReflectPermission;
-import java.util.PropertyPermission;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.ws.rs.core.MediaType;
@@ -41,7 +39,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * Tests that the default {@link ExceptionMapper} is disabled overriding the default exception mapper.
@@ -60,16 +57,7 @@ public class DisabledDefaultExceptionThrowableMapperTest extends DisabledDefault
                         DisabledDefaultExceptionMapperTest.class,
                         ExceptionResource.class,
                         TestUtil.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-                // This can be removed if WFARQ-118 is resolved
-                .addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                        // Required for Arquillian
-                        new ReflectPermission("suppressAccessChecks"),
-                        new PropertyPermission("arquillian.*", "read"),
-                        new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
-                        // Required for JUnit
-                        new RuntimePermission("accessDeclaredMembers")),
-                        "permissions.xml");
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     /**

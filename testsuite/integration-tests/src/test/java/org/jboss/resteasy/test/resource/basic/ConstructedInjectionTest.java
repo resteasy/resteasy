@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.resource.basic;
 
-import java.util.PropertyPermission;
-
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
@@ -11,7 +9,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.spi.config.security.ConfigPropertyPermission;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.test.resource.basic.resource.ConstructedInjectionResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -23,7 +20,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resource
@@ -40,22 +36,6 @@ public class ConstructedInjectionTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ConstructedInjectionTest.class.getSimpleName());
         war.addClass(TestPortProvider.class);
-
-        // Use of PortProviderUtil in the deployment
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("ipv6", "read"),
-                // Required for the PortProvider
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new ConfigPropertyPermission("RESTEASY_PORT"),
-                new RuntimePermission("getenv.RESTEASY_HOST"),
-                new ConfigPropertyPermission("RESTEASY_HOST"),
-                new ConfigPropertyPermission("org.jboss.resteasy.host"),
-                new PropertyPermission("org.jboss.resteasy.host", "read"),
-                new RuntimePermission("getenv.org.jboss.resteasy.host", "read"),
-                new ConfigPropertyPermission("org.jboss.resteasy.port"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new RuntimePermission("getenv.org.jboss.resteasy.port", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, ConstructedInjectionResource.class);
     }
 

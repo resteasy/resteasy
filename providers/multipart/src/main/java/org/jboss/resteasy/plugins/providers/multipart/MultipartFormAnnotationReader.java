@@ -8,7 +8,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.security.AccessController;
 import java.util.List;
 
 import jakarta.ws.rs.Consumes;
@@ -131,7 +130,7 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object> 
         for (Field field : type.getDeclaredFields()) {
             if (field.isAnnotationPresent(FormParam.class)
                     || field.isAnnotationPresent(org.jboss.resteasy.annotations.jaxrs.FormParam.class)) {
-                AccessController.doPrivileged(new FieldEnablerPrivilegedAction(field));
+                field.setAccessible(true);
                 FormParam param = field.getAnnotation(FormParam.class);
                 String name;
                 if (param != null) {

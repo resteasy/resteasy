@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.providers.multipart;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.ReflectPermission;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +49,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Multipart provider
@@ -94,8 +92,6 @@ public class ContextProvidersTest {
                 ContextProvidersCustomerFormNewAnnotationOnSetter.class,
                 ContextProvidersName.class, ContextProvidersXop.class, PortProviderUtil.class);
         war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, ContextProvidersResource.class);
     }
 

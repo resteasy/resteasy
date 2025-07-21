@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.crypto;
 
-import java.lang.reflect.ReflectPermission;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -45,7 +44,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Crypto
@@ -85,8 +83,6 @@ public class SigningTest {
         WebArchive war = TestUtil.prepareArchive(SigningTest.class.getSimpleName());
         war.addClass(SigningProxy.class);
         war.addAsResource(SigningTest.class.getPackage(), "SigningTest.jks", "test.jks");
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks")), "permissions.xml");
         Map<String, String> contextParams = new HashMap<>();
         contextParams.put("resteasy.doseta.keystore.classpath", "test.jks");
         contextParams.put("resteasy.doseta.keystore.password", "password");

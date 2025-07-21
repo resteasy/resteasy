@@ -2,12 +2,7 @@ package org.jboss.resteasy.test.cdi.basic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.lang.reflect.ReflectPermission;
-import java.net.SocketPermission;
-import java.security.SecurityPermission;
 import java.util.Hashtable;
-import java.util.PropertyPermission;
-import java.util.logging.LoggingPermission;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -45,7 +40,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter CDI
@@ -80,18 +74,6 @@ public class EJBTest {
                 .addClasses(EJBResourceParent.class, EJBLocalResource.class, EJBRemoteResource.class, EJBBookResource.class)
                 .setWebXML(EJBTest.class.getPackage(), "ejbtest_web.xml")
                 .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml");
-        // Arquillian in the deployment
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
-                new LoggingPermission("control", ""),
-                new PropertyPermission("arquillian.*", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new SecurityPermission("insertProvider"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")), "permissions.xml");
         return war;
     }
 

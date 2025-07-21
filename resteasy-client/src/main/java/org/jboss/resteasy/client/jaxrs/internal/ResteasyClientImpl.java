@@ -1,8 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
 import java.net.URI;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -85,29 +83,10 @@ public class ResteasyClientImpl implements ResteasyClient {
         try {
             httpEngine.close();
             if (cleanupExecutor) {
-                if (System.getSecurityManager() == null) {
-                    asyncInvocationExecutor.shutdown();
-                } else {
-                    AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                        @Override
-                        public Void run() {
-                            asyncInvocationExecutor.shutdown();
-                            return null;
-                        }
-                    });
-                }
+                asyncInvocationExecutor.shutdown();
             }
-            if (System.getSecurityManager() == null) {
-                if (scheduledExecutorService != null && !scheduledExecutorService.isManaged()) {
-                    scheduledExecutorService.shutdown();
-                }
-            } else {
-                AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
-                    if (scheduledExecutorService != null && !scheduledExecutorService.isManaged()) {
-                        scheduledExecutorService.shutdown();
-                    }
-                    return null;
-                });
+            if (scheduledExecutorService != null && !scheduledExecutorService.isManaged()) {
+                scheduledExecutorService.shutdown();
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

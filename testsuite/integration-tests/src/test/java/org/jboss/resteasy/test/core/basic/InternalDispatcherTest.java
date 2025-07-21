@@ -1,12 +1,8 @@
 package org.jboss.resteasy.test.core.basic;
 
-import java.lang.reflect.ReflectPermission;
-import java.net.SocketPermission;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.PropertyPermission;
-import java.util.logging.LoggingPermission;
 
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
@@ -27,7 +23,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Core
@@ -49,22 +44,8 @@ public class InternalDispatcherTest {
         WebArchive war = TestUtil.prepareArchive(InternalDispatcherTest.class.getSimpleName());
         war.addClasses(InternalDispatcherClient.class, InternalDispatcherForwardingResource.class);
         war.addClasses(TestUtil.class, PortProviderUtil.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new RuntimePermission("accessDeclaredMembers"),
-                new ReflectPermission("suppressAccessChecks")), "permissions.xml");
         List<Class<?>> singletons = new ArrayList<>();
         singletons.add(InternalDispatcherForwardingResource.class);
-        // Arquillian in the deployment
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
-                new LoggingPermission("control", ""),
-                new PropertyPermission("arquillian.*", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);
     }
 

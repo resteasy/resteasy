@@ -19,10 +19,8 @@
 
 package org.jboss.resteasy.client.jaxrs.internal;
 
-import java.security.AccessController;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivilegedAction;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
@@ -191,23 +189,16 @@ class DefaultClientBuilderConfiguration implements ClientBuilderConfiguration {
         final Object protocolObject = configuration.getProperty(Options.CLIENT_SSL_CONTEXT_ALGORITHM.name());
         final String protocol;
         if (protocolObject == null) {
-            protocol = getOptionValue(Options.CLIENT_SSL_CONTEXT_ALGORITHM);
+            protocol = Options.CLIENT_SSL_CONTEXT_ALGORITHM.getValue();
         } else {
             if (protocolObject instanceof String) {
                 protocol = (String) protocolObject;
             } else {
-                protocol = getOptionValue(Options.CLIENT_SSL_CONTEXT_ALGORITHM);
+                protocol = Options.CLIENT_SSL_CONTEXT_ALGORITHM.getValue();
                 LogMessages.LOGGER.invalidProtocol(protocolObject, protocol);
             }
         }
         return SSLContext.getInstance(protocol);
-    }
-
-    private static <T> T getOptionValue(final Options<T> option) {
-        if (System.getSecurityManager() == null) {
-            return option.getValue();
-        }
-        return AccessController.doPrivileged((PrivilegedAction<T>) option::getValue);
     }
 
     private static class TrustSelfSignedTrustManager implements X509TrustManager {

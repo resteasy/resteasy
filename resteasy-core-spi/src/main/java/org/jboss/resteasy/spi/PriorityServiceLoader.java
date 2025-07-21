@@ -25,10 +25,6 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.AccessControlContext;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -319,14 +315,12 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
         final Class<S> type;
         final int priority;
         final Function<Class<? extends S>, S> constructor;
-        final AccessControlContext acc;
         volatile S instance;
 
         private Holder(final Class<S> type, final int priority, final Function<Class<? extends S>, S> constructor) {
             this.type = type;
             this.priority = priority;
             this.constructor = constructor;
-            acc = System.getSecurityManager() == null ? null : AccessController.getContext();
         }
 
         @Override
@@ -360,13 +354,9 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
             if (instance == null) {
                 synchronized (this) {
                     try {
-                        if (acc == null) {
-                            instance = createInstance();
-                        } else {
-                            instance = AccessController.doPrivileged((PrivilegedExceptionAction<S>) this::createInstance, acc);
-                        }
-                    } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException
-                            | PrivilegedActionException e) {
+                        instance = createInstance();
+                    } catch (NoSuchMethodException | InvocationTargetException | InstantiationException
+                            | IllegalAccessException e) {
                         throw Messages.MESSAGES.failedToConstructClass(e, type);
                     }
                 }
