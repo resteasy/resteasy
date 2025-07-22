@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
@@ -47,7 +45,6 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.cdi.util.Constants;
 import org.jboss.resteasy.test.cdi.util.Counter;
-import org.jboss.resteasy.test.cdi.util.CounterBinding;
 
 @Path("/")
 @RequestScoped
@@ -62,7 +59,6 @@ public class CDIInjectionBookResource {
     public static final String BOOK_WRITER_STATEFUL = "BookWriterStateless";
     public static final String BOOK_RESOURCE_STATEFUL = "BookResourceStateless";
     public static final String BOOK_RESOURCE_STATEFUL2 = "BookResourceStateless2";
-    public static final String COUNTER = "counter";
     public static final String COLLECTION = "collection";
     public static final String BOOK_BAG = "bookBag";
     public static final String NEW_BEAN_APPLICATION_SCOPED = "newBeanApplicationScoped";
@@ -72,21 +68,17 @@ public class CDIInjectionBookResource {
     private static HashMap<String, Object> store;
     private static AtomicInteger constructCounter = new AtomicInteger();
     private static AtomicInteger destroyCounter = new AtomicInteger();
-    private static CountDownLatch latch = new CountDownLatch(2);
     @Inject
     @CDIInjectionResourceBinding
     @PersistenceContext(unitName = "test")
     EntityManager em;
-    private HashSet<CDIInjectionBook> set = new HashSet<CDIInjectionBook>();
+    private HashSet<CDIInjectionBook> set = new HashSet<>();
     @Inject
     private BeanManager beanManager;
     @Inject
     private int secret; // used to determine identity
     @Inject
     private CDIInjectionDependentScoped dependent; // dependent scoped managed bean
-    @Inject
-    @CounterBinding
-    private Counter counter; // application scoped singleton: injected as Weld proxy
     @EJB
     private CDIInjectionBookCollection collection; // application scoped singleton: injected as EJB proxy
     // @Note: stateful and stateful2 are two very different objects.
@@ -139,11 +131,6 @@ public class CDIInjectionBookResource {
         log.info("postConstruct(): constructCounter: " + constructCounter.get());
     }
 
-    public CountDownLatch getCountDownLatch() {
-        log.info("latch.getCount(): " + latch.getCount());
-        return latch;
-    }
-
     @Inject
     public void init(Instance<Logger> logInstance) {
         this.log = logInstance.get();
@@ -185,7 +172,6 @@ public class CDIInjectionBookResource {
             store.put(BOOK_WRITER_STATEFUL, writer.getStateful());
             store.put(BOOK_RESOURCE_STATEFUL, stateful);
             store.put(BOOK_RESOURCE_STATEFUL2, stateful2);
-            store.put(COUNTER, counter);
             store.put(COLLECTION, collection);
             store.put(BOOK_BAG, bookBag);
             store.put(NEW_BEAN_APPLICATION_SCOPED, newBean1);
@@ -216,7 +202,6 @@ public class CDIInjectionBookResource {
                 store.get(BOOK_WRITER_STATEFUL).equals(writer.getStateful()) &&
                 !store.get(BOOK_RESOURCE_STATEFUL).equals(stateful) &&
                 !store.get(BOOK_RESOURCE_STATEFUL2).equals(stateful2) &&
-                store.get(COUNTER).equals(counter) &&
                 store.get(COLLECTION).equals(collection) &&
                 store.get(BOOK_BAG).equals(bookBag) &&
                 store.get(NEW_BEAN_APPLICATION_SCOPED).equals(newBean1) &&
@@ -240,11 +225,9 @@ public class CDIInjectionBookResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response createBook(CDIInjectionBook book) {
         log.info("entering createBook()");
-        int id = counter.getNext();
-        book.setId(id);
         collection.addBook(book);
-        log.info("stored: " + id + "->" + book);
-        return Response.ok(id).build();
+        log.info("stored: " + book);
+        return Response.ok(book.getId()).build();
     }
 
     @GET
@@ -388,9 +371,6 @@ public class CDIInjectionBookResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response consumeBookMessageFromMDB() throws InterruptedException {
         log.info("entering consumeBookMessageFromMDB()");
-        getCountDownLatch().await(5000, TimeUnit.MILLISECONDS); // Wait until BookMDB has stored book in BookCollection.
-        CDIInjectionBookCollection collection = getBookCollection();
-        log.info("consumeBookMessageFromMDB(): collection.size(): " + collection.getBooks().size());
         if (collection.getBooks().size() == 1) {
             String name = collection.getBooks().iterator().next().getName();
             log.info("got book name: " + name);
@@ -405,22 +385,10 @@ public class CDIInjectionBookResource {
     @Path("mdb/books")
     public Collection<CDIInjectionBook> getBooksMDB() throws InterruptedException {
         log.info("entering getBooksMDB()");
-        log.info("getBooksMDB(): waiting on latch");
-        latch.await();
         log.info("this.theSecret(): " + this.theSecret());
         Collection<CDIInjectionBook> books = collection.getBooks();
         log.info("getBooksMDB(): " + books);
         return books;
-    }
-
-    CDIInjectionBookCollection getBookCollection() {
-        log.info("entering getBookCollection()");
-        return collection;
-    }
-
-    Counter getCounter() {
-        log.info("returning: " + counter);
-        return counter;
     }
 
     boolean isApplicationScoped(Class<?> c) {

@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.cdi.injection.resource;
 
+import java.util.Objects;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
@@ -59,14 +61,16 @@ public class CDIInjectionBook {
         return "Book[" + id + "," + name + "]";
     }
 
+    @Override
     public boolean equals(Object o) {
-        if (o == null || !(o instanceof CDIInjectionBook)) {
+        if (o == null || getClass() != o.getClass())
             return false;
-        }
-        return name.equals(((CDIInjectionBook) o).name);
+        CDIInjectionBook that = (CDIInjectionBook) o;
+        return Objects.equals(name, that.name);
     }
 
+    @Override
     public int hashCode() {
-        return super.hashCode();
+        return Objects.hash(id, name);
     }
 }
