@@ -8,12 +8,19 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import jakarta.jms.Connection;
 import jakarta.jms.ConnectionFactory;
@@ -69,12 +76,14 @@ import org.jboss.resteasy.test.cdi.util.PersistenceUnitProducer;
 import org.jboss.resteasy.test.cdi.util.Utilities;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.utils.PortProviderUtil;
+import org.jboss.resteasy.utils.TestApplication;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -129,30 +138,45 @@ public class ReverseInjectionTest {
 
     @Deployment
     public static Archive<?> createTestArchive() throws Exception {
-        WebArchive war = TestUtil.prepareArchive("resteasy-reverse-injection-test")
-                .addClasses(ReverseInjectionTest.class, PortProviderUtil.class)
-                .addClasses(Constants.class, PersistenceUnitProducer.class, UtilityProducer.class, Utilities.class)
-                .addClasses(CDIInjectionBook.class, CDIInjectionBookResource.class)
-                .addClasses(CDIInjectionResourceBinding.class, CDIInjectionResourceProducer.class)
-                .addClasses(Counter.class, CDIInjectionBookCollection.class, CDIInjectionBookReader.class,
-                        CDIInjectionBookWriter.class)
-                .addClasses(CDIInjectionDependentScoped.class, CDIInjectionStatefulEJB.class,
-                        CDIInjectionUnscopedResource.class)
-                .addClasses(CDIInjectionBookBagLocal.class, CDIInjectionBookBag.class)
-                .addClasses(CDIInjectionBookMDB.class)
-                .addClasses(ReverseInjectionEJBInterface.class)
-                .addClasses(StatelessEJBwithJaxRsComponentsInterface.class, StatelessEJBwithJaxRsComponents.class)
-                .addClasses(StatefulDependentScopedEJBwithJaxRsComponentsInterface.class,
-                        StatefulDependentScopedEJBwithJaxRsComponents.class)
-                .addClasses(StatefulRequestScopedEJBwithJaxRsComponentsInterface.class,
-                        StatefulRequestScopedEJBwithJaxRsComponents.class)
-                .addClasses(StatefulApplicationScopedEJBwithJaxRsComponentsInterface.class,
-                        StatefulApplicationScopedEJBwithJaxRsComponents.class)
-                .addClasses(ReverseInjectionEJBHolderRemote.class, ReverseInjectionEJBHolderLocal.class,
-                        ReverseInjectionEJBHolder.class)
-                .addClasses(ReverseInjectionResource.class)
-                .addClasses(CDIInjectionNewBean.class, CDIInjectionStereotypedApplicationScope.class,
-                        CDIInjectionStereotypedDependentScope.class)
+        WebArchive war = ShrinkWrap.create(WebArchive.class, "resteasy-reverse-injection-test.war");
+        war.addClass(TestApplication.class)
+                .addClasses(
+                        CDIInjectionBook.class,
+                        CDIInjectionBookBag.class,
+                        CDIInjectionBookBagLocal.class,
+                        CDIInjectionBookCollection.class,
+                        CDIInjectionBookMDB.class,
+                        CDIInjectionBookReader.class,
+                        CDIInjectionBookResource.class,
+                        CDIInjectionBookWriter.class,
+                        CDIInjectionDependentScoped.class,
+                        CDIInjectionNewBean.class,
+                        CDIInjectionResourceBinding.class,
+                        CDIInjectionResourceProducer.class,
+                        CDIInjectionStatefulEJB.class,
+                        CDIInjectionStereotypedApplicationScope.class,
+                        CDIInjectionStereotypedDependentScope.class,
+                        CDIInjectionUnscopedResource.class,
+                        Constants.class,
+                        Counter.class,
+                        PersistenceUnitProducer.class,
+                        PortProviderUtil.class,
+                        ReverseInjectionEJBHolder.class,
+                        ReverseInjectionEJBHolderLocal.class,
+                        ReverseInjectionEJBHolderRemote.class,
+                        ReverseInjectionEJBInterface.class,
+                        ReverseInjectionResource.class,
+                        ReverseInjectionTest.class,
+                        StatefulApplicationScopedEJBwithJaxRsComponents.class,
+                        StatefulApplicationScopedEJBwithJaxRsComponentsInterface.class,
+                        StatefulDependentScopedEJBwithJaxRsComponents.class,
+                        StatefulDependentScopedEJBwithJaxRsComponentsInterface.class,
+                        StatefulRequestScopedEJBwithJaxRsComponents.class,
+                        StatefulRequestScopedEJBwithJaxRsComponentsInterface.class,
+                        StatelessEJBwithJaxRsComponents.class,
+                        StatelessEJBwithJaxRsComponentsInterface.class,
+                        Utilities.class,
+                        UtilityProducer.class)
                 .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml")
                 .addAsResource(ReverseInjectionTest.class.getPackage(), "persistence.xml", "META-INF/persistence.xml");
         return war;
@@ -279,55 +303,61 @@ public class ReverseInjectionTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    @Disabled("RESTEASY-2962")
-    public void testMDB() throws Exception {
-        String destinationName = "queue/test";
-        Context ic;
-        ConnectionFactory cf;
-        Connection connection = null;
-        try {
-            ic = new InitialContext();
-            cf = (ConnectionFactory) ic.lookup("/ConnectionFactory");
-            Queue queue = (Queue) ic.lookup(destinationName);
-            connection = cf.createConnection();
+    public void testMDB() throws NamingException {
+        String destinationName = "jms/queue/test";
+        Context ic = new InitialContext();
+        ConnectionFactory cf = (ConnectionFactory) ic.lookup("/ConnectionFactory");
+        try (Connection connection = cf.createConnection()) {
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            MessageProducer producer = session.createProducer(queue);
+            MessageProducer producer = session.createProducer((Queue) ic.lookup(destinationName));
             connection.start();
-            CDIInjectionBook book1 = new CDIInjectionBook("Dead Man Snoring");
-            TextMessage message = session.createTextMessage(book1.getName());
-            producer.send(message);
-            log.info("Message sent to the JMS Provider: " + book1.getName());
-            CDIInjectionBook book2 = new CDIInjectionBook("Dead Man Drooling");
-            message = session.createTextMessage(book2.getName());
-            producer.send(message);
-            log.info("Message sent to the JMS Provider: " + book2.getName());
-            WebTarget base = client.target(generateURL("/mdb/books"));
-            Response response = base.request().get();
-            log.info("status: " + response.getStatus());
-            assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            @SuppressWarnings("unchecked")
-            Collection<CDIInjectionBook> books = response.readEntity(new GenericType<>(BookCollectionType));
-            log.info("Collection: " + books);
-            assertEquals(2, books.size(), "Wrong count of received items");
-            Iterator<CDIInjectionBook> it = books.iterator();
-            CDIInjectionBook b1 = it.next();
-            CDIInjectionBook b2 = it.next();
-            assertTrue(book1.equals(b1) && book2.equals(b2) || book1.equals(b2) && book2.equals(b1),
-                    "Book is not inject correctly");
+
+            CDIInjectionBook book1 = createNewBook("Dead Man Snoring", session, producer);
+            CDIInjectionBook book2 = createNewBook("Dead Man Drooling", session, producer);
+
+            waitAndAssert(URI.create(generateURL("/mdb/books")), books -> {
+                assertEquals(2, books.size(), "Wrong number of books received");
+                var names = books.stream().map(CDIInjectionBook::getName).toList();
+                assertTrue(names.contains(book1.getName()) && names.contains(book2.getName()),
+                        "Expected books not found");
+            });
         } catch (Exception exc) {
-            StringWriter errors = new StringWriter();
-            exc.printStackTrace(new PrintWriter(errors));
-            log.error(errors.toString());
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (JMSException e) {
-                    StringWriter errors = new StringWriter();
-                    e.printStackTrace(new PrintWriter(errors));
-                    log.error(errors.toString());
-                }
+            logStacktrace(exc);
+            Assertions.fail(exc);
+        }
+    }
+
+    private void logStacktrace(Exception exc) {
+        StringWriter errors = new StringWriter();
+        exc.printStackTrace(new PrintWriter(errors));
+        log.error(errors.toString());
+    }
+
+    private CDIInjectionBook createNewBook(String title, Session session, MessageProducer producer) throws JMSException {
+        var book = new CDIInjectionBook(title);
+        TextMessage message = session.createTextMessage(book.getName());
+        producer.send(message);
+        log.info("Message sent to the JMS Provider: " + book.getName());
+        return book;
+    }
+
+    public void waitAndAssert(URI uri, Consumer<List<CDIInjectionBook>> assertionConsumer) throws AssertionError {
+        log.info("waitAndAssert(..) validation starting.");
+        Instant endTime = Instant.now().plus(Duration.of(30, ChronoUnit.SECONDS));
+        AssertionError lastAssertionError = null;
+
+        while (Instant.now().isBefore(endTime)) {
+            try (Response response = client.target(uri).request().get()) {
+                assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+                assertionConsumer.accept(response.readEntity(new GenericType<>(BookCollectionType)));
+                return;
+            } catch (AssertionError assertionError) {
+                log.debug("waitAndAssert(..) validation failed - retrying.");
+                lastAssertionError = assertionError;
+                Thread.onSpinWait();
             }
         }
+
+        throw Objects.requireNonNullElseGet(lastAssertionError, AssertionError::new);
     }
 }
