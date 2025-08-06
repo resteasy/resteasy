@@ -121,7 +121,7 @@ public class ChunkOutputStream extends AsyncOutputStream {
             response.prepareChunkStream();
         response.checkException();
         Future<Void> f = response.response.write(buffer);
-        if(handler != null) {
+        if (handler != null) {
             f.onComplete(handler);
         }
         buffer = Buffer.buffer();
