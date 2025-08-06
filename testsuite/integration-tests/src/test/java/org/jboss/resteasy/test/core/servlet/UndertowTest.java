@@ -1,12 +1,9 @@
 package org.jboss.resteasy.test.core.servlet;
 
 import java.io.ByteArrayOutputStream;
-import java.lang.reflect.ReflectPermission;
 import java.net.HttpURLConnection;
-import java.net.SocketPermission;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.PropertyPermission;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -21,7 +18,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Configuration
@@ -33,21 +29,10 @@ import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 public class UndertowTest {
     @Deployment
     public static Archive<?> createTestArchive() {
-        WebArchive war = ShrinkWrap.create(WebArchive.class, "RESTEASY-903.war")
+        return ShrinkWrap.create(WebArchive.class, "RESTEASY-903.war")
                 .addClasses(UndertowServlet.class, FilterForwardServlet.class, UndertowTest.class, TestUtil.class,
                         PortProviderUtil.class)
                 .addAsWebInfResource(ServletConfigTest.class.getPackage(), "UndertowWeb.xml", "web.xml");
-        // Arquillian in the deployment and use of PortProviderUtil
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new PropertyPermission("arquillian.*", "read"),
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read"),
-                new SocketPermission("[" + PortProviderUtil.getHost() + "]", "connect,resolve")), "permissions.xml");
-        return war;
     }
 
     private String generateURL(String path) {

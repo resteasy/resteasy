@@ -2,8 +2,6 @@ package org.jboss.resteasy.test.wadl;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.lang.reflect.ReflectPermission;
-
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 
@@ -21,7 +19,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
@@ -34,12 +31,6 @@ public class DeploymentTest {
         WebArchive war = TestUtil.prepareArchiveWithApplication(DeploymentTest.class.getSimpleName(),
                 WadlTestApplication.class);
         war.addPackages(true, "org.jboss.resteasy.wadl");
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                // Can be removed when WFLY-17065 is resolved
-                DeploymentDescriptors.addModuleFilePermission("org.glassfish.jaxb"),
-                new RuntimePermission("getClassLoader"),
-                new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers")), "permissions.xml");
         TestUtil.finishContainerPrepare(war, null, ExtendedResource.class, ListType.class);
         return war;
     }

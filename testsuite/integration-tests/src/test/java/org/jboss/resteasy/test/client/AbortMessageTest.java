@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.client;
 
 import java.io.UnsupportedEncodingException;
-import java.util.logging.LoggingPermission;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -21,7 +20,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -47,9 +45,6 @@ public class AbortMessageTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(AbortMessageTest.class.getSimpleName());
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new LoggingPermission("control", ""),
-                new RuntimePermission("accessDeclaredMembers")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, AbortMessageResourceFilter.class);
     }
 

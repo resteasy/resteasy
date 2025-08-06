@@ -1,9 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
 import java.lang.annotation.Annotation;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -103,17 +100,8 @@ public abstract class AbstractJAXBContextFinder implements JAXBContextFinder {
         b.append(OBJECT_FACTORY_NAME);
         Class<?> factoryClass;
         try {
-            if (System.getSecurityManager() == null) {
-                factoryClass = Thread.currentThread().getContextClassLoader().loadClass(b.toString());
-            } else {
-                factoryClass = AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
-                    @Override
-                    public Class<?> run() throws ClassNotFoundException {
-                        return Thread.currentThread().getContextClassLoader().loadClass(b.toString());
-                    }
-                });
-            }
-        } catch (PrivilegedActionException | ClassNotFoundException e) {
+            factoryClass = Thread.currentThread().getContextClassLoader().loadClass(b.toString());
+        } catch (ClassNotFoundException e) {
             return null;
         }
         if (factoryClass.isAnnotationPresent(XmlRegistry.class))

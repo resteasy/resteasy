@@ -8,8 +8,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +36,7 @@ import org.jboss.resteasy.spi.util.Types;
  */
 @SuppressWarnings("unchecked")
 public class ContextParameterInjector implements ValueInjector {
-    private static Constructor<?> constructor;
+    private static final Constructor<?> constructor;
 
     private Class<?> rawType;
     private Class<?> proxy;
@@ -48,19 +46,16 @@ public class ContextParameterInjector implements ValueInjector {
     private volatile boolean outputStreamWasWritten = false;
 
     static {
-        constructor = AccessController.doPrivileged(new PrivilegedAction<Constructor<?>>() {
-            @Override
-            public Constructor<?> run() {
-                try {
-                    Class.forName("jakarta.servlet.http.HttpServletResponse", false,
-                            Thread.currentThread().getContextClassLoader());
-                    Class<?> clazz = Class.forName("org.jboss.resteasy.core.ContextServletOutputStream");
-                    return clazz.getDeclaredConstructor(ContextParameterInjector.class, OutputStream.class);
-                } catch (Exception e) {
-                    return null;
-                }
-            }
-        });
+        Constructor<?> c;
+        try {
+            Class.forName("jakarta.servlet.http.HttpServletResponse", false,
+                    Thread.currentThread().getContextClassLoader());
+            Class<?> clazz = Class.forName("org.jboss.resteasy.core.ContextServletOutputStream");
+            c = clazz.getDeclaredConstructor(ContextParameterInjector.class, OutputStream.class);
+        } catch (Exception ignore) {
+            c = null;
+        }
+        constructor = c;
     }
 
     public ContextParameterInjector(final Class<?> proxy, final Class<?> rawType, final Type genericType,
@@ -186,27 +181,11 @@ public class ContextParameterInjector implements ValueInjector {
             Object delegate = factory.getContextData(rawType, genericType, annotations, false);
             Class<?>[] intfs = computeInterfaces(delegate, rawType);
             ClassLoader clazzLoader = null;
-            final SecurityManager sm = System.getSecurityManager();
-            if (sm == null) {
-                clazzLoader = delegate == null ? rawType.getClassLoader() : delegate.getClass().getClassLoader();
-                // The class loader may be null for primitives, void or the type was loaded from the bootstrap class loader.
-                // In such cases we should use the TCCL.
-                if (clazzLoader == null) {
-                    clazzLoader = Thread.currentThread().getContextClassLoader();
-                }
-            } else {
-                clazzLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-                    @Override
-                    public ClassLoader run() {
-                        ClassLoader result = delegate == null ? rawType.getClassLoader() : delegate.getClass().getClassLoader();
-                        // The class loader may be null for primitives, void or the type was loaded from the bootstrap class loader.
-                        // In such cases we should use the TCCL.
-                        if (result == null) {
-                            result = Thread.currentThread().getContextClassLoader();
-                        }
-                        return result;
-                    }
-                });
+            clazzLoader = delegate == null ? rawType.getClassLoader() : delegate.getClass().getClassLoader();
+            // The class loader may be null for primitives, void or the type was loaded from the bootstrap class loader.
+            // In such cases we should use the TCCL.
+            if (clazzLoader == null) {
+                clazzLoader = Thread.currentThread().getContextClassLoader();
             }
             return Proxy.newProxyInstance(clazzLoader, intfs, new GenericDelegatingProxy());
         }

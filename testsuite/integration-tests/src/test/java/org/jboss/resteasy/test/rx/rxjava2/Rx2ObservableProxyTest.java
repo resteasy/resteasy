@@ -38,7 +38,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 import io.reactivex.Observable;
 
@@ -97,12 +96,7 @@ public class Rx2ObservableProxyTest {
 
     @Deployment
     public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(Rx2ObservableProxyTest.class.getSimpleName())
-                .addAsManifestResource(
-                        // Required until WFLY-17051 is resolved
-                        DeploymentDescriptors
-                                .createPermissionsXmlAsset(DeploymentDescriptors.addModuleFilePermission("org.eclipse.yasson")),
-                        "permissions.xml");
+        WebArchive war = TestUtil.prepareArchive(Rx2ObservableProxyTest.class.getSimpleName());
         war.addClass(Thing.class);
         war.addClass(TRACE.class);
         war.addClass(Bytes.class);

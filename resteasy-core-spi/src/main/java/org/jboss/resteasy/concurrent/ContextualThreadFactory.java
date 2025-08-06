@@ -19,8 +19,6 @@
 
 package org.jboss.resteasy.concurrent;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -41,19 +39,10 @@ class ContextualThreadFactory implements ThreadFactory {
     @Override
     public Thread newThread(final Runnable r) {
         final Thread thread = new Thread(r, String.format("%s-%d", prefix, threadCounter.incrementAndGet()));
-        if (System.getSecurityManager() == null) {
-            thread.setDaemon(true);
-            if (thread.getPriority() != Thread.NORM_PRIORITY) {
-                thread.setPriority(Thread.NORM_PRIORITY);
-            }
-            return thread;
+        thread.setDaemon(true);
+        if (thread.getPriority() != Thread.NORM_PRIORITY) {
+            thread.setPriority(Thread.NORM_PRIORITY);
         }
-        return AccessController.doPrivileged((PrivilegedAction<Thread>) () -> {
-            thread.setDaemon(true);
-            if (thread.getPriority() != Thread.NORM_PRIORITY) {
-                thread.setPriority(Thread.NORM_PRIORITY);
-            }
-            return thread;
-        });
+        return thread;
     }
 }

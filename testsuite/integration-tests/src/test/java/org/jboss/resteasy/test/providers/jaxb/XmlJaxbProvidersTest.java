@@ -1,9 +1,7 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
 import java.io.File;
-import java.io.FilePermission;
 import java.io.InputStream;
-import java.lang.reflect.ReflectPermission;
 
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
@@ -37,7 +35,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -60,13 +57,6 @@ public class XmlJaxbProvidersTest {
         war.addClass(XmlJaxbProvidersTest.class);
         war.addAsResource(XmlJaxbProvidersTest.class.getPackage(), "orders/order_123.xml");
         war.as(ZipExporter.class).exportTo(new File("target", XmlJaxbProvidersTest.class.getSimpleName() + ".war"), true);
-
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new FilePermission("<<ALL FILES>>", "read"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("getClassLoader")),
-                "permissions.xml");
 
         return TestUtil.finishContainerPrepare(war, null, XmlJaxbProvidersOrderResource.class, Order.class, Ordertype.class,
                 ShipTo.class, Shiptotype.class, Item.class, Itemtype.class, JAXBCache.class, XmlJaxbProvidersHelper.class,

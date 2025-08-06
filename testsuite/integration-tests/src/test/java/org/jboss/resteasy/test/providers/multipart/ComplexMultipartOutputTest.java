@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.providers.multipart;
 
 import java.io.InputStream;
-import java.lang.reflect.ReflectPermission;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
@@ -50,8 +48,6 @@ public class ComplexMultipartOutputTest {
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(ComplexMultipartOutputTest.class.getSimpleName());
         war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null,
                 ComplexMultipartOutputResource.class);
     }

@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.providers.multipart;
 
-import java.lang.reflect.ReflectPermission;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
@@ -30,7 +29,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Multipart provider
@@ -84,8 +82,6 @@ public class InputPartDefaultCharsetOverwriteTest {
         WebArchive war = TestUtil.prepareArchive(InputPartDefaultCharsetOverwriteTest.class.getSimpleName());
         war.addClasses(InputPartDefaultCharsetOverwriteTest.class);
         war.addClasses(TestUtil.class, PortProviderUtil.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteService.class);
     }
 

@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -220,40 +218,19 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
         // in WildFly so we will use it. We are not exposing this as a property as other clients may not require a
         // a setting like this.
         final long maxIdleTime = 60L;
-        if (System.getSecurityManager() == null) {
-            HttpClientBuilder httpClientBuilder = HttpClientBuilder.create()
-                    .setConnectionManager(cm)
-                    .evictExpiredConnections()
-                    .evictIdleConnections(maxIdleTime, TimeUnit.SECONDS)
-                    .setDefaultRequestConfig(rcBuilder.build())
-                    .disableContentCompression();
-            if (!that.isCookieManagementEnabled()) {
-                httpClientBuilder.disableCookieManagement();
-            }
-            if (that.isDisableAutomaticRetries()) {
-                httpClientBuilder.disableAutomaticRetries();
-            }
-            httpClient = httpClientBuilder.build();
-        } else {
-            httpClient = AccessController.doPrivileged(new PrivilegedAction<HttpClient>() {
-                @Override
-                public HttpClient run() {
-                    HttpClientBuilder httpClientBuilder = HttpClientBuilder.create()
-                            .setConnectionManager(cm)
-                            .evictExpiredConnections()
-                            .evictIdleConnections(maxIdleTime, TimeUnit.SECONDS)
-                            .setDefaultRequestConfig(rcBuilder.build())
-                            .disableContentCompression();
-                    if (!that.isCookieManagementEnabled()) {
-                        httpClientBuilder.disableCookieManagement();
-                    }
-                    if (that.isDisableAutomaticRetries()) {
-                        httpClientBuilder.disableAutomaticRetries();
-                    }
-                    return httpClientBuilder.build();
-                }
-            });
+        HttpClientBuilder httpClientBuilder = HttpClientBuilder.create()
+                .setConnectionManager(cm)
+                .evictExpiredConnections()
+                .evictIdleConnections(maxIdleTime, TimeUnit.SECONDS)
+                .setDefaultRequestConfig(rcBuilder.build())
+                .disableContentCompression();
+        if (!that.isCookieManagementEnabled()) {
+            httpClientBuilder.disableCookieManagement();
         }
+        if (that.isDisableAutomaticRetries()) {
+            httpClientBuilder.disableAutomaticRetries();
+        }
+        httpClient = httpClientBuilder.build();
 
         ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient, true);
         engine.setResponseBufferSize(responseBufferSize);
@@ -265,12 +242,8 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
     }
 
     private static ClientConfigProvider findClientConfigProvider() {
-        if (System.getSecurityManager() == null) {
-            return PriorityServiceLoader.load(ClientConfigProvider.class, getClassLoader(ClientConfigProvider.class)).first()
-                    .orElse(null);
-        }
-        return AccessController.doPrivileged((PrivilegedAction<ClientConfigProvider>) () -> PriorityServiceLoader
-                .load(ClientConfigProvider.class, getClassLoader(ClientConfigProvider.class)).first().orElse(null));
+        return PriorityServiceLoader.load(ClientConfigProvider.class, getClassLoader(ClientConfigProvider.class)).first()
+                .orElse(null);
     }
 
     private static ClassLoader getClassLoader(final Class<?> type) {

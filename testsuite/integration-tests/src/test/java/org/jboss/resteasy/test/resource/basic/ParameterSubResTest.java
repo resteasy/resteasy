@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.resource.basic;
 
-import java.util.logging.LoggingPermission;
-
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
@@ -35,7 +33,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resources
@@ -65,8 +62,6 @@ public class ParameterSubResTest {
         war.addClass(ParameterSubResSub.class);
         war.addClass(ParameterSubResSubImpl.class);
         war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new LoggingPermission("control", "")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, ParameterSubResRootImpl.class, ParameterSubResGenericSub.class);
     }
 

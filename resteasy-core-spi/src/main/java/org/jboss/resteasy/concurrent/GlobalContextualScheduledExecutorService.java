@@ -72,10 +72,11 @@ class GlobalContextualScheduledExecutorService extends ContextualScheduledExecut
         if (delegate == null) {
             synchronized (this) {
                 if (delegate == null) {
-                    final int poolSize = SecurityActions.getCoreThreads("resteasy.async.timeout.scheduler.min.pool.size");
+                    // TODO (jrp) We should simply add an option for this
+                    final int poolSize = CoreThreads.getCoreThreads("resteasy.async.timeout.scheduler.min.pool.size");
                     delegate = Executors.newScheduledThreadPool(poolSize,
                             new ContextualThreadFactory("contextual-scheduled-pool"));
-                    SecurityActions.registerShutdownHook(shutdownHook);
+                    Runtime.getRuntime().addShutdownHook(shutdownHook);
                 }
             }
         }
@@ -85,7 +86,7 @@ class GlobalContextualScheduledExecutorService extends ContextualScheduledExecut
     @Override
     public void close() {
         synchronized (this) {
-            SecurityActions.removeShutdownHook(shutdownHook);
+            Runtime.getRuntime().removeShutdownHook(shutdownHook);
             if (delegate != null) {
                 delegate.shutdown();
                 delegate = null;

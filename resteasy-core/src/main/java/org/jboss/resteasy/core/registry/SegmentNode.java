@@ -1,8 +1,6 @@
 package org.jboss.resteasy.core.registry;
 
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -554,12 +552,7 @@ public class SegmentNode {
     }
 
     private static boolean getConfigValue(final String key) {
-        if (System.getSecurityManager() == null) {
-            return ConfigurationFactory.getInstance().getConfiguration().getOptionalValue(key, boolean.class)
-                    .orElse(false);
-        }
-        return AccessController.doPrivileged((PrivilegedAction<Boolean>) () -> ConfigurationFactory.getInstance()
-                .getConfiguration().getOptionalValue(key, boolean.class)
-                .orElse(false));
+        return ConfigurationFactory.getInstance().getConfiguration().getOptionalValue(key, boolean.class)
+                .orElse(false);
     }
 }

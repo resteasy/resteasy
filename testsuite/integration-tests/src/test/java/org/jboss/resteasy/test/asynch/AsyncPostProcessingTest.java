@@ -1,10 +1,5 @@
 package org.jboss.resteasy.test.asynch;
 
-import java.lang.reflect.ReflectPermission;
-import java.net.SocketPermission;
-import java.security.SecurityPermission;
-import java.util.PropertyPermission;
-
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
 
@@ -25,7 +20,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Asynchronous RESTEasy
@@ -44,18 +38,6 @@ public class AsyncPostProcessingTest {
         WebArchive war = TestUtil.prepareArchive(AsyncPostProcessingTest.class.getSimpleName());
         war.addClasses(TestUtil.class, PortProviderUtil.class);
         war.addAsWebInfResource(AsyncPostProcessingTest.class.getPackage(), "AsyncPostProcessingTestWeb.xml", "web.xml");
-        // Arquillian in the deployment
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks"),
-                new PropertyPermission("arquillian.*", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new SecurityPermission("insertProvider"),
-                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, AsyncPostProcessingResource.class,
                 AsyncPostProcessingMsgBodyWriterInterceptor.class, AsyncPostProcessingInterceptor.class);
     }

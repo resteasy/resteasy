@@ -19,8 +19,6 @@
 
 package org.jboss.resteasy.spi.config;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ServiceLoader;
 
 /**
@@ -43,26 +41,19 @@ class SingletonConfigurationFactory {
         static final ConfigurationFactory INSTANCE;
 
         static {
-            final PrivilegedAction<ConfigurationFactory> action = () -> {
-                // We must use this class loader for environments where the TCCL might pick up an instance from a source
-                // that is not meant to be shared.
-                final ServiceLoader<ConfigurationFactory> loader = ServiceLoader.load(ConfigurationFactory.class,
-                        Holder.class.getClassLoader());
-                ConfigurationFactory current = null;
-                for (ConfigurationFactory factory : loader) {
-                    if (current == null) {
-                        current = factory;
-                    } else if (factory.priority() < current.priority()) {
-                        current = factory;
-                    }
+            // We must use this class loader for environments where the TCCL might pick up an instance from a source
+            // that is not meant to be shared.
+            final ServiceLoader<ConfigurationFactory> loader = ServiceLoader.load(ConfigurationFactory.class,
+                    Holder.class.getClassLoader());
+            ConfigurationFactory current = null;
+            for (ConfigurationFactory factory : loader) {
+                if (current == null) {
+                    current = factory;
+                } else if (factory.priority() < current.priority()) {
+                    current = factory;
                 }
-                return current == null ? () -> Integer.MAX_VALUE : current;
-            };
-            if (System.getSecurityManager() == null) {
-                INSTANCE = action.run();
-            } else {
-                INSTANCE = AccessController.doPrivileged(action);
             }
+            INSTANCE = current == null ? () -> Integer.MAX_VALUE : current;
         }
     }
 }

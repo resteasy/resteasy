@@ -1,10 +1,6 @@
 package org.jboss.resteasy.test.client;
 
-import java.lang.reflect.ReflectPermission;
-import java.net.SocketPermission;
-import java.util.PropertyPermission;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.LoggingPermission;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -26,7 +22,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -48,17 +43,6 @@ public class ClientCacheTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ClientCacheTest.class.getSimpleName());
         war.addClasses(ClientCacheProxy.class, ClientCacheTest.class, TestUtil.class, PortProviderUtil.class);
-        // Arquillian in the deployment and use of PortProviderUtil and Test util in the deployment
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
-                new LoggingPermission("control", ""),
-                new PropertyPermission("arquillian.*", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")), "permissions.xml");
         war.addClasses(ClientCacheProxy.class, ClientCacheTest.class, TestUtil.class, PortProviderUtil.class);
         return TestUtil.finishContainerPrepare(war, null, ClientCacheService.class);
     }

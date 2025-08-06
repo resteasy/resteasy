@@ -1,8 +1,6 @@
 package org.jboss.resteasy.test.response;
 
-import java.lang.reflect.ReflectPermission;
 import java.util.Map;
-import java.util.PropertyPermission;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -29,7 +27,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
@@ -97,10 +94,6 @@ public class CommitNewCookiesHeaderTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(DEP);
         war.addClass(EchoResource.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks"),
-                new PropertyPermission("ipv6", "read"),
-                new PropertyPermission("node", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, EchoResource.class);
     }
 

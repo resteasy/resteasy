@@ -1,11 +1,9 @@
 package org.jboss.resteasy.test.providers.jackson2;
 
-import java.lang.reflect.ReflectPermission;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PropertyPermission;
 
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.GenericType;
@@ -36,7 +34,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Jackson2 provider
@@ -55,10 +52,6 @@ public class ExceptionMapperMarshalTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ProxyWithGenericReturnTypeJacksonTest.class.getSimpleName());
         war.addClass(Jackson2Test.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new RuntimePermission("getProtectionDomain"),
-                new ReflectPermission("suppressAccessChecks"),
-                new PropertyPermission("resteasy.server.tracing.*", "read")), "permissions.xml");
         Map<String, String> contextParam = new HashMap<>();
         contextParam.put(ResteasyContextParameters.RESTEASY_PREFER_JACKSON_OVER_JSONB, "true");
         return TestUtil.finishContainerPrepare(war, contextParam, ExceptionMapperMarshalErrorMessage.class,

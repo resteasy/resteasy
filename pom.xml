@@ -25,13 +25,13 @@
         <maven.compiler.release>17</maven.compiler.release>
 
         <!-- Dependency versions -->
-        <version.org.jboss.arquillian.core>1.9.4.Final</version.org.jboss.arquillian.core>
+        <version.org.jboss.arquillian.core>1.10.0.Final</version.org.jboss.arquillian.core>
         <version.org.jboss.arquillian.jakarta>10.0.0.Final</version.org.jboss.arquillian.jakarta>
         <version.org.jboss.arquillian.container.arquillian-weld-embedded>4.0.0.Final</version.org.jboss.arquillian.container.arquillian-weld-embedded>
         <version.org.jboss.logging.jboss-logging-processor>3.0.4.Final</version.org.jboss.logging.jboss-logging-processor>
-        <version.org.wildfly>35.0.1.Final</version.org.wildfly>
+        <version.org.wildfly>36.0.1.Final</version.org.wildfly>
         <version.org.wildfly.arquillian.wildfly-arquillian>5.1.0.Beta11</version.org.wildfly.arquillian.wildfly-arquillian>
-        <version.org.wildfly.wildfly-channel-maven-plugin>1.0.19</version.org.wildfly.wildfly-channel-maven-plugin>
+        <version.org.wildfly.wildfly-channel-maven-plugin>1.0.27</version.org.wildfly.wildfly-channel-maven-plugin>
 
         <jboss.home/>
         <!-- print logs to file by default -->
@@ -55,7 +55,7 @@
         <!-- Plugins versions -->
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
         <version.org.jacoco.plugin>0.8.13</version.org.jacoco.plugin>
-        <version.org.wildfly.galleon-plugins>7.3.1.Final</version.org.wildfly.galleon-plugins>
+        <version.org.wildfly.galleon-plugins>7.4.0.Final</version.org.wildfly.galleon-plugins>
         <version.org.wildfly.plugins.wildfly-maven-plugin>5.1.3.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
         <version.org.wildfly.jar.plugin>12.0.0.Final</version.org.wildfly.jar.plugin>
 

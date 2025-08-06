@@ -1,10 +1,7 @@
 package org.jboss.resteasy.test.core.spi;
 
-import java.lang.reflect.ReflectPermission;
-import java.net.SocketPermission;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PropertyPermission;
 
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
@@ -25,7 +22,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter ResourceClassProcessor SPI
@@ -51,16 +47,6 @@ public class ResourceClassProcessorPriorityTest {
         WebArchive war = TestUtil.prepareArchive(ResourceClassProcessorPriorityTest.class.getSimpleName());
         war.addClass(ResourceClassProcessorPriorityTest.class);
         war.addClass(PortProviderUtil.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new PropertyPermission("ipv6", "read"),
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("arquillian.*", "read"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new ReflectPermission("suppressAccessChecks")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null,
                 ResourceClassProcessorPureEndPoint.class,
                 ResourceClassProcessorPriiorityAImplementation.class,

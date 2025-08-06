@@ -6,8 +6,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -150,7 +148,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
     private final boolean defaultExceptionManagerEnabled;
 
     public ResteasyProviderFactoryImpl() {
-        this(getOptionValue(Options.ENABLE_DEFAULT_EXCEPTION_MAPPER));
+        this(Options.ENABLE_DEFAULT_EXCEPTION_MAPPER.getValue());
     }
 
     /**
@@ -178,7 +176,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
         initializeCommon(null, true, false);
         // don't know when client will be made shareable so just do it here
         lockSnapshots();
-        this.defaultExceptionManagerEnabled = getOptionValue(Options.ENABLE_DEFAULT_EXCEPTION_MAPPER);
+        this.defaultExceptionManagerEnabled = Options.ENABLE_DEFAULT_EXCEPTION_MAPPER.getValue();
     }
 
     /**
@@ -206,7 +204,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
             serverHelper = new ServerHelper(this, parentImpl.serverHelper);
             initializeCommon(parentImpl, false, true);
         }
-        this.defaultExceptionManagerEnabled = getOptionValue(Options.ENABLE_DEFAULT_EXCEPTION_MAPPER);
+        this.defaultExceptionManagerEnabled = Options.ENABLE_DEFAULT_EXCEPTION_MAPPER.getValue();
     }
 
     protected void registerBuiltin() {
@@ -1590,15 +1588,8 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
                 throw Messages.MESSAGES.failedToConstructClass(e, builderClass);
             }
         };
-        final Optional<EntityPart.Builder> found;
-        if (System.getSecurityManager() == null) {
-            found = PriorityServiceLoader.load(EntityPart.Builder.class, constructor)
-                    .first();
-        } else {
-            found = AccessController.doPrivileged((PrivilegedAction<Optional<EntityPart.Builder>>) () -> PriorityServiceLoader
-                    .load(EntityPart.Builder.class, constructor)
-                    .first());
-        }
+        final Optional<EntityPart.Builder> found = PriorityServiceLoader.load(EntityPart.Builder.class, constructor)
+                .first();
         return found.orElseThrow(() -> Messages.MESSAGES.noImplementationFound(EntityPart.Builder.class.getName()));
     }
 
@@ -1673,13 +1664,5 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
      */
     public boolean isDefaultExceptionManagerEnabled() {
         return defaultExceptionManagerEnabled;
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static <T> T getOptionValue(final Options<T> option) {
-        if (System.getSecurityManager() == null) {
-            return option.getValue();
-        }
-        return AccessController.doPrivileged((PrivilegedAction<T>) option::getValue);
     }
 }

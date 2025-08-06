@@ -8,10 +8,6 @@ import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.ref.Cleaner;
 import java.nio.file.Path;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -98,17 +94,7 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
     private static final String processId;
 
     static {
-        try {
-            processId = AccessController.doPrivileged(new PrivilegedExceptionAction<String>() {
-                @Override
-                public String run() throws Exception {
-                    return ManagementFactory.getRuntimeMXBean().getName().replaceAll("[^0-9a-zA-Z]", "");
-                }
-
-            });
-        } catch (PrivilegedActionException pae) {
-            throw new RuntimeException(pae);
-        }
+        processId = ManagementFactory.getRuntimeMXBean().getName().replaceAll("[^0-9a-zA-Z]", "");
 
     }
 
@@ -344,22 +330,8 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
         try {
             loadHttpMethod(request, httpMethod);
 
-            if (System.getSecurityManager() == null) {
-                res = httpClient.execute(httpMethod,
-                        ((httpContextProvider == null) ? null : httpContextProvider.getContext()));
-            } else {
-                try {
-                    res = AccessController.doPrivileged(new PrivilegedExceptionAction<HttpResponse>() {
-                        @Override
-                        public HttpResponse run() throws Exception {
-                            return httpClient.execute(httpMethod,
-                                    ((httpContextProvider == null) ? null : httpContextProvider.getContext()));
-                        }
-                    });
-                } catch (PrivilegedActionException pae) {
-                    throw new RuntimeException(pae);
-                }
-            }
+            res = httpClient.execute(httpMethod,
+                    ((httpContextProvider == null) ? null : httpContextProvider.getContext()));
         } catch (Exception e) {
             LogMessages.LOGGER.clientSendProcessingFailure(e);
             throw new ProcessingException(Messages.MESSAGES.unableToInvokeRequest(e.toString()), e);
@@ -659,11 +631,7 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
     }
 
     private static <T> T getProperty(final String name, final Class<T> type, final Supplier<T> dft) {
-        if (System.getSecurityManager() == null) {
-            return ConfigurationFactory.getInstance().getConfiguration().getOptionalValue(name, type).orElseGet(dft);
-        }
-        return AccessController.doPrivileged((PrivilegedAction<T>) () -> ConfigurationFactory.getInstance()
-                .getConfiguration().getOptionalValue(name, type).orElseGet(dft));
+        return ConfigurationFactory.getInstance().getConfiguration().getOptionalValue(name, type).orElseGet(dft);
     }
 
 }

@@ -1,10 +1,7 @@
 package org.jboss.resteasy.test.providers.custom;
 
-import java.lang.reflect.ReflectPermission;
-import java.net.SocketPermission;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PropertyPermission;
 
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Response;
@@ -23,7 +20,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Providers
@@ -43,17 +39,6 @@ public class WriterNotBuiltinTest {
         war.addClass(PortProviderUtil.class);
         Map<String, String> contextParams = new HashMap<>();
         contextParams.put("resteasy.use.builtin.providers", "false");
-        // Arquillian in the deployment
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new PropertyPermission("arquillian.*", "read"),
-                new PropertyPermission("ipv6", "read"),
-                new PropertyPermission("node", "read"),
-                new PropertyPermission("org.jboss.resteasy.port", "read"),
-                new PropertyPermission("quarkus.tester", "read"),
-                new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
-                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, contextParams, WriterNotBuiltinTestWriter.class,
                 ReaderWriterResource.class);
     }

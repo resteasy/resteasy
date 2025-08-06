@@ -6,10 +6,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
@@ -105,14 +101,9 @@ public class Mime4JWorkaround {
     }
 
     private static <T> Optional<T> getProperty(final String name, final Class<T> type) {
-        if (System.getSecurityManager() == null) {
-            return ConfigurationFactory.getInstance()
-                    .getConfiguration()
-                    .getOptionalValue(name, type);
-        }
-        return AccessController.doPrivileged((PrivilegedAction<Optional<T>>) () -> ConfigurationFactory.getInstance()
+        return ConfigurationFactory.getInstance()
                 .getConfiguration()
-                .getOptionalValue(name, type));
+                .getOptionalValue(name, type);
     }
 
     /**
@@ -128,8 +119,7 @@ public class Mime4JWorkaround {
         private final Path directory;
 
         CustomTempFileStorageProvider() {
-            this.directory = (System.getSecurityManager() == null) ? Options.ENTITY_TMP_DIR.getValue()
-                    : AccessController.doPrivileged((PrivilegedAction<Path>) Options.ENTITY_TMP_DIR::getValue);
+            this.directory = Options.ENTITY_TMP_DIR.getValue();
         }
 
         @Override
@@ -138,26 +128,6 @@ public class Mime4JWorkaround {
         }
 
         private static Path createTempFile(final Path directory) throws IOException {
-            boolean java2SecurityEnabled = System.getSecurityManager() != null;
-            if (java2SecurityEnabled) {
-                try {
-                    return AccessController.doPrivileged(
-                            (PrivilegedExceptionAction<Path>) () -> {
-                                if (directory == null) {
-                                    return Files.createTempFile(CustomTempFileStorageProvider.DEFAULT_PREFIX,
-                                            CustomTempFileStorageProvider.suffix);
-                                }
-                                return Files.createTempFile(directory, CustomTempFileStorageProvider.DEFAULT_PREFIX,
-                                        CustomTempFileStorageProvider.suffix);
-                            });
-                } catch (PrivilegedActionException pae) {
-                    Throwable cause = pae.getCause();
-                    if (cause instanceof IOException) {
-                        throw (IOException) cause;
-                    } else
-                        throw new RuntimeException(cause);
-                }
-            }
             if (directory == null) {
                 return Files.createTempFile(CustomTempFileStorageProvider.DEFAULT_PREFIX, CustomTempFileStorageProvider.suffix);
             }
@@ -166,19 +136,6 @@ public class Mime4JWorkaround {
         }
 
         private static OutputStream createFileOutputStream(final Path file) throws IOException {
-            boolean java2SecurityEnabled = System.getSecurityManager() != null;
-            if (java2SecurityEnabled) {
-                try {
-                    return AccessController
-                            .doPrivileged((PrivilegedExceptionAction<OutputStream>) () -> Files.newOutputStream(file));
-                } catch (PrivilegedActionException pae) {
-                    Throwable cause = pae.getCause();
-                    if (cause instanceof IOException) {
-                        throw (IOException) cause;
-                    } else
-                        throw new RuntimeException(cause);
-                }
-            }
             return Files.newOutputStream(file);
         }
 
@@ -238,16 +195,9 @@ public class Mime4JWorkaround {
                     for (Iterator<Path> iterator = filesToDelete.iterator(); iterator.hasNext();) {
                         Path f = iterator.next();
                         try {
-                            if (System.getSecurityManager() != null) {
-                                AccessController.doPrivileged((PrivilegedExceptionAction<Object>) () -> {
-                                    Files.deleteIfExists(f);
-                                    return null;
-                                });
-                            } else {
-                                Files.deleteIfExists(f);
-                            }
+                            Files.deleteIfExists(f);
                             iterator.remove();
-                        } catch (PrivilegedActionException | IOException e) {
+                        } catch (IOException e) {
                             LogMessages.LOGGER.debugf(e, "Failed to delete file %s", f);
                         }
                     }

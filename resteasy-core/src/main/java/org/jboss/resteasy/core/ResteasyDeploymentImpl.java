@@ -1,7 +1,5 @@
 package org.jboss.resteasy.core;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -292,7 +290,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
         Object context = getDefaultContextObjects() == null ? null
                 : getDefaultContextObjects().get(ResteasyConfiguration.class);
         // Check if the efault exception manager is enabled
-        final boolean defaultExceptionManagerEnabled = getOptionValue(Options.ENABLE_DEFAULT_EXCEPTION_MAPPER,
+        final boolean defaultExceptionManagerEnabled = Options.ENABLE_DEFAULT_EXCEPTION_MAPPER.getValue(
                 (ResteasyConfiguration) context);
         // it is very important that each deployment create their own provider factory
         // this allows each WAR to have their own set of providers
@@ -1027,18 +1025,10 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
     }
 
     private static Set<Class<?>> loadServices(final Class<?> service) {
-        if (System.getSecurityManager() == null) {
-            final Set<Class<?>> results = new LinkedHashSet<>();
-            results.addAll(PriorityServiceLoader.load(service).getTypes());
-            results.addAll(PriorityServiceLoader.load(service, service.getClassLoader()).getTypes());
-            return results;
-        }
-        return AccessController.doPrivileged((PrivilegedAction<Set<Class<?>>>) () -> {
-            final Set<Class<?>> results = new LinkedHashSet<>();
-            results.addAll(PriorityServiceLoader.load(service).getTypes());
-            results.addAll(PriorityServiceLoader.load(service, service.getClassLoader()).getTypes());
-            return results;
-        });
+        final Set<Class<?>> results = new LinkedHashSet<>();
+        results.addAll(PriorityServiceLoader.load(service).getTypes());
+        results.addAll(PriorityServiceLoader.load(service, service.getClassLoader()).getTypes());
+        return results;
     }
 
     private static boolean isEnabled(final Map<String, Object> properties, final String name) {
@@ -1050,13 +1040,5 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
             return (Boolean) value;
         }
         return !String.valueOf(value).equalsIgnoreCase("false");
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static <T> T getOptionValue(final Options<T> option, final ResteasyConfiguration config) {
-        if (System.getSecurityManager() == null) {
-            return option.getValue(config);
-        }
-        return AccessController.doPrivileged((PrivilegedAction<T>) () -> option.getValue(config));
     }
 }

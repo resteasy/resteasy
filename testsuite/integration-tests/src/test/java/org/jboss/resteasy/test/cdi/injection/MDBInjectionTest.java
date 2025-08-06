@@ -1,7 +1,11 @@
 package org.jboss.resteasy.test.cdi.injection;
 
-import java.net.SocketPermission;
 import java.net.URI;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 import jakarta.annotation.Resource;
 import jakarta.ws.rs.client.Client;
@@ -10,7 +14,6 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 
-import org.hibernate.validator.HibernateValidatorPermission;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -50,7 +53,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter CDI
@@ -89,10 +91,6 @@ public class MDBInjectionTest {
         if (PortProviderUtil.isIpv6()) {
             host = String.format("[%s]", host);
         }
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new HibernateValidatorPermission("accessPrivateMembers"),
-                new SocketPermission(host, "resolve")),
-                "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
@@ -128,19 +126,37 @@ public class MDBInjectionTest {
         // Send a book title.
         WebTarget base = client.target(baseUri.resolve("produceMessage/"));
         String title = "Dead Man Lounging";
-        CDIInjectionBook book = new CDIInjectionBook(23, title);
-        Response response = base.request().post(Entity.entity(book, Constants.MEDIA_TYPE_TEST_XML));
-        log.trace("status: " + response.getStatus());
-        log.trace(response.readEntity(String.class));
-        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        response.close();
+        try (Response response = base.request().post(Entity.entity(new CDIInjectionBook(23, title),
+                Constants.MEDIA_TYPE_TEST_XML))) {
+            log.trace("status: " + response.getStatus());
+            log.trace(response.readEntity(String.class));
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        }
 
         // Verify that the received book title is the one that was sent.
-        base = client.target(baseUri.resolve("mdb/consumeMessage/"));
-        response = base.request().get();
-        log.trace("status: " + response.getStatus());
-        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assertions.assertEquals(title, response.readEntity(String.class), "Wrong response");
-        response.close();
+        waitAndAssert(baseUri.resolve("mdb/consumeMessage/"), response -> {
+            log.trace("status: " + response.getStatus());
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            Assertions.assertEquals(title, response.readEntity(String.class), "Wrong response");
+        });
+    }
+
+    private void waitAndAssert(URI uri, Consumer<Response> assertionConsumer) throws AssertionError {
+        log.info("waitAndAssert(..) validation starting.");
+        Instant endTime = Instant.now().plus(Duration.of(30, ChronoUnit.SECONDS));
+        AssertionError lastAssertionError = null;
+
+        while (Instant.now().isBefore(endTime)) {
+            try (Response response = client.target(uri).request().get()) {
+                assertionConsumer.accept(response);
+                return;
+            } catch (AssertionError assertionError) {
+                log.debug("waitAndAssert(..) validation failed - retrying.");
+                lastAssertionError = assertionError;
+                Thread.onSpinWait();
+            }
+        }
+
+        throw Objects.requireNonNullElseGet(lastAssertionError, AssertionError::new);
     }
 }

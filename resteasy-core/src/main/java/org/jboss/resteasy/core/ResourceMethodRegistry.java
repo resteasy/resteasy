@@ -2,9 +2,6 @@ package org.jboss.resteasy.core;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -230,7 +227,7 @@ public class ResourceMethodRegistry implements Registry {
 
         // https://issues.jboss.org/browse/JBPAPP-7871
         for (Class<?> clazz : classes) {
-            for (Method method : getDeclaredMethods(clazz)) {
+            for (Method method : clazz.getDeclaredMethods()) {
                 Method _method = resourceBuilder.getAnnotatedMethod(clazz, method);
                 if (_method != null && !java.lang.reflect.Modifier.isPublic(_method.getModifiers())) {
                     LogMessages.LOGGER.JAXRSAnnotationsFoundAtNonPublicMethod(method.getDeclaringClass().getName(),
@@ -239,25 +236,6 @@ public class ResourceMethodRegistry implements Registry {
             }
         }
 
-    }
-
-    private Method[] getDeclaredMethods(final Class<?> clazz) {
-        Method[] methodList = new Method[0];
-        try {
-            if (System.getSecurityManager() == null) {
-                methodList = clazz.getDeclaredMethods();
-            } else {
-                methodList = AccessController.doPrivileged(new PrivilegedExceptionAction<Method[]>() {
-                    @Override
-                    public Method[] run() throws Exception {
-                        return clazz.getDeclaredMethods();
-                    }
-                });
-            }
-        } catch (PrivilegedActionException pae) {
-
-        }
-        return methodList;
     }
 
     @Override

@@ -5,9 +5,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -198,22 +195,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector {
 
     protected Object constructOutsideRequest(Object[] args) {
         try {
-            Object target = null;
-            if (System.getSecurityManager() == null) {
-                target = constructor.newInstance(args);
-            } else {
-                try {
-                    target = AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
-                        @Override
-                        public Object run() throws Exception {
-                            return constructor.newInstance(args);
-                        }
-                    });
-                } catch (PrivilegedActionException pae) {
-                    throw new RuntimeException(pae);
-                }
-            }
-            return target;
+            return constructor.newInstance(args);
         } catch (InstantiationException e) {
             throw new RuntimeException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e);
         } catch (IllegalAccessException e) {

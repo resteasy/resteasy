@@ -9,6 +9,9 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
+import org.jboss.resteasy.test.cdi.util.Counter;
+import org.jboss.resteasy.test.cdi.util.CounterBinding;
+
 @Singleton
 @ApplicationScoped
 public class CDIInjectionBookCollection {
@@ -18,7 +21,14 @@ public class CDIInjectionBookCollection {
     @Inject
     Logger log;
 
+    @Inject
+    @CounterBinding
+    private Counter counter; // application scoped singleton: injected as Weld proxy
+
     public void addBook(CDIInjectionBook book) {
+        int id = counter.getNext();
+        book.setId(id);
+
         em.persist(book);
         log.info("persisted: " + book);
     }

@@ -23,7 +23,6 @@ import org.jboss.resteasy.test.xxe.resource.SecureProcessingFavoriteMovie;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingFavoriteMovieXmlRootElement;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingFavoriteMovieXmlType;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingResource;
-import org.jboss.resteasy.utils.AssumeUtils;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -353,7 +352,6 @@ public class SecureProcessing2Test {
      */
     @Test
     public void testSecurityFalseDTDsDefaultExpansionDefault() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestSkipPassesFailsSkip("fdd");
     }
 
@@ -365,7 +363,6 @@ public class SecureProcessing2Test {
      */
     @Test
     public void testSecurityFalseDTDsDefaultExpansionFalse() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestSkipPassesFailsSkip("fdf");
     }
 
@@ -377,7 +374,6 @@ public class SecureProcessing2Test {
      */
     @Test
     public void testSecurityFalseDTDsDefaultExpansionTrue() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestSkipPassesFailsSkip("fdt");
     }
 
@@ -389,7 +385,6 @@ public class SecureProcessing2Test {
      */
     @Test
     public void testSecurityFalseDTDsFalseExpansionDefault() throws Exception {
-        AssumeUtils.canDisableFeatureSecureProcessing();
         doTestPassesPassesPassesFails("ffd");
     }
 

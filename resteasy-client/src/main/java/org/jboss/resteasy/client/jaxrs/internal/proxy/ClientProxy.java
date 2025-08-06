@@ -3,9 +3,6 @@ package org.jboss.resteasy.client.jaxrs.internal.proxy;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.Map;
 
 import jakarta.ws.rs.client.WebTarget;
@@ -60,39 +57,10 @@ public class ClientProxy implements InvocationHandler {
                 // We need to use the privateLookupIn and lookup(), compared to publicLookup(), as the proxy is likely
                 // in a different module. See the JavaDoc for MethodHandles.privateLookupIn() for details on how this
                 // works and this allows more permissive rules.
-                if (System.getSecurityManager() == null) {
-                    return MethodHandles.privateLookupIn(clazz, MethodHandles.lookup())
-                            .unreflectSpecial(method, clazz)
-                            .bindTo(o)
-                            .invokeWithArguments(args);
-                }
-                try {
-                    return AccessController.doPrivileged((PrivilegedExceptionAction<Object>) () -> {
-                        try {
-                            return MethodHandles.privateLookupIn(clazz, MethodHandles.lookup())
-                                    .unreflectSpecial(method, clazz)
-                                    .bindTo(o)
-                                    .invokeWithArguments(args);
-                        } catch (Throwable e) {
-                            if (e instanceof Error) {
-                                throw (Error) e;
-                            }
-                            if (e instanceof RuntimeException) {
-                                throw (RuntimeException) e;
-                            }
-                            if (e instanceof Exception) {
-                                throw (Exception) e;
-                            }
-                            throw new RuntimeException(e);
-                        }
-                    });
-                } catch (PrivilegedActionException e) {
-                    final Throwable real = e.getCause();
-                    if (real != null) {
-                        throw real;
-                    }
-                    throw e;
-                }
+                return MethodHandles.privateLookupIn(clazz, MethodHandles.lookup())
+                        .unreflectSpecial(method, clazz)
+                        .bindTo(o)
+                        .invokeWithArguments(args);
             }
         }
 

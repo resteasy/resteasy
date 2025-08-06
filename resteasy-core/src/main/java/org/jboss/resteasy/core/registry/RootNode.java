@@ -3,8 +3,6 @@ package org.jboss.resteasy.core.registry;
 import static org.jboss.resteasy.core.registry.SegmentNode.RESTEASY_CHOSEN_ACCEPT;
 
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,15 +28,8 @@ public class RootNode {
     private static int CACHE_SIZE = 2048;
     private static boolean CACHE = true;
     static {
-        if (System.getSecurityManager() == null) {
-            CACHE = Boolean.parseBoolean(System.getProperty(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED, "true"));
-            CACHE_SIZE = Integer.getInteger(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE, 2048);
-        } else {
-            CACHE = AccessController.doPrivileged((PrivilegedAction<Boolean>) () -> Boolean
-                    .parseBoolean(System.getProperty(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED, "true")));
-            CACHE_SIZE = AccessController.doPrivileged((PrivilegedAction<Integer>) () -> Integer
-                    .getInteger(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE, 2048));
-        }
+        CACHE = Boolean.parseBoolean(System.getProperty(ResteasyContextParameters.RESTEASY_MATCH_CACHE_ENABLED, "true"));
+        CACHE_SIZE = Integer.getInteger(ResteasyContextParameters.RESTEASY_MATCH_CACHE_SIZE, 2048);
     }
 
     public int getSize() {

@@ -2,7 +2,6 @@ package org.jboss.resteasy.test.exception;
 
 import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
 
-import java.lang.reflect.ReflectPermission;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +25,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.wildfly.arquillian.junit.annotations.RequiresModule;
-import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -50,8 +48,6 @@ public class ClosedResponseHandlingTest {
         war.addClass(ClosedResponseHandlingTest.class);
         war.addPackage(ClosedResponseHandlingResource.class.getPackage());
         war.addClass(PortProviderUtil.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks")), "permissions.xml");
 
         Map<String, String> params = new HashMap<>();
         params.put(ResteasyContextParameters.RESTEASY_TRACING_TYPE, ResteasyContextParameters.RESTEASY_TRACING_TYPE_ALL);
@@ -69,8 +65,6 @@ public class ClosedResponseHandlingTest {
         war.addClass(ClosedResponseHandlingTest.class);
         war.addPackage(ClosedResponseHandlingResource.class.getPackage());
         war.addClass(PortProviderUtil.class);
-        war.addAsManifestResource(DeploymentDescriptors.createPermissionsXmlAsset(
-                new ReflectPermission("suppressAccessChecks")), "permissions.xml");
         war.setWebXML(ClientWebApplicationExceptionResteasyProxyTest.class.getPackage(), "webapplicationexception_web.xml");
 
         return TestUtil.finishContainerPrepare(war, null, ClosedResponseHandlingResource.class,
