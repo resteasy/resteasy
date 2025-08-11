@@ -252,7 +252,7 @@ public class SseTest {
     @Test
     @Order(5)
     public void testReconnect() throws Exception {
-        int proxyPort = 9090;
+        int proxyPort = PortProviderUtil.findOpenPort();
         SimpleProxyServer proxy = new SimpleProxyServer(PortProviderUtil.getHost(), PortProviderUtil.getPort(), proxyPort);
         proxy.start();
         int maxWaits = 30;
