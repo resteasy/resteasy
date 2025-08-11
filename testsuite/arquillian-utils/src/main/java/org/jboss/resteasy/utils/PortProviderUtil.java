@@ -1,6 +1,8 @@
 package org.jboss.resteasy.utils;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URL;
 
@@ -187,5 +189,36 @@ public class PortProviderUtil {
      */
     public static boolean isIpv6() {
         return ipv6;
+    }
+
+    /**
+     * Looks for an available open port from 1024 to 65535.
+     *
+     * @return the available port
+     *
+     * @throws RuntimeException if no port is available
+     */
+    public static int findOpenPort() {
+        return PortProviderUtil.findOpenPort(1024);
+    }
+
+    /**
+     * Looks for an available open port from minimum port passed to 65535.
+     *
+     * @param minPort the minimum port number to attempt
+     *
+     * @return the available port
+     *
+     * @throws RuntimeException if no port is available
+     */
+    public static int findOpenPort(final int minPort) {
+        for (int port = minPort; port < 65535; port++) {
+            try (ServerSocket serverSocket = new ServerSocket(port)) {
+                serverSocket.setReuseAddress(true);
+                return port;
+            } catch (IOException ignore) {
+            }
+        }
+        throw new RuntimeException("Could not find any available port starting with " + minPort);
     }
 }
