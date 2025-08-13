@@ -11,9 +11,11 @@ import org.jboss.resteasy.annotations.providers.img.ImageWriterParams;
 
 @Path("/image")
 public class ImageResource {
+    public static final String CONTENT_TYPE = "image/png";
+
     @POST
     @Consumes("image/*")
-    @Produces("image/png")
+    @Produces(CONTENT_TYPE)
     @ImageWriterParams(compressionQuality = 0.2f)
     public IIOImage transcodeImage(IIOImage image) {
         return image;

@@ -1,13 +1,22 @@
 package org.jboss.resteasy.test.providers.iioimage;
 
-import java.io.BufferedInputStream;
+import static org.jboss.resteasy.test.providers.iioimage.resource.ImageResource.CONTENT_TYPE;
+
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -39,10 +48,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @RunAsClient
 public class IIOImageProviderTest {
     static ResteasyClient client;
-    //two different versions of the same png image, compressed using JDK8 and JDK11, so that we can perform byte comparisons in testPostPNGImage()
-    static final String testPngResource1 = "test1.png";
-    static final String testPngResource2 = "test2.png";
-    static final String testWdpResource = "test.wdp";
 
     @BeforeEach
     public void init() {
@@ -73,25 +78,23 @@ public class IIOImageProviderTest {
      */
     @Test
     public void testPostPNGImage() throws Exception {
-        final String testPngResource = System.getProperty("java.version").startsWith("1.") ? testPngResource1
-                : testPngResource2;
-        File file = new File(TestUtil.getResourcePath(IIOImageProviderTest.class, testPngResource));
-        Assertions.assertTrue(file.exists());
-        Response response = client.target(TEST_URI).request().post(Entity.entity(file, "image/png"));
-        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        String contentType = response.getHeaderString("content-type");
-        Assertions.assertEquals("image/png", contentType, "Wrong content type of response");
+        File localImage = createNewPng(
+                ImageIO.read(new File(TestUtil.getResourcePath(IIOImageProviderTest.class, "test.png"))));
+        Assertions.assertTrue(localImage.exists());
 
-        BufferedInputStream in = new BufferedInputStream(response.readEntity(InputStream.class));
+        Response response = client.target(TEST_URI).request().post(Entity.entity(localImage, CONTENT_TYPE));
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals(CONTENT_TYPE, response.getHeaderString("content-type"), "Wrong content type of response");
+
         ByteArrayOutputStream fromServer = new ByteArrayOutputStream();
-        writeTo(in, fromServer);
+        writeTo(response.readEntity(InputStream.class), fromServer);
         response.close();
-        File savedPng = new File(TestUtil.getResourcePath(IIOImageProviderTest.class, testPngResource));
-        FileInputStream fis = new FileInputStream(savedPng);
-        ByteArrayOutputStream fromTestData = new ByteArrayOutputStream();
-        writeTo(fis, fromTestData);
+
+        ByteArrayOutputStream localData = new ByteArrayOutputStream();
+        writeTo(new FileInputStream(localImage), localData);
+
         // ImageResource could change image slightly, so next assert could fail, because same picture could have been saved different
-        Assertions.assertTrue(Arrays.equals(fromServer.toByteArray(), fromTestData.toByteArray()),
+        Assertions.assertTrue(Arrays.equals(fromServer.toByteArray(), localData.toByteArray()),
                 "ImageResource could change image slightly or ImageResource is wrong");
     }
 
@@ -104,6 +107,8 @@ public class IIOImageProviderTest {
      */
     @Test
     public void testPostUnsupportedImage() throws Exception {
+        final String testWdpResource = "test.wdp";
+
         File file = new File(TestUtil.getResourcePath(IIOImageProviderTest.class, testWdpResource));
         Assertions.assertTrue(file.exists());
         Response response = client.target(TEST_URI).request().post(Entity.entity(file, "image/vnd.ms-photo"));
@@ -112,11 +117,39 @@ public class IIOImageProviderTest {
         response.close();
     }
 
-    public void writeTo(final InputStream in, final OutputStream out) throws IOException {
+    private void writeTo(final InputStream in, final OutputStream out) throws IOException {
         int read;
         final byte[] buf = new byte[2048];
         while ((read = in.read(buf)) != -1) {
             out.write(buf, 0, read);
+        }
+    }
+
+    /*
+     * Under certain JDKs (e.g., OpenJDK and Oracle) the compression library can cause a false negative in the test due
+     * to a slight change in the bits of the image, even though the two compared images are visually identical. This method
+     * reads in the source image and creates a new PNG, implicitly using the underlying libraries of the JDK that is running
+     * both the test and the server. This should remove any differences caused by varying compression libraries and verify
+     * that Resteasy is handling the IIOImage payloads correctly.
+     */
+    private File createNewPng(BufferedImage image) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageWriter writer = ImageIO.getImageWritersByFormatName("png").next();
+
+        try (ImageOutputStream output = ImageIO.createImageOutputStream(baos)) {
+            writer.setOutput(output);
+            IIOImage iioImage = new IIOImage(image, null, null);
+            ImageWriteParam param = writer.getDefaultWriteParam();
+            writer.write(null, iioImage, param);
+            File imageFile = File.createTempFile("test", ".png");
+            try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+                baos.writeTo(fos);
+            }
+            baos.close();
+
+            return imageFile;
+        } finally {
+            writer.dispose();
         }
     }
 }
