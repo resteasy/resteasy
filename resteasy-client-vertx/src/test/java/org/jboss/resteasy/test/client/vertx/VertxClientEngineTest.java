@@ -69,7 +69,7 @@ public class VertxClientEngineTest {
             client.close();
         }
         CountDownLatch latch = new CountDownLatch(1);
-        vertx.close(ar -> latch.countDown());
+        vertx.close().onComplete(ar -> latch.countDown());
         latch.await(2, TimeUnit.MINUTES);
         executorService.shutdownNow();
     }
@@ -77,7 +77,7 @@ public class VertxClientEngineTest {
     private Client client() throws Exception {
         if (server.actualPort() == 0) {
             CompletableFuture<Void> fut = new CompletableFuture<>();
-            server.listen(0, ar -> {
+            server.listen(0).onComplete(ar -> {
                 if (ar.succeeded()) {
                     fut.complete(null);
                 } else {
@@ -363,7 +363,7 @@ public class VertxClientEngineTest {
     @Test
     public void testServerFailure1() throws Exception {
         server.requestHandler(req -> {
-            req.response().close();
+            req.response().reset();
         });
 
         try {
@@ -381,7 +381,7 @@ public class VertxClientEngineTest {
             resp.setChunked(true).write("something");
             vertx.setTimer(1000, id -> {
                 // Leave it some time to receive the response headers and start processing the response
-                resp.close();
+                resp.reset();
             });
         });
 
