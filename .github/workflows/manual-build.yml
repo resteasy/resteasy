@@ -21,7 +21,7 @@ jobs:
     runs-on: ${{ inputs.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set up JDK ${{ inputs.javaVersion }}
         uses: actions/setup-java@v4
         with:
