@@ -19,7 +19,9 @@ import io.vertx.core.http.HttpServerResponse;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
+ * @deprecated use new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class VertxRequestHandler implements Handler<HttpServerRequest> {
 
     private final Vertx vertx;

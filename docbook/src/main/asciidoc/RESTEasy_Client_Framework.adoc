@@ -838,6 +838,19 @@ public HttpEngine createVertxEngine() {
 
 You can read more about HttpClient configuration https://vertx.io/docs/vertx-core/java/#_making_requests[here].
 
+[IMPORTANT]
+====
+The Vert.x client has moved to its own project which can be found at https://github.com/resteasy/resteasy-vertx.
+The packages have remained the same, but the Maven GAV has changed:
+[source,xml]
+----
+<dependency>
+    <groupId>dev.resteasy.vertx</groupId>
+    <artifactId>resteasy-vertx-client</artifactId>
+</dependency>
+----
+====
+
 [[_reactor_netty_client]]
 ==== Reactor Netty Client Engine
 

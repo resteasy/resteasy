@@ -10,7 +10,9 @@ import org.jboss.resteasy.spi.metadata.ResourceClass;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
+ * @deprecated use new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class VertxRegistry implements Registry {
 
     private final Registry delegate;

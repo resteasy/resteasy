@@ -21,7 +21,9 @@ import io.vertx.core.http.HttpServerRequest;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * @deprecated use new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class VertxUtil {
     public static ResteasyUriInfo extractUriInfo(HttpServerRequest req, String contextPath) {
         String uri = req.absoluteURI();

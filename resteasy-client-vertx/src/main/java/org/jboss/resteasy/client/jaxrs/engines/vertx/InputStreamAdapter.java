@@ -7,6 +7,10 @@ import java.io.InterruptedIOException;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.streams.ReadStream;
 
+/**
+ * @deprecated use new dependencies
+ */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class InputStreamAdapter extends InputStream {
 
     private final Object lock = new Object();
