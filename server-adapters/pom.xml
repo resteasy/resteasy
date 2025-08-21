@@ -32,7 +32,6 @@
         <module>resteasy-netty4-cdi</module>
         <module>resteasy-undertow</module>
         <module>resteasy-undertow-cdi</module>
-        <module>resteasy-vertx</module>
         <module>resteasy-reactor-netty</module>
     </modules>
 

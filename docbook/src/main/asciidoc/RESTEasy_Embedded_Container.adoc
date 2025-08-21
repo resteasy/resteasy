@@ -212,9 +212,8 @@ Include this archive to use the Vertx feature
 [source,xml,subs="attributes+"]
 ----
 <dependency>
-    <groupId>org.jboss.resteasy</groupId>
-    <artifactId>resteasy-vertx</artifactId>
-    <version>{resteasy-version}</version>
+    <groupId>dev.resteasy.vertx</groupId>
+    <artifactId>resteasy-vertx-embedded-server</artifactId>
 </dependency>
 ----
 
@@ -264,6 +263,19 @@ public String context(
     return "the-response";
 }
 ----
+
+[IMPORTANT]
+====
+The Vert.x embedded has moved to its own project which can be found at https://github.com/resteasy/resteasy-vertx.
+The packages have remained the same, but the Maven GAV has changed:
+[source,xml]
+----
+<dependency>
+    <groupId>dev.resteasy.vertx</groupId>
+    <artifactId>resteasy-vertx-embedded-server</artifactId>
+</dependency>
+----
+====
 
 === EmbeddedJaxrsServer
 

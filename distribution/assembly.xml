@@ -56,7 +56,6 @@
             <includes>
                 <include>org.jboss.resteasy:resteasy-undertow</include>
                 <include>org.jboss.resteasy:resteasy-netty4</include>
-                <include>org.jboss.resteasy:resteasy-vertx</include>
                 <include>org.jboss.resteasy:resteasy-jdk-http</include>
                 <include>jakarta.servlet:jakarta.servlet-api</include>
             </includes>
