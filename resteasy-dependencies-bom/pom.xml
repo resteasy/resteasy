@@ -125,7 +125,6 @@
                 <groupId>dev.resteasy.junit.extension</groupId>
                 <artifactId>resteasy-junit-extension</artifactId>
                 <version>${version.dev.resteasy.junit.extension}</version>
-                <scope>test</scope>
             </dependency>
 
             <dependency>

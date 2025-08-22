@@ -25,6 +25,7 @@
     </dependencyManagement>
 
     <modules>
+        <module>embedded-server-tests</module>
         <module>server-adapter-test-base</module>
         <module>resteasy-jdk-http</module>
         <module>resteasy-netty4</module>
