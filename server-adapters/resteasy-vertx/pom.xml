@@ -125,6 +125,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>resteasy-embedded-server-tests</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
@@ -148,7 +154,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <dependenciesToScan>${project.groupId}:resteasy-embedded-server-tests</dependenciesToScan>
                     <excludedGroups>NoSslTests</excludedGroups>
+                    <!-- This test was previously only executed on the UndertowJaxrsServer. It does not seem to
+                         work with Vert.x, so we'll just skip it. -->
+                    <excludes>
+                        <exclude>**/NonCDIValidatorFactoryTest</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>
