@@ -40,6 +40,7 @@ import org.jboss.jandex.Index;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.concurrent.ContextualExecutors;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.scanner.ResourceScanner;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedServer;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedServers;
@@ -185,11 +186,22 @@ public class ResteasySeInstance implements Instance {
 
     @Override
     public CompletionStage<StopResult> stop() {
+        // Get the current context
+        final Map<Class<?>, Object> currentContext = ResteasyContext.getContextDataMap(false);
+        // Clear the current context
+        ResteasyContext.clearContextData();
         final CompletableFuture<StopResult> cf = new CompletableFuture<>();
         executor.submit(() -> {
             try {
-                server.stop();
-                cf.complete(stopResult);
+                // Before we start, push the current context for potential usage when stopping the server
+                ResteasyContext.pushContextDataMap(currentContext);
+                try {
+                    server.stop();
+                    cf.complete(stopResult);
+                } finally {
+                    // Finally clear current threads context
+                    ResteasyContext.clearContextData();
+                }
             } catch (Throwable t) {
                 cf.completeExceptionally(t);
             }
