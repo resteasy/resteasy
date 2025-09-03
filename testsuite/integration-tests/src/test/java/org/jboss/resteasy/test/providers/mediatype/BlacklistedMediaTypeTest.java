@@ -44,7 +44,7 @@ import org.wildfly.arquillian.junit.annotations.RequiresModule;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@RequiresModule("org.bouncycastle")
+@RequiresModule("org.bouncycastle.bcprov")
 public class BlacklistedMediaTypeTest {
 
     private static final String APPLICATION_SIGNED_EXCHANGE = "application/signed-exchange";
