@@ -326,6 +326,8 @@
                                         <exclude>**/SslServerWithWildcardHostnameCertificateTest.java</exclude>
                                         <exclude>**/SslServerWithWrongHostnameCertificateTest.java</exclude>
                                         <exclude>**/SslSniHostNamesTest.java</exclude>
+                                        <exclude>**/JettyClientHttpEngineTest.java</exclude>
+                                        <exclude>**/VertxClientHttpEngineTest.java</exclude>
                                     </excludes>
                                 </configuration>
                             </execution>
