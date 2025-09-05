@@ -18,6 +18,10 @@ import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerResponse;
 
+/**
+ * @deprecated use new dependencies
+ */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class VertxHttpResponse implements HttpResponse {
     private int status = 200;
     private OutputStream os;

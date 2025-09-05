@@ -34,7 +34,9 @@ import io.vertx.core.buffer.Buffer;
  * </pre>
  *
  * @author tbussier
+ * @deprecated use new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class ChunkOutputStream extends AsyncOutputStream {
     private Buffer buffer;
     private final VertxHttpResponse response;

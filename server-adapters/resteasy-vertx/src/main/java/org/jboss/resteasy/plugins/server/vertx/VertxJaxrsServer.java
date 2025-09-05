@@ -34,7 +34,9 @@ import io.vertx.core.json.JsonObject;
  * @author Norman Maurer
  * @author Julien Viet
  * @version $Rev: 2080 $, $Date: 2010-01-26 18:04:19 +0900 (Tue, 26 Jan 2010) $
+ * @deprecated use new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class VertxJaxrsServer implements EmbeddedJaxrsServer<VertxJaxrsServer> {
     private static final ConcurrentMap<String, Helper> deploymentMap = new ConcurrentHashMap<>();
     protected VertxOptions vertxOptions = new VertxOptions();

@@ -5,7 +5,9 @@ import org.jboss.resteasy.spi.Registry;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
+ * @deprecated use new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class VertxResteasyDeployment extends ResteasyDeploymentImpl {
 
     @Override

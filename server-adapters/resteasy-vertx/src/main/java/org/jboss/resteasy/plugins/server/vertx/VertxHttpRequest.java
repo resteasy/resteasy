@@ -43,7 +43,9 @@ import io.vertx.core.http.HttpServerRequest;
  * @author Norman Maurer
  * @author Kristoffer Sjogren
  * @version $Revision: 1 $
+ * @deprecated use new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class VertxHttpRequest extends BaseHttpRequest {
     protected ResteasyHttpHeaders httpHeaders;
     protected SynchronousDispatcher dispatcher;

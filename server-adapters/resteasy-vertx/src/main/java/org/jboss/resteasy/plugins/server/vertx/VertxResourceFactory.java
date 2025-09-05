@@ -13,7 +13,9 @@ import io.vertx.core.Vertx;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
+ * @deprecated use new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class VertxResourceFactory implements ResourceFactory {
 
     private final ResourceFactory delegate;

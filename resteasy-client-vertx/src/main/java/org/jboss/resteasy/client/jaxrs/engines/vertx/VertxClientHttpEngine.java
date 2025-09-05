@@ -42,6 +42,10 @@ import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.RequestOptions;
 
+/**
+ * @deprecated use new dependencies
+ */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class VertxClientHttpEngine implements AsyncClientHttpEngine {
 
     /**

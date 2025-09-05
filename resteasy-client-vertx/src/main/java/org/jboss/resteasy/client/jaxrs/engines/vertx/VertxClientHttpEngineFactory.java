@@ -32,7 +32,9 @@ import io.vertx.core.net.ProxyType;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
+ * @deprecated use new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class VertxClientHttpEngineFactory implements ClientHttpEngineFactory {
     @Override
     public AsyncClientHttpEngine asyncHttpClientEngine(final ClientBuilderConfiguration configuration) {
