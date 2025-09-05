@@ -56,17 +56,17 @@ jobs:
 
     steps:
       - name: Checkout RESTEasy
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: resteasy
       - name: Checkout RESTEasy TCK Runner
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: resteasy/resteasy-tck-runner
           path: resteasy-tck-runner
           ref: 'jakarta-rest-3.1'
       - name: Set up JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: |
             17
@@ -125,17 +125,17 @@ jobs:
 
     steps:
       - name: Checkout RESTEasy
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: resteasy
       - name: Checkout RESTEasy TCK Runner
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: resteasy/resteasy-tck-runner
           path: resteasy-tck-runner
           ref: 'jakarta-rest-3.1'
       - name: Set up JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: |
             11
