@@ -247,7 +247,7 @@ public class NettyTest {
         Socket client = new Socket(getHost(), getPort());
         PrintWriter out = new PrintWriter(client.getOutputStream(), true);
         BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-        out.printf(Locale.US, "GET %s HTTP/1.1\nHost: %s:%d\n\n", uri, getHost(), getPort());
+        out.printf(Locale.US, "GET %s HTTP/1.1\r\nHost: %s:%d\r\n\r\n", uri, getHost(), getPort());
         String statusLine = in.readLine();
         String response = in.readLine();
 
