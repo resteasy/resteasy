@@ -37,7 +37,7 @@ public class URLConnectionEngine implements ClientHttpEngine {
     protected HostnameVerifier hostnameVerifier;
     protected Integer readTimeout;
     protected Integer connectTimeout;
-    protected boolean useDefaultProxy;
+    protected boolean useJvmProxySettings;
     protected String proxyHost;
     protected Integer proxyPort;
     protected String proxyScheme;
@@ -151,7 +151,7 @@ public class URLConnectionEngine implements ClientHttpEngine {
         Proxy proxy = null;
         if (this.proxyHost != null && this.proxyPort != null) {
             proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(this.proxyHost, this.proxyPort));
-        } else if (!this.useDefaultProxy) {
+        } else if (!this.useJvmProxySettings) {
             proxy = Proxy.NO_PROXY;
         }
 
@@ -265,19 +265,12 @@ public class URLConnectionEngine implements ClientHttpEngine {
         this.readTimeout = readTimeout;
     }
 
-    /**
-     * Configures whether the default proxy settings should be enabled for the connection.
-     *
-     * @param useDefaultProxy a boolean flag indicating whether to enable the default parametric-driven proxy.
-     *                        If set to {@code true}, the default proxy settings will be enabled;
-     *                        otherwise, they will remain disabled.
-     */
-    public void setUseDefaultProxy(boolean useDefaultProxy) {
-        this.useDefaultProxy = useDefaultProxy;
+    public void setUseJvmProxySettings(boolean useJvmProxySettings) {
+        this.useJvmProxySettings = useJvmProxySettings;
     }
 
-    public boolean isUseDefaultProxy() {
-        return this.useDefaultProxy;
+    public boolean isUseJvmProxySettings() {
+        return this.useJvmProxySettings;
     }
 
     public void setProxyHost(String proxyHost) {
