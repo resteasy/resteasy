@@ -32,7 +32,6 @@
                 <include>org.jboss.resteasy:resteasy-core</include>
                 <include>org.jboss.resteasy:resteasy-client-api</include>
                 <include>org.jboss.resteasy:resteasy-client</include>
-                <include>org.jboss.resteasy:resteasy-client-jetty</include>
                 <include>org.jboss.resteasy:resteasy-servlet-initializer</include>
                 <include>org.jboss.resteasy:resteasy-jaxb-provider</include>
                 <include>org.jboss.resteasy:resteasy-fastinfoset-provider</include>

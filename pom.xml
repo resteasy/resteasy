@@ -152,7 +152,6 @@
                 <module>resteasy-rxjava2</module>
                 <module>resteasy-reactor</module>
                 <module>server-adapters</module>
-                <module>resteasy-client-jetty</module>
                 <module>resteasy-client-reactor-netty</module>
                 <module>resteasy-client-utils</module>
                 <module>resteasy-wadl</module>

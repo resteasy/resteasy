@@ -34,11 +34,6 @@
             <artifactId>resteasy-client</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-client-jetty</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>jakarta.ws.rs</groupId>

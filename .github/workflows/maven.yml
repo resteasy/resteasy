@@ -16,7 +16,6 @@ on:
       - 'resteasy-cdi/**'
       - 'resteasy-client/**'
       - 'resteasy-client-api/**'
-      - 'resteasy-client-jetty/**'
       - 'resteasy-client-reactor-netty/**'
       - 'resteasy-client-utils/**'
       - 'resteasy-core/**'
