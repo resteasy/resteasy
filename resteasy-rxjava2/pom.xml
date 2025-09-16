@@ -48,8 +48,13 @@
           <scope>test</scope>
       </dependency>
       <dependency>
+          <groupId>dev.resteasy.junit.extension</groupId>
+          <artifactId>resteasy-junit-extension</artifactId>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
           <groupId>org.jboss.resteasy</groupId>
-          <artifactId>resteasy-netty4</artifactId>
+          <artifactId>resteasy-undertow-cdi</artifactId>
           <version>${project.version}</version>
           <scope>test</scope>
       </dependency>

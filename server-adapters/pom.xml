@@ -28,11 +28,8 @@
         <module>embedded-server-tests</module>
         <module>server-adapter-test-base</module>
         <module>resteasy-jdk-http</module>
-        <module>resteasy-netty4</module>
-        <module>resteasy-netty4-cdi</module>
         <module>resteasy-undertow</module>
         <module>resteasy-undertow-cdi</module>
-        <module>resteasy-reactor-netty</module>
     </modules>
 
     <dependencies>
