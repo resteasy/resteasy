@@ -1,60 +1,25 @@
 package org.jboss.resteasy.test.nextgen.wadl;
 
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
+import java.util.Set;
 
-import org.jboss.resteasy.core.ResteasyDeploymentImpl;
-import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.test.TestPortProvider;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.Application;
+
 import org.jboss.resteasy.test.nextgen.wadl.resources.BasicResource;
 import org.jboss.resteasy.test.nextgen.wadl.resources.issues.RESTEASY1246;
-import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
-import org.jboss.resteasy.wadl.ResteasyWadlGenerator;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import dev.resteasy.junit.extension.annotations.RestBootstrap;
 
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
+@RestBootstrap(WADLNettyContainerTest.TestApplication.class)
 public class WADLNettyContainerTest {
-    private static NettyJaxrsServer netty;
-    private static int port = TestPortProvider.getPort();
-    private static Client client = ClientBuilder.newClient();
-
-    @BeforeAll
-    public static void setup() throws Exception {
-        ResteasyDeployment deployment = new ResteasyDeploymentImpl();
-        deployment.setSecurityEnabled(true);
-
-        netty = new NettyJaxrsServer();
-        netty.setDeployment(deployment);
-        netty.setPort(port);
-        netty.setRootResourcePath("");
-        netty.setSecurityDomain(null);
-        netty.start();
-
-        deployment.getRegistry().addPerRequestResource(BasicResource.class);
-        deployment.getRegistry().addPerRequestResource(RESTEASY1246.class);
-
-        ResteasyWadlDefaultResource defaultResource = new MyWadlResource();
-
-        deployment.getRegistry().addSingletonResource(defaultResource);
-
-        defaultResource.getServices().put("/", ResteasyWadlGenerator.generateServiceRegistry(deployment));
-    }
-
-    @AfterAll
-    public static void end() throws Exception {
-        try {
-            client.close();
-        } catch (Exception e) {
-
-        }
-        netty.stop();
-        netty = null;
-    }
+    @Inject
+    private static Client client;
 
     @Test
     public void test() throws Exception {
@@ -62,5 +27,13 @@ public class WADLNettyContainerTest {
         basicTest.setClient(client);
         basicTest.testBasicSet();
         basicTest.testResteasy1246();
+    }
+
+    @ApplicationPath("/")
+    public static class TestApplication extends Application {
+        @Override
+        public Set<Class<?>> getClasses() {
+            return Set.of(BasicResource.class, RESTEASY1246.class, MyWadlResource.class);
+        }
     }
 }

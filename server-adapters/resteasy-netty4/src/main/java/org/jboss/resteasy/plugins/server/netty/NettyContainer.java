@@ -8,7 +8,10 @@ import org.jboss.resteasy.util.PortProvider;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ *
+ * @deprecated use the new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class NettyContainer {
     public static NettyJaxrsServer netty;
 

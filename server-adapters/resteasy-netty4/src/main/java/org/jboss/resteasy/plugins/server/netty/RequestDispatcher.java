@@ -25,7 +25,10 @@ import io.netty.channel.ChannelHandlerContext;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @author Norman Maurer
  * @version $Revision: 1 $
+ *
+ * @deprecated use the new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class RequestDispatcher {
     protected final SynchronousDispatcher dispatcher;
     protected final ResteasyProviderFactory providerFactory;

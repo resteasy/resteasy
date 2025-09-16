@@ -32,7 +32,10 @@ import io.netty.handler.codec.http.DefaultHttpContent;
  *
  * @author tbussier
  *
+ *
+ * @deprecated use the new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class ChunkOutputStream extends AsyncOutputStream {
     private final Object writeLock = new Object();
     private final ByteBuf buffer;

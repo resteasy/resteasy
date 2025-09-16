@@ -20,7 +20,10 @@ import io.netty.channel.ChannelHandlerContext;
 
 /**
  * A request dispatcher that starts a RequestContext during invocation.
+ *
+ * @deprecated use the new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 @Vetoed
 public class CdiRequestDispatcher extends RequestDispatcher {
     private final Instance<Object> instance;

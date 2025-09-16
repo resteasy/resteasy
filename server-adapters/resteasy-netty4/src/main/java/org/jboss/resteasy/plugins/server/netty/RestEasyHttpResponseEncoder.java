@@ -23,7 +23,9 @@ import io.netty.handler.codec.http.LastHttpContent;
  *
  * @author Norman Maurer
  *
+ * @deprecated use the new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 @Sharable
 public class RestEasyHttpResponseEncoder extends MessageToMessageEncoder<NettyHttpResponse> {
 

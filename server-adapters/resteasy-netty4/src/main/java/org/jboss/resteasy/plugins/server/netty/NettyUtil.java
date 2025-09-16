@@ -22,7 +22,10 @@ import io.netty.util.concurrent.FastThreadLocalThread;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ *
+ * @deprecated use the new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class NettyUtil {
     public static ResteasyUriInfo extractUriInfo(HttpRequest request, String contextPath, String protocol) {
         String uri = request.uri();

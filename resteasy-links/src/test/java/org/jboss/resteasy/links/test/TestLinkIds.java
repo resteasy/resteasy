@@ -1,71 +1,32 @@
 package org.jboss.resteasy.links.test;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import java.util.Set;
 
-import java.util.concurrent.TimeUnit;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
 
-import jakarta.ws.rs.client.ClientBuilder;
-
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.RESTServiceDiscovery.AtomLink;
-import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
-import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
-import org.jboss.resteasy.spi.Dispatcher;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.metadata.ResourceBuilder;
-import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class TestLinkIds {
-    private static NettyJaxrsServer server;
+import dev.resteasy.junit.extension.annotations.RestBootstrap;
 
-    private static Dispatcher dispatcher;
+@RestBootstrap(TestLinkIds.TestApplication.class)
+public class TestLinkIds {
+
+    private static IDServiceTest client;
+    private static String url;
 
     @BeforeAll
-    public static void beforeClass() throws Exception {
-        server = new NettyJaxrsServer();
-        server.setPort(TestPortProvider.getPort());
-        server.setRootResourcePath("/");
-        ResteasyDeployment deployment = server.getDeployment();
-        deployment.start();
-        dispatcher = deployment.getDispatcher();
-        POJOResourceFactory noDefaults = new POJOResourceFactory(new ResourceBuilder(), IDServiceTestBean.class);
-        dispatcher.getRegistry().addResourceFactory(noDefaults);
-        server.start();
-
-        httpClient = HttpClientBuilder.create().build();
-        ApacheHttpClientEngine engine = ApacheHttpClientEngine.create(httpClient);
-        url = generateBaseUrl();
-        ResteasyWebTarget target = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).httpEngine(engine).build().target(url);
-        client = target.proxy(IDServiceTest.class);
-    }
-
-    @AfterAll
-    public static void afterClass() throws Exception {
-        server.stop();
-        server = null;
-        dispatcher = null;
-    }
-
-    private static String url;
-    private static IDServiceTest client;
-    private static CloseableHttpClient httpClient;
-
-    @SuppressWarnings("deprecation")
-    @AfterEach
-    public void after() {
-        // TJWS does not support chunk encodings well so I need to kill kept
-        // alive connections
-        httpClient.getConnectionManager().closeIdleConnections(0, TimeUnit.MILLISECONDS);
+    public static void beforeClass(final ResteasyWebTarget webTarget) throws Exception {
+        client = webTarget.proxy(IDServiceTest.class);
+        url = webTarget.getUri().toASCIIString();
+        if (url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
+        }
     }
 
     @Test
@@ -112,5 +73,13 @@ public class TestLinkIds {
         AtomLink link = links.get(0);
         Assertions.assertEquals("self", link.getRel());
         Assertions.assertEquals(url + relativeUrl, link.getHref());
+    }
+
+    @ApplicationPath("/")
+    public static class TestApplication extends Application {
+        @Override
+        public Set<Class<?>> getClasses() {
+            return Set.of(IDServiceTestBean.class);
+        }
     }
 }

@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.security.doseta;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-
 import java.net.URL;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -10,7 +8,10 @@ import java.security.PublicKey;
 import java.security.SignatureException;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Set;
 
+import jakarta.inject.Inject;
+import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -19,11 +20,12 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.ResponseProcessingException;
 import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -34,9 +36,8 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.security.doseta.After;
 import org.jboss.resteasy.annotations.security.doseta.Signed;
 import org.jboss.resteasy.annotations.security.doseta.Verify;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.security.doseta.DKIMSignature;
 import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
 import org.jboss.resteasy.security.doseta.KeyRepository;
@@ -44,43 +45,27 @@ import org.jboss.resteasy.security.doseta.UnauthorizedSignatureException;
 import org.jboss.resteasy.security.doseta.Verification;
 import org.jboss.resteasy.security.doseta.Verifier;
 import org.jboss.resteasy.spi.MarshalledEntity;
-import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.util.ParameterParser;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import dev.resteasy.junit.extension.annotations.RestBootstrap;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@RestBootstrap(SigningTest.TestApplication.class)
 public class SigningTest {
     private static final Logger LOG = Logger.getLogger(SigningTest.class);
-    private static NettyJaxrsServer server;
-    private static ResteasyDeployment deployment;
     public static KeyPair keys;
     public static DosetaKeyRepository repository;
     public static PrivateKey badKey;
-    public static ResteasyClient client;
-
-    public Registry getRegistry() {
-        return deployment.getRegistry();
-    }
-
-    public ResteasyProviderFactory getProviderFactory() {
-        return deployment.getProviderFactory();
-    }
-
-    /**
-     * @param resource
-     */
-    public static void addPerRequestResource(Class<?> resource) {
-        deployment.getRegistry().addPerRequestResource(resource);
-    }
+    @Inject
+    public Client client;
 
     @Test
     public void testMe() {
@@ -91,11 +76,6 @@ public class SigningTest {
 
     @BeforeAll
     public static void setup() throws Exception {
-        server = new NettyJaxrsServer();
-        server.setPort(TestPortProvider.getPort());
-        server.setRootResourcePath("/");
-        deployment = server.getDeployment();
-        deployment.start();
 
         repository = new DosetaKeyRepository();
         repository.setKeyStorePath("test.jks");
@@ -112,21 +92,8 @@ public class SigningTest {
         KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
         badKey = keyPair.getPrivate();
 
+        final ResteasyDeployment deployment = ResteasyContext.getContextData(ResteasyDeployment.class);
         deployment.getDispatcher().getDefaultContextObjects().put(KeyRepository.class, repository);
-        addPerRequestResource(SignedResource.class);
-
-        server.start();
-
-        client = (ResteasyClient) ClientBuilder.newClient();
-    }
-
-    @AfterAll
-    public static void afterIt() throws Exception {
-        client.close();
-        server.stop();
-        server = null;
-        deployment = null;
-
     }
 
     @Path("/signed")
@@ -316,6 +283,14 @@ public class SigningTest {
         @Path("expires-year")
         public String getExpiresYear() {
             return "hello world";
+        }
+    }
+
+    @ApplicationPath("/")
+    public static class TestApplication extends Application {
+        @Override
+        public Set<Class<?>> getClasses() {
+            return Set.of(SignedResource.class);
         }
     }
 
@@ -730,9 +705,7 @@ public class SigningTest {
     }
 
     @Test
-    public void testProxy() throws Exception {
-        //ResteasyClientImpl client = new ResteasyClientImpl();
-        ResteasyWebTarget target = client.target(generateBaseUrl());
+    public void testProxy(final ResteasyWebTarget target) throws Exception {
         target.property(KeyRepository.class.getName(), repository);
         SigningProxy proxy = target.proxy(SigningProxy.class);
         String output = proxy.hello();
@@ -741,9 +714,7 @@ public class SigningTest {
     }
 
     @Test
-    public void testBadSignatureProxy() throws Exception {
-        //ResteasyClientImpl client = new ResteasyClientImpl();
-        ResteasyWebTarget target = client.target(generateBaseUrl());
+    public void testBadSignatureProxy(final ResteasyWebTarget target) throws Exception {
         target.property(KeyRepository.class.getName(), repository);
         SigningProxy proxy = target.proxy(SigningProxy.class);
         try {

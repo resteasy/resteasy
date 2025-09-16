@@ -28,7 +28,10 @@ import reactor.netty.http.server.HttpServerResponse;
  * This is the 1-way bridge from RestEasy to reactor-netty's {@link
  * HttpServerResponse}. Headers come via direct call. RestEasy will write the
  * response body to the output stream it gets from {@link #getOutputStream}.
+ *
+ * @deprecated use the new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class ReactorNettyHttpResponse implements HttpResponse {
     private static final Logger log = Logger.getLogger(ReactorNettyHttpResponse.class);
 

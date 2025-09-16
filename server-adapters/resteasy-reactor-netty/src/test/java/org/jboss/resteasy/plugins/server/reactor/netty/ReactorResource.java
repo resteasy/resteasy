@@ -1,9 +1,16 @@
-package org.jboss.resteasy.reactor;
+/*
+ * Copyright The RESTEasy Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
+package org.jboss.resteasy.plugins.server.reactor.netty;
+
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -42,5 +49,12 @@ public class ReactorResource {
     @GET
     public Mono<Integer> injectionAsync(@Async @Context Integer value) {
         return Mono.just(value);
+    }
+
+    @Path("delay/{secs}")
+    @GET
+    public Mono<String> delay(@PathParam("secs") int delay) {
+        return Mono.just("I delayed for " + delay + " seconds.")
+                .delayElement(Duration.ofSeconds(delay));
     }
 }

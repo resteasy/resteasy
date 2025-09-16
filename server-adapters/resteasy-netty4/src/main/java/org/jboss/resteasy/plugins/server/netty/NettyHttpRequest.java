@@ -47,7 +47,10 @@ import io.netty.channel.ChannelHandlerContext;
  * @author Norman Maurer
  * @author Kristoffer Sjogren
  * @version $Revision: 1 $
+ *
+ * @deprecated use the new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class NettyHttpRequest extends BaseHttpRequest {
     protected ResteasyHttpHeaders httpHeaders;
     protected SynchronousDispatcher dispatcher;

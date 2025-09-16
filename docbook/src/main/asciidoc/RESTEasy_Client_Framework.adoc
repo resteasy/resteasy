@@ -883,7 +883,21 @@ This allows leveraging some reactor features:
 * the ability for a `Mono#timeout` set on the response to aggressively terminate the HTTP request;
 * the ability to pass a (reactor) context from client calls into `ReactorNettyClientHttpEngine`.
 
-For some sample code, see `org.jboss.resteasy.reactor.ReactorTest` in the RESTEasy module resteasy-reactor. 
+For some sample code, see `org.jboss.resteasy.reactor.ReactorTest` in the RESTEasy module resteasy-reactor.
+
+[IMPORTANT]
+====
+The Reactor Netty client has moved to its own project which can be found at https://github.com/resteasy/resteasy-netty.
+The packages and GAV's have changed. The new package name is `dev.resteasy.netty.reactor.engine` and only contains
+`ReactorNettyClientHttpEngine`. The new GAV is as follows:
+[source,xml]
+----
+<dependency>
+    <groupId>dev.resteasy.netty</groupId>
+    <artifactId>resteasy-reactor-netty-client</artifactId>
+</dependency>
+----
+====
 
 === Client Utilities
 

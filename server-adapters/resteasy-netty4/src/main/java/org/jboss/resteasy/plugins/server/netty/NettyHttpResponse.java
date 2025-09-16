@@ -29,7 +29,10 @@ import io.netty.handler.codec.http.LastHttpContent;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ *
+ * @deprecated use the new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class NettyHttpResponse implements HttpResponse {
     private static final int EMPTY_CONTENT_LENGTH = 0;
     private int status = 200;
