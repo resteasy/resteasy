@@ -3,7 +3,10 @@ package org.jboss.resteasy.test.security.doseta;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
+import java.util.Set;
 
+import jakarta.inject.Inject;
+import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
@@ -11,63 +14,43 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation.Builder;
 import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.annotations.security.doseta.Signed;
 import org.jboss.resteasy.annotations.security.doseta.Verify;
-import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.security.doseta.DKIMSignature;
 import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
 import org.jboss.resteasy.security.doseta.KeyRepository;
-import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import dev.resteasy.junit.extension.annotations.RestBootstrap;
 import se.unlogic.eagledns.EagleDNS;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@RestBootstrap(SigningDnsTest.TestApplication.class)
 public class SigningDnsTest {
-    private static NettyJaxrsServer server;
-    private static ResteasyDeployment deployment;
     public static DosetaKeyRepository clientRepository;
     public static DosetaKeyRepository serverRepository;
     public static PrivateKey badKey;
-    private static Client client;
 
-    public Registry getRegistry() {
-        return deployment.getRegistry();
-    }
-
-    public ResteasyProviderFactory getProviderFactory() {
-        return deployment.getProviderFactory();
-    }
-
-    /**
-     * @param resource
-     */
-    public static void addPerRequestResource(Class<?> resource) {
-        deployment.getRegistry().addPerRequestResource(resource);
-    }
+    @Inject
+    private Client client;
 
     @BeforeAll
     public static void setup() throws Exception {
-        server = new NettyJaxrsServer();
-        server.setPort(TestPortProvider.getPort());
-        server.setRootResourcePath("/");
-        deployment = server.getDeployment();
-        deployment.start();
 
         clientRepository = new DosetaKeyRepository();
         clientRepository.setKeyStorePath("test1.jks");
@@ -86,13 +69,9 @@ public class SigningDnsTest {
         KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
         badKey = keyPair.getPrivate();
 
+        final ResteasyDeployment deployment = ResteasyContext.getContextData(ResteasyDeployment.class);
         deployment.getDispatcher().getDefaultContextObjects().put(KeyRepository.class, serverRepository);
-        addPerRequestResource(SignedResource.class);
         configureDNS();
-
-        server.start();
-
-        client = ClientBuilder.newClient();
     }
 
     private static EagleDNS dns;
@@ -106,10 +85,6 @@ public class SigningDnsTest {
     @AfterAll
     public static void shutdownDns() {
         dns.shutdown();
-        client.close();
-        server.stop();
-        server = null;
-        deployment = null;
     }
 
     @Path("/signed")
@@ -142,6 +117,14 @@ public class SigningDnsTest {
             //         System.out.println(signature);
         }
 
+    }
+
+    @ApplicationPath("/")
+    public static class TestApplication extends Application {
+        @Override
+        public Set<Class<?>> getClasses() {
+            return Set.of(SignedResource.class);
+        }
     }
 
     @Test

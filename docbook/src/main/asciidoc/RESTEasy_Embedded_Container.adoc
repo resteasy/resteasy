@@ -155,11 +155,23 @@ Include this archive to use netty4
 [source,xml,subs="attributes+"]
 ----
 <dependency>
-    <groupId>org.jboss.resteasy</groupId>
-    <artifactId>resteasy-netty4</artifactId>
-    <version>{resteasy-version}</version>
+    <groupId>dev.resteasy.netty</groupId>
+    <artifactId>resteasy-embedded-server</artifactId>
 </dependency>
 ----
+
+[IMPORTANT]
+====
+The Reactor Netty client has moved to its own project which can be found at https://github.com/resteasy/resteasy-netty.
+The packages have remained the same, but the Maven GAV has changed:
+[source,xml]
+----
+<dependency>
+    <groupId>dev.resteasy.netty</groupId>
+    <artifactId>resteasy-embedded-server</artifactId>
+</dependency>
+----
+====
 
 === Reactor-Netty
 
@@ -185,11 +197,23 @@ Include this archive to use the reactor netty feature
 [source,xml,subs="attributes+"]
 ----
 <dependency>
-    <groupId>org.jboss.resteasy</groupId>
-    <artifactId>resteasy-reactor-netty</artifactId>
-    <version>{resteasy-version}</version>
+    <groupId>dev.resteasy.netty</groupId>
+    <artifactId>resteasy-embedded-server-rector</artifactId>
 </dependency>
 ----
+
+[IMPORTANT]
+====
+The Reactor Netty embedded server has moved to its own project which can be found at https://github.com/resteasy/resteasy-netty.
+The packages have remained the same, but the Maven GAV has changed:
+[source,xml]
+----
+<dependency>
+    <groupId>dev.resteasy.netty</groupId>
+    <artifactId>resteasy-embedded-server-rector</artifactId>
+</dependency>
+----
+====
 
 === Vert.x
 
