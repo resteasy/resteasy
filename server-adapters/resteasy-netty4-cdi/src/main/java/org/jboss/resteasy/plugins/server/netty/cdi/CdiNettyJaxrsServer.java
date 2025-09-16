@@ -10,7 +10,10 @@ import org.jboss.resteasy.plugins.server.netty.RequestDispatcher;
 
 /**
  * A CDI aware Netty Jaxrs Server.
+ *
+ * @deprecated use the new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 @Dependent
 public class CdiNettyJaxrsServer extends NettyJaxrsServer {
     private Instance<Object> instance;

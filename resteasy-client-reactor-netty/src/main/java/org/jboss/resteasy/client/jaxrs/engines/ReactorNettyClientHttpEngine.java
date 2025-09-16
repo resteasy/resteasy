@@ -47,6 +47,11 @@ import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.HttpClientResponse;
 import reactor.netty.resources.ConnectionProvider;
 
+/**
+ *
+ * @deprecated use the new dependencies and packages to avoid split packages
+ */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class ReactorNettyClientHttpEngine implements ReactiveClientHttpEngine {
     private static final Logger log = Logger.getLogger(ReactorNettyClientHttpEngine.class);
 

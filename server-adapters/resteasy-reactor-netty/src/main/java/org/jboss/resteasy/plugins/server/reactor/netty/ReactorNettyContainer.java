@@ -6,6 +6,10 @@ import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.util.PortProvider;
 
+/**
+ * @deprecated use the new dependencies
+ */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class ReactorNettyContainer {
 
     private static final Logger log = Logger.getLogger(ReactorNettyContainer.class);

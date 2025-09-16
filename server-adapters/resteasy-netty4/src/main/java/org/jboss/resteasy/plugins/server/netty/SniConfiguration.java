@@ -16,7 +16,10 @@ import io.netty.util.Mapping;
  *
  * @author Sebastian Łaskawiec
  * @see <a href="https://tools.ietf.org/html/rfc6066#page-6">TLS extensions</a>
+ *
+ * @deprecated use the new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class SniConfiguration {
 
     protected final DomainWildcardMappingBuilder<SslContext> mapping;

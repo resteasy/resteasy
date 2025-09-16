@@ -9,7 +9,9 @@ import org.jboss.logging.annotations.MessageBundle;
  * @version $Revision: 1.1 $
  *
  *          Copyright Sep 1, 2015
+ * @deprecated use the new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 @MessageBundle(projectCode = "RESTEASY")
 public interface Messages {
     Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);

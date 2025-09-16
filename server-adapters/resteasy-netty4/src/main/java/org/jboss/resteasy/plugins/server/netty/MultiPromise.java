@@ -6,6 +6,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 
+/**
+ *
+ * @deprecated use the new dependencies
+ */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class MultiPromise {
 
     private final ChannelHandlerContext ctx;

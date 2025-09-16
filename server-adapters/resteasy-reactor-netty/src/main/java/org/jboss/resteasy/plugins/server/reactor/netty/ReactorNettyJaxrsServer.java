@@ -59,7 +59,10 @@ import reactor.netty.http.server.HttpServerResponse;
  * 3. When paired with a Netty-based client (e.g. the JAX-RS client powered by
  * reactor-netty), the threadpool can be efficiently shared between the client
  * and the server.
+ *
+ * @deprecated use the new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class ReactorNettyJaxrsServer implements EmbeddedJaxrsServer<ReactorNettyJaxrsServer> {
     private static final Logger log = Logger.getLogger(ReactorNettyJaxrsServer.class);
 

@@ -24,7 +24,9 @@ import io.netty.handler.codec.http.HttpUtil;
  *
  * @author Norman Maurer
  *
+ * @deprecated use the new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 @Sharable
 public class RestEasyHttpRequestDecoder extends MessageToMessageDecoder<io.netty.handler.codec.http.HttpRequest> {
     private final SynchronousDispatcher dispatcher;

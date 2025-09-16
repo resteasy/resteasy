@@ -46,7 +46,10 @@ import io.netty.util.concurrent.EventExecutor;
  * @author <a href="http://gleamynode.net/">Trustin Lee</a>
  * @author Norman Maurer
  * @version $Rev: 2080 $, $Date: 2010-01-26 18:04:19 +0900 (Tue, 26 Jan 2010) $
+ *
+ * @deprecated use the new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer> {
     protected ServerBootstrap bootstrap = new ServerBootstrap();
     protected String hostname = null;

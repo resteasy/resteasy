@@ -24,7 +24,10 @@ import org.jboss.resteasy.util.CaseInsensitiveMap;
  * Known Limitation:
  * The get and getFirst methods returns the list(since this is an instance of MultivaluedMap) value of the given key.
  * Any direct changes to the underlying list will not be tracked.
+ *
+ * @deprecated use the new dependencies and packages to avoid split packages
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class TrackingMap<V> extends CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Cloneable {
 
     private final CaseInsensitiveMap<V> delegate;

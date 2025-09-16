@@ -6,6 +6,10 @@ import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 import reactor.core.publisher.Sinks.EmitFailureHandler;
 
+/**
+ * @deprecated use the new dependencies
+ */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class SinkSubscriber {
 
     private SinkSubscriber() {

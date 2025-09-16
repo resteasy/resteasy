@@ -9,7 +9,10 @@ import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ *
+ * @deprecated use the new dependencies
  */
+@Deprecated(forRemoval = true, since = "6.2.13.Final")
 public class NettySecurityContext implements SecurityContext {
     protected final Principal principal;
     protected final SecurityDomain domain;
