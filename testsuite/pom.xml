@@ -92,6 +92,14 @@
                 <artifactId>arquillian-weld-embedded</artifactId>
                 <version>${version.org.jboss.arquillian.container.arquillian-weld-embedded}</version>
             </dependency>
+            <!-- Import the RESTEasy BOM for testing -->
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-bom</artifactId>
+                <version>${version.resteasy.testsuite}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- Placed here to be resolved for other sub-modules -->
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
@@ -202,18 +210,6 @@
             </activation>
             <properties>
                 <jboss.home>${server.home}</jboss.home>
-            </properties>
-        </profile>
-        <!-- If resteasy.version is specified, it will be used for tests instead of the project.version -->
-        <profile>
-            <id>custom-resteasy-version</id>
-            <activation>
-                <property>
-                    <name>version.resteasy.testsuite</name>
-                </property>
-            </activation>
-            <properties>
-                <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
             </properties>
         </profile>
 
