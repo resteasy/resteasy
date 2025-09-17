@@ -156,10 +156,10 @@
                 <module>resteasy-wadl-undertow-connector</module>
                 <module>wildfly/resteasy-feature-pack</module>
                 <module>wildfly/resteasy-channel</module>
+                <!-- Build after other sub-projects that are part of the BOM -->
+                <module>resteasy-bom</module>
                 <module>profiling-tests</module>
                 <module>testsuite</module>
-                <!-- Build this last -->
-                <module>resteasy-bom</module>
             </modules>
             <dependencyManagement>
                 <dependencies>
