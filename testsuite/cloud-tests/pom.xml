@@ -55,6 +55,9 @@
         <dekorate.push>true</dekorate.push>
         <!-- Individual tests will need to set this property -->
         <wildfly.cloud.test.base.image.name/>
+
+        <!-- Skip deploying tests -->
+        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
     </properties>
 
     <modules>

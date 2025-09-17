@@ -1,25 +1,91 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>dev.resteasy.tools</groupId>
-        <artifactId>resteasy-parent</artifactId>
-        <version>3</version>
-        <relativePath/>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-parent</artifactId>
+        <version>50</version>
+        <relativePath />
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-
-    <name>RESTEasy</name>
-    <description>Resteasy</description>
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
     <version>6.2.13.Final-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <name>RESTEasy</name>
+    <description>A Jakarta REST implementation</description>
+    <url>https://resteasy.dev</url>
+
+    <organization>
+        <name>RESTEasy Community</name>
+        <url>https://resteasy.dev</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>https://repository.jboss.org/licenses/apache-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>rmcdonough</id>
+            <name>Ryan J. McDonough</name>
+            <email>ryan@damnhandy.com</email>
+            <url>https://damnhandy.com</url>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
+        <developer>
+            <id>patriot1burke</id>
+            <name>Bill Burke</name>
+            <email>bill@burkecentral.com</email>
+            <organization>JBoss</organization>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
+        <developer>
+            <id>jamezp</id>
+            <name>James Perkins</name>
+            <email>jperkins@ibm.com</email>
+            <organization>IBM</organization>
+            <url>https://resteasy.dev</url>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-8</timezone>
+        </developer>
+    </developers>
+
+    <contributors>
+        <contributor>
+            <name>Heiko Braun</name>
+        </contributor>
+        <contributor>
+            <name>Martin Algesten</name>
+        </contributor>
+    </contributors>
+
+    <scm>
+        <connection>scm:git:git://github.com/resteasy/resteasy.git</connection>
+        <developerConnection>scm:git:git@github.com:resteasy/resteasy.git</developerConnection>
+        <url>https://github.com/resteasy/resteasy/tree/main/</url>
+    </scm>
+
+    <issueManagement>
+        <system>JIRA</system>
+        <url>https://issues.redhat.com/browse/RESTEASY</url>
+    </issueManagement>
+
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Dependency versions -->
         <version.org.jboss.arquillian.core>1.9.5.Final</version.org.jboss.arquillian.core>
         <version.org.jboss.arquillian.jakarta>10.0.0.Final</version.org.jboss.arquillian.jakarta>
@@ -49,6 +115,8 @@
         <channel.stream.version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}</channel.stream.version>
 
         <!-- Plugins versions -->
+        <version.formatter.maven.plugin>2.23.0</version.formatter.maven.plugin>
+        <version.impsort.maven.plugin>1.9.0</version.impsort.maven.plugin>
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
         <version.org.jacoco.plugin>0.8.13</version.org.jacoco.plugin>
         <version.org.wildfly.galleon-plugins>7.0.0.Final</version.org.wildfly.galleon-plugins>
@@ -57,51 +125,25 @@
 
         <!-- Test options -->
         <additionalJvmArgs>-Djava.io.tmpdir=${project.build.directory}</additionalJvmArgs>
+
+        <!-- maven-release-plugin configuration -->
+        <autoVersionSubmodules>true</autoVersionSubmodules>
+        <preparationGoals>clean install javadoc:aggregate-no-fork site</preparationGoals>
+        <preparationProfiles>jboss-release,release</preparationProfiles>
+        <releaseProfiles>${preparationProfiles}</releaseProfiles>
+        <signTag>true</signTag>
+        <tagNameFormat>v@{project.version}</tagNameFormat>
+        <arguments>-DskipTests</arguments>
+        <!-- Do not push changes by default when using the maven-release-plugin:prepare -->
+        <pushChanges>false</pushChanges>
+        <!-- Use the local directory when using perform -->
+        <localCheckout>true</localCheckout>
+        <!--JBoss Nexus properties -->
+        <nexus.repository.staging>resteasy-staging</nexus.repository.staging>
+        <nexus.staging.tag>resteasy-${project.version}</nexus.staging.tag>
+        <!-- Temporarily override this plugin version until the jboss-parent catches up -->
+        <version.nxrm3.plugin>1.0.12</version.nxrm3.plugin>
     </properties>
-
-    <url>https://resteasy.dev</url>
-
-    <licenses>
-        <license>
-            <name>Apache License 2.0</name>
-            <url>https://repository.jboss.org/licenses/apache-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <scm>
-        <connection>scm:git:git://github.com/resteasy/resteasy.git</connection>
-        <developerConnection>scm:git:git@github.com:resteasy/resteasy.git</developerConnection>
-        <url>https://github.com/resteasy/resteasy/tree/main/</url>
-    </scm>
-
-    <issueManagement>
-        <system>JIRA</system>
-        <url>https://issues.redhat.com/browse/RESTEASY</url>
-    </issueManagement>
-
-    <developers>
-        <developer>
-            <id>rmcdonough</id>
-            <name>Ryan J. McDonough</name>
-            <email>ryan@damnhandy.com</email>
-            <url>http://damnhandy.com</url>
-            <roles>
-                <role>project-owner</role>
-            </roles>
-            <timezone>-5</timezone>
-        </developer>
-        <developer>
-            <id>patriot1burke</id>
-            <name>Bill Burke</name>
-            <email>bill@burkecentral.com</email>
-            <organization>JBoss</organization>
-            <roles>
-                <role>project-owner</role>
-            </roles>
-            <timezone>-5</timezone>
-        </developer>
-    </developers>
 
     <repositories>
         <!-- Required for provisioning WildFly. Not all dependencies currently exist on Maven Central. This is also
@@ -123,6 +165,254 @@
             <layout>default</layout>
         </repository>
     </repositories>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.jboss.logging</groupId>
+                                <artifactId>jboss-logging-processor</artifactId>
+                                <version>${version.org.jboss.logging.jboss-logging-processor}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <runOrder>alphabetical</runOrder>
+                        <argLine>${surefire.system.args}</argLine>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <configuration>
+                        <doclint>none</doclint>
+                        <minmemory>128m</minmemory>
+                        <maxmemory>1024m</maxmemory>
+                        <quiet>false</quiet>
+                        <excludePackageNames>
+                            com.restfully.*:org.jboss.resteasy.examples.*:se.unlogic.*:org.jboss.resteasy.tests.*
+                        </excludePackageNames>
+                        <header><![CDATA[<b>${project.name} ${project.version}</b>
+                            <br>References in this document to JAX-RS refer to the Jakarta RESTful Web Services unless otherwise noted.
+                            <br>References in this document to JAXB refer to the Jakarta XML Binding unless otherwise noted.
+                            ]]>
+                        </header>
+                    </configuration>
+                      <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-maven-plugin</artifactId>
+                    <version>${version.org.eclipse.jetty}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${version.org.jacoco.plugin}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.wildfly.galleon-plugins</groupId>
+                    <artifactId>wildfly-galleon-maven-plugin</artifactId>
+                    <version>${version.org.wildfly.galleon-plugins}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.wildfly.plugins</groupId>
+                    <artifactId>wildfly-maven-plugin</artifactId>
+                    <version>${version.org.wildfly.plugins.wildfly-maven-plugin}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.wildfly.plugins</groupId>
+                    <artifactId>wildfly-jar-maven-plugin</artifactId>
+                    <version>${version.org.wildfly.jar.plugin}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>clover-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>i18n cleanup</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>src/main/resources</directory>
+                                    <includes>
+                                        <include>org/**</include>
+                                    </includes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>check-style</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>checkstyle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>ban-bad-dependencies</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <searchTransitive>true</searchTransitive>
+                                    <excludes>
+                                        <exclude>javax.activation:activation</exclude>
+                                        <exclude>javax.activation:javax.activation-api</exclude>
+                                        <exclude>javax.enterprise:cdi-api</exclude>
+                                        <exclude>javax.inject:javax.inject</exclude>
+                                        <exclude>javax.json:javax.json-api</exclude>
+                                        <exclude>javax.persistence:javax.persistence-api</exclude>
+                                        <exclude>javax.persistence:persistence-api</exclude>
+                                        <exclude>javax.security.enterprise:javax.security.enterprise-api</exclude>
+                                        <exclude>javax.servlet:servlet-api</exclude>
+                                        <exclude>javax.transaction:jta</exclude>
+                                        <exclude>javax.validation:validation-api</exclude>
+                                        <exclude>javax.xml:jaxrpc-api</exclude>
+                                        <exclude>javax.xml.bind:jaxb-api</exclude>
+                                        <exclude>javax.xml.soap:saaj-api</exclude>
+                                        <exclude>javax.xml.stream:stax-api</exclude>
+                                        <exclude>log4j:log4j</exclude>
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>dep-convergence</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <dependencyConvergence/>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Change the channel.stream.version property to match the current project version major.minor -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>parse-version</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Format source files -->
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <version>${version.formatter.maven.plugin}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>dev.resteasy.tools</groupId>
+                        <artifactId>ide-config</artifactId>
+                        <version>3</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <!-- store outside of target to speed up formatting when mvn clean is used -->
+                    <cachedir>.cache</cachedir>
+                    <configFile>eclipse-code-formatter.xml</configFile>
+                    <configXmlFile>resteasy-xml.properties</configXmlFile>
+                    <includeResources>true</includeResources>
+                    <lineEnding>LF</lineEnding>
+                    <removeTrailingWhitespace>true</removeTrailingWhitespace>
+                    <skip>${skipFormatting}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>format</id>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>net.revelc.code</groupId>
+                <artifactId>impsort-maven-plugin</artifactId>
+                <version>${version.impsort.maven.plugin}</version>
+                <configuration>
+                    <!-- store outside of target to speed up formatting when mvn clean is used -->
+                    <cachedir>.cache</cachedir>
+                    <groups>java.,javax.,jakarta.,org.,com.</groups>
+                    <staticGroups>*</staticGroups>
+                    <skip>${skipFormatting}</skip>
+                    <removeUnused>true</removeUnused>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sort-resource-imports</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>sort</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <profiles>
         <profile>
@@ -313,228 +603,4 @@
             </properties>
         </profile>
     </profiles>
-
-    <contributors>
-        <contributor>
-            <name>Heiko Braun</name>
-        </contributor>
-        <contributor>
-            <name>Martin Algesten</name>
-        </contributor>
-    </contributors>
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <annotationProcessorPaths>
-                            <path>
-                                <groupId>org.jboss.logging</groupId>
-                                <artifactId>jboss-logging-processor</artifactId>
-                                <version>${version.org.jboss.logging.jboss-logging-processor}</version>
-                            </path>
-                        </annotationProcessorPaths>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration>
-                        <runOrder>alphabetical</runOrder>
-                        <argLine>${surefire.system.args}</argLine>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <configuration>
-                        <doclint>none</doclint>
-                        <minmemory>128m</minmemory>
-                        <maxmemory>1024m</maxmemory>
-                        <quiet>false</quiet>
-                        <excludePackageNames>
-                            com.restfully.*:org.jboss.resteasy.examples.*:se.unlogic.*:org.jboss.resteasy.tests.*
-                        </excludePackageNames>
-                        <header><![CDATA[<b>${project.name} ${project.version}</b>
-                            <br>References in this document to JAX-RS refer to the Jakarta RESTful Web Services unless otherwise noted.
-                            <br>References in this document to JAXB refer to the Jakarta XML Binding unless otherwise noted.
-                            ]]>
-                        </header>
-                    </configuration>
-                      <executions>
-                        <execution>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-maven-plugin</artifactId>
-                    <version>${version.org.eclipse.jetty}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>${version.org.jacoco.plugin}</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.wildfly.galleon-plugins</groupId>
-                    <artifactId>wildfly-galleon-maven-plugin</artifactId>
-                    <version>${version.org.wildfly.galleon-plugins}</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.wildfly.plugins</groupId>
-                    <artifactId>wildfly-maven-plugin</artifactId>
-                    <version>${version.org.wildfly.plugins.wildfly-maven-plugin}</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.wildfly.plugins</groupId>
-                    <artifactId>wildfly-jar-maven-plugin</artifactId>
-                    <version>${version.org.wildfly.jar.plugin}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>com.atlassian.maven.plugins</groupId>
-                <artifactId>clover-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>i18n cleanup</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                        <configuration>
-                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
-                            <filesets>
-                                <fileset>
-                                    <directory>src/main/resources</directory>
-                                    <includes>
-                                        <include>org/**</include>
-                                    </includes>
-                                </fileset>
-                            </filesets>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>check-style</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>checkstyle</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>ban-bad-dependencies</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <bannedDependencies>
-                                    <searchTransitive>true</searchTransitive>
-                                    <excludes>
-                                        <exclude>javax.activation:activation</exclude>
-                                        <exclude>javax.activation:javax.activation-api</exclude>
-                                        <exclude>javax.enterprise:cdi-api</exclude>
-                                        <exclude>javax.inject:javax.inject</exclude>
-                                        <exclude>javax.json:javax.json-api</exclude>
-                                        <exclude>javax.persistence:javax.persistence-api</exclude>
-                                        <exclude>javax.persistence:persistence-api</exclude>
-                                        <exclude>javax.security.enterprise:javax.security.enterprise-api</exclude>
-                                        <exclude>javax.servlet:servlet-api</exclude>
-                                        <exclude>javax.transaction:jta</exclude>
-                                        <exclude>javax.validation:validation-api</exclude>
-                                        <exclude>javax.xml:jaxrpc-api</exclude>
-                                        <exclude>javax.xml.bind:jaxb-api</exclude>
-                                        <exclude>javax.xml.soap:saaj-api</exclude>
-                                        <exclude>javax.xml.stream:stax-api</exclude>
-                                        <exclude>log4j:log4j</exclude>
-                                    </excludes>
-                                </bannedDependencies>
-                            </rules>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>dep-convergence</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <dependencyConvergence/>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Change the channel.stream.version property to match the current project version major.minor -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>parse-version</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>parse-version</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Format source files -->
-            <plugin>
-                <groupId>net.revelc.code.formatter</groupId>
-                <artifactId>formatter-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>net.revelc.code</groupId>
-                <artifactId>impsort-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>sort-resource-imports</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>sort</goal>
-                        </goals>
-                        <configuration>
-                            <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
-                            <testSourceDirectory>${project.basedir}/src/test/resources</testSourceDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </reporting>
 </project>

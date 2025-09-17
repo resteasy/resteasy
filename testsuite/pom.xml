@@ -14,7 +14,7 @@
     <artifactId>resteasy-testsuite</artifactId>
 
     <properties>
-        <version.resteasy.testsuite>${project.version}</version.resteasy.testsuite>
+        <version.resteasy.testsuite>6.2.13.Final-SNAPSHOT</version.resteasy.testsuite>
         <additional.surefire.excluded.groups/>
         <!-- default value required for cmd-line -->
         <securityManagerArg>-DSECMGR="false"</securityManagerArg>

@@ -45,3 +45,8 @@ myDB.script
 myDB.properties
 
 .DS_Store
+
+# Release files
+*.releaseBackup
+release.properties
+pom.xml.tag
