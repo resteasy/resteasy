@@ -25,6 +25,8 @@
         <module.jar.path>${jboss.home}${file.separator}modules${file.separator}system${file.separator}layers${file.separator}base</module.jar.path>
 
         <version.org.jboss.shrinkwrap.resolver>3.3.0</version.org.jboss.shrinkwrap.resolver>
+        <!-- Exclude additional tests with e.g. -Dresteasy-integration-tests.additional.surefire.excludes='%regex[.*JettyClientHttpEngineTest.*|.*VertxClientHttpEngineTest.*]' -->
+        <resteasy-integration-tests.additional.surefire.excludes/>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
@@ -170,6 +172,7 @@
                                         <exclude>**/SseJsonEventTest</exclude>
                                         <!-- The CustomJackson2Provider doesn't work with this if the full project is not built. -->
                                         <exclude>**/CustomJackson2ProviderTest.java</exclude>
+                                        <exclude>${resteasy-integration-tests.additional.surefire.excludes}</exclude>
                                     </excludes>
                                 </configuration>
                             </execution>
@@ -326,6 +329,7 @@
                                         <exclude>**/SslServerWithWildcardHostnameCertificateTest.java</exclude>
                                         <exclude>**/SslServerWithWrongHostnameCertificateTest.java</exclude>
                                         <exclude>**/SslSniHostNamesTest.java</exclude>
+                                        <exclude>${resteasy-integration-tests.additional.surefire.excludes}</exclude>
                                     </excludes>
                                 </configuration>
                             </execution>
@@ -762,6 +766,7 @@
                                     <exclude>**/JaxbXmlRootElementProviderTest.java</exclude>
                                     <exclude>**/JsonBindingAnnotationsJacksonTest.java</exclude>
                                     <exclude>**/SseJsonEventTest</exclude>
+                                    <exclude>${resteasy-integration-tests.additional.surefire.excludes}</exclude>
                                 </excludes>
                             </configuration>
                         </execution>
