@@ -30,6 +30,7 @@
 
     <artifactId>galleon-feature-pack</artifactId>
     <name>RESTEasy: Galleon Feature Pack</name>
+    <packaging>pom</packaging>
 
     <properties>
         <common.resources.directory>${basedir}/../common/src/main/resources</common.resources.directory>

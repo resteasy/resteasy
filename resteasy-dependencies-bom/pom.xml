@@ -2,10 +2,10 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <parent>
-        <groupId>dev.resteasy.tools</groupId>
-        <artifactId>resteasy-parent</artifactId>
-        <version>3</version>
-        <relativePath/>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-parent</artifactId>
+        <version>50</version>
+        <relativePath />
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy</groupId>
@@ -16,6 +16,11 @@
     <description>RESTEasy dependencies BOM</description>
 
     <url>https://resteasy.dev</url>
+
+    <organization>
+        <name>RESTEasy Community</name>
+        <url>https://resteasy.dev</url>
+    </organization>
 
     <licenses>
         <license>
@@ -101,6 +106,22 @@
         <version.io.projectreactor>2024.0.10</version.io.projectreactor>
 
         <version.asyncutil>0.1.0</version.asyncutil>
+
+        <!-- maven-release-plugin configuration -->
+        <autoVersionSubmodules>true</autoVersionSubmodules>
+        <preparationGoals>clean install</preparationGoals>
+        <preparationProfiles>jboss-release,release</preparationProfiles>
+        <releaseProfiles>${preparationProfiles}</releaseProfiles>
+        <signTag>true</signTag>
+        <tagNameFormat>v@{project.version}</tagNameFormat>
+        <arguments>-DskipTests</arguments>
+        <!-- Do not push changes by default when using the maven-release-plugin:prepare -->
+        <pushChanges>false</pushChanges>
+        <!-- Use the local directory when using perform -->
+        <localCheckout>true</localCheckout>
+        <!--JBoss Nexus properties -->
+        <nexus.repository.staging>resteasy-staging</nexus.repository.staging>
+        <nexus.staging.tag>resteasy-${project.version}</nexus.staging.tag>
     </properties>
 
     <dependencyManagement>
@@ -135,7 +156,6 @@
                 <groupId>org.jboss.logging</groupId>
                 <artifactId>jboss-logging</artifactId>
                 <version>${version.org.jboss.logging.jboss-logging}</version>
-                <!--<scope>provided</scope> todo this should be provided-->
             </dependency>
 
             <dependency>

@@ -27,6 +27,9 @@
         <version.org.jboss.shrinkwrap.resolver>3.3.0</version.org.jboss.shrinkwrap.resolver>
         <!-- Exclude additional tests with e.g. -Dresteasy-integration-tests.additional.surefire.excludes='%regex[.*JettyClientHttpEngineTest.*|.*VertxClientHttpEngineTest.*]' -->
         <resteasy-integration-tests.additional.surefire.excludes/>
+
+        <!-- Skip deploying tests -->
+        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>

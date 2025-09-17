@@ -15,6 +15,9 @@
     <properties>
         <!-- Version properties -->
         <version.arquillian.jetty>2.0.0.Final</version.arquillian.jetty>
+
+        <!-- Skip deploying tests -->
+        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
     </properties>
 
     <dependencyManagement>
