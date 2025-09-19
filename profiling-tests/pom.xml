@@ -12,6 +12,11 @@
     <name>RESTEasy Profiling Tests</name>
     <description/>
 
+    <properties>
+        <!-- Skip deploying tests -->
+        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>

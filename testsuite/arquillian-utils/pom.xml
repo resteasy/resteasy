@@ -13,9 +13,6 @@
     <version>7.0.0.Final-SNAPSHOT</version>
     <name>RESTEasy Main testsuite: Arquillian utils</name>
     <packaging>jar</packaging>
-    <properties>
-        <version.resteasy.testsuite>${project.version}</version.resteasy.testsuite>
-    </properties>
 
     <dependencyManagement>
         <dependencies>
@@ -45,19 +42,19 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core-spi</artifactId>
-            <version>${version.resteasy.testsuite}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <version>${version.resteasy.testsuite}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-validator-provider</artifactId>
-            <version>${version.resteasy.testsuite}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
