@@ -5,10 +5,10 @@
          org.jboss.resteasy:resteasy-dependencies BOM which we do not want included in this BOM.
     -->
     <parent>
-        <groupId>dev.resteasy.tools</groupId>
-        <artifactId>resteasy-parent</artifactId>
-        <version>3</version>
-        <relativePath/>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-parent</artifactId>
+        <version>50</version>
+        <relativePath />
     </parent>
 
     <groupId>org.jboss.resteasy</groupId>
@@ -20,6 +20,11 @@
     <description/>
 
     <url>https://resteasy.dev</url>
+
+    <organization>
+        <name>RESTEasy Community</name>
+        <url>https://resteasy.dev</url>
+    </organization>
 
     <licenses>
         <license>
@@ -39,6 +44,24 @@
         <system>JIRA</system>
         <url>https://issues.redhat.com/browse/RESTEASY</url>
     </issueManagement>
+
+    <properties>
+        <!-- maven-release-plugin configuration -->
+        <autoVersionSubmodules>true</autoVersionSubmodules>
+        <preparationGoals>clean install</preparationGoals>
+        <preparationProfiles>jboss-release,release</preparationProfiles>
+        <releaseProfiles>${preparationProfiles}</releaseProfiles>
+        <signTag>true</signTag>
+        <tagNameFormat>v@{project.version}</tagNameFormat>
+        <arguments>-DskipTests</arguments>
+        <!-- Do not push changes by default when using the maven-release-plugin:prepare -->
+        <pushChanges>false</pushChanges>
+        <!-- Use the local directory when using perform -->
+        <localCheckout>true</localCheckout>
+        <!--JBoss Nexus properties -->
+        <nexus.repository.staging>resteasy-staging</nexus.repository.staging>
+        <nexus.staging.tag>resteasy-${project.version}</nexus.staging.tag>
+    </properties>
 
     <dependencyManagement>
         <dependencies>

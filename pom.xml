@@ -1,25 +1,91 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>dev.resteasy.tools</groupId>
-        <artifactId>resteasy-parent</artifactId>
-        <version>3</version>
-        <relativePath/>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-parent</artifactId>
+        <version>50</version>
+        <relativePath />
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-
-    <name>RESTEasy</name>
-    <description>Resteasy</description>
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
     <version>6.2.13.Final-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <name>RESTEasy</name>
+    <description>A Jakarta REST implementation</description>
+    <url>https://resteasy.dev</url>
+
+    <organization>
+        <name>RESTEasy Community</name>
+        <url>https://resteasy.dev</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>https://repository.jboss.org/licenses/apache-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>rmcdonough</id>
+            <name>Ryan J. McDonough</name>
+            <email>ryan@damnhandy.com</email>
+            <url>https://damnhandy.com</url>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
+        <developer>
+            <id>patriot1burke</id>
+            <name>Bill Burke</name>
+            <email>bill@burkecentral.com</email>
+            <organization>JBoss</organization>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
+        <developer>
+            <id>jamezp</id>
+            <name>James Perkins</name>
+            <email>jperkins@ibm.com</email>
+            <organization>IBM</organization>
+            <url>https://resteasy.dev</url>
+            <roles>
+                <role>project-owner</role>
+            </roles>
+            <timezone>-8</timezone>
+        </developer>
+    </developers>
+
+    <contributors>
+        <contributor>
+            <name>Heiko Braun</name>
+        </contributor>
+        <contributor>
+            <name>Martin Algesten</name>
+        </contributor>
+    </contributors>
+
+    <scm>
+        <connection>scm:git:git://github.com/resteasy/resteasy.git</connection>
+        <developerConnection>scm:git:git@github.com:resteasy/resteasy.git</developerConnection>
+        <url>https://github.com/resteasy/resteasy/tree/main/</url>
+    </scm>
+
+    <issueManagement>
+        <system>JIRA</system>
+        <url>https://issues.redhat.com/browse/RESTEASY</url>
+    </issueManagement>
+
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Dependency versions -->
         <version.org.jboss.arquillian.core>1.9.5.Final</version.org.jboss.arquillian.core>
         <version.org.jboss.arquillian.jakarta>10.0.0.Final</version.org.jboss.arquillian.jakarta>
@@ -49,6 +115,8 @@
         <channel.stream.version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}</channel.stream.version>
 
         <!-- Plugins versions -->
+        <version.formatter.maven.plugin>2.23.0</version.formatter.maven.plugin>
+        <version.impsort.maven.plugin>1.9.0</version.impsort.maven.plugin>
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
         <version.org.jacoco.plugin>0.8.13</version.org.jacoco.plugin>
         <version.org.wildfly.galleon-plugins>7.0.0.Final</version.org.wildfly.galleon-plugins>
@@ -57,51 +125,25 @@
 
         <!-- Test options -->
         <additionalJvmArgs>-Djava.io.tmpdir=${project.build.directory}</additionalJvmArgs>
+
+        <!-- maven-release-plugin configuration -->
+        <autoVersionSubmodules>true</autoVersionSubmodules>
+        <preparationGoals>clean install javadoc:aggregate-no-fork site</preparationGoals>
+        <preparationProfiles>jboss-release,release</preparationProfiles>
+        <releaseProfiles>${preparationProfiles}</releaseProfiles>
+        <signTag>true</signTag>
+        <tagNameFormat>v@{project.version}</tagNameFormat>
+        <arguments>-DskipTests</arguments>
+        <!-- Do not push changes by default when using the maven-release-plugin:prepare -->
+        <pushChanges>false</pushChanges>
+        <!-- Use the local directory when using perform -->
+        <localCheckout>true</localCheckout>
+        <!--JBoss Nexus properties -->
+        <nexus.repository.staging>resteasy-staging</nexus.repository.staging>
+        <nexus.staging.tag>resteasy-${project.version}</nexus.staging.tag>
+        <!-- Temporarily override this plugin version until the jboss-parent catches up -->
+        <version.nxrm3.plugin>1.0.12</version.nxrm3.plugin>
     </properties>
-
-    <url>https://resteasy.dev</url>
-
-    <licenses>
-        <license>
-            <name>Apache License 2.0</name>
-            <url>https://repository.jboss.org/licenses/apache-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <scm>
-        <connection>scm:git:git://github.com/resteasy/resteasy.git</connection>
-        <developerConnection>scm:git:git@github.com:resteasy/resteasy.git</developerConnection>
-        <url>https://github.com/resteasy/resteasy/tree/main/</url>
-    </scm>
-
-    <issueManagement>
-        <system>JIRA</system>
-        <url>https://issues.redhat.com/browse/RESTEASY</url>
-    </issueManagement>
-
-    <developers>
-        <developer>
-            <id>rmcdonough</id>
-            <name>Ryan J. McDonough</name>
-            <email>ryan@damnhandy.com</email>
-            <url>http://damnhandy.com</url>
-            <roles>
-                <role>project-owner</role>
-            </roles>
-            <timezone>-5</timezone>
-        </developer>
-        <developer>
-            <id>patriot1burke</id>
-            <name>Bill Burke</name>
-            <email>bill@burkecentral.com</email>
-            <organization>JBoss</organization>
-            <roles>
-                <role>project-owner</role>
-            </roles>
-            <timezone>-5</timezone>
-        </developer>
-    </developers>
 
     <repositories>
         <!-- Required for provisioning WildFly. Not all dependencies currently exist on Maven Central. This is also
@@ -124,204 +166,6 @@
         </repository>
     </repositories>
 
-    <profiles>
-        <profile>
-            <id>resteasy-default</id>
-            <activation>
-                <property>
-                    <name>!resteasy.dependencies.eap</name>
-                </property>
-            </activation>
-            <modules>
-                <module>resteasy-dependencies-bom</module>
-                <module>resteasy-core-spi</module>
-                <module>resteasy-core</module>
-                <module>resteasy-client-api</module>
-                <module>resteasy-client</module>
-                <module>providers</module>
-                <module>security</module>
-                <module>resteasy-links</module>
-                <module>resteasy-jsapi</module>
-                <module>resteasy-cdi</module>
-                <module>resteasy-servlet-initializer</module>
-                <module>resteasy-stats</module>
-                <module>resteasy-rxjava2</module>
-                <module>resteasy-reactor</module>
-                <module>server-adapters</module>
-                <module>resteasy-client-jetty</module>
-                <module>resteasy-client-vertx</module>
-                <module>resteasy-client-reactor-netty</module>
-                <module>resteasy-client-utils</module>
-                <module>resteasy-wadl</module>
-                <module>resteasy-wadl-undertow-connector</module>
-                <module>wildfly/resteasy-feature-pack</module>
-                <module>wildfly/resteasy-channel</module>
-                <module>profiling-tests</module>
-                <module>testsuite</module>
-                <!-- Build this last -->
-                <module>resteasy-bom</module>
-            </modules>
-            <dependencyManagement>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.jboss.resteasy</groupId>
-                        <artifactId>resteasy-dependencies</artifactId>
-                        <version>${project.version}</version>
-                        <type>pom</type>
-                        <scope>import</scope>
-                    </dependency>
-
-                    <dependency>
-                        <groupId>org.wildfly</groupId>
-                        <artifactId>wildfly-ee-galleon-pack</artifactId>
-                        <version>${version.org.wildfly}</version>
-                        <type>zip</type>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.wildfly</groupId>
-                        <artifactId>wildfly-preview-feature-pack</artifactId>
-                        <version>${version.org.wildfly}</version>
-                        <type>zip</type>
-                    </dependency>
-
-                    <dependency>
-                        <groupId>org.wildfly.galleon-plugins</groupId>
-                        <artifactId>wildfly-galleon-plugins</artifactId>
-                        <version>${version.org.wildfly.galleon-plugins}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.wildfly.galleon-plugins</groupId>
-                        <artifactId>wildfly-config-gen</artifactId>
-                        <version>${version.org.wildfly.galleon-plugins}</version>
-                    </dependency>
-                </dependencies>
-            </dependencyManagement>
-        </profile>
-        <profile>
-            <id>release</id>
-            <activation>
-                <property>
-                    <name>release</name>
-                </property>
-            </activation>
-            <modules>
-                <module>docbook</module>
-                <module>distribution</module>
-            </modules>
-            <reporting>
-                <excludeDefaults>true</excludeDefaults>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <reportSets>
-                            <reportSet>
-                                <id>aggregate</id>
-                                <inherited>false</inherited>
-                                <reports>
-                                    <report>aggregate-no-fork</report>
-                                </reports>
-                            </reportSet>
-                            <reportSet>
-                                <id>default</id>
-                                <reports>
-                                    <report>javadoc</report>
-                                </reports>
-                            </reportSet>
-                        </reportSets>
-                    </plugin>
-                </plugins>
-            </reporting>
-        </profile>
-        <profile>
-            <id>Windows</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                </os>
-            </activation>
-            <properties>
-                <surefire.system.args>-Xms512m -Xmx512m -Djdk.io.File.enableADS=true</surefire.system.args>
-                <additionalJvmArgs>-Djdk.io.File.enableADS=true -Djava.io.tmpdir=${project.build.directory}</additionalJvmArgs>
-            </properties>
-        </profile>
-        <profile>
-            <id>format-check</id>
-            <build>
-                <plugins>
-                    <!-- Validate formatting -->
-                    <plugin>
-                        <groupId>net.revelc.code.formatter</groupId>
-                        <artifactId>formatter-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>validate-format</id>
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>validate</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>validate-format-resources</id>
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>validate</goal>
-                                </goals>
-                                <configuration>
-                                    <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
-                                    <testSourceDirectory>${project.basedir}/src/test/resources</testSourceDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>net.revelc.code</groupId>
-                        <artifactId>impsort-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>check-import-sort</id>
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>check-import-sort-resources</id>
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                                <configuration>
-                                    <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
-                                    <testSourceDirectory>${project.basedir}/src/test/resources</testSourceDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>debug-logs</id>
-            <activation>
-                <property>
-                    <name>debug.logs</name>
-                </property>
-            </activation>
-            <properties>
-                <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
-            </properties>
-        </profile>
-    </profiles>
-
-    <contributors>
-        <contributor>
-            <name>Heiko Braun</name>
-        </contributor>
-        <contributor>
-            <name>Martin Algesten</name>
-        </contributor>
-    </contributors>
     <build>
         <pluginManagement>
             <plugins>
@@ -509,10 +353,46 @@
             <plugin>
                 <groupId>net.revelc.code.formatter</groupId>
                 <artifactId>formatter-maven-plugin</artifactId>
+                <version>${version.formatter.maven.plugin}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>dev.resteasy.tools</groupId>
+                        <artifactId>ide-config</artifactId>
+                        <version>3</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <!-- store outside of target to speed up formatting when mvn clean is used -->
+                    <cachedir>.cache</cachedir>
+                    <configFile>eclipse-code-formatter.xml</configFile>
+                    <configXmlFile>resteasy-xml.properties</configXmlFile>
+                    <includeResources>true</includeResources>
+                    <lineEnding>LF</lineEnding>
+                    <removeTrailingWhitespace>true</removeTrailingWhitespace>
+                    <skip>${skipFormatting}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>format</id>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>net.revelc.code</groupId>
                 <artifactId>impsort-maven-plugin</artifactId>
+                <version>${version.impsort.maven.plugin}</version>
+                <configuration>
+                    <!-- store outside of target to speed up formatting when mvn clean is used -->
+                    <cachedir>.cache</cachedir>
+                    <groups>java.,javax.,jakarta.,org.,com.</groups>
+                    <staticGroups>*</staticGroups>
+                    <skip>${skipFormatting}</skip>
+                    <removeUnused>true</removeUnused>
+                </configuration>
                 <executions>
                     <execution>
                         <id>sort-resource-imports</id>
@@ -520,10 +400,6 @@
                         <goals>
                             <goal>sort</goal>
                         </goals>
-                        <configuration>
-                            <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
-                            <testSourceDirectory>${project.basedir}/src/test/resources</testSourceDirectory>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -537,4 +413,194 @@
             </plugin>
         </plugins>
     </reporting>
+
+    <profiles>
+        <profile>
+            <id>resteasy-default</id>
+            <activation>
+                <property>
+                    <name>!resteasy.dependencies.eap</name>
+                </property>
+            </activation>
+            <modules>
+                <module>resteasy-dependencies-bom</module>
+                <module>resteasy-core-spi</module>
+                <module>resteasy-core</module>
+                <module>resteasy-client-api</module>
+                <module>resteasy-client</module>
+                <module>providers</module>
+                <module>security</module>
+                <module>resteasy-links</module>
+                <module>resteasy-jsapi</module>
+                <module>resteasy-cdi</module>
+                <module>resteasy-servlet-initializer</module>
+                <module>resteasy-stats</module>
+                <module>resteasy-rxjava2</module>
+                <module>resteasy-reactor</module>
+                <module>server-adapters</module>
+                <module>resteasy-client-jetty</module>
+                <module>resteasy-client-vertx</module>
+                <module>resteasy-client-reactor-netty</module>
+                <module>resteasy-client-utils</module>
+                <module>resteasy-wadl</module>
+                <module>resteasy-wadl-undertow-connector</module>
+                <module>wildfly/resteasy-feature-pack</module>
+                <module>wildfly/resteasy-channel</module>
+                <!-- Build after other sub-projects that are part of the BOM -->
+                <module>resteasy-bom</module>
+                <module>profiling-tests</module>
+                <module>testsuite</module>
+            </modules>
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jboss.resteasy</groupId>
+                        <artifactId>resteasy-dependencies</artifactId>
+                        <version>${project.version}</version>
+                        <type>pom</type>
+                        <scope>import</scope>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.wildfly</groupId>
+                        <artifactId>wildfly-ee-galleon-pack</artifactId>
+                        <version>${version.org.wildfly}</version>
+                        <type>zip</type>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.wildfly</groupId>
+                        <artifactId>wildfly-preview-feature-pack</artifactId>
+                        <version>${version.org.wildfly}</version>
+                        <type>zip</type>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.wildfly.galleon-plugins</groupId>
+                        <artifactId>wildfly-galleon-plugins</artifactId>
+                        <version>${version.org.wildfly.galleon-plugins}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.wildfly.galleon-plugins</groupId>
+                        <artifactId>wildfly-config-gen</artifactId>
+                        <version>${version.org.wildfly.galleon-plugins}</version>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
+        </profile>
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>release</name>
+                </property>
+            </activation>
+            <modules>
+                <module>docbook</module>
+                <module>distribution</module>
+            </modules>
+            <reporting>
+                <excludeDefaults>true</excludeDefaults>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <reportSets>
+                            <reportSet>
+                                <id>aggregate</id>
+                                <inherited>false</inherited>
+                                <reports>
+                                    <report>aggregate-no-fork</report>
+                                </reports>
+                            </reportSet>
+                            <reportSet>
+                                <id>default</id>
+                                <reports>
+                                    <report>javadoc</report>
+                                </reports>
+                            </reportSet>
+                        </reportSets>
+                    </plugin>
+                </plugins>
+            </reporting>
+        </profile>
+        <profile>
+            <id>Windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <surefire.system.args>-Xms512m -Xmx512m -Djdk.io.File.enableADS=true</surefire.system.args>
+                <additionalJvmArgs>-Djdk.io.File.enableADS=true -Djava.io.tmpdir=${project.build.directory}</additionalJvmArgs>
+            </properties>
+        </profile>
+        <profile>
+            <id>format-check</id>
+            <build>
+                <plugins>
+                    <!-- Validate formatting -->
+                    <plugin>
+                        <groupId>net.revelc.code.formatter</groupId>
+                        <artifactId>formatter-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>validate-format</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>validate</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>validate-format-resources</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>validate</goal>
+                                </goals>
+                                <configuration>
+                                    <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
+                                    <testSourceDirectory>${project.basedir}/src/test/resources</testSourceDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>net.revelc.code</groupId>
+                        <artifactId>impsort-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>check-import-sort</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>check-import-sort-resources</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <configuration>
+                                    <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
+                                    <testSourceDirectory>${project.basedir}/src/test/resources</testSourceDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>debug-logs</id>
+            <activation>
+                <property>
+                    <name>debug.logs</name>
+                </property>
+            </activation>
+            <properties>
+                <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
+            </properties>
+        </profile>
+    </profiles>
 </project>
