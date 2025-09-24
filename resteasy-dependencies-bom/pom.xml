@@ -71,7 +71,7 @@
         <version.org.apache.james.apache-mime4j>0.8.13</version.org.apache.james.apache-mime4j>
         <version.org.bouncycastle>1.78.1</version.org.bouncycastle>
         <version.org.eclipse.angus.angus-activation>2.0.3</version.org.eclipse.angus.angus-activation>
-        <version.org.eclipse.angus.angus-mail>2.0.4</version.org.eclipse.angus.angus-mail>
+        <version.org.eclipse.angus.angus-mail>2.0.5</version.org.eclipse.angus.angus-mail>
         <version.org.eclipse.jetty>11.0.25</version.org.eclipse.jetty>
         <version.org.eclipse.parsson>1.1.7</version.org.eclipse.parsson>
         <version.org.eclipse.yasson>3.0.4</version.org.eclipse.yasson>
