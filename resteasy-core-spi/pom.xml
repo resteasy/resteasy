@@ -8,7 +8,6 @@
     </parent>
     <artifactId>resteasy-core-spi</artifactId>
     <name>RESTEasy Core SPI</name>
-    <description />
     <packaging>jar</packaging>
 
     <dependencies>

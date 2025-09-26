@@ -9,7 +9,6 @@
     <artifactId>resteasy-servlet-initializer</artifactId>
     <packaging>jar</packaging>
     <name>RESTEasy Servlet Container Initializer</name>
-    <description />
 
     <dependencies>
         <dependency>

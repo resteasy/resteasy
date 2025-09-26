@@ -10,7 +10,6 @@
 
     <artifactId>resteasy-undertow</artifactId>
     <name>RESTEasy Undertow Integration</name>
-    <description />
 
     <dependencies>
         <dependency>

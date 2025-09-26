@@ -9,7 +9,6 @@
     <artifactId>resteasy-json-binding-provider</artifactId>
     <packaging>jar</packaging>
     <name>RESTEasy JSON-Binding Provider</name>
-    <description />
 
     <dependencies>
         <dependency>

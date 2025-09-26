@@ -6,7 +6,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <name>RESTEasy Security</name>
-    <description />
+    <description></description>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>security-pom</artifactId>

@@ -16,7 +16,6 @@
     <packaging>pom</packaging>
 
     <name>RESTEasy Maven Import (BOM)</name>
-    <description />
 
     <url>https://resteasy.dev</url>
 
