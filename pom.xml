@@ -134,7 +134,8 @@
         <!-- maven-release-plugin configuration -->
         <autoVersionSubmodules>true</autoVersionSubmodules>
         <preparationGoals>clean install javadoc:aggregate-no-fork site</preparationGoals>
-        <preparationProfiles>jboss-release,release</preparationProfiles>
+        <!-- The channels release is done differently in that it needs to release as a separate deployment -->
+        <preparationProfiles>jboss-release,release,channels-release</preparationProfiles>
         <releaseProfiles>${preparationProfiles}</releaseProfiles>
         <signTag>true</signTag>
         <tagNameFormat>v@{project.version}</tagNameFormat>
