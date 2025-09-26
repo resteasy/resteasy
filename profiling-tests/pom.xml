@@ -9,7 +9,6 @@
     <artifactId>resteasy-profiling-tests</artifactId>
     <packaging>jar</packaging>
     <name>RESTEasy Profiling Tests</name>
-    <description />
 
     <properties>
         <!-- Skip deploying tests -->
