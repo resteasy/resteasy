@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <!-- Use the jboss-parent as the parent. The org.jboss.resteasy:resteasy-jaxrs-all imports the
          org.jboss.resteasy:resteasy-dependencies BOM which we do not want included in this BOM.
@@ -13,11 +12,11 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-bom</artifactId>
-    <version>7.0.0.Final-SNAPSHOT</version>
+    <version>7.0.0.Beta2</version>
     <packaging>pom</packaging>
 
     <name>RESTEasy Maven Import (BOM)</name>
-    <description/>
+    <description />
 
     <url>https://resteasy.dev</url>
 
@@ -38,7 +37,8 @@
         <connection>scm:git:git://github.com/resteasy/resteasy.git</connection>
         <developerConnection>scm:git:git@github.com:resteasy/resteasy.git</developerConnection>
         <url>https://github.com/resteasy/resteasy/tree/main/</url>
-    </scm>
+      <tag>v7.0.0.Beta2</tag>
+  </scm>
 
     <issueManagement>
         <system>JIRA</system>

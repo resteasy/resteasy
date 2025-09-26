@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
@@ -10,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-dependencies</artifactId>
-    <version>7.0.0.Final-SNAPSHOT</version>
+    <version>7.0.0.Beta2</version>
     <packaging>pom</packaging>
     <name>RESTEasy dependencies BOM</name>
     <description>RESTEasy dependencies BOM</description>
@@ -34,7 +33,8 @@
         <connection>scm:git:git://github.com/resteasy/resteasy.git</connection>
         <developerConnection>scm:git:git@github.com:resteasy/resteasy.git</developerConnection>
         <url>https://github.com/resteasy/resteasy/tree/main/</url>
-    </scm>
+      <tag>v7.0.0.Beta2</tag>
+  </scm>
 
     <issueManagement>
         <system>JIRA</system>

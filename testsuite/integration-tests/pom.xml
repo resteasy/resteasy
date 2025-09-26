@@ -1,13 +1,11 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-testsuite</artifactId>
-        <version>7.0.0.Final-SNAPSHOT</version>
+        <version>7.0.0.Beta2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -26,7 +24,7 @@
 
         <version.org.jboss.shrinkwrap.resolver>3.3.0</version.org.jboss.shrinkwrap.resolver>
         <!-- Exclude additional tests with e.g. -Dresteasy-integration-tests.additional.surefire.excludes='%regex[.*JettyClientHttpEngineTest.*|.*VertxClientHttpEngineTest.*]' -->
-        <resteasy-integration-tests.additional.surefire.excludes/>
+        <resteasy-integration-tests.additional.surefire.excludes />
 
         <!-- Skip deploying tests -->
         <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
@@ -106,7 +104,7 @@
                                     </channel>
                                 </channels>
                                 <galleon-options>
-                                    <jboss-maven-dist/>
+                                    <jboss-maven-dist />
                                 </galleon-options>
                             </configuration>
                         </execution>
@@ -667,12 +665,12 @@
 
                                 <delete quiet="true" dir="${container.base.dir.managed}" />
                                 <copy todir="${container.base.dir.managed}" overwrite="true" failonerror="true">
-                                    <fileset dir="${jboss.home}/standalone"/>
+                                    <fileset dir="${jboss.home}/standalone" />
                                 </copy>
 
                                 <delete quiet="true" dir="${container.base.dir.managed.encoding}" />
                                 <copy todir="${container.base.dir.managed.encoding}" overwrite="true" failonerror="true">
-                                    <fileset dir="${jboss.home}/standalone"/>
+                                    <fileset dir="${jboss.home}/standalone" />
                                 </copy>
                             </target>
                         </configuration>

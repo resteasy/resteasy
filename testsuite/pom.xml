@@ -1,25 +1,24 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>7.0.0.Final-SNAPSHOT</version>
+        <version>7.0.0.Beta2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <name>RESTEasy Main testsuite</name>
-    <description/>
+    <description />
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
 
     <artifactId>resteasy-testsuite</artifactId>
 
     <properties>
-        <version.resteasy.testsuite>7.0.0.Final-SNAPSHOT</version.resteasy.testsuite>
+        <version.resteasy.testsuite>7.0.0.Beta2</version.resteasy.testsuite>
         <!-- Currently WildFly Preview does not include MBean support as it was removed from Jakarta EE 11 -->
         <additional.surefire.excluded.groups>managed-bean-support-required</additional.surefire.excluded.groups>
-        <jacoco.agent/>
-        <ipv6ArquillianSettings/>
-        <debugJvmArgs/>
+        <jacoco.agent />
+        <ipv6ArquillianSettings />
+        <debugJvmArgs />
         <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
         <test.java.home>${java.home}</test.java.home>
 
@@ -30,7 +29,7 @@
         <version.org.wildfly.cloud-tests>1.0.0.Alpha2</version.org.wildfly.cloud-tests>
 
         <!-- Provisioning properties -->
-        <server.version/>
+        <server.version />
 
         <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
         <!-- WildFly Preview is currently targeting Jakarta EE 11 and we should use it by default
@@ -127,7 +126,7 @@
                     <systemPropertyVariables>
                         <additionalJvmArgs>${additionalJvmArgs}</additionalJvmArgs>
                         <ipv6>false</ipv6>
-                        <ipv6ArquillianSettings></ipv6ArquillianSettings>
+                        <ipv6ArquillianSettings />
                         <node>127.0.0.1</node>
                         <jboss.home>${jboss.home}</jboss.home>
                         <project.version>${project.version}</project.version>
@@ -347,37 +346,37 @@
                                 <configuration>
                                     <skip>${skipTests}</skip>
                                     <target>
-                                        <property name="result.report.dir" location="target/jacoco-report"/>
+                                        <property name="result.report.dir" location="target/jacoco-report" />
                                         <taskdef name="report" classname="org.jacoco.ant.ReportTask">
-                                            <classpath path="${project.build.directory}/jacoco-jars/org.jacoco.ant.jar"/>
+                                            <classpath path="${project.build.directory}/jacoco-jars/org.jacoco.ant.jar" />
                                         </taskdef>
                                         <echo>Creating JaCoCo RESTEasy test coverage reports...</echo>
                                         <report>
                                             <executiondata>
                                                 <fileset dir="${basedir}">
-                                                    <include name="**/target/jacoco.exec"/>
+                                                    <include name="**/target/jacoco.exec" />
                                                 </fileset>
                                             </executiondata>
                                             <structure name="JaCoCo RESTEasy">
                                                 <classfiles>
                                                     <fileset dir="${basedir}/integration-tests/target/test-server">
-                                                        <include name="**/resteasy*${project.version}.jar"/>
-                                                        <include name="**/jose-jwt*${project.version}.jar"/>
-                                                        <include name="**/async-http-servlet*.jar"/>
-                                                        <include name="**/jboss-jaxrs-api*.jar"/>
-                                                        <include name="**/jackson-jaxrs*.jar"/>
-                                                        <include name="**/jackson-module*.jar"/>
-                                                        <include name="**/wildfly-jaxrs*.jar"/>
+                                                        <include name="**/resteasy*${project.version}.jar" />
+                                                        <include name="**/jose-jwt*${project.version}.jar" />
+                                                        <include name="**/async-http-servlet*.jar" />
+                                                        <include name="**/jboss-jaxrs-api*.jar" />
+                                                        <include name="**/jackson-jaxrs*.jar" />
+                                                        <include name="**/jackson-module*.jar" />
+                                                        <include name="**/wildfly-jaxrs*.jar" />
                                                     </fileset>
                                                 </classfiles>
                                                 <sourcefiles encoding="UTF-8">
                                                     <dirset dir="${basedir}/..">
-                                                        <include name="**/src/main/java"/>
+                                                        <include name="**/src/main/java" />
                                                     </dirset>
                                                 </sourcefiles>
                                             </structure>
-                                            <html destdir="\${result.report.dir}"/>
-                                            <xml destfile="\${result.report.dir}/report.xml"/>
+                                            <html destdir="\${result.report.dir}" />
+                                            <xml destfile="\${result.report.dir}/report.xml" />
                                         </report>
                                     </target>
                                 </configuration>
