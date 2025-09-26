@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
@@ -11,7 +10,7 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>6.2.13.Final-SNAPSHOT</version>
+    <version>6.2.13.Final</version>
     <packaging>pom</packaging>
 
     <name>RESTEasy</name>
@@ -78,7 +77,8 @@
         <connection>scm:git:git://github.com/resteasy/resteasy.git</connection>
         <developerConnection>scm:git:git@github.com:resteasy/resteasy.git</developerConnection>
         <url>https://github.com/resteasy/resteasy/tree/main/</url>
-    </scm>
+      <tag>v6.2.13.Final</tag>
+  </scm>
 
     <issueManagement>
         <system>JIRA</system>
@@ -95,7 +95,7 @@
         <version.org.wildfly.arquillian.wildfly-arquillian>5.1.0.Final</version.org.wildfly.arquillian.wildfly-arquillian>
         <version.org.wildfly.wildfly-channel-maven-plugin>1.0.29</version.org.wildfly.wildfly-channel-maven-plugin>
 
-        <jboss.home/>
+        <jboss.home />
         <!-- print logs to file by default -->
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
         <!-- maven-enforcer-plugin -->
@@ -329,7 +329,7 @@
                         </goals>
                         <configuration>
                             <rules>
-                                <dependencyConvergence/>
+                                <dependencyConvergence />
                             </rules>
                         </configuration>
                     </execution>
