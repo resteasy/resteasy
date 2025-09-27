@@ -9,7 +9,6 @@
     <artifactId>resteasy-jackson2-provider</artifactId>
     <packaging>jar</packaging>
     <name>RESTEasy Jackson 2 Provider</name>
-    <description />
 
     <dependencies>
         <dependency>

@@ -9,7 +9,6 @@
 
     <artifactId>jose-jwt</artifactId>
     <name>RESTEasy Security: JOSE JWT</name>
-    <description />
 
     <dependencies>
         <dependency>

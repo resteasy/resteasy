@@ -7,7 +7,6 @@
     </parent>
     <artifactId>resteasy-cdi</artifactId>
     <name>RESTEasy CDI integration module</name>
-    <description />
     <packaging>jar</packaging>
     <dependencies>
 

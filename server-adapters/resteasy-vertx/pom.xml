@@ -10,7 +10,6 @@
 
     <artifactId>resteasy-vertx</artifactId>
     <name>RESTEasy Vert.x Integration</name>
-    <description />
 
     <dependencies>
         <dependency>

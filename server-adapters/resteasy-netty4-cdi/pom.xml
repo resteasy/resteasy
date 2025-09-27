@@ -10,7 +10,6 @@
 
     <artifactId>resteasy-netty4-cdi</artifactId>
     <name>RESTEasy Netty 4 Integration w/ CDI Support</name>
-    <description />
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>

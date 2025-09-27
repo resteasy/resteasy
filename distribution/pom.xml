@@ -10,11 +10,16 @@
     <artifactId>resteasy-dist</artifactId>
     <packaging>pom</packaging>
     <name>RESTEasy Distribution</name>
-    <description />
 
     <modules>
         <module>src-distribution</module>
     </modules>
+
+    <properties>
+        <!-- Skip deploying tests -->
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <skipNexusStagingDeployMojo>${maven.deploy.skip}</skipNexusStagingDeployMojo>
+    </properties>
 
     <dependencies>
 
@@ -151,12 +156,6 @@
         </pluginManagement>
         <plugins>
             <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
@@ -181,13 +180,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <configuration>
-                    <createChecksum>true</createChecksum>
-                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -9,7 +9,6 @@
     <artifactId>resteasy-jaxb-provider</artifactId>
     <packaging>jar</packaging>
     <name>RESTEasy JAXB Provider</name>
-    <description />
 
     <dependencies>
 

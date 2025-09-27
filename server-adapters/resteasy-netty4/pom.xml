@@ -10,7 +10,6 @@
 
     <artifactId>resteasy-netty4</artifactId>
     <name>RESTEasy Netty 4 Integration</name>
-    <description />
 
     <dependencies>
         <dependency>

@@ -9,7 +9,6 @@
     <version>6.2.13.Final-SNAPSHOT</version>
     <packaging>jdocbook</packaging>
     <name>RESTEasy Upgrade Guide (${translation})</name>
-    <description/>
     <repositories>
         <repository>
             <id>jboss</id>

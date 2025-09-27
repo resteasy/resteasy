@@ -9,7 +9,6 @@
     <artifactId>resteasy-stats</artifactId>
     <packaging>jar</packaging>
     <name>RESTEasy Stats</name>
-    <description />
 
     <dependencies>
 

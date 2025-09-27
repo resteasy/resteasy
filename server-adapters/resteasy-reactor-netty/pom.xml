@@ -10,7 +10,6 @@
 
     <artifactId>resteasy-reactor-netty</artifactId>
     <name>RESTEasy Reactor-Netty Integration</name>
-    <description />
 
     <dependencies>
         <dependency>

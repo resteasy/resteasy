@@ -10,7 +10,6 @@
 
     <artifactId>resteasy-crypto</artifactId>
     <name>RESTEasy Security: Crypto</name>
-    <description />
 
     <dependencies>
         <dependency>
