@@ -290,18 +290,4 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>channels-release</id>
-            <activation>
-                <property>
-                    <name>release</name>
-                </property>
-            </activation>
-            <properties>
-                <nexus.staging.tag>resteasy-channels-${project.version}</nexus.staging.tag>
-            </properties>
-        </profile>
-    </profiles>
-
 </project>
