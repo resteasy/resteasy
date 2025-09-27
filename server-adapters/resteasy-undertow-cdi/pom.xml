@@ -27,6 +27,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>resteasy-undertow-cdi</artifactId>
+    <name>RESTEasy Undertow Embedded Server with CDI</name>
+    <description>An Undertow embedded server adaptor with support for Jakarta Context and Dependency Injection</description>
     <dependencies>
 
         <dependency>

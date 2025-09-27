@@ -10,6 +10,7 @@
 
     <artifactId>resteasy-client-api</artifactId>
     <name>RESTEasy Client API</name>
+    <description>RESTEasy Client API</description>
 
     <dependencies>
 

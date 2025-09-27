@@ -11,6 +11,7 @@
     <artifactId>resteasy-reference-guide</artifactId>
     <packaging>pom</packaging>
     <name>RESTEasy Reference Guide</name>
+    <description>The RESTEasy documentation</description>
 
     <build>
         <plugins>

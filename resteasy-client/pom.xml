@@ -10,6 +10,7 @@
 
     <artifactId>resteasy-client</artifactId>
     <name>RESTEasy Client</name>
+    <description>RESTEasy Jakarta REST client implementation.</description>
 
     <dependencies>
 

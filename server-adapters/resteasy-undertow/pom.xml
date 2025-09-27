@@ -10,6 +10,7 @@
 
     <artifactId>resteasy-undertow</artifactId>
     <name>RESTEasy Undertow Integration</name>
+    <description>An Undertow embedded server adaptor</description>
 
     <dependencies>
         <dependency>

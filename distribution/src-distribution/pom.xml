@@ -9,6 +9,7 @@
     <artifactId>resteasy-src-dist</artifactId>
     <packaging>pom</packaging>
     <name>RESTEasy Source Distribution</name>
+    <description>Creates a source distribution archive</description>
 
     <build>
         <plugins>

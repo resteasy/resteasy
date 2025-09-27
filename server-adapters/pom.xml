@@ -4,11 +4,12 @@
         <artifactId>resteasy-jaxrs-all</artifactId>
         <version>7.0.0.Final-SNAPSHOT</version>
     </parent>
-    <name>RESTEasy Http Adapter Plugins</name>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>resteasy-http-adapter-pom</artifactId>
     <packaging>pom</packaging>
+    <name>RESTEasy Http Adapter Plugins</name>
+    <description>Embedded server adaptors</description>
 
     <dependencyManagement>
         <dependencies>

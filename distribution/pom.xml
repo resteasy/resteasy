@@ -10,6 +10,7 @@
     <artifactId>resteasy-dist</artifactId>
     <packaging>pom</packaging>
     <name>RESTEasy Distribution</name>
+    <description>Creates archives for the source and a distribution archive</description>
 
     <modules>
         <module>src-distribution</module>

@@ -27,6 +27,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>server-adapter-test-base</artifactId>
+    <name>RESTEasy Server Adaptor Testing</name>
+    <description>Provides base testing utilities for embedded server adaptor testing</description>
 
     <dependencies>
         <dependency>
