@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-dependencies</artifactId>
-    <version>7.0.0.Final-SNAPSHOT</version>
+    <version>7.0.0.Final</version>
     <packaging>pom</packaging>
     <name>RESTEasy dependencies BOM</name>
     <description>RESTEasy dependencies BOM</description>
@@ -33,7 +33,7 @@
         <connection>scm:git:git://github.com/resteasy/resteasy.git</connection>
         <developerConnection>scm:git:git@github.com:resteasy/resteasy.git</developerConnection>
         <url>https://github.com/resteasy/resteasy/tree/main/</url>
-      <tag>HEAD</tag>
+      <tag>v7.0.0.Final</tag>
   </scm>
 
     <issueManagement>
