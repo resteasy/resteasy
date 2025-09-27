@@ -2,7 +2,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>7.0.0.Beta4</version>
+        <version>7.0.0.Final-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <name>RESTEasy Main testsuite</name>
@@ -12,7 +12,7 @@
     <artifactId>resteasy-testsuite</artifactId>
 
     <properties>
-        <version.resteasy.testsuite>7.0.0.Beta4</version.resteasy.testsuite>
+        <version.resteasy.testsuite>7.0.0.Final-SNAPSHOT</version.resteasy.testsuite>
         <!-- Currently WildFly Preview does not include MBean support as it was removed from Jakarta EE 11 -->
         <additional.surefire.excluded.groups>managed-bean-support-required</additional.surefire.excluded.groups>
         <jacoco.agent />

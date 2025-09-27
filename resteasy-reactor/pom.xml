@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>7.0.0.Beta4</version>
+    <version>7.0.0.Final-SNAPSHOT</version>
   </parent>
   <artifactId>resteasy-reactor</artifactId>
   <name>RESTEasy Reactor integration</name>
