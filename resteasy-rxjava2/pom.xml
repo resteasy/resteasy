@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>7.0.0.Final-SNAPSHOT</version>
+    <version>7.0.0.Beta4</version>
   </parent>
   <artifactId>resteasy-rxjava2</artifactId>
   <name>RESTEasy RxJava 2 integration</name>
