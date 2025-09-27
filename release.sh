@@ -154,9 +154,7 @@ if [ ${status} = 0 ]; then
     echo "Your release has been successful. Check the validation after $(date -d "now + 10 minutes" +"%H:%M:%S") on https://repository.jboss.org/nexus."
     echo "Once validation is successful, execute the following command:"
     echo ""
-    echo "git checkout ${TAG_NAME}"
-    echo "mvn nxrm3:staging-move -Dmaven.repo.local=\"${LOCAL_REPO}\""
-    echo "git checkout ${CURRENT_BRANCH}"
+    echo "mvn nxrm3:staging-move -Dmaven.repo.local=\"${LOCAL_REPO}\" -Dnexus.staging.tag=\"${TAG_NAME}\""
     echo "git push upstream ${CURRENT_BRANCH}"
     echo "git push upstream ${TAG_NAME}"
 
