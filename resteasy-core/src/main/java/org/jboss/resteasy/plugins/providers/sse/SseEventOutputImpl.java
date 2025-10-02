@@ -407,6 +407,9 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             }
 
             if (asyncContext.isSuspended()) {
+                BuiltResponse jaxrsResponse = (BuiltResponse) Response.noContent().build();
+                response.setStatus(jaxrsResponse.getStatus());
+                ServerResponseWriter.commitHeaders(jaxrsResponse, response);
                 ResteasyAsynchronousResponse asyncResponse = asyncContext.getAsyncResponse();
                 if (asyncResponse != null) {
                     try {
