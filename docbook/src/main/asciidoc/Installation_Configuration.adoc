@@ -743,7 +743,7 @@ RESTEasy can receive the following configuration options from any ConfigSource's
 
 | resteasy.document.secure.processing.feature
 | true
-| Impose security constraints in processing org.w3c.dom.Document documents and {xml-binding} object representations
+| Impose security constraints in processing org.w3c.dom.Document documents and {xml-binding} object representations. When enabled, sets `XMLConstants.FEATURE_SECURE_PROCESSING` which applies JVM limits including `jdk.xml.entityExpansionLimit` (2,500 in Java 24+, 64,000 in earlier versions), `jdk.xml.totalEntitySizeLimit` (50,000,000), and other XML processing restrictions. See https://docs.oracle.com/en/java/javase/25/security/java-api-xml-processing-jaxp-security-guide.html
 
 | resteasy.document.secure.disableDTDs
 | true
