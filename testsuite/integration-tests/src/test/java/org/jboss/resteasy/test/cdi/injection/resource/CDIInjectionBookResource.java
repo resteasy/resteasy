@@ -28,8 +28,8 @@ import jakarta.jms.Queue;
 import jakarta.jms.Session;
 import jakarta.jms.TextMessage;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -70,7 +70,6 @@ public class CDIInjectionBookResource {
     private static AtomicInteger destroyCounter = new AtomicInteger();
     @Inject
     @CDIInjectionResourceBinding
-    @PersistenceContext(unitName = "test")
     EntityManager em;
     private HashSet<CDIInjectionBook> set = new HashSet<>();
     @Inject
@@ -256,6 +255,7 @@ public class CDIInjectionBookResource {
 
     @POST
     @Path("entityManager")
+    @Transactional
     public Response testEntityManager() {
         log.info("entering testEntityManager()");
         CDIInjectionBook book1 = collection.getBook(Counter.INITIAL_VALUE);

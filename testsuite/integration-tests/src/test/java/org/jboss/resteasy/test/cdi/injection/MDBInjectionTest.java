@@ -31,6 +31,7 @@ import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookResource;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookWriter;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionDependentScoped;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionNewBean;
+import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionResourceBinding;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionResourceProducer;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionScopeInheritingStereotype;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionScopeStereotype;
@@ -40,9 +41,7 @@ import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionStereotypedDep
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionUnscopedResource;
 import org.jboss.resteasy.test.cdi.util.Constants;
 import org.jboss.resteasy.test.cdi.util.Counter;
-import org.jboss.resteasy.test.cdi.util.PersistenceUnitProducer;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -84,13 +83,9 @@ public class MDBInjectionTest {
                 .addClasses(CDIInjectionNewBean.class)
                 .addClasses(CDIInjectionScopeStereotype.class, CDIInjectionScopeInheritingStereotype.class)
                 .addClasses(CDIInjectionStereotypedApplicationScope.class, CDIInjectionStereotypedDependentScope.class)
-                .addClasses(Resource.class, CDIInjectionResourceProducer.class, PersistenceUnitProducer.class)
+                .addClasses(Resource.class, CDIInjectionResourceProducer.class, CDIInjectionResourceBinding.class)
                 .addAsWebInfResource(TestUtil.createBeansXml(), "beans.xml")
                 .addAsResource(InjectionTest.class.getPackage(), "persistence.xml", "META-INF/persistence.xml");
-        String host = PortProviderUtil.getHost();
-        if (PortProviderUtil.isIpv6()) {
-            host = String.format("[%s]", host);
-        }
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
