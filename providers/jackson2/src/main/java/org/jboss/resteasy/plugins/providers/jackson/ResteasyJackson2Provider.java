@@ -5,11 +5,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.ext.Provider;
@@ -17,7 +20,9 @@ import jakarta.ws.rs.ext.Provider;
 import org.jboss.resteasy.annotations.providers.jackson.Formatted;
 import org.jboss.resteasy.core.interception.jaxrs.DecoratorMatcher;
 import org.jboss.resteasy.core.messagebody.AsyncBufferedMessageBodyWriter;
+import org.jboss.resteasy.plugins.providers.ProviderHelper;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 
 import com.fasterxml.jackson.core.JsonEncoding;
@@ -177,6 +182,72 @@ public class ResteasyJackson2Provider extends JacksonJsonProvider implements Asy
     }
 
     protected final ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig> _writers = new ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig>();
+
+    private static final class LazyByteArrayOutputStream extends OutputStream {
+
+        private byte[] buf;
+        private int count;
+
+        private void ensureCapacity(int minCapacity) {
+            if (minCapacity < 0) {
+                throw new OutOfMemoryError();
+            }
+            if (buf == null) {
+                buf = new byte[minCapacity];
+                return;
+            }
+            int oldCapacity = buf.length;
+            int minGrowth = minCapacity - oldCapacity;
+            if (minGrowth > 0) {
+                grow(minGrowth, oldCapacity);
+            }
+        }
+
+        private void grow(int minGrowth, int oldCapacity) {
+            int newCapacity = oldCapacity + Math.max((oldCapacity >> 1), minGrowth);
+            if (newCapacity < 0) {
+                // if we cannot grow as much as we want, let's just grow to what we need
+                newCapacity = oldCapacity + minGrowth;
+                if (newCapacity < 0) {
+                    throw new OutOfMemoryError();
+                }
+            }
+            buf = Arrays.copyOf(buf, newCapacity);
+        }
+
+        @Override
+        public void write(int b) {
+            ensureCapacity(count + 1);
+            buf[count] = (byte) b;
+            count++;
+        }
+
+        @Override
+        public void write(byte[] b, int off, int len) throws IOException {
+            ensureCapacity(count + len);
+            System.arraycopy(b, off, buf, count, len);
+            count += len;
+        }
+    }
+
+    private static final byte[] EMPTY = new byte[0];
+
+    @Override
+    public CompletionStage<Void> asyncWriteTo(Object t, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, AsyncOutputStream entityStream) {
+        LazyByteArrayOutputStream bos = new LazyByteArrayOutputStream();
+        try {
+            writeTo(t, type, genericType, annotations, mediaType, httpHeaders, bos);
+            byte[] array = bos.buf;
+            if (array == null) {
+                array = EMPTY;
+            }
+            bos.buf = null;
+            return entityStream.asyncWrite(array, 0, bos.count);
+        } catch (WebApplicationException | IOException e) {
+            return ProviderHelper.completedException(e);
+        }
+    }
 
     @Override
     public void writeTo(Object value, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
