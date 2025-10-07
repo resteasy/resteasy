@@ -129,7 +129,7 @@
         <!-- maven-release-plugin configuration -->
         <autoVersionSubmodules>true</autoVersionSubmodules>
         <preparationGoals>clean install javadoc:aggregate-no-fork site</preparationGoals>
-        <preparationProfiles>jboss-release,release</preparationProfiles>
+        <preparationProfiles>jboss-release,release,cloud-tests</preparationProfiles>
         <releaseProfiles>${preparationProfiles}</releaseProfiles>
         <signTag>true</signTag>
         <tagNameFormat>v@{project.version}</tagNameFormat>
