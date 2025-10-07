@@ -72,7 +72,6 @@ import org.jboss.resteasy.test.cdi.injection.resource.StatelessEJBwithJaxRsCompo
 import org.jboss.resteasy.test.cdi.injection.resource.StatelessEJBwithJaxRsComponentsInterface;
 import org.jboss.resteasy.test.cdi.util.Constants;
 import org.jboss.resteasy.test.cdi.util.Counter;
-import org.jboss.resteasy.test.cdi.util.PersistenceUnitProducer;
 import org.jboss.resteasy.test.cdi.util.Utilities;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -159,7 +158,6 @@ public class ReverseInjectionTest {
                         CDIInjectionUnscopedResource.class,
                         Constants.class,
                         Counter.class,
-                        PersistenceUnitProducer.class,
                         PortProviderUtil.class,
                         ReverseInjectionEJBHolder.class,
                         ReverseInjectionEJBHolderLocal.class,
