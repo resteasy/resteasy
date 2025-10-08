@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -57,6 +60,7 @@ import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -614,6 +618,79 @@ public class MultipartEntityPartProviderTest {
         }
     }
 
+    /**
+     * Tests sending {@code multipart/form-data} content as a {@link EntityPart List<EntityPart>}. Three parts are sent
+     * and processed by the resource returning all the headers from the request. This is done through an client
+     * proxy asynchronously.
+     * <p>
+     * The result from the REST endpoint is a JSON object containing the headers for each entry.
+     * <br>
+     * Example:
+     * <code>
+     *     <pre>
+     * {
+     *     "entity-part": {
+     *         "Content-Disposition": [
+     *             "form-data; name=\"entity-part\""
+     *         ],
+     *         "Content-Type": [
+     *             "text/plain"
+     *         ],
+     *         "test-content-type": [
+     *             "text/plain"
+     *         ],
+     *         "test-entity-1": [
+     *             "part1"
+     *         ]
+     *     }
+     * }
+     *     </pre>
+     * </code>
+     * </p>
+     *
+     * @throws Exception if an error occurs in the test
+     */
+    @Test
+    public void echoHeadersAsync(@RequestPath("test") final ResteasyWebTarget target) throws Exception {
+        final List<EntityPart> multipart = List.of(
+                EntityPart.withName("entity-part")
+                        .content("test entity part")
+                        .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                        .header("test-entity-1", "part1")
+                        .header("test-content-type", MediaType.TEXT_PLAIN, MediaType.APPLICATION_OCTET_STREAM)
+                        .build(),
+                EntityPart.withName("string-part")
+                        .content("test string")
+                        .mediaType(MediaType.TEXT_PLAIN_TYPE)
+                        .header("test-entity-2", "part2")
+                        .header("test-content-type", MediaType.TEXT_PLAIN)
+                        .build(),
+                EntityPart.withName("input-stream-part")
+                        .content("test input stream".getBytes(StandardCharsets.UTF_8))
+                        .mediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                        .header("test-entity-3", "part3")
+                        .header("test-content-type", MediaType.APPLICATION_OCTET_STREAM)
+                        .build());
+        // Create the proxy client
+        final AsyncClient client = target.proxy(AsyncClient.class);
+        try (Response response = client.asyncHeaders(multipart).toCompletableFuture().get(5L, TimeUnit.SECONDS)) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+
+            final JsonObject json = response.readEntity(JsonObject.class);
+            JsonObject part = json.getJsonObject("entity-part");
+            checkHeader(part, "test-entity-1", "part1");
+            checkHeader(part, "test-content-type", MediaType.TEXT_PLAIN, MediaType.APPLICATION_OCTET_STREAM);
+
+            part = json.getJsonObject("string-part");
+            checkHeader(part, "test-entity-2", "part2");
+            checkHeader(part, "test-content-type", MediaType.TEXT_PLAIN);
+
+            part = json.getJsonObject("input-stream-part");
+            checkHeader(part, "test-entity-3", "part3");
+            checkHeader(part, "test-content-type", MediaType.APPLICATION_OCTET_STREAM);
+        }
+    }
+
     private static void checkEntity(final List<EntityPart> entityParts, final String name, final String expectedText)
             throws IOException {
         final EntityPart part = find(entityParts, name);
@@ -815,6 +892,28 @@ public class MultipartEntityPartProviderTest {
             return Response.ok(objectBuilder.build()).build();
         }
 
+        @POST
+        @Consumes(MediaType.MULTIPART_FORM_DATA)
+        @Produces(MediaType.APPLICATION_JSON)
+        @Path("/async")
+        public CompletableFuture<Response> asyncHeaders(final List<EntityPart> entityParts) {
+            return CompletableFuture.supplyAsync(() -> {
+                final JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+                for (EntityPart entityPart : entityParts) {
+                    final JsonObjectBuilder headerObjectBuilder = Json.createObjectBuilder();
+                    entityPart.getHeaders().forEach((name, values) -> {
+                        final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+                        for (String value : values) {
+                            arrayBuilder.add(value);
+                        }
+                        headerObjectBuilder.add(name, arrayBuilder);
+                    });
+                    objectBuilder.add(entityPart.getName(), headerObjectBuilder);
+                }
+                return Response.ok(objectBuilder.build()).build();
+            });
+        }
+
         private static MultivaluedMap<String, String> filterHeaders(final MultivaluedMap<String, String> headers) {
             final MultivaluedMap<String, String> filtered = new MultivaluedHashMap<>();
             for (var entry : headers.entrySet()) {
@@ -824,6 +923,15 @@ public class MultipartEntityPartProviderTest {
             }
             return filtered;
         }
+    }
+
+    interface AsyncClient {
+
+        @POST
+        @Consumes(MediaType.MULTIPART_FORM_DATA)
+        @Produces(MediaType.APPLICATION_JSON)
+        @Path("/async")
+        CompletionStage<Response> asyncHeaders(List<EntityPart> entityParts);
     }
 
     private static class CloseTrackingInputStream extends ByteArrayInputStream {
