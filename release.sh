@@ -136,7 +136,7 @@ if [ -d "${LOCAL_REPO}" ]; then
 fi
 
 # Prepare the command
-command="mvn clean release:clean release:prepare release:perform -Dmaven.repo.local=\"${LOCAL_REPO}\" -Prelease -DdevelopmentVersion=\"${DEVEL_VERSION}\" -DreleaseVersion=\"${RELEASE_VERSION}\" -Dtag=\"${TAG_NAME}\" ${MAVEN_ARGS[*]}"
+command="mvn clean release:clean release:prepare release:perform -Dmaven.repo.local=\"${LOCAL_REPO}\" -Prelease,cloud-tests -DdevelopmentVersion=\"${DEVEL_VERSION}\" -DreleaseVersion=\"${RELEASE_VERSION}\" -Dtag=\"${TAG_NAME}\" ${MAVEN_ARGS[*]}"
 if [ "-v" = "${VERBOSE}" ]; then
     printf "\n\nExecuting:\n  "
     echo "${command}"
