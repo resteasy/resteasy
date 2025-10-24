@@ -14,11 +14,13 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.WriteListener;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.NewCookie;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -234,10 +236,13 @@ public class HttpServletResponseWrapper implements HttpResponse {
         private volatile ServletOutputStream lazyOut;
         // Guarded by this
         private long idCounter;
+        // Track if stream is closed due to session invalidation or other errors
+        private final AtomicBoolean streamClosed;
 
         DeferredOutputStream() throws IOException {
             asyncQueue = new PriorityQueue<>(AsyncOperationComparator.INSTANCE);
             asyncRegistered = new AtomicBoolean();
+            streamClosed = new AtomicBoolean(false);
         }
 
         @Override
@@ -279,7 +284,45 @@ public class HttpServletResponseWrapper implements HttpResponse {
             return op.future;
         }
 
+        /**
+         * Checks if the request has a valid {@link HttpSession}. If no session exists, we still consider this valid.
+         * A session is only invalid if {@link HttpSession#invalidate()} has been invoked.
+         */
+        private boolean isSessionInvalidated(final AsyncOperation op) {
+            try {
+                HttpSession session = request.getSession(false);
+                // The session does not exist, consider it valid
+                if (session != null) {
+                    // Try to access session to check if it's still valid
+                    session.getLastAccessedTime();
+                    return false;
+                }
+                // No session means we can't check, assume valid
+                return false;
+            } catch (IllegalStateException e) {
+                streamClosed.set(true);
+                // Session has been invalidated
+                if (op != null) {
+                    op.future.completeExceptionally(Messages.MESSAGES.invalidSession());
+                }
+                onError(Messages.MESSAGES.invalidSession());
+                return true;
+            }
+        }
+
         private void queue(AsyncOperation op) {
+            // Check if stream should be considered closed
+            if (streamClosed.get()) {
+                op.future.completeExceptionally(new IOException(Messages.MESSAGES.streamIsClosed()));
+                onError(new IOException(Messages.MESSAGES.streamIsClosed()));
+                return;
+            }
+
+            // Check session validity to fail fast on invalidated sessions
+            if (isSessionInvalidated(op)) {
+                return;
+            }
+
             // fetch it from the context directly to avoid having to restore the context just in case we're invoked on a context-less thread
             HttpRequest resteasyRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
             if (request.isAsyncStarted() && !resteasyRequest.getAsyncContext().isOnInitialRequest()) {
@@ -288,6 +331,8 @@ public class HttpServletResponseWrapper implements HttpResponse {
                 try {
                     out = getServletOutputStream();
                 } catch (IOException e) {
+                    // We can't write to the stream, consider it closed
+                    streamClosed.set(true);
                     op.future.completeExceptionally(e);
                     return;
                 }
@@ -316,6 +361,12 @@ public class HttpServletResponseWrapper implements HttpResponse {
 
         private void flushQueue() {
             synchronized (this) {
+                // Re-validate session before processing queue to avoid race condition
+                // between queue() check and async execution
+                if (isSessionInvalidated(null)) {
+                    return;
+                }
+
                 final ServletOutputStream out;
                 try {
                     out = getServletOutputStream();
@@ -340,6 +391,7 @@ public class HttpServletResponseWrapper implements HttpResponse {
         public void onError(Throwable t) {
             synchronized (this) {
                 asyncListenerCalled = true;
+                streamClosed.set(true);
                 AsyncOperation op;
                 while ((op = asyncQueue.poll()) != null) {
                     if (!op.future.isDone())
