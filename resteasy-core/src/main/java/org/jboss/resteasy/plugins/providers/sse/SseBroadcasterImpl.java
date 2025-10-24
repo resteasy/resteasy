@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.providers.sse;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -21,7 +22,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 public class SseBroadcasterImpl implements SseBroadcaster {
-    private ConcurrentLinkedQueue<SseEventSink> outputQueue = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<SseEventSink> outputQueue = new ConcurrentLinkedQueue<>();
 
     private final List<BiConsumer<SseEventSink, Throwable>> onErrorConsumers = new CopyOnWriteArrayList<>();
 
@@ -138,14 +139,29 @@ public class SseBroadcasterImpl implements SseBroadcaster {
         for (SseEventSink eventSink : outputQueue) {
             ret = ret.thenCompose(v -> {
                 try {
-                    return eventSink.send(event)
-                            .exceptionally(err -> {
-                                // do not propagate the exception to the returned CF
-                                // apparently, the goal is to close this sink and not report the error
-                                // of the broadcast operation
-                                notifyOnErrorListeners(eventSink, err);
-                                return null;
-                            });
+                    CompletionStage<?> sendStage = eventSink.send(event);
+
+                    return sendStage.exceptionally(err -> {
+                        // do not propagate the exception to the returned CF
+                        // apparently, the goal is to close this sink and not report the error
+                        // of the broadcast operation
+
+                        // If we got an IO error, the sink is likely dead - close it
+                        Throwable cause = err;
+                        while (cause instanceof CompletionException && cause.getCause() != null) {
+                            cause = cause.getCause();
+                            if (cause instanceof IOException) {
+                                try {
+                                    eventSink.close();
+                                } catch (Exception ignore) {
+                                }
+                                break;
+                            }
+                        }
+
+                        notifyOnErrorListeners(eventSink, err);
+                        return null;
+                    });
                 } catch (Exception e) {
                     // do not propagate the exception to the returned CF
                     // apparently, the goal is to close this sink and not report the error
