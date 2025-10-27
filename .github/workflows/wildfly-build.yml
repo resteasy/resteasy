@@ -57,13 +57,13 @@ jobs:
       - name: Build with Maven Java ${{ matrix.java }}
         run: mvn clean install '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
       - name: Upload surefire reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}
           path: '**/surefire-reports/*'
       - name: Upload server logs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: server-logs-${{ matrix.os }}-${{ matrix.java }}
@@ -92,12 +92,12 @@ jobs:
       - name: Test with ${{ matrix.profile }} - JDK ${{ matrix.java }}
         run:  |
           mvn clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
           path: '**/surefire-reports/*'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
