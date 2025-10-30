@@ -71,12 +71,12 @@ jobs:
       - name: Build with Maven Java 21 - ${{ matrix.os }}
         run:  |
           mvn clean install -U -B -fae '-Dgithub.actions'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: surefire-reports-${{ matrix.os }}
           path: '**/surefire-reports/'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: server-logs-${{ matrix.os }}
@@ -102,12 +102,12 @@ jobs:
       - name: Test with ${{ matrix.profile }} - JDK 21
         run:  |
           mvn clean install -U -B -fae ${{ matrix.profile }} '-Dgithub.actions'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: surefire-reports-${{ matrix.os }}
           path: '**/surefire-reports/'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: server-logs-${{ matrix.os }}
@@ -134,12 +134,12 @@ jobs:
       - name: Test with Java 11 on WildFly 34 - ${{ matrix.os }}
         run:  |
           mvn clean install -U -B -fae '-Dserver.version=34.0.0.Final' '-Dgithub.actions' '-Djvm=${{env.JAVA_HOME_11_X64}}/bin/java'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: surefire-reports-${{ matrix.os }}}-34
           path: '**/surefire-reports/'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: server-logs-${{ matrix.os }}-34
