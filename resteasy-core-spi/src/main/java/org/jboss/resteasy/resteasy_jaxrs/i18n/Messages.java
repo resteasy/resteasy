@@ -905,4 +905,7 @@ public interface Messages {
 
     @Message(id = BASE + 2085, value = "Failed to resolve the SSLContext for the client.")
     RuntimeException failedToResolveSSLContext(@Cause Throwable cause);
+
+    @Message(id = BASE + 2095, value = "The HTTP session has been invalidated.")
+    IOException invalidSession();
 }
