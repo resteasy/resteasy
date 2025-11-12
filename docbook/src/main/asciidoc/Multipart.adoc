@@ -718,6 +718,12 @@ Config compatible value.
 | 5MB
 | 512MB is equivalent to 512 Megabytes
 
+| `dev.resteasy.entity.file.buffer.size`
+| The size of the buffer used when writing the entity to a file. This can be disabled by setting a value of less than 1.
+If disabled, ensure a larger value is set in `-XX:MaxDirectMemorySize` JVM argument for large entities.
+| 8192
+| -1 would disable the buffer, a value of 16384 processes the entities and writes them to the file 16384 bytes at a time.
+
 | `dev.resteasy.entity.file.threshold`
 | The threshold to use for the amount of data that can be stored in a file for entities. If the threshold is reached an
   `IllegalStateException` will be thrown. A value of -1 means no limit.

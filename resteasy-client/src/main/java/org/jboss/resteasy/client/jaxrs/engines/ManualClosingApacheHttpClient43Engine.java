@@ -1,7 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -479,9 +478,6 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
         if (request.getEntity() != null) {
             if (httpMethod instanceof HttpGet)
                 throw new ProcessingException(Messages.MESSAGES.getRequestCannotHaveBody());
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            request.getDelegatingOutputStream().setDelegate(baos);
             try {
                 HttpEntity entity = buildEntity(request);
                 HttpPost post = (HttpPost) httpMethod;
