@@ -19,15 +19,17 @@
 
 package org.jboss.resteasy.client.jaxrs.engines;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Supplier;
 
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.FileEntity;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.EntityOutputStream;
-import org.jboss.resteasy.spi.ResourceCleaner;
 import org.jboss.resteasy.spi.config.Threshold;
 
 /**
@@ -61,13 +63,56 @@ class ClientEntityOutputStream extends EntityOutputStream {
         }
         checkExported(Messages.MESSAGES.alreadyExported());
         synchronized (lock) {
-            final Path file = getFile();
-            if (file != null) {
-                final AbstractHttpEntity result = new FileEntity(file.toFile());
-                ResourceCleaner.register(result, new FileCleaner(file));
-                return result;
+            final Path path = getFile();
+            if (path != null) {
+                return new PathHttpEntity(path);
             }
             return new ByteArrayEntity(getAndClearMemory());
+        }
+    }
+
+    private static class PathHttpEntity extends AbstractHttpEntity {
+        private final Path file;
+        private final InputStream content;
+
+        private PathHttpEntity(final Path file) {
+            this.file = file;
+            this.content = new EntityInputStream(file);
+        }
+
+        @Override
+        public boolean isRepeatable() {
+            // We delete the file once the getContent().close() happens
+            return false;
+        }
+
+        @Override
+        public long getContentLength() {
+            if (Files.exists(file)) {
+                try {
+                    return Files.size(file);
+                } catch (IOException ignore) {
+                }
+            }
+            return -1;
+        }
+
+        @Override
+        public InputStream getContent() throws IOException, UnsupportedOperationException {
+            return content;
+        }
+
+        @Override
+        public void writeTo(final OutputStream outStream) throws IOException {
+            try (InputStream in = getContent()) {
+                in.transferTo(outStream);
+                outStream.flush();
+            }
+        }
+
+        @Override
+        public boolean isStreaming() {
+            return false;
         }
     }
 }

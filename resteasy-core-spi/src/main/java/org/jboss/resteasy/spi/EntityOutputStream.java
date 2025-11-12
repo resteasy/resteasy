@@ -24,7 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.ref.Cleaner;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -32,7 +32,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.config.Options;
 import org.jboss.resteasy.spi.config.SizeUnit;
@@ -52,23 +51,7 @@ import org.jboss.resteasy.spi.config.Threshold;
 public class EntityOutputStream extends OutputStream {
     private static final Logger LOGGER = Logger.getLogger(EntityOutputStream.class);
     private static final byte[] EMPTY_BYTES = new byte[0];
-
-    protected static class FileCleaner implements Runnable {
-        private final Path path;
-
-        public FileCleaner(final Path path) {
-            this.path = path;
-        }
-
-        @Override
-        public void run() {
-            try {
-                Files.deleteIfExists(path);
-            } catch (IOException e) {
-                LogMessages.LOGGER.debugf(e, "Failed to delete file %s", path);
-            }
-        }
-    }
+    private static final int BUFFER_SIZE = Options.ENTITY_FILE_BUFFER_SIZE.getValue();
 
     protected final Object lock = new Object();
     private final AtomicBoolean closed = new AtomicBoolean();
@@ -219,8 +202,7 @@ public class EntityOutputStream extends OutputStream {
             close();
             final Path file = getFile();
             if (file != null) {
-                final InputStream in = Files.newInputStream(file);
-                return new EntityInputStream(in, ResourceCleaner.register(in, new FileCleaner(file)));
+                return new EntityInputStream(file);
             }
             return new ByteArrayInputStream(getAndClearMemory());
         }
@@ -292,10 +274,25 @@ public class EntityOutputStream extends OutputStream {
             }
             bytesWritten = inMemory.size();
             checkFileThreshold(len);
-            final OutputStream out = Files.newOutputStream(file, StandardOpenOption.CREATE);
-            inMemory.writeTo(out);
-            inMemory.reset();
-            delegate = out;
+            final OutputStream out = BUFFER_SIZE > 0 ? new ChunkedOutputStream(file) : Files.newOutputStream(file);
+            try {
+                inMemory.writeTo(out);
+                inMemory.reset();
+                delegate = out;
+            } catch (IOException e) {
+                try {
+                    out.close();
+                } catch (IOException ignore) {
+                }
+                final var file = this.file;
+                this.file = null;
+                try {
+                    Files.delete(file);
+                } catch (IOException deleteException) {
+                    LOGGER.debugf(deleteException, "Failed to delete temporary file %s", file);
+                }
+                throw e;
+            }
             return delegate;
         }
     }
@@ -327,13 +324,82 @@ public class EntityOutputStream extends OutputStream {
         return Options.ENTITY_TMP_DIR.getValue();
     }
 
-    private static class EntityInputStream extends InputStream {
-        private final InputStream delegate;
-        private final Cleaner.Cleanable cleanable;
+    /**
+     * This serves as a wrapper to limit the peak amount that will be written at once
+     * through to the java nio File. This is to limit the peak DirectByteBuffer the nio
+     * layer will allocate since it would allocate a thread local buffer matching in size
+     * to the size of the largest write call to the file.
+     */
+    private static class ChunkedOutputStream extends OutputStream {
+        private final OutputStream delegate;
+        private final Path file;
 
-        private EntityInputStream(final InputStream delegate, final Cleaner.Cleanable cleanable) {
-            this.delegate = delegate;
-            this.cleanable = cleanable;
+        private ChunkedOutputStream(final Path file) throws IOException {
+            this.delegate = Files.newOutputStream(file);
+            this.file = file;
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            try {
+                delegate.write(b);
+            } catch (IOException e) {
+                deleteFile();
+                throw e;
+            }
+        }
+
+        @Override
+        public void write(final byte[] b) throws IOException {
+            this.write(b, 0, b.length);
+        }
+
+        @Override
+        public void write(final byte[] b, final int off, final int len) throws IOException {
+            try {
+                int pos = off;
+                while (pos < off + len) {
+                    int writeAmount = Math.min(BUFFER_SIZE, off + len - pos);
+                    delegate.write(b, pos, writeAmount);
+                    pos += writeAmount;
+                }
+            } catch (IOException e) {
+                deleteFile();
+                throw e;
+            }
+        }
+
+        @Override
+        public void close() throws IOException {
+            try {
+                delegate.close();
+            } catch (IOException e) {
+                deleteFile();
+                throw e;
+            }
+        }
+
+        private void deleteFile() {
+            try {
+                Files.deleteIfExists(file);
+            } catch (IOException ignore) {
+            }
+        }
+    }
+
+    protected static class EntityInputStream extends InputStream {
+        private final InputStream delegate;
+
+        public EntityInputStream(final Path file) {
+            try {
+                this.delegate = Files.newInputStream(file, StandardOpenOption.DELETE_ON_CLOSE);
+            } catch (IOException e) {
+                try {
+                    Files.delete(file);
+                } catch (IOException ignore) {
+                }
+                throw new UncheckedIOException(e);
+            }
         }
 
         @Override
@@ -378,11 +444,7 @@ public class EntityOutputStream extends OutputStream {
 
         @Override
         public void close() throws IOException {
-            try {
-                delegate.close();
-            } finally {
-                cleanable.clean();
-            }
+            delegate.close();
         }
 
         @Override
