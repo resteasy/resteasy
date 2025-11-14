@@ -817,6 +817,11 @@ RESTEasy can receive the following configuration options from any ConfigSource's
 | 5MB
 | The threshold to use for the amount of data to store in memory for entities.
 
+| `dev.resteasy.entity.file.buffer.size`
+| 8192
+| The size of the buffer used when writing the entity to a file. This can be disabled by setting a value of less than 1.
+If disabled, ensure a larger value is set in `-XX:MaxDirectMemorySize` JVM argument for large entities.
+
 | `dev.resteasy.entity.file.threshold`
 |50MB
 | The threshold to use for the amount of data that can be stored in a file for entities. If the threshold is reached an
