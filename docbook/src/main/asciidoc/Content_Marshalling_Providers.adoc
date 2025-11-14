@@ -212,24 +212,29 @@ See <<_microprofile_config>> for more information about application configuratio
 Another way of dealing with the problem is by prohibiting DTDs, which RESTEasy does by default.
 This behavior can be changed by setting the parameter `resteasy.document.secure.disableDTDs` to "false".
 
-Documents are also subject to Denial of Service Attacks when buffers are overrun by large entities or too many attributes.
-For example, if a DTD defined the following entities 
+Documents are also subject to Denial of Service (DoS) Attacks when buffers are overrun by large entities or too many attributes.
+This is known as the "Billion Laughs" or "XML Bomb" attack. For example, if a DTD defined the following entities:
 
-[source]
+[source,xml]
 ----
-!ENTITY foo 'foo'
-!ENTITY foo1 'foo;foo;foo;foo;foo;foo;foo;foo;foo;foo;'
-!ENTITY foo2 'foo1;foo1;foo1;foo1;foo1;foo1;foo1;foo1;foo1;foo1;'
-!ENTITY foo3 'foo2;foo2;foo2;foo2;foo2;foo2;foo2;foo2;foo2;foo2;'
-!ENTITY foo4 'foo3;foo3;foo3;foo3;foo3;foo3;foo3;foo3;foo3;foo3;'
-!ENTITY foo5 'foo4;foo4;foo4;foo4;foo4;foo4;foo4;foo4;foo4;foo4;'
-!ENTITY foo6 'foo5;foo5;foo5;foo5;foo5;foo5;foo5;foo5;foo5;foo5;'
+<!ENTITY foo "foo">
+<!ENTITY foo1 "&foo;&foo;&foo;&foo;&foo;&foo;&foo;&foo;&foo;&foo;">
+<!ENTITY foo2 "&foo1;&foo1;&foo1;&foo1;&foo1;&foo1;&foo1;&foo1;&foo1;&foo1;">
+<!ENTITY foo3 "&foo2;&foo2;&foo2;&foo2;&foo2;&foo2;&foo2;&foo2;&foo2;&foo2;">
+<!ENTITY foo4 "&foo3;&foo3;&foo3;&foo3;&foo3;&foo3;&foo3;&foo3;&foo3;&foo3;">
+<!ENTITY foo5 "&foo4;&foo4;&foo4;&foo4;&foo4;&foo4;&foo4;&foo4;&foo4;&foo4;">
+<!ENTITY foo6 "&foo5;&foo5;&foo5;&foo5;&foo5;&foo5;&foo5;&foo5;&foo5;&foo5;">
 ----
 
-then the expansion of foo6;  would result in 1,000,000 foos.
-By default, RESTEasy will limit the number of expansions and the number of attributes per entity.
-The exact behavior depends on the underlying parser.
-The limits can be turned off by setting the parameter `resteasy.document.secure.processing.feature` to "false".
+then the expansion of `&foo6;` would result in 1,000,000 "foo" strings, consuming significant memory from a small XML input.
+
+By default, RESTEasy enables `XMLConstants.FEATURE_SECURE_PROCESSING` which limits the number of entity expansions,
+total entity size, element depth, and number of attributes per entity. The parameter
+`resteasy.document.secure.processing.feature` controls this behavior (default is `true`).
+
+NOTE: On Java 24+, the default entity expansion limit was reduced from 64,000 to 2,500 for improved security.
+If you encounter `SAXParseException` errors related to entity expansion limits, see the
+<<xml_entity_expansion_limits,JAXB providers section>> for details on how to handle this change.
 
 [[_text_media_types]]
 === Text media types and character sets
