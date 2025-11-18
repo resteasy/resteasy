@@ -73,6 +73,32 @@
         </contributor>
     </contributors>
 
+    <modules>
+        <module>resteasy-dependencies-bom</module>
+        <module>resteasy-core-spi</module>
+        <module>resteasy-core</module>
+        <module>resteasy-client-api</module>
+        <module>resteasy-client</module>
+        <module>providers</module>
+        <module>security</module>
+        <module>resteasy-links</module>
+        <module>resteasy-jsapi</module>
+        <module>resteasy-cdi</module>
+        <module>resteasy-servlet-initializer</module>
+        <module>resteasy-stats</module>
+        <module>resteasy-rxjava2</module>
+        <module>resteasy-reactor</module>
+        <module>server-adapters</module>
+        <module>resteasy-client-utils</module>
+        <module>resteasy-wadl</module>
+        <module>resteasy-wadl-undertow-connector</module>
+        <module>wildfly/resteasy-feature-pack</module>
+        <module>wildfly/resteasy-channel</module>
+        <!-- Build after other sub-projects that are part of the BOM -->
+        <module>resteasy-bom</module>
+        <module>testsuite</module>
+    </modules>
+
     <scm>
         <connection>scm:git:git://github.com/resteasy/resteasy.git</connection>
         <developerConnection>scm:git:git@github.com:resteasy/resteasy.git</developerConnection>
@@ -150,6 +176,42 @@
         <!-- Temporarily override this plugin version until the jboss-parent catches up -->
         <version.nxrm3.plugin>1.0.12</version.nxrm3.plugin>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-dependencies</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-ee-galleon-pack</artifactId>
+                <version>${version.org.wildfly}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-preview-feature-pack</artifactId>
+                <version>${version.org.wildfly}</version>
+                <type>zip</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly.galleon-plugins</groupId>
+                <artifactId>wildfly-galleon-plugins</artifactId>
+                <version>${version.org.wildfly.galleon-plugins}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly.galleon-plugins</groupId>
+                <artifactId>wildfly-config-gen</artifactId>
+                <version>${version.org.wildfly.galleon-plugins}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <repositories>
         <!-- Required for provisioning WildFly. Not all dependencies currently exist on Maven Central. This is also
@@ -421,74 +483,6 @@
     </reporting>
 
     <profiles>
-        <profile>
-            <id>resteasy-default</id>
-            <activation>
-                <property>
-                    <name>!resteasy.dependencies.eap</name>
-                </property>
-            </activation>
-            <modules>
-                <module>resteasy-dependencies-bom</module>
-                <module>resteasy-core-spi</module>
-                <module>resteasy-core</module>
-                <module>resteasy-client-api</module>
-                <module>resteasy-client</module>
-                <module>providers</module>
-                <module>security</module>
-                <module>resteasy-links</module>
-                <module>resteasy-jsapi</module>
-                <module>resteasy-cdi</module>
-                <module>resteasy-servlet-initializer</module>
-                <module>resteasy-stats</module>
-                <module>resteasy-rxjava2</module>
-                <module>resteasy-reactor</module>
-                <module>server-adapters</module>
-                <module>resteasy-client-utils</module>
-                <module>resteasy-wadl</module>
-                <module>resteasy-wadl-undertow-connector</module>
-                <module>wildfly/resteasy-feature-pack</module>
-                <module>wildfly/resteasy-channel</module>
-                <!-- Build after other sub-projects that are part of the BOM -->
-                <module>resteasy-bom</module>
-                <module>testsuite</module>
-            </modules>
-            <dependencyManagement>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.jboss.resteasy</groupId>
-                        <artifactId>resteasy-dependencies</artifactId>
-                        <version>${project.version}</version>
-                        <type>pom</type>
-                        <scope>import</scope>
-                    </dependency>
-
-                    <dependency>
-                        <groupId>org.wildfly</groupId>
-                        <artifactId>wildfly-ee-galleon-pack</artifactId>
-                        <version>${version.org.wildfly}</version>
-                        <type>zip</type>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.wildfly</groupId>
-                        <artifactId>wildfly-preview-feature-pack</artifactId>
-                        <version>${version.org.wildfly}</version>
-                        <type>zip</type>
-                    </dependency>
-
-                    <dependency>
-                        <groupId>org.wildfly.galleon-plugins</groupId>
-                        <artifactId>wildfly-galleon-plugins</artifactId>
-                        <version>${version.org.wildfly.galleon-plugins}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.wildfly.galleon-plugins</groupId>
-                        <artifactId>wildfly-config-gen</artifactId>
-                        <version>${version.org.wildfly.galleon-plugins}</version>
-                    </dependency>
-                </dependencies>
-            </dependencyManagement>
-        </profile>
         <profile>
             <id>release</id>
             <modules>
