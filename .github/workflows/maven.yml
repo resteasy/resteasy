@@ -61,16 +61,21 @@ jobs:
           java-version: |
             17
             21
+            25
           distribution: 'temurin'
           cache: 'maven'
 
       - name: Build with Maven Java 21 test with Java 17 - ${{ matrix.os }}
         run:  |
-          mvn clean install -U -B -fae '-Dgithub.actions' '-Djvm=${{env.JAVA_HOME_17_X64}}/bin/java'
+          mvn -V clean install -U -B -fae '-Dgithub.actions' '-Djvm=${{env.JAVA_HOME_17_X64}}/bin/java'
 
       - name: Build with Maven Java 21 - ${{ matrix.os }}
         run:  |
-          mvn clean install -U -B -fae '-Dgithub.actions'
+          mvn -V clean install -U -B -fae '-Dgithub.actions' '-Djvm=${{env.JAVA_HOME_21_X64}}/bin/java'
+
+      - name: Build with Maven Java 25 - ${{ matrix.os }}
+        run:  |
+          mvn -V clean install -U -B -fae '-Dgithub.actions'
       - uses: actions/upload-artifact@v5
         if: failure()
         with:

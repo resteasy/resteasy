@@ -31,6 +31,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
@@ -43,6 +45,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 @ServerSetup(DisableDefaultExceptionMapperSetupTask.class)
+@DisabledForJreRange(min = JRE.JAVA_24)
 public class SecureProcessingTest {
 
     protected final Logger logger = Logger.getLogger(SecureProcessingTest.class.getName());
