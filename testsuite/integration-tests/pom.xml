@@ -382,7 +382,7 @@
                                 <goals>
                                     <goal>provision</goal>
                                 </goals>
-                                <configuration combine.children="override">
+                                <configuration>
                                     <provisioning-dir>${jboss.home}</provisioning-dir>
                                     <skip>${wildfly.skip}</skip>
                                     <galleon-options>

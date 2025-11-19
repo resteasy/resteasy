@@ -54,12 +54,15 @@ jobs:
           java-version: |
             17
             21
+            25
           distribution: 'temurin'
           cache: 'maven'
       - name: Build with Maven Java 21 and test with 17
-        run: mvn clean install '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Djvm=${{env.JAVA_HOME_17_X64}}/bin/java'
+        run: mvn -V clean install '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Djvm=${{env.JAVA_HOME_17_X64}}/bin/java'
       - name: Build with Maven Java 21
-        run: mvn clean install '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
+        run: mvn -V clean install '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Djvm=${{env.JAVA_HOME_21_X64}}/bin/java'
+      - name: Test with ${{ matrix.profile }} - JDK 25
+        run:  mvn -V clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
       - name: Upload surefire reports
         uses: actions/upload-artifact@v5
         if: failure()
@@ -97,10 +100,10 @@ jobs:
           cache: 'maven'
       - name: Test with ${{ matrix.profile }} - JDK 17
         run:  |
-          mvn clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Djvm=${{env.JAVA_HOME_17_X64}}/bin/java'
+          mvn -V clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Djvm=${{env.JAVA_HOME_17_X64}}/bin/java'
       - name: Test with ${{ matrix.profile }} - JDK 21
         run:  |
-          mvn clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
+          mvn -V clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
       - uses: actions/upload-artifact@v5
         if: failure()
         with:
