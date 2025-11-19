@@ -727,3 +727,71 @@ applies to {xml-binding} unmarshallers.
 <<_configuring_document_marshalling>> also discusses the prohibition of DTDs and the imposition of limits on entity expansion and the number of attributes per element.
 The parameters `resteasy.document.secure.disableDTDs` and `resteasy.document.secure.processing.feature` discussed there,
 and their default values, also apply to the representation of {xml-binding} objects.
+
+[[xml_entity_expansion_limits]]
+==== XML Entity Expansion Limits
+
+When `resteasy.document.secure.processing.feature=true` (the default), `XMLConstants.FEATURE_SECURE_PROCESSING`
+is enabled, which enforces JVM-level XML processing limits.
+
+===== What FEATURE_SECURE_PROCESSING Protects Against
+
+`FEATURE_SECURE_PROCESSING` protects against XML-based Denial of Service (DoS) attacks, particularly:
+
+**Billion Laughs Attack (XML Bomb)**: Exponential entity expansion where a small XML document (< 1 KB)
+can expand to gigabytes in memory, causing OutOfMemoryError and server crashes. For example:
+
+[source,xml]
+----
+<!DOCTYPE root [
+  <!ENTITY lol "lol">
+  <!ENTITY lol1 "&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;">
+  <!ENTITY lol2 "&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;">
+  <!ENTITY lol3 "&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;">
+]>
+<root>&lol3;</root>  <!-- Expands to 1,000 "lol" strings -->
+----
+
+Without limits, this pattern can continue (lol4, lol5, etc.) creating billions of expansions from a tiny input document.
+
+**Quadratic Blowup Attack**: Using large entity definitions referenced many times, causing excessive
+memory consumption even without exponential expansion.
+
+**Deep Nesting Attacks**: Extremely deep element nesting that can cause stack overflow errors.
+
+**Attribute Overflow**: Elements with hundreds or thousands of attributes that slow parsing.
+
+IMPORTANT: The `resteasy.document.expand.entity.references` setting controls *external* entity
+expansion (XXE protection - reading files or making network requests), while `resteasy.document.secure.processing.feature`
+controls *internal* entity expansion limits (DoS protection). Both work together for comprehensive XML security.
+
+NOTE: On Java 24+, the `jdk.xml.entityExpansionLimit` may be enforced as a JVM-level security policy
+even when `resteasy.document.secure.processing.feature=false`. The exact behavior depends on the JVM
+implementation and security configuration. Setting the JVM property is the most reliable way to adjust
+this limit if needed.
+
+If you encounter `SAXParseException` with "entity expansion limit" on Java 24+, you can:
+
+1. **Recommended**: Reduce entity usage in your XML documents to stay under 2,500 expansions
+2. **Alternative**: Increase the JVM limit (security tradeoff):
++
+----
+-Djdk.xml.entityExpansionLimit=10000
+----
++
+This property should be set as a JVM argument when starting your application server.
+3. **Not recommended**: Disable secure processing (may not bypass JVM-level limits on Java 24+):
++
+[source,xml]
+----
+<context-param>
+    <param-name>resteasy.document.secure.processing.feature</param-name>
+    <param-value>false</param-value>
+</context-param>
+----
++
+WARNING: Disabling this feature exposes your application to XML entity expansion attacks and may not
+bypass the `jdk.xml.entityExpansionLimit` on Java 24+. Use only for testing or when you have other
+security controls in place.
+
+For more information: https://docs.oracle.com/en/java/javase/25/security/java-api-xml-processing-jaxp-security-guide.html
