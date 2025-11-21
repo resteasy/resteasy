@@ -318,11 +318,6 @@ public class HttpServletResponseWrapper implements HttpResponse {
                 return;
             }
 
-            // Check session validity to fail fast on invalidated sessions
-            if (isSessionInvalidated(op)) {
-                return;
-            }
-
             // fetch it from the context directly to avoid having to restore the context just in case we're invoked on a context-less thread
             HttpRequest resteasyRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
             if (request.isAsyncStarted() && !resteasyRequest.getAsyncContext().isOnInitialRequest()) {
@@ -334,6 +329,7 @@ public class HttpServletResponseWrapper implements HttpResponse {
                     // We can't write to the stream, consider it closed
                     streamClosed.set(true);
                     op.future.completeExceptionally(e);
+                    onError(e);
                     return;
                 }
                 if (asyncRegistered.compareAndSet(false, true)) {
@@ -360,13 +356,12 @@ public class HttpServletResponseWrapper implements HttpResponse {
         }
 
         private void flushQueue() {
+            // Re-validate session before processing queue to avoid race condition
+            // between queue() check and async execution
+            if (isSessionInvalidated(null)) {
+                return;
+            }
             synchronized (this) {
-                // Re-validate session before processing queue to avoid race condition
-                // between queue() check and async execution
-                if (isSessionInvalidated(null)) {
-                    return;
-                }
-
                 final ServletOutputStream out;
                 try {
                     out = getServletOutputStream();
