@@ -7,6 +7,7 @@ import jakarta.ws.rs.core.Variant;
 
 import org.junit.jupiter.api.*;
 
+@DisplayName("Negotiate")
 class ServerDrivenNegotiationTest {
     private ServerDrivenNegotiation unitUnderTest;
 
@@ -16,40 +17,103 @@ class ServerDrivenNegotiationTest {
     }
 
     @Nested
+    @DisplayName("Language")
     class LanguageNegotiation {
         private final Variant de = new Variant(null, "de", null);
-        private final Variant de_DE = new Variant(null, "de", "DE", null);
-        private final Variant de_CH = new Variant(null, "de", "CH", null);
+        private final Variant deDE = new Variant(null, "de", "DE", null);
+        private final Variant deCH = new Variant(null, "de", "CH", null);
         private final Variant en = new Variant(null, "en", null);
-        private final Variant en_US = new Variant(null, "en", "US", null);
+        private final Variant enUS = new Variant(null, "en", "US", null);
 
-        @Test
-        @Disabled
-        void getBestMatchWithGenericFirst() {
-            // given
-            List<Variant> availableGenericFirst = List.of(en, en_US, de, de_DE, de_CH);
-            unitUnderTest.setAcceptLanguageHeaders(List.of("de-DE"));
+        @Nested
+        class GenericsFirst {
+            private final List<Variant> availableLanguages = List.of(en, enUS, de, deDE, deCH);
 
-            // when
-            Variant result = unitUnderTest.getBestMatch(availableGenericFirst);
+            @Test
+            @Disabled("Currently failing, see #4739")
+            void acceptDeDE() {
+                // given
+                unitUnderTest.setAcceptLanguageHeaders(List.of("de-DE"));
 
-            // then
-            Assertions.assertNotNull(result);
-            Assertions.assertEquals(Locale.GERMANY, result.getLanguage());
+                // when
+                Variant result = unitUnderTest.getBestMatch(availableLanguages);
+
+                // then
+                Assertions.assertNotNull(result);
+                Assertions.assertEquals(Locale.GERMANY, result.getLanguage());
+            }
+
+            @Test
+            void acceptUnavailableSpecificLanguage() {
+                // given
+                unitUnderTest.setAcceptLanguageHeaders(List.of("de-AT"));
+
+                // when
+                Variant result = unitUnderTest.getBestMatch(availableLanguages);
+
+                // then
+                Assertions.assertNotNull(result);
+                Assertions.assertEquals(Locale.GERMAN, result.getLanguage());
+            }
+
+            @Test
+            void acceptGenericLanguage() {
+                // given
+                unitUnderTest.setAcceptLanguageHeaders(List.of("de"));
+
+                // when
+                Variant result = unitUnderTest.getBestMatch(availableLanguages);
+
+                // then
+                Assertions.assertNotNull(result);
+                Assertions.assertEquals(Locale.GERMAN, result.getLanguage());
+            }
         }
 
-        @Test
-        void getBestMatchWithSpecificFirst() {
-            // given
-            List<Variant> availableGenericFirst = List.of(en_US, en, de_DE, de_CH, de);
-            unitUnderTest.setAcceptLanguageHeaders(List.of("de-DE"));
+        @Nested
+        @DisplayName("where specific languages are listed first.")
+        class SpecificsFirst {
+            private final List<Variant> availableLanguages = List.of(enUS, en, deDE, deCH, de);
 
-            // when
-            Variant result = unitUnderTest.getBestMatch(availableGenericFirst);
+            @Test
+            void acceptAvailableSpecificLanguage() {
+                // given
+                unitUnderTest.setAcceptLanguageHeaders(List.of("de-DE"));
 
-            // then
-            Assertions.assertNotNull(result);
-            Assertions.assertEquals(Locale.GERMANY, result.getLanguage());
+                // when
+                Variant result = unitUnderTest.getBestMatch(availableLanguages);
+
+                // then
+                Assertions.assertNotNull(result);
+                Assertions.assertEquals(Locale.GERMANY, result.getLanguage());
+            }
+
+            @Test
+            void acceptUnavailableSpecificLanguage() {
+                // given
+                unitUnderTest.setAcceptLanguageHeaders(List.of("de-AT"));
+
+                // when
+                Variant result = unitUnderTest.getBestMatch(availableLanguages);
+
+                // then
+                Assertions.assertNotNull(result);
+                Assertions.assertEquals(Locale.GERMAN, result.getLanguage());
+            }
+
+            @Test
+            @Disabled("Currently failing, see #4739")
+            void acceptGenericLanguage() {
+                // given
+                unitUnderTest.setAcceptLanguageHeaders(List.of("de"));
+
+                // when
+                Variant result = unitUnderTest.getBestMatch(availableLanguages);
+
+                // then
+                Assertions.assertNotNull(result);
+                Assertions.assertEquals(Locale.GERMAN, result.getLanguage());
+            }
         }
     }
 }
