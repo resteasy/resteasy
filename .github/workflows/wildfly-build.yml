@@ -45,7 +45,7 @@ jobs:
         java: ['17', '21', '25']
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: wildfly-extras/wildfly-nightly-download@v1
         id: wildfly-nightly
       - name: Set up JDK ${{ matrix.java }}
@@ -80,7 +80,7 @@ jobs:
           - '-am -Pprovision-without-resteasy,without-jackson -pl wildfly/resteasy-channel,/resteasy-dependencies-bom,testsuite/integration-tests'
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: wildfly-extras/wildfly-nightly-download@v1
         id: wildfly-nightly
       - name: Set up JDK ${{ matrix.java }}
