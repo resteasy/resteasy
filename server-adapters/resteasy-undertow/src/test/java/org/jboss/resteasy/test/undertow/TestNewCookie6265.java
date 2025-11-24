@@ -41,63 +41,61 @@ public class TestNewCookie6265 {
         public Response getNewCookie() throws Exception {
             NewCookie6265.Builder builder6265 = new NewCookie6265.Builder("name6265");
             NewCookie6265 cookie6265 = builder6265.value("value1")
-                  .version(17)
-                  .path("/path1")
-                  .domain("domain1")
-                  .comment("comment1")
-                  .maxAge(23)
-                  .expiry(new Date(3, 5, 7))
-                  .secure(false)
-                  .httpOnly(true)
-                  .sameSite(SameSite.LAX)
-                  .extension("a=b")
-                  .extension("c")
-                  .build();
+                    .version(17)
+                    .path("/path1")
+                    .domain("domain1")
+                    .comment("comment1")
+                    .maxAge(23)
+                    .expiry(new Date(3, 5, 7))
+                    .secure(false)
+                    .httpOnly(true)
+                    .sameSite(SameSite.LAX)
+                    .extension("a=b")
+                    .extension("c")
+                    .build();
             NewCookie.Builder builder2109 = new NewCookie.Builder("name2109");
             NewCookie cookie2109 = builder2109.value("value2")
-                  .version(19)
-                  .path("/path2")
-                  .domain("domain2")
-                  .comment("comment2")
-                  .maxAge(29)
-                  .expiry(new Date(5, 7, 11))
-                  .secure(true)
-                  .httpOnly(false)
-                  .sameSite(SameSite.STRICT)
-                  .build();
+                    .version(19)
+                    .path("/path2")
+                    .domain("domain2")
+                    .comment("comment2")
+                    .maxAge(29)
+                    .expiry(new Date(5, 7, 11))
+                    .secure(true)
+                    .httpOnly(false)
+                    .sameSite(SameSite.STRICT)
+                    .build();
             return Response.ok().cookie(cookie6265, cookie2109).build();
         }
 
         @GET
         @Path("checkCookie/cookie")
         public Response checkCookieCookie(
-              @CookieParam("name6265") Cookie cookie6265, 
-              @CookieParam("name2109") Cookie cookie2109, 
-              @CookieParam("Domain") Cookie domain) throws Exception {
-           boolean b6265 = 
-                 "name6265".equals(cookie6265.getName()) &&
-                 "value1".equals(cookie6265.getValue()) &&
-                 cookie6265.getPath() == null &&
-                 cookie6265.getDomain() == null;
-           boolean b2109 = 
-                 "name2109".equals(cookie2109.getName()) &&
-                 "value2".equals(cookie2109.getValue()) &&
-                 "/path2".equals(cookie2109.getPath()) &&
-                 "domain2".equals(cookie2109.getDomain());
-           boolean bDomain = domain == null;
-           return Response.ok(b6265 && b2109 && bDomain).build();
+                @CookieParam("name6265") Cookie cookie6265,
+                @CookieParam("name2109") Cookie cookie2109,
+                @CookieParam("Domain") Cookie domain) throws Exception {
+            boolean b6265 = "name6265".equals(cookie6265.getName()) &&
+                    "value1".equals(cookie6265.getValue()) &&
+                    cookie6265.getPath() == null &&
+                    cookie6265.getDomain() == null;
+            boolean b2109 = "name2109".equals(cookie2109.getName()) &&
+                    "value2".equals(cookie2109.getValue()) &&
+                    "/path2".equals(cookie2109.getPath()) &&
+                    "domain2".equals(cookie2109.getDomain());
+            boolean bDomain = domain == null;
+            return Response.ok(b6265 && b2109 && bDomain).build();
         }
-        
+
         @GET
         @Path("checkCookie/string")
         public Response checkCookieString(
-              @CookieParam("name6265") Cookie cookie6265, 
-              @CookieParam("name2109") Cookie cookie2109, 
-              @CookieParam("Domain") Cookie domain) throws Exception {
-           boolean b6265 = "name6265=value1".equals(cookie6265.toString());
-           boolean b2109 = "name2109=value2; $Domain=domain2; $Path=/path2".equals(cookie2109.toString());
-           boolean bDomain = domain == null;
-           return Response.ok(b6265 && b2109 && bDomain).build();
+                @CookieParam("name6265") Cookie cookie6265,
+                @CookieParam("name2109") Cookie cookie2109,
+                @CookieParam("Domain") Cookie domain) throws Exception {
+            boolean b6265 = "name6265=value1".equals(cookie6265.toString());
+            boolean b2109 = "name2109=value2; $Domain=domain2; $Path=/path2".equals(cookie2109.toString());
+            boolean bDomain = domain == null;
+            return Response.ok(b6265 && b2109 && bDomain).build();
 
         }
     }
@@ -144,7 +142,7 @@ public class TestNewCookie6265 {
         Assert.assertTrue(newCookie6265.getExtensions().size() == 2);
         Assert.assertTrue(newCookie6265.getExtensions().contains("a=b"));
         Assert.assertTrue(newCookie6265.getExtensions().contains("c"));
-        
+
         NewCookie newCookie2109 = (NewCookie) response.getCookies().get("name2109");
         Assert.assertTrue("value2".equals(newCookie2109.getValue()));
         Assert.assertTrue(19 == newCookie2109.getVersion());
@@ -159,15 +157,15 @@ public class TestNewCookie6265 {
 
         // Send Cookie back to server
         response = client.target("http://localhost:8081/checkCookie/cookie").request()
-              .cookie(newCookie6265)
-              .cookie(newCookie2109)
-              .get();
+                .cookie(newCookie6265)
+                .cookie(newCookie2109)
+                .get();
         Assert.assertTrue(response.readEntity(Boolean.class));
-        
+
         response = client.target("http://localhost:8081/checkCookie/string").request()
-              .cookie(newCookie6265)
-              .cookie(newCookie2109)
-              .get();
+                .cookie(newCookie6265)
+                .cookie(newCookie2109)
+                .get();
         Assert.assertTrue(response.readEntity(Boolean.class));
     }
 }

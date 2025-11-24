@@ -97,16 +97,16 @@ public class ClientInvocationBuilder implements Invocation.Builder {
     public Invocation.Builder cookie(Cookie cookie) {
         if (!(Cookie.class.equals(cookie.getClass()))) {
             if (cookie.getVersion() == NewCookie6265.NO_VERSION) {
-               cookie = new Cookie.Builder(cookie.getName())
-                     .value(cookie.getValue())
-                     .build();
+                cookie = new Cookie.Builder(cookie.getName())
+                        .value(cookie.getValue())
+                        .build();
             } else {
-               cookie = new Cookie.Builder(cookie.getName())
-                     .value(cookie.getValue())
-                     .path(cookie.getPath())
-                     .domain(cookie.getDomain())
-                     .version(cookie.getVersion())
-                     .build();
+                cookie = new Cookie.Builder(cookie.getName())
+                        .value(cookie.getValue())
+                        .path(cookie.getPath())
+                        .domain(cookie.getDomain())
+                        .version(cookie.getVersion())
+                        .build();
             }
         }
         getHeaders().cookie(cookie);

@@ -25,7 +25,7 @@ public class CookieNullValueTest {
         Assertions.assertTrue(stringCookie.contains("a="), errorMessage);
         Assertions.assertTrue(stringCookie.contains("Version="), errorMessage);
     }
-    
+
     /**
      * @tpTestDetails Test for creating of NewCookieHeaderDelegate with NewCookie6265
      * @tpSince RESTEasy 7.0.1.Final
