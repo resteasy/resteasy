@@ -8,14 +8,13 @@ import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.NewCookie;
 
 /**
- * RFC 6265 version of NewCookie. 
- * 
+ * RFC 6265 version of NewCookie.
+ *
  * Currently, Jakarta REST follows an extension of RFC 2109, with some fields
  * from RFC 6265 (e.g., HttpOnly). NewCookie6265 differs from NewCookie by
- * 
- *  1. Dispensing with Version field
- *  2. Adding ad hoc "extension" fields
- *  
+ *
+ * 1. Dispensing with Version field
+ * 2. Adding ad hoc "extension" fields
  */
 public class NewCookie6265 extends NewCookie {
 
