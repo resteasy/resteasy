@@ -32,31 +32,7 @@ public class NewCookie6265 extends NewCookie {
      */
     @Deprecated
     public NewCookie6265(final String name, final String value) {
-        this(name, value, null, null, null, DEFAULT_MAX_AGE, null, false, false, null);
-    }
-
-    /**
-     * Create a new instance.
-     *
-     * @param name    the name of the cookie.
-     * @param value   the value of the cookie.
-     * @param path    the URI path for which the cookie is valid.
-     * @param domain  the host domain for which the cookie is valid.
-     * @param comment the comment.
-     * @param maxAge  the maximum age of the cookie in seconds.
-     * @param secure  specifies whether the cookie will only be sent over a secure connection.
-     * @throws IllegalArgumentException if name is {@code null}.
-     * @deprecated This constructor will be removed in a future version. Please use {@link NewCookie.Builder} instead.
-     */
-    @Deprecated
-    public NewCookie6265(final String name,
-            final String value,
-            final String path,
-            final String domain,
-            final String comment,
-            final int maxAge,
-            final boolean secure) {
-        this(name, value, path, domain, comment, maxAge, null, secure, false, null);
+        this(name, value, null, null, DEFAULT_MAX_AGE, null, false, false, null);
     }
 
     /**
@@ -66,7 +42,6 @@ public class NewCookie6265 extends NewCookie {
      * @param value    the value of the cookie.
      * @param path     the URI path for which the cookie is valid.
      * @param domain   the host domain for which the cookie is valid.
-     * @param comment  the comment.
      * @param maxAge   the maximum age of the cookie in seconds.
      * @param secure   specifies whether the cookie will only be sent over a secure connection.
      * @param httpOnly if {@code true} make the cookie HTTP only, i.e. only visible as part of an HTTP request.
@@ -79,24 +54,21 @@ public class NewCookie6265 extends NewCookie {
             final String value,
             final String path,
             final String domain,
-            final String comment,
             final int maxAge,
             final boolean secure,
             final boolean httpOnly) {
-        this(name, value, path, domain, comment, maxAge, null, secure, httpOnly, null);
+        this(name, value, path, domain, maxAge, null, secure, httpOnly, null);
     }
 
     /**
      * Create a new instance.
      *
-     * @param name    the name of the cookie
-     * @param value   the value of the cookie
-     * @param path    the URI path for which the cookie is valid
-     * @param domain  the host domain for which the cookie is valid
-     * @param version the version of the specification to which the cookie complies
-     * @param comment the comment
-     * @param maxAge  the maximum age of the cookie in seconds
-     * @param secure  specifies whether the cookie will only be sent over a secure connection
+     * @param name   the name of the cookie
+     * @param value  the value of the cookie
+     * @param path   the URI path for which the cookie is valid
+     * @param domain the host domain for which the cookie is valid
+     * @param maxAge the maximum age of the cookie in seconds
+     * @param secure specifies whether the cookie will only be sent over a secure connection
      * @throws IllegalArgumentException if name is {@code null}.
      * @deprecated This constructor will be removed in a future version. Please use {@link NewCookie.Builder} instead.
      */
@@ -105,11 +77,9 @@ public class NewCookie6265 extends NewCookie {
             final String value,
             final String path,
             final String domain,
-            final int version,
-            final String comment,
             final int maxAge,
             final boolean secure) {
-        this(name, value, path, domain, comment, maxAge, null, secure, false, null);
+        this(name, value, path, domain, maxAge, null, secure, false, null);
     }
 
     /**
@@ -119,8 +89,6 @@ public class NewCookie6265 extends NewCookie {
      * @param value    the value of the cookie
      * @param path     the URI path for which the cookie is valid
      * @param domain   the host domain for which the cookie is valid
-     * @param version  the version of the specification to which the cookie complies
-     * @param comment  the comment
      * @param maxAge   the maximum age of the cookie in seconds
      * @param expiry   the cookie expiry date.
      * @param secure   specifies whether the cookie will only be sent over a secure connection
@@ -134,13 +102,11 @@ public class NewCookie6265 extends NewCookie {
             final String value,
             final String path,
             final String domain,
-            final int version,
-            final String comment,
             final int maxAge,
             final Date expiry,
             final boolean secure,
             final boolean httpOnly) {
-        this(name, value, path, domain, comment, maxAge, expiry, secure, httpOnly, null);
+        this(name, value, path, domain, maxAge, expiry, secure, httpOnly, null);
     }
 
     /**
@@ -150,8 +116,6 @@ public class NewCookie6265 extends NewCookie {
      * @param value    the value of the cookie
      * @param path     the URI path for which the cookie is valid
      * @param domain   the host domain for which the cookie is valid
-     * @param version  the version of the specification to which the cookie complies
-     * @param comment  the comment
      * @param maxAge   the maximum age of the cookie in seconds
      * @param expiry   the cookie expiry date.
      * @param secure   specifies whether the cookie will only be sent over a secure connection
@@ -166,7 +130,6 @@ public class NewCookie6265 extends NewCookie {
             final String value,
             final String path,
             final String domain,
-            final String comment,
             final int maxAge,
             final Date expiry,
             final boolean secure,
@@ -192,15 +155,15 @@ public class NewCookie6265 extends NewCookie {
     }
 
     /**
-     * JAX-RS {@link NewCookie} builder class.
+     * JAX-RS {@link NewCookie6265} builder class.
      * <p>
-     * New Cookie builder provides methods that let you conveniently configure and subsequently build a new
-     * {@code NewCookie} instance.
+     * {@code NewCookie6265} builder provides methods that let you conveniently configure and subsequently build a new
+     * {@code NewCookie6265} instance.
      * </p>
      * For example:
      *
      * <pre>
-     * NewCookie cookie = new NewCookie.Builder("name")
+     * NewCookie6265 cookie = new NewCookie6265.Builder("name")
      *         .path("/")
      *         .domain("domain.com")
      *         .sameSite(SameSite.LAX)
@@ -272,7 +235,8 @@ public class NewCookie6265 extends NewCookie {
         }
 
         /**
-         * Set the version of the cookie. Defaults to {@link Cookie#DEFAULT_VERSION}
+         * Set the version of the cookie. A {@code NewCookie6265} has no version field,
+         * so this method always sets the version field to NewCookie6265.NO_VERSION.
          *
          * @param version the version of the specification to which the cookie complies.
          * @return the updated builder instance.
@@ -305,7 +269,8 @@ public class NewCookie6265 extends NewCookie {
         }
 
         /**
-         * Set the comment associated with the cookie.
+         * Set the comment associated with the cookie. A {@code NewCookie6265} has no comment field,
+         * so this method always sets the comment field to null.
          *
          * @param comment the comment.
          * @return the updated builder instance.
@@ -381,11 +346,23 @@ public class NewCookie6265 extends NewCookie {
             return self();
         }
 
+        /**
+         * Adds an extension field
+         * 
+         * @param ex
+         * @return
+         */
         public T extension(String ex) {
             extensions.add(ex);
             return self();
         }
 
+        /**
+         * Adds a list of extension fields
+         * 
+         * @param exs
+         * @return
+         */
         public T extensions(List<String> exs) {
             extensions = exs;
             return self();
@@ -397,9 +374,9 @@ public class NewCookie6265 extends NewCookie {
         }
 
         /**
-         * Build a new {@link NewCookie} instance using all the configuration previously specified in this builder.
+         * Build a new {@link NewCookie6265} instance using all the configuration previously specified in this builder.
          *
-         * @return a new {@link NewCookie} instance.
+         * @return a new {@link NewCookie6265} instance.
          * @throws IllegalArgumentException if name is {@code null}.
          */
         @Override
