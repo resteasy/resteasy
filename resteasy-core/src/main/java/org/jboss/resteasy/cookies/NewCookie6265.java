@@ -348,7 +348,7 @@ public class NewCookie6265 extends NewCookie {
 
         /**
          * Adds an extension field
-         * 
+         *
          * @param ex
          * @return
          */
@@ -359,7 +359,7 @@ public class NewCookie6265 extends NewCookie {
 
         /**
          * Adds a list of extension fields
-         * 
+         *
          * @param exs
          * @return
          */
