@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://jakarta.ee/xml/ns/jakartaee" version="6.0"
+    xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+    <display-name>RESTEasy Servlet Bootstrap Parameter Test</display-name>
+
+    <!-- Context-level parameters -->
+    <context-param>
+        <param-name>jakarta.ws.rs.Application</param-name>
+        <param-value>org.jboss.resteasy.test.core.servlet.resource.ServletBootstrapParameterApplication</param-value>
+    </context-param>
+
+    <!-- This parameter exists in both context and servlet init-params -->
+    <context-param>
+        <param-name>shared.parameter</param-name>
+        <param-value>from-context</param-value>
+    </context-param>
+
+    <!-- This parameter only exists in context-param -->
+    <context-param>
+        <param-name>context.only.parameter</param-name>
+        <param-value>context-value</param-value>
+    </context-param>
+
+    <servlet>
+        <servlet-name>resteasy</servlet-name>
+        <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher</servlet-class>
+
+        <!-- This parameter exists in both context and servlet init-params -->
+        <!-- Per RESTEASY-3678, this should take precedence over the context-param -->
+        <init-param>
+            <param-name>shared.parameter</param-name>
+            <param-value>from-servlet</param-value>
+        </init-param>
+
+        <!-- This parameter only exists in servlet init-param -->
+        <init-param>
+            <param-name>servlet.only.parameter</param-name>
+            <param-value>servlet-value</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>resteasy</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+</web-app>
