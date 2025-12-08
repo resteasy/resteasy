@@ -49,10 +49,10 @@ public class ServletBootstrap extends ListenerBootstrap {
 
     @Override
     public String getParameter(final String name) {
-        // First check the servlet context, not found delegate the super method
-        String value = config.getServletContext().getInitParameter(name);
+        // We first need to check the servlet init-param, then we check the servlet context parameter
+        String value = super.getParameter(name);
         if (value == null) {
-            value = super.getParameter(name);
+            value = config.getServletContext().getInitParameter(name);
         }
         return value;
     }
