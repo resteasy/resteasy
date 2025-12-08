@@ -270,43 +270,22 @@ if [ ${status} -eq 0 ]; then
     echo ""
 
     # ============================================================================
-    # GitHub Release Handling
+    # GitHub Release Instructions
     # ============================================================================
 
+    echo ""
     if command -v gh &>/dev/null; then
         # Check for default repo quietly
         if ! gh repo set-default --view &>/dev/null; then
-            echo ""
             echo -e "${RED}No default repository has been set. You must use 'gh repo set-default' to set a default repository before executing the following commands.${CLEAR}"
             echo ""
-            echo "gh release create --generate-notes ${START_TAG[*]} ${GH_RELEASE_TYPE} --verify-tag ${TAG_NAME}"
-            if [ -n "${distZip}" ] && [ -n "${srcZip}" ]; then
-                echo "gh release upload ${TAG_NAME} ${distZip} ${srcZip}"
-            fi
-        else
-            if ${DRY_RUN}; then
-                printf "${YELLOW}Dry run would execute:${CLEAR}\ngh release create --generate-notes %s %s --verify-tag %s\n" "${START_TAG[*]}" "${GH_RELEASE_TYPE}" "${TAG_NAME}"
-                if [ -n "${distZip}" ] && [ -n "${srcZip}" ]; then
-                    printf "${YELLOW}Then would upload:${CLEAR}\ngh release upload %s %s %s\n" "${TAG_NAME}" "${distZip}" "${srcZip}"
-                fi
-            else
-                echo ""
-                echo "Creating GitHub release..."
-                gh release create --generate-notes ${START_TAG[@]+"${START_TAG[@]}"} ${GH_RELEASE_TYPE} --verify-tag "${TAG_NAME}"
-
-                # Upload distribution files if they exist
-                if [ -n "${distZip}" ] && [ -n "${srcZip}" ]; then
-                    echo "Uploading distribution files..."
-                    gh release upload "${TAG_NAME}" "${distZip}" "${srcZip}"
-                elif [ -n "${distZip}" ] || [ -n "${srcZip}" ]; then
-                    echo "${YELLOW}Warning: Only some distribution files found. Skipping upload.${CLEAR}"
-                    if [ -n "${distZip}" ]; then echo "  Found: ${distZip}"; fi
-                    if [ -n "${srcZip}" ]; then echo "  Found: ${srcZip}"; fi
-                fi
-            fi
+        fi
+        echo "Create a GitHub release with:"
+        echo "gh release create --generate-notes ${START_TAG[*]} ${GH_RELEASE_TYPE} --verify-tag ${TAG_NAME}"
+        if [ -n "${distZip}" ] && [ -n "${srcZip}" ]; then
+            echo "gh release upload ${TAG_NAME} ${distZip} ${srcZip}"
         fi
     else
-        echo ""
         echo "The gh command is not available. You must manually create a release for the GitHub tag ${TAG_NAME}."
         if [ -n "${distZip}" ] || [ -n "${srcZip}" ]; then
             echo "The following files should be attached to the release:"
@@ -315,8 +294,23 @@ if [ ${status} -eq 0 ]; then
         fi
     fi
 
+    # ============================================================================
+    # Documentation Publishing Instructions
+    # ============================================================================
+
     echo ""
-    echo "You must also create a pull request to https://github.com/resteasy/resteasy.github.io with the documentation content."
+    # Check if distribution ZIP with documentation exists (reuse distZip from above)
+    if [ -n "${distZip}" ] && [ -f "${distZip}" ]; then
+        DOCS_REPO="../resteasy.github.io"
+        if [ ! -d "${DOCS_REPO}" ]; then
+            echo "${YELLOW}Warning: Could not find resteasy.github.io repository.${CLEAR}"
+            DOCS_REPO="/path/to/resteasy.github.io"
+        fi
+        echo "Publish documentation with:"
+        echo "./publish-docs.sh --version ${RELEASE_VERSION} --docs-repo ${DOCS_REPO} --dist-zip ${distZip}"
+    else
+        echo "${YELLOW}Warning: Distribution ZIP not found. Documentation may not have been packaged.${CLEAR}"
+    fi
 else
     printf "\n%sThe release has failed.%s See the previous errors and try again.\n" "${RED}" "${CLEAR}"
     if ${VERBOSE}; then
