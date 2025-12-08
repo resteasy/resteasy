@@ -56,6 +56,7 @@ import com.fasterxml.jackson.jakarta.rs.json.JsonEndpointConfig;
 public class ResteasyJackson2Provider extends JacksonJsonProvider implements AsyncBufferedMessageBodyWriter<Object> {
 
     DecoratorMatcher decoratorMatcher = new DecoratorMatcher();
+    private final ObjectMapper defaultObjectMapper = new ObjectMapper().findAndRegisterModules();
 
     @Override
     public boolean isReadable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
@@ -430,7 +431,7 @@ public class ResteasyJackson2Provider extends JacksonJsonProvider implements Asy
     protected ObjectMapper _locateMapperViaProvider(final Class<?> type, final MediaType mediaType) {
         final ObjectMapper mapper = super._locateMapperViaProvider(type, mediaType);
         if (mapper == null && useDefaultObjectMapper()) {
-            return new ObjectMapper().findAndRegisterModules();
+            return defaultObjectMapper.copy();
         }
         return mapper;
     }
