@@ -21,20 +21,103 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>7.0.1.Final-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-parent</artifactId>
+        <version>50</version>
+        <relativePath/>
     </parent>
 
     <groupId>dev.resteasy.channels</groupId>
     <artifactId>resteasy-7.0</artifactId>
-    <name>RESTEasy: Channel Manifest</name>
+    <version>7.0.1.Final-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <name>RESTEasy: Channel Manifest</name>
+    <description>Channel manifest for RESTEasy ${channel.stream.version}.x feature pack</description>
+    <url>https://resteasy.dev</url>
+
+    <organization>
+        <name>RESTEasy Community</name>
+        <url>https://resteasy.dev</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>https://repository.jboss.org/licenses/apache-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>jamezp</id>
+            <name>James Perkins</name>
+            <email>jperkins@ibm.com</email>
+            <url>https://resteasy.dev</url>
+            <organization>IBM</organization>
+            <roles>
+                <role>project-lead</role>
+            </roles>
+            <timezone>-8</timezone>
+        </developer>
+    </developers>
+
+    <contributors>
+        <!-- Original author and founder of RESTEasy -->
+        <contributor>
+            <name>Bill Burke</name>
+            <organization>JBoss</organization>
+        </contributor>
+        <contributor>
+            <name>Ryan J. McDonough</name>
+        </contributor>
+        <contributor>
+            <name>Heiko Braun</name>
+        </contributor>
+        <contributor>
+            <name>Martin Algesten</name>
+        </contributor>
+    </contributors>
+
+    <scm>
+        <connection>scm:git:git://github.com/resteasy/resteasy.git</connection>
+        <developerConnection>scm:git:git@github.com:resteasy/resteasy.git</developerConnection>
+        <url>https://github.com/resteasy/resteasy</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>JIRA</system>
+        <url>https://issues.redhat.com/browse/RESTEASY</url>
+    </issueManagement>
+
     <properties>
+        <!--suppress XmlUnresolvedReference these properties are created via the build-helper-maven-plugin -->
+        <channel.stream.version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}</channel.stream.version>
         <generated.manifest.file>${project.build.directory}/resteasy-${channel.stream.version}-${project.version}-manifest.yaml</generated.manifest.file>
+        <!-- Plugin versions -->
+        <version.org.wildfly.wildfly-channel-maven-plugin>1.0.30</version.org.wildfly.wildfly-channel-maven-plugin>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-dependencies</artifactId>
+                <version>7.0.1.Final-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-bom</artifactId>
+                <version>7.0.1.Final-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <!-- Dependencies to include in the manifest -->
@@ -51,7 +134,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>jose-jwt</artifactId>
-            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -62,7 +144,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-atom-provider</artifactId>
-            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -73,7 +154,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-cdi</artifactId>
-            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -84,7 +164,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -95,7 +174,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client-api</artifactId>
-            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -106,7 +184,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core</artifactId>
-            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -117,7 +194,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core-spi</artifactId>
-            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -128,7 +204,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-crypto</artifactId>
-            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -139,7 +214,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jackson2-provider</artifactId>
-            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -150,7 +224,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
-            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -161,7 +234,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jsapi</artifactId>
-            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -172,7 +244,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-json-binding-provider</artifactId>
-            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -183,7 +254,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-json-p-provider</artifactId>
-            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -194,7 +264,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-multipart-provider</artifactId>
-            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -205,7 +274,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-rxjava2</artifactId>
-            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -226,7 +294,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-validator-provider</artifactId>
-            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -243,6 +310,20 @@
 
     <build>
         <plugins>
+            <!-- Change the channel.stream.version property to match the current project version major.minor -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>parse-version</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.wildfly</groupId>
                 <artifactId>wildfly-channel-maven-plugin</artifactId>
