@@ -32,39 +32,27 @@
 
     <developers>
         <developer>
-            <id>rmcdonough</id>
-            <name>Ryan J. McDonough</name>
-            <email>ryan@damnhandy.com</email>
-            <url>https://damnhandy.com</url>
-            <roles>
-                <role>project-owner</role>
-            </roles>
-            <timezone>-5</timezone>
-        </developer>
-        <developer>
-            <id>patriot1burke</id>
-            <name>Bill Burke</name>
-            <email>bill@burkecentral.com</email>
-            <organization>JBoss</organization>
-            <roles>
-                <role>project-owner</role>
-            </roles>
-            <timezone>-5</timezone>
-        </developer>
-        <developer>
             <id>jamezp</id>
             <name>James Perkins</name>
             <email>jperkins@ibm.com</email>
-            <organization>IBM</organization>
             <url>https://resteasy.dev</url>
+            <organization>IBM</organization>
             <roles>
-                <role>project-owner</role>
+                <role>project-lead</role>
             </roles>
             <timezone>-8</timezone>
         </developer>
     </developers>
 
     <contributors>
+        <!-- Original author and founder of RESTEasy -->
+        <contributor>
+            <name>Bill Burke</name>
+            <organization>JBoss</organization>
+        </contributor>
+        <contributor>
+            <name>Ryan J. McDonough</name>
+        </contributor>
         <contributor>
             <name>Heiko Braun</name>
         </contributor>
@@ -105,7 +93,7 @@
     <scm>
         <connection>scm:git:git://github.com/resteasy/resteasy.git</connection>
         <developerConnection>scm:git:git@github.com:resteasy/resteasy.git</developerConnection>
-        <url>https://github.com/resteasy/resteasy/tree/main/</url>
+        <url>https://github.com/resteasy/resteasy</url>
       <tag>HEAD</tag>
   </scm>
 
@@ -122,7 +110,6 @@
         <version.org.jboss.logging.jboss-logging-processor>3.0.4.Final</version.org.jboss.logging.jboss-logging-processor>
         <version.org.wildfly>34.0.1.Final</version.org.wildfly>
         <version.org.wildfly.arquillian.wildfly-arquillian>5.1.0.Final</version.org.wildfly.arquillian.wildfly-arquillian>
-        <version.org.wildfly.wildfly-channel-maven-plugin>1.0.30</version.org.wildfly.wildfly-channel-maven-plugin>
 
         <jboss.home />
         <!-- print logs to file by default -->
