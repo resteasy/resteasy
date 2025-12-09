@@ -98,6 +98,25 @@
         <generated.manifest.file>${project.build.directory}/resteasy-${channel.stream.version}-${project.version}-manifest.yaml</generated.manifest.file>
         <!-- Plugin versions -->
         <version.org.wildfly.wildfly-channel-maven-plugin>1.0.30</version.org.wildfly.wildfly-channel-maven-plugin>
+
+        <!-- maven-release-plugin configuration -->
+        <autoVersionSubmodules>true</autoVersionSubmodules>
+        <preparationGoals>clean install</preparationGoals>
+        <preparationProfiles>jboss-release,release</preparationProfiles>
+        <releaseProfiles>${preparationProfiles}</releaseProfiles>
+        <signTag>true</signTag>
+        <tagNameFormat>v@{project.version}</tagNameFormat>
+        <arguments>-DskipTests</arguments>
+        <!-- Do not push changes by default when using the maven-release-plugin:prepare -->
+        <pushChanges>false</pushChanges>
+        <!-- Use the local directory when using perform -->
+        <localCheckout>true</localCheckout>
+        <!--JBoss Nexus properties -->
+        <nexus.repository.release>resteasy</nexus.repository.release>
+        <nexus.repository.staging>resteasy-staging</nexus.repository.staging>
+        <nexus.staging.tag>resteasy-${project.version}</nexus.staging.tag>
+        <!-- Temporarily override this plugin version until the jboss-parent catches up -->
+        <version.nxrm3.plugin>1.0.13</version.nxrm3.plugin>
     </properties>
 
     <dependencyManagement>

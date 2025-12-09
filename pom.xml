@@ -159,7 +159,7 @@
         <nexus.repository.staging>resteasy-staging</nexus.repository.staging>
         <nexus.staging.tag>resteasy-${project.version}</nexus.staging.tag>
         <!-- Temporarily override this plugin version until the jboss-parent catches up -->
-        <version.nxrm3.plugin>1.0.12</version.nxrm3.plugin>
+        <version.nxrm3.plugin>1.0.13</version.nxrm3.plugin>
     </properties>
 
     <dependencyManagement>
