@@ -10,7 +10,7 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>7.0.1.Final-SNAPSHOT</version>
+    <version>7.0.1.Final</version>
     <packaging>pom</packaging>
 
     <name>RESTEasy</name>
@@ -91,7 +91,7 @@
         <connection>scm:git:git://github.com/resteasy/resteasy.git</connection>
         <developerConnection>scm:git:git@github.com:resteasy/resteasy.git</developerConnection>
         <url>https://github.com/resteasy/resteasy</url>
-      <tag>HEAD</tag>
+      <tag>v7.0.1.Final</tag>
   </scm>
 
     <issueManagement>

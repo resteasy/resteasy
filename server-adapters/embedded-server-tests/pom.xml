@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-http-adapter-pom</artifactId>
-        <version>7.0.1.Final-SNAPSHOT</version>
+        <version>7.0.1.Final</version>
     </parent>
 
     <artifactId>resteasy-embedded-server-tests</artifactId>
