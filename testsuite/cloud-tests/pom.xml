@@ -55,9 +55,9 @@
         <dekorate.push>true</dekorate.push>
         <!-- Individual tests will need to set this property -->
         <wildfly.cloud.test.base.image.name/>
-
         <!-- Skip deploying tests -->
-        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <skipPublishing>${maven.deploy.skip}</skipPublishing>
     </properties>
 
     <modules>
@@ -143,14 +143,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <!-- TODO (jrp) do we want to do this> -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
             </plugin>
         </plugins>
     </build>

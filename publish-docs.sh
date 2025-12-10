@@ -308,15 +308,31 @@ echo ""
 if command -v gh &>/dev/null; then
     # gh CLI is available - try to create PR
     if ! gh repo set-default --view &>/dev/null; then
+        # Get GitHub username for fork workflow
+        GH_USER=$(gh api user -q .login 2>/dev/null || echo "")
+        if [ -n "${GH_USER}" ]; then
+            HEAD_REF="${GH_USER}:${BRANCH_NAME}"
+        else
+            HEAD_REF="${BRANCH_NAME}"
+        fi
+
         echo "${YELLOW}Warning: No default repository set for gh CLI.${CLEAR}"
         echo "Run: gh repo set-default"
         echo ""
         echo "Then create PR with:"
-        echo "gh pr create --fill --base main --head ${BRANCH_NAME}"
+        echo "gh pr create --fill --base main --head ${HEAD_REF}"
     else
+        # Determine the head ref (handle fork workflow)
+        GH_USER=$(gh api user -q .login 2>/dev/null || echo "")
+        if [ -n "${GH_USER}" ]; then
+            HEAD_REF="${GH_USER}:${BRANCH_NAME}"
+        else
+            HEAD_REF="${BRANCH_NAME}"
+        fi
+
         # Create PR
         echo "Creating pull request..."
-        PR_URL=$(gh pr create --fill --base main --head "${BRANCH_NAME}")
+        PR_URL=$(gh pr create --fill --base main --head "${HEAD_REF}")
         echo ""
         echo "${GREEN}Pull request created successfully!${CLEAR}"
         echo "PR URL: ${PR_URL}"

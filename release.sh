@@ -250,24 +250,13 @@ fi
 status=$?
 
 # ============================================================================
-# Post-release instructions
+# Post-release
 # ============================================================================
 
 if [ ${status} -eq 0 ]; then
     # Get the path to the ZIP files
     distZip=$(readlink -e distribution/target/distribution/*.zip 2>/dev/null || echo "")
     srcZip=$(readlink -e distribution/src-distribution/target/distribution/*.zip 2>/dev/null || echo "")
-
-    echo ""
-    echo "Your release has been successful. Check the validation after $(date -d "now + 10 minutes" +"%H:%M:%S") on https://repository.jboss.org/nexus."
-    echo "Once validation is successful, execute the following command:"
-    echo ""
-    echo "git checkout ${TAG_NAME}"
-    echo "mvn nxrm3:staging-move -Dmaven.repo.local=\"${LOCAL_REPO}\""
-    echo "git checkout ${CURRENT_BRANCH}"
-    echo "git push upstream ${CURRENT_BRANCH}"
-    echo "git push upstream ${TAG_NAME}"
-    echo ""
 
     # ============================================================================
     # GitHub Release Instructions
@@ -277,13 +266,30 @@ if [ ${status} -eq 0 ]; then
     if command -v gh &>/dev/null; then
         # Check for default repo quietly
         if ! gh repo set-default --view &>/dev/null; then
-            echo -e "${RED}No default repository has been set. You must use 'gh repo set-default' to set a default repository before executing the following commands.${CLEAR}"
+            echo -e "${RED}No default repository has been set. You must use gh repo set-default to set a default repository before executing the following commands.${CLEAR}"
             echo ""
+            echo "gh release create --generate-notes ${START_TAG[*]} ${GH_RELEASE_TYPE} --verify-tag ${TAG_NAME}"
+        else
+            if ${DRY_RUN}; then
+                printf "${YELLOW}Dry run would execute:${CLEAR}\ngh release create --generate-notes %s %s --verify-tag %s\n" "${START_TAG[*]}" "${GH_RELEASE_TYPE}" "${TAG_NAME}"
+            else
+                if gh release create --generate-notes "${START_TAG[@]}" ${GH_RELEASE_TYPE} --verify-tag "${TAG_NAME}"; then
+                    echo "GitHub release created successfully."
+                else
+                    echo "${RED}Warning: Failed to create GitHub release.${CLEAR}"
+                fi
+            fi
         fi
-        echo "Create a GitHub release with:"
-        echo "gh release create --generate-notes ${START_TAG[*]} ${GH_RELEASE_TYPE} --verify-tag ${TAG_NAME}"
         if [ -n "${distZip}" ] && [ -n "${srcZip}" ]; then
-            echo "gh release upload ${TAG_NAME} ${distZip} ${srcZip}"
+            if ${DRY_RUN}; then
+                printf "${YELLOW}Dry run would execute:${CLEAR}\ngh release upload %s %s %s\n" "${TAG_NAME}" "${distZip}" "${srcZip}"
+            else
+                if gh release upload "${TAG_NAME}" "${distZip}" "${srcZip}"; then
+                    echo "Release artifacts uploaded successfully."
+                else
+                    echo "${RED}Warning: Failed to upload release artifacts.${CLEAR}"
+                fi
+            fi
         fi
     else
         echo "The gh command is not available. You must manually create a release for the GitHub tag ${TAG_NAME}."
@@ -305,9 +311,19 @@ if [ ${status} -eq 0 ]; then
         if [ ! -d "${DOCS_REPO}" ]; then
             echo "${YELLOW}Warning: Could not find resteasy.github.io repository.${CLEAR}"
             DOCS_REPO="/path/to/resteasy.github.io"
+            echo "./publish-docs.sh --version ${RELEASE_VERSION} --docs-repo ${DOCS_REPO} --dist-zip ${distZip}"
+        else
+            if ${DRY_RUN}; then
+                printf "${YELLOW}Dry run would execute:${CLEAR}\n./publish-docs.sh --version %s --docs-repo %s --dist-zip %s\n" "${RELEASE_VERSION}" "${DOCS_REPO}" "${distZip}"
+            else
+                echo "Publishing documentation:"
+                if ./publish-docs.sh --version "${RELEASE_VERSION}" --docs-repo "${DOCS_REPO}" --dist-zip "${distZip}"; then
+                    echo "Documentation published successfully."
+                else
+                    echo "${RED}Warning: Failed to publish documentation.${CLEAR}"
+                fi
+            fi
         fi
-        echo "Publish documentation with:"
-        echo "./publish-docs.sh --version ${RELEASE_VERSION} --docs-repo ${DOCS_REPO} --dist-zip ${distZip}"
     else
         echo "${YELLOW}Warning: Distribution ZIP not found. Documentation may not have been packaged.${CLEAR}"
     fi
