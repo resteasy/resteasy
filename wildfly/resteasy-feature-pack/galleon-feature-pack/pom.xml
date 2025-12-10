@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-feature-pack</artifactId>
-        <version>6.2.15.Final</version>
+        <version>6.2.16.Final-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
