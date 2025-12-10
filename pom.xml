@@ -131,6 +131,7 @@
         <channel.stream.version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}</channel.stream.version>
 
         <!-- Plugins versions -->
+        <version.central.publishing.maven.plugin>0.9.0</version.central.publishing.maven.plugin>
         <version.formatter.maven.plugin>2.23.0</version.formatter.maven.plugin>
         <version.impsort.maven.plugin>1.9.0</version.impsort.maven.plugin>
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
@@ -147,21 +148,20 @@
         <!-- maven-release-plugin configuration -->
         <autoVersionSubmodules>true</autoVersionSubmodules>
         <preparationGoals>clean install javadoc:aggregate-no-fork site</preparationGoals>
-        <preparationProfiles>jboss-release,release,cloud-tests</preparationProfiles>
+        <preparationProfiles>release,gpg-sign</preparationProfiles>
         <releaseProfiles>${preparationProfiles}</releaseProfiles>
         <signTag>true</signTag>
         <tagNameFormat>v@{project.version}</tagNameFormat>
         <arguments>-DskipTests</arguments>
         <!-- Do not push changes by default when using the maven-release-plugin:prepare -->
-        <pushChanges>false</pushChanges>
+        <pushChanges>true</pushChanges>
         <!-- Use the local directory when using perform -->
         <localCheckout>true</localCheckout>
-        <!--JBoss Nexus properties -->
-        <nexus.repository.release>resteasy</nexus.repository.release>
-        <nexus.repository.staging>resteasy-staging</nexus.repository.staging>
-        <nexus.staging.tag>resteasy-${project.version}</nexus.staging.tag>
-        <!-- Temporarily override this plugin version until the jboss-parent catches up -->
-        <version.nxrm3.plugin>1.0.13</version.nxrm3.plugin>
+        <!-- Maven Central properties -->
+        <repo.sonatype.url>https://central.sonatype.com</repo.sonatype.url>
+        <sonatype.server.id>central</sonatype.server.id>
+        <autoPublish>true</autoPublish>
+        <waitUntil>validated</waitUntil>
     </properties>
 
     <dependencyManagement>
@@ -476,6 +476,71 @@
                 <module>docbook</module>
                 <module>distribution</module>
             </modules>
+
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>${sonatype.server.id}</id>
+                    <url>${repo.sonatype.url}</url>
+                </snapshotRepository>
+                <repository>
+                    <id>${sonatype.server.id}</id>
+                    <url>${repo.sonatype.url}</url>
+                </repository>
+            </distributionManagement>
+
+            <build>
+                <plugins>
+                    <!-- Semantically ordered -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <configuration>
+                            <rules>
+                                <requireReleaseDeps>
+                                    <message>No Snapshots Allowed!</message>
+                                </requireReleaseDeps>
+                            </rules>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>${version.central.publishing.maven.plugin}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>${sonatype.server.id}</publishingServerId>
+                            <autoPublish>${autoPublish}</autoPublish>
+                            <waitUntil>${waitUntil}</waitUntil>
+                            <deploymentName>org.jboss.resteasy-${project.version}</deploymentName>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
             <reporting>
                 <excludeDefaults>true</excludeDefaults>
                 <plugins>
