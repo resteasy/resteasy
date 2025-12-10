@@ -19,7 +19,7 @@
     <properties>
         <!-- Skip deploying tests -->
         <maven.deploy.skip>true</maven.deploy.skip>
-        <skipNexusStagingDeployMojo>${maven.deploy.skip}</skipNexusStagingDeployMojo>
+        <skipPublishing>${maven.deploy.skip}</skipPublishing>
     </properties>
 
     <dependencies>

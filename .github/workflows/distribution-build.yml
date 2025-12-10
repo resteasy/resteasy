@@ -36,4 +36,4 @@ jobs:
           cache: 'maven'
       - name: Build Documentation and Distribution
         run: |
-          mvn -B -ntp clean install site -DskipTests -Prelease -Pjboss-release -Dgpg.skip=true
+          mvn -B -ntp clean install site -DskipTests -Prelease -Dgpg.skip=true

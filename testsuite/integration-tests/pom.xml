@@ -27,7 +27,8 @@
         <resteasy-integration-tests.additional.surefire.excludes />
 
         <!-- Skip deploying tests -->
-        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <skipPublishing>${maven.deploy.skip}</skipPublishing>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
