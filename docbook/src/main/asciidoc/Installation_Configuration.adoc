@@ -152,7 +152,7 @@ Using Maven to provision WildFly you can simply use the RESTEasy Channel Manifes
                     </channel>
                     <channel>
                         <manifest>
-                            <groupId>dev.resteasy.channels</groupId>
+                            <groupId>org.jboss.resteasy.channels</groupId>
                             <artifactId>resteasy-{channel-stream-version}</artifactId>
                         </manifest>
                     </channel>
@@ -162,6 +162,9 @@ Using Maven to provision WildFly you can simply use the RESTEasy Channel Manifes
     </executions>
 </plugin>
 ----
+
+IMPORTANT: Please note for versions 6.2.15.Final and 7.0.1.Final the `groupId` for the channel has changed from
+`dev.resteasy.channels` to `org.jboss.resteasy.channels`.
 
 === Deploying a RESTEasy application to WildFly
 

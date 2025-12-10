@@ -42,7 +42,7 @@
         <wildfly.channel.manifest.version>${server.version}</wildfly.channel.manifest.version>
 
 
-        <resteasy.channel.manifest.groupId>dev.resteasy.channels</resteasy.channel.manifest.groupId>
+        <resteasy.channel.manifest.groupId>org.jboss.resteasy.channels</resteasy.channel.manifest.groupId>
         <resteasy.channel.manifest.artifactId>resteasy-${channel.stream.version}</resteasy.channel.manifest.artifactId>
         <resteasy.channel.manifest.version>${project.version}</resteasy.channel.manifest.version>
     </properties>
