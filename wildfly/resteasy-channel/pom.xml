@@ -23,7 +23,7 @@
     <parent>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <groupId>org.jboss.resteasy</groupId>
-        <version>7.0.1.Final-SNAPSHOT</version>
+        <version>7.0.1.Final</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -46,14 +46,14 @@
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-dependencies</artifactId>
-                <version>7.0.1.Final-SNAPSHOT</version>
+                <version>7.0.1.Final</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-bom</artifactId>
-                <version>7.0.1.Final-SNAPSHOT</version>
+                <version>7.0.1.Final</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
