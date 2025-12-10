@@ -13,14 +13,14 @@
     <name>RESTEasy Reference Guide</name>
     <description>The RESTEasy documentation</description>
 
+    <properties>
+        <!-- Skip deploying tests -->
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <skipPublishing>${maven.deploy.skip}</skipPublishing>
+    </properties>
+
     <build>
         <plugins>
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
             <plugin>
                 <artifactId>maven-site-plugin</artifactId>
                 <configuration>
