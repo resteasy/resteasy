@@ -202,27 +202,6 @@ if ! git diff-index --quiet HEAD -- 2>/dev/null; then
     failNoHelp "Documentation repository has uncommitted changes. Please commit or stash them first.\nRepository: ${DOCS_REPO}"
 fi
 
-# Get current version from index.html
-CURRENT_MAJOR_MINOR=""
-if [ -f "index.html" ]; then
-    CURRENT_MAJOR_MINOR=$(grep -oP 'content="0; \K[0-9.]+(?=/userguide)' index.html 2>/dev/null || echo "")
-fi
-
-# Determine archiving strategy
-SHOULD_ARCHIVE=false
-ACTION="create"
-
-if [ -n "${CURRENT_MAJOR_MINOR}" ] && [ "${CURRENT_MAJOR_MINOR}" != "${MAJOR_MINOR}" ]; then
-    SHOULD_ARCHIVE=true
-    ACTION="archive and create"
-    echo "${YELLOW}Version change: ${CURRENT_MAJOR_MINOR} → ${MAJOR_MINOR} (will archive old version)${CLEAR}"
-elif [ -d "${MAJOR_MINOR}" ]; then
-    ACTION="overwrite"
-    echo "Patch release for ${MAJOR_MINOR} (will overwrite)"
-else
-    echo "First release of ${MAJOR_MINOR}"
-fi
-
 # ============================================================================
 # Publish documentation
 # ============================================================================
@@ -231,13 +210,11 @@ echo ""
 echo "Publishing documentation for ${RELEASE_VERSION} (${MAJOR_MINOR})..."
 echo ""
 
-if ${SHOULD_ARCHIVE}; then
-    echo "Archiving ${CURRENT_MAJOR_MINOR}/ to archive/${CURRENT_MAJOR_MINOR}/..."
-    mkdir -p archive
-    mv "${CURRENT_MAJOR_MINOR}" "archive/${CURRENT_MAJOR_MINOR}"
-elif [ -d "${MAJOR_MINOR}" ]; then
+if [ -d "${MAJOR_MINOR}" ]; then
     echo "Removing existing ${MAJOR_MINOR}/ directory..."
     rm -rf "${MAJOR_MINOR}"
+else
+    mkdir -p "${MAJOR_MINOR}"
 fi
 
 # ============================================================================
@@ -248,25 +225,11 @@ echo "Creating ${MAJOR_MINOR}/ directory structure..."
 mkdir -p "${MAJOR_MINOR}/javadocs"
 mkdir -p "${MAJOR_MINOR}/userguide"
 
-echo "Copying JavaDocs..."
+echo "Copying JavaDocs ${EXTRACTED_JAVADOCS}/* to ${MAJOR_MINOR}/javadocs/"
 cp -r "${EXTRACTED_JAVADOCS}"/* "${MAJOR_MINOR}/javadocs/"
 
-echo "Copying user guide..."
+echo "Copying user guide ${EXTRACTED_USERGUIDE}/* to ${MAJOR_MINOR}/userguide/"
 cp -r "${EXTRACTED_USERGUIDE}"/* "${MAJOR_MINOR}/userguide/"
-
-# ============================================================================
-# Update index.html if major.minor changed
-# ============================================================================
-
-if [ "${CURRENT_MAJOR_MINOR}" != "${MAJOR_MINOR}" ]; then
-    if [ -f "index.html" ]; then
-        echo "Updating index.html redirect to ${MAJOR_MINOR}/userguide..."
-        sed -i "s|content=\"0; [0-9.]\+/userguide\"|content=\"0; ${MAJOR_MINOR}/userguide\"|" index.html
-        sed -i "s|href=\"\./[0-9.]\+/userguide\"|href=\"./${MAJOR_MINOR}/userguide\"|" index.html
-    else
-        echo "${YELLOW}Warning: index.html not found. You may need to create it manually.${CLEAR}"
-    fi
-fi
 
 # ============================================================================
 # Create branch, commit, and push
@@ -278,11 +241,7 @@ echo ""
 
 # Generate branch name and commit message
 BRANCH_NAME="docs-${RELEASE_VERSION}"
-if ${SHOULD_ARCHIVE}; then
-    COMMIT_MSG="Archive ${CURRENT_MAJOR_MINOR} documentation and add ${RELEASE_VERSION} documentation"
-else
-    COMMIT_MSG="Update ${MAJOR_MINOR} documentation to ${RELEASE_VERSION}"
-fi
+COMMIT_MSG="Update ${MAJOR_MINOR} documentation to ${RELEASE_VERSION}"
 
 # Create and checkout new branch
 echo "Creating branch: ${BRANCH_NAME}"
@@ -351,7 +310,6 @@ echo ""
 echo "Summary:"
 echo "  Version: ${RELEASE_VERSION}"
 echo "  Major.minor: ${MAJOR_MINOR}"
-echo "  Action: ${ACTION}"
 echo "  Branch: ${BRANCH_NAME}"
 echo ""
 echo "Verify GitHub Pages updated after PR is merged (may take a few minutes):"
