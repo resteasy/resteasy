@@ -12,7 +12,7 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-bom</artifactId>
-    <version>7.0.1.Final</version>
+    <version>7.0.2.Final-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>RESTEasy Maven Import (BOM)</name>
@@ -68,7 +68,7 @@
         <connection>scm:git:git://github.com/resteasy/resteasy.git</connection>
         <developerConnection>scm:git:git@github.com:resteasy/resteasy.git</developerConnection>
         <url>https://github.com/resteasy/resteasy</url>
-      <tag>v7.0.1.Final</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <issueManagement>
@@ -101,137 +101,137 @@
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>jose-jwt</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-atom-provider</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-cdi</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-client</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-client-api</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-client-utils</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-core</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-core-spi</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-crypto</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-fastinfoset-provider</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-html</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jackson2-provider</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jaxb-provider</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jsapi</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-json-binding-provider</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-json-p-provider</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-links</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-multipart-provider</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-reactor</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-rxjava2</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-servlet-initializer</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-stats</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-undertow</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-undertow-cdi</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-validator-provider</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-wadl</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-wadl-undertow-connector</artifactId>
-                <version>7.0.1.Final</version>
+                <version>7.0.2.Final-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
