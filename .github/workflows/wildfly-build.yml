@@ -45,7 +45,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
       - uses: wildfly-extras/wildfly-nightly-download@v1
         id: wildfly-nightly
       - name: Set up JDK
@@ -64,13 +64,13 @@ jobs:
       - name: Test with ${{ matrix.profile }} - JDK 25
         run:  mvn -V clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
       - name: Upload surefire reports
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: surefire-reports-${{ matrix.os }}
           path: '**/surefire-reports/'
       - name: Upload server logs
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: server-logs-${{ matrix.os }}
@@ -104,12 +104,12 @@ jobs:
       - name: Test with ${{ matrix.profile }} - JDK 21
         run:  |
           mvn -V clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: surefire-reports-${{ matrix.os }}-${{ matrix.wildfly-version }}
           path: '**/surefire-reports/'
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: server-logs-${{ matrix.os }}-${{ matrix.wildfly-version }}
@@ -140,12 +140,12 @@ jobs:
       - name: Test with Java 17 on WildFly ${{ matrix.wildfly-version }} - ${{ matrix.os }}
         run:  |
           mvn clean install -U -B -fae '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions' '-Plegacy-wildfly'
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: surefire-reports-${{ matrix.os }}}-${{ matrix.wildfly-version }}
           path: '**/surefire-reports/'
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: server-logs-${{ matrix.os }}-${{ matrix.wildfly-version }}
