@@ -39,7 +39,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         id: download-m2
         with:
           name: wildfly-maven-repository
@@ -57,13 +57,13 @@ jobs:
       - name: Build on ${{ inputs.os }} with Java ${{ inputs.javaVersion }}
         run: mvn clean install '-Dserver.version=${{needs.wildfly-build.outputs.wildfly-version}}'
       - name: Upload surefire reports
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: surefire-reports
           path: '**/surefire-reports/*'
       - name: Upload server logs
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: server-logs
