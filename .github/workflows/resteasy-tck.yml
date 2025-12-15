@@ -106,14 +106,14 @@ jobs:
           java -version
           mvn -version
           mvn clean install -U -B -fae -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: test-reports
           path: |
             '**/surefire-reports/'
             '**/failsafe-reports/'
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: server-logs
@@ -159,14 +159,14 @@ jobs:
           export JAVA_HOME
           mvn -version
           mvn clean install -U -B -fae -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}" -Dversion.org.wildfly=34.0.0.Final
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: legacy-test-reports
           path: |
             '**/surefire-reports/'
             '**/failsafe-reports/'
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: server-logs
