@@ -59,7 +59,19 @@ public class Utils {
         if (clazz.isAnnotationPresent(Provider.class)) {
             return true;
         }
-        for (Method method : clazz.getMethods()) {
+        return hasEndpointMethod(clazz);
+    }
+
+    /**
+     * Checks each method on the class looking for any method annotated with {@link Path @Path} or any of the
+     * {@link HttpMethod}'s.
+     *
+     * @param type the class to process the methods on
+     *
+     * @return {@code true} if this is determined to be an endpoint method
+     */
+    public static boolean hasEndpointMethod(final Class<?> type) {
+        for (Method method : type.getMethods()) {
             if (method.isAnnotationPresent(Path.class)) {
                 return true;
             }

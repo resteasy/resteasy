@@ -1,57 +1,61 @@
 [[_resteasy_enterprise_bean_integration]]
 == {enterprise-beans} Integration
 
-RESTEasy currently only has simple integration with {enterprise-beans}. To make a bean a {spec-name} resource, an SLSB's
-`@Remote` or `@Local` interface must be annotated with {spec-name} annotations. Also, the application's beans must be
-configured in web.xml.
+RESTEasy provides tight integration with {enterprise-beans} (EJB) components. This allows you to use standard Jakarta REST
+annotations directly on your Session Beans, leveraging EJB features like transaction management and security.
 
+=== Automatic Discovery via CDI (Recommended)
+
+In accordance with the Jakarta REST specification (Section 11.2.4), RESTEasy automatically discovers and registers EJBs
+that use Jakarta REST annotations.
+
+==== 1. Standard Configuration
+
+The specification mandates that Resource class annotations (such as `@Path`) MUST be applied to the EJB implementation
+class, while method annotations (such as `@GET`, `@POST`, `@Produces`) can remain on the Local Interface.
+
+**Example: The Standard Pattern**
 
 [source,java]
 ----
+// 1. The Local Interface defines the business contract
 @Local
-@Path("/Library")
 public interface Library {
-   
-   @GET
-   @Path("/books/{isbn}")
-   String getBook(@PathParam("isbn") String isbn);
+    // JAX-RS method annotations can go here (preferred) or on the class
+    @GET
+    @Path("/books/{isbn}")
+    String getBook(@PathParam("isbn") String isbn);
 }
 
+// 2. The Implementation Class defines the Resource Path
 @Stateless
+@Path("/library") // Resource-level annotations MUST be here
 public class LibraryBean implements Library {
+
+    @Override
+    public String getBook(String isbn) {
+        return "Book: " + isbn;
+    }
 }
 ----
 
-Next, in RESTEasy's web.xml file manually register the bean with RESTEasy using the `resteasy.jndi.resources` context-param
+==== 2. View Resolution and Multiple Interfaces
+
+RESTEasy's CDI integration automatically determines the correct EJB View (Interface) to use for the JAX-RS resource lookup.
+
+* **Single Interface:** If your EJB implements a single `@Local` interface, RESTEasy will automatically proxy requests through that interface. No additional configuration is required.
+* **Multiple Interfaces:** If your EJB implements multiple interfaces, RESTEasy will attempt to use the first interface it discovers.
+* **Warning:** If your JAX-RS methods are split across multiple interfaces, or if the "first discovered" interface does not contain the JAX-RS methods, the lookup may fail or result in 404s.
+* **Solution:** In complex multi-interface scenarios, it is recommended to consolidate your JAX-RS methods into a single interface or use `@LocalBean` to expose the class view directly, ensuring all methods are accessible via a single type.
+
+=== Manual JNDI Registration (Legacy)
+
+If you are strictly avoiding CDI, you can manually register EJBs in `web.xml`.
 
 [source,xml]
 ----
-<web-app>
-   <display-name>Example EJB</display-name>
-   <context-param>
-      <param-name>resteasy.jndi.resources</param-name>
-      <param-value>LibraryBean/local</param-value>
-   </context-param>
-</web-app>
+<context-param>
+    <param-name>resteasy.jndi.resources</param-name>
+    <param-value>java:global/myApp/myEjbModule/LibraryBean!com.example.Library</param-value>
+</context-param>
 ----
-
-This is the only portable way RESTEasy offers {enterprise-beans} integration.
-Future versions of RESTEasy will have tighter integration with Wildfly, thus eliminating manual registrations or modifications to web.xml.
-
-If you're using RESTEasy with an EAR and {enterprise-beans}, a good structure to have is:
-
-[source]
-----
-my-ear.ear
-|------myejb.jar
-|------resteasy-jaxrs.war
-       |
-       ----WEB-INF/web.xml
-       ----WEB-INF/lib (nothing)
-|------lib/
-       |
-       ----All RESTEasy jar files
-----
-
-From the distribution, remove all libraries from `WEB-INF/lib` and place them in a common EAR lib or place the RESTEasy
-jar dependencies in the application server's system classpath.
