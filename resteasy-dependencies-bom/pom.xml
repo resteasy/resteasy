@@ -126,7 +126,7 @@
         <version.org.wildfly.common>1.6.0.Final</version.org.wildfly.common>
         <version.org.wildfly.security>2.0.0.Final</version.org.wildfly.security>
         <version.weld.api>5.0.SP3</version.weld.api>
-        <version.weld>5.1.6.Final</version.weld>
+        <version.weld>5.1.7.Final</version.weld>
         <version.com.github.java-json-tools.btf>1.3</version.com.github.java-json-tools.btf>
         <version.com.github.java-json-tools.jackson-coreutils>2.0</version.com.github.java-json-tools.jackson-coreutils>
         <version.com.github.java-json-tools.json-patch>1.13</version.com.github.java-json-tools.json-patch>
