@@ -77,11 +77,7 @@ public class SslSniHostNamesTest extends SslTestBase {
             builder.addStep(op);
 
             final ModelNode protocols = new ModelNode().setEmptyList();
-            if (TestUtil.isIbmJdk()) { // on ibm java, client doesn't use TLSv1.2
-                protocols.add("TLSv1");
-            } else {
-                protocols.add("TLSv1.2");
-            }
+            protocols.add("TLSv1.2");
             address = Operations.createAddress("subsystem", "elytron", "server-ssl-context", "httpsSSC");
             op = Operations.createAddOperation(address);
             op.get("key-manager").set("httpsKM");

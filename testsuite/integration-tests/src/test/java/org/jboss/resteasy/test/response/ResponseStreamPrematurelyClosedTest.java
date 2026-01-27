@@ -61,42 +61,32 @@ public class ResponseStreamPrematurelyClosedTest {
         Builder builder = client.target(generateURL("/test/document/abc/content")).request();
 
         try (MyByteArrayOutputStream baos = new MyByteArrayOutputStream()) {
+            //suggest jvm to do gc and wait the gc notification
+            final CountDownLatch coutDown = new CountDownLatch(1);
 
-            if (!TestUtil.isIbmJdk()) {
-                //suggest jvm to do gc and wait the gc notification
-                final CountDownLatch coutDown = new CountDownLatch(1);
-
-                List<GarbageCollectorMXBean> gcbeans = ManagementFactory.getGarbageCollectorMXBeans();
-                NotificationListener listener = new NotificationListener() {
-                    public void handleNotification(Notification notification, Object handback) {
-                        coutDown.countDown();
-                    }
-                };
-                //builder.get().readEntity explicitly on the same line below and not saved in any temp variable
-                //to let the JVM try finalizing the ClientResponse object
-                try (InputStream ins = builder.get().readEntity(InputStream.class)) {
-                    for (GarbageCollectorMXBean gcbean : gcbeans) {
-                        NotificationEmitter emitter = (NotificationEmitter) gcbean;
-                        emitter.addNotificationListener(listener, null, null);
-                    }
-                    System.gc();
-                    coutDown.await(10, TimeUnit.SECONDS);
-
-                    ins.transferTo(baos);
-                    Assertions.assertEquals(10000000, baos.size(), () -> "Received string: " + baos.toShortString());
-                } finally {
-                    //remove the listener
-                    for (GarbageCollectorMXBean gcbean : gcbeans) {
-                        ((NotificationEmitter) gcbean).removeNotificationListener(listener);
-                    }
+            List<GarbageCollectorMXBean> gcbeans = ManagementFactory.getGarbageCollectorMXBeans();
+            NotificationListener listener = new NotificationListener() {
+                public void handleNotification(Notification notification, Object handback) {
+                    coutDown.countDown();
                 }
-            } else { // workaround for Ibm jdk - doesn't allow to use NotificationEmitter with GarbageCollectorMXBean
-                //builder.get().readEntity explicitly on the same line below and not saved in any temp variable
-                //to let the JVM try finalizing the ClientResponse object
-                try (InputStream in = builder.get().readEntity(InputStream.class)) {
-                    in.transferTo(baos);
+            };
+            //builder.get().readEntity explicitly on the same line below and not saved in any temp variable
+            //to let the JVM try finalizing the ClientResponse object
+            try (InputStream ins = builder.get().readEntity(InputStream.class)) {
+                for (GarbageCollectorMXBean gcbean : gcbeans) {
+                    NotificationEmitter emitter = (NotificationEmitter) gcbean;
+                    emitter.addNotificationListener(listener, null, null);
                 }
-                Assertions.assertEquals(100000000, baos.size());
+                System.gc();
+                coutDown.await(10, TimeUnit.SECONDS);
+
+                ins.transferTo(baos);
+                Assertions.assertEquals(10000000, baos.size(), () -> "Received string: " + baos.toShortString());
+            } finally {
+                //remove the listener
+                for (GarbageCollectorMXBean gcbean : gcbeans) {
+                    ((NotificationEmitter) gcbean).removeNotificationListener(listener);
+                }
             }
         }
     }
