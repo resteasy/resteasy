@@ -134,7 +134,7 @@
         <version.io.reactivex.rxjava2-rxjava>2.2.21</version.io.reactivex.rxjava2-rxjava>
         <version.org.reactivestreams>1.0.4</version.org.reactivestreams>
         <version.org.hibernate.validator>9.0.1.Final</version.org.hibernate.validator>
-        <version.io.projectreactor>2024.0.12</version.io.projectreactor>
+        <version.io.projectreactor>2024.0.14</version.io.projectreactor>
 
         <version.asyncutil>0.1.0</version.asyncutil>
 
