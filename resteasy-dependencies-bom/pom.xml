@@ -87,7 +87,7 @@
         <version.dev.resteasy.junit.extension>1.0.0.Beta1</version.dev.resteasy.junit.extension>
         <version.io.netty.netty4>4.1.128.Final</version.io.netty.netty4>
         <version.io.vertx>4.4.9</version.io.vertx>
-        <version.io.undertow>2.3.20.Final</version.io.undertow>
+        <version.io.undertow>2.3.23.Final</version.io.undertow>
         <version.jakarta.activation>2.1.4</version.jakarta.activation>
         <version.jakarta.enterprise.cdi-api>4.0.1</version.jakarta.enterprise.cdi-api>
         <version.jakarta.inject.jakarta.inject-api>2.0.1</version.jakarta.inject.jakarta.inject-api>
