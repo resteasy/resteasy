@@ -65,7 +65,7 @@ class ClientEntityOutputStream extends EntityOutputStream {
         synchronized (lock) {
             final Path path = getFile();
             if (path != null) {
-                return new PathHttpEntity(path);
+                return new PathHttpEntity(path, new EntityInputStream(path));
             }
             return new ByteArrayEntity(getAndClearMemory());
         }
@@ -75,9 +75,9 @@ class ClientEntityOutputStream extends EntityOutputStream {
         private final Path file;
         private final InputStream content;
 
-        private PathHttpEntity(final Path file) {
+        private PathHttpEntity(final Path file, final InputStream content) {
             this.file = file;
-            this.content = new EntityInputStream(file);
+            this.content = content;
         }
 
         @Override
