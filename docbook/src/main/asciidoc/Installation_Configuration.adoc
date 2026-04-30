@@ -140,14 +140,14 @@ Using Maven to provision WildFly you can simply use the RESTEasy Channel Manifes
                 <feature-packs>
                     <feature-pack>
                         <groupId>org.wildfly</groupId>
-                        <artifactId>wildfly-ee-galleon-pack</artifactId>
+                        <artifactId>wildfly-ee-10-feature-pack</artifactId>
                     </feature-pack>
                 </feature-packs>
                 <channels>
                     <channel>
                         <manifest>
                             <groupId>org.wildfly.channels</groupId>
-                            <artifactId>wildfly-ee</artifactId>
+                            <artifactId>wildfly-ee-10</artifactId>
                         </manifest>
                     </channel>
                     <channel>

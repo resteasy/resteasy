@@ -30,10 +30,10 @@
         <!-- Provisioning properties -->
         <server.version />
         <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
-        <server.test.feature.pack.artifactId>wildfly-ee-galleon-pack</server.test.feature.pack.artifactId>
+        <server.test.feature.pack.artifactId>wildfly-ee-10-feature-pack</server.test.feature.pack.artifactId>
 
         <wildfly.channel.manifest.groupId>org.wildfly.channels</wildfly.channel.manifest.groupId>
-        <wildfly.channel.manifest.artifactId>wildfly-ee</wildfly.channel.manifest.artifactId>
+        <wildfly.channel.manifest.artifactId>wildfly-ee-10</wildfly.channel.manifest.artifactId>
         <wildfly.channel.manifest.version>${server.version}</wildfly.channel.manifest.version>
 
         <resteasy.channel.manifest.groupId>org.jboss.resteasy.channels</resteasy.channel.manifest.groupId>

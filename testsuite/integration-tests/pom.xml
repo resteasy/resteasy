@@ -358,9 +358,20 @@
                 </plugins>
             </build>
         </profile>
+        <!-- WildFly 34 and below support Java 11 and require different feature-packs and channels-->
+        <profile>
+            <id>legacy-wildfly-channels</id>
+            <properties>
+                <server.test.feature.pack.artifactId>wildfly-ee-galleon-pack</server.test.feature.pack.artifactId>
+                <wildfly.channel.manifest.artifactId>wildfly-ee</wildfly.channel.manifest.artifactId>
+            </properties>
+        </profile>
         <!-- The WildFly Channel is only available on WildFly 32+ -->
         <profile>
             <id>legacy-wildfly</id>
+            <properties>
+                <server.test.feature.pack.artifactId>wildfly-ee-galleon-pack</server.test.feature.pack.artifactId>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -549,7 +560,7 @@
             <artifactId>resteasy-wadl</artifactId>
             <scope>test</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-wadl-undertow-connector</artifactId>
