@@ -158,7 +158,7 @@ jobs:
           echo JAVA_HOME="${JAVA_HOME}"
           export JAVA_HOME
           mvn -version
-          mvn clean install -U -B -fae -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}" -Dversion.org.wildfly=34.0.0.Final
+          mvn clean install -U -B -fae -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}" -Dversion.org.wildfly=34.0.1.Final -Plegacy-wildfly-channels
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
