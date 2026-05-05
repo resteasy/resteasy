@@ -18,13 +18,13 @@ import org.junit.jupiter.api.Test;
  * @tpSubChapter Resource tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Tests building resource classes from annotations.
- * @tpSince RESTEasy 7.0.0
+ * @tpSince RESTEasy 6.2.17
  */
 public class ResourceBuilderTest {
 
     /**
      * @tpTestDetails Test resource method declared in resource class.
-     * @tpSince RESTEasy 7.0.0
+     * @tpSince RESTEasy 6.2.17
      */
     @Test
     public void methodInResourceClass() {
@@ -35,7 +35,7 @@ public class ResourceBuilderTest {
 
     /**
      * @tpTestDetails Test resource method declared in public parent class.
-     * @tpSince RESTEasy 7.0.0
+     * @tpSince RESTEasy 6.2.17
      */
     @Test
     public void inheritedMethod() {
@@ -46,7 +46,7 @@ public class ResourceBuilderTest {
 
     /**
      * @tpTestDetails Test resource method declared in package-private parent class.
-     * @tpSince RESTEasy 7.0.0
+     * @tpSince RESTEasy 6.2.17
      */
     @Test
     public void inheritedMethodFromPrivateClass() {

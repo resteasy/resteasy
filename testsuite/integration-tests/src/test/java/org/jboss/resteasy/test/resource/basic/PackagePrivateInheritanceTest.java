@@ -31,11 +31,11 @@ import org.wildfly.arquillian.junit.annotations.RequiresModule;
  * @tpTestCaseDetails Regression test for RESTEASY-3621: a public resource class that inherits a
  *                    JAX-RS resource method from a package-private superclass must be invocable
  *                    without throwing IllegalAccessException.
- * @tpSince RESTEasy 7.0.2
+ * @tpSince RESTEasy 6.2.17
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@RequiresModule(value = "org.jboss.resteasy.resteasy-core-spi", minVersion = "6.2.16.Final")
+@RequiresModule(value = "org.jboss.resteasy.resteasy-core-spi", minVersion = "6.2.17.Final")
 public class PackagePrivateInheritanceTest {
 
     private static Client client;
@@ -64,7 +64,7 @@ public class PackagePrivateInheritanceTest {
     /**
      * @tpTestDetails Verify that a GET request to a resource method declared in a package-private
      *                superclass succeeds with HTTP 200 and the expected response body.
-     * @tpSince RESTEasy 7.0.2
+     * @tpSince RESTEasy 6.2.17
      */
     @Test
     public void inheritedMethodFromPackagePrivateClassIsInvocable() {
