@@ -758,8 +758,16 @@ public class ResourceBuilder {
             builder = createResourceClassBuilder(clazz);
         }
         for (Method method : clazz.getMethods()) {
-            if (!method.isSynthetic() && !method.getDeclaringClass().equals(Object.class))
-                processMethod(isLocator, builder, clazz, method);
+            if (!method.getDeclaringClass().equals(Object.class)) {
+                if (!method.isSynthetic()) {
+                    processMethod(isLocator, builder, clazz, method);
+                } else if (method.isBridge() && !hasNonSyntheticDeclaredMethodWithName(method)) {
+                    final Method bridgedMethod = findNonSyntheticSuperclassMethod(method);
+                    if (bridgedMethod != null) {
+                        processMethod(builder, clazz, method, bridgedMethod);
+                    }
+                }
+            }
 
         }
         if (!clazz.isInterface()) {
@@ -777,6 +785,35 @@ public class ResourceBuilder {
         else
             builder = buildRootResource(clazz, path.value());
         return builder;
+    }
+
+    private static Method findNonSyntheticSuperclassMethod(final Method bridgeMethod) {
+        for (Class<?> superClass = bridgeMethod.getDeclaringClass().getSuperclass(); superClass != null
+                && !superClass.equals(Object.class); superClass = superClass.getSuperclass()) {
+            try {
+                final Method m = superClass.getDeclaredMethod(bridgeMethod.getName(), bridgeMethod.getParameterTypes());
+                if (!m.isSynthetic()) {
+                    return m;
+                }
+            } catch (NoSuchMethodException e) {
+                // not in this superclass, keep walking up
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns true if the bridge method's declaring class has a non-synthetic declared method with the same name.
+     * This indicates a generic type-erasure bridge (which has a concrete counterpart with more specific types),
+     * as opposed to an accessibility bridge for a package-private superclass (which has no concrete counterpart).
+     */
+    private static boolean hasNonSyntheticDeclaredMethodWithName(final Method bridgeMethod) {
+        for (Method m : bridgeMethod.getDeclaringClass().getDeclaredMethods()) {
+            if (!m.isSynthetic() && m.getName().equals(bridgeMethod.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static Set<String> getHttpMethods(Method method) {
@@ -984,11 +1021,24 @@ public class ResourceBuilder {
 
     protected void processMethod(boolean isLocator, ResourceClassBuilder resourceClassBuilder, Class<?> root,
             Method implementation) {
-        Method method = getAnnotatedMethod(root, implementation);
+        processMethod(resourceClassBuilder, root, implementation, implementation);
+    }
+
+    /**
+     * Process the resource method to configure the builder.
+     *
+     * @param resourceClassBuilder the builder to configure
+     * @param root                 the root resource class
+     * @param implementation       the method to be invoked (may be a bridge method)
+     * @param annotatedMethod      the method containing Jakarta REST annotations (may be in a superclass)
+     */
+    private void processMethod(final ResourceClassBuilder resourceClassBuilder, final Class<?> root,
+            final Method implementation, final Method annotatedMethod) {
+        Method method = getAnnotatedMethod(root, annotatedMethod);
         if (method != null) {
             Set<String> httpMethods = getHttpMethods(method);
 
-            ResourceLocatorBuilder resourceLocatorBuilder;
+            ResourceLocatorBuilder<?> resourceLocatorBuilder;
 
             if (httpMethods == null) {
                 resourceLocatorBuilder = resourceClassBuilder.locator(implementation, method);
