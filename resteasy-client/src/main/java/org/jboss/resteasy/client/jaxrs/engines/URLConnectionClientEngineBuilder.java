@@ -33,7 +33,16 @@ public class URLConnectionClientEngineBuilder implements ClientHttpEngineBuilder
             clientEngine.setProxyScheme(resteasyClientBuilder.getDefaultProxyScheme());
         }
 
+        if (resteasyClientBuilder.getHostnameVerifier() != null) {
+            clientEngine.setHostnameVerifier(resteasyClientBuilder.getHostnameVerifier());
+        }
+
+        if (resteasyClientBuilder.getSSLContext() != null) {
+            clientEngine.setSslContext(resteasyClientBuilder.getSSLContext());
+        }
+
         clientEngine.setFollowRedirects(resteasyClientBuilder.isFollowRedirects());
+        clientEngine.setUseJvmProxySettings(resteasyClientBuilder.isUseJvmProxySettings());
         return clientEngine;
     }
 }
