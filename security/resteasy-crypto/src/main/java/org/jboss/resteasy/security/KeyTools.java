@@ -2,21 +2,12 @@ package org.jboss.resteasy.security;
 
 import java.math.BigInteger;
 import java.security.KeyPair;
-import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.Date;
+import java.time.ZonedDateTime;
 
-import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
-import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.cert.X509v1CertificateBuilder;
-import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
-import org.bouncycastle.crypto.util.PrivateKeyFactory;
-import org.bouncycastle.operator.ContentSigner;
-import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
-import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
-import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
+import javax.security.auth.x500.X500Principal;
+
+import org.wildfly.security.x500.cert.X509CertificateBuilder;
 
 /**
  * Class provides utility functions for generation of V1
@@ -67,50 +58,24 @@ public class KeyTools {
     private static X509Certificate generateV1SelfSignedCertificate(KeyPair caKeyPair,
             String subject, String issuer) {
         try {
-            X500Name subjectDN = new X500Name("CN=" + subject);
-            X500Name issuerDN;
-            if (issuer == null) {
-                issuerDN = subjectDN;
-            } else {
-                issuerDN = new X500Name("CN=" + issuer);
-            }
+            X500Principal subjectDN = new X500Principal("CN=" + subject);
+            X500Principal issuerDN = (issuer == null) ? subjectDN
+                    : new X500Principal("CN=" + issuer);
 
-            Date validityStartDate = new Date(System.currentTimeMillis() - 10000);
-            Date validityEndDate = new Date(System.currentTimeMillis() + 10000);
-            SubjectPublicKeyInfo subPubKeyInfo = SubjectPublicKeyInfo
-                    .getInstance(caKeyPair.getPublic().getEncoded());
-
-            X509v1CertificateBuilder certGen = new X509v1CertificateBuilder(
-                    issuerDN, BigInteger.valueOf(System.currentTimeMillis()),
-                    validityStartDate, validityEndDate, subjectDN, subPubKeyInfo);
-
-            X509CertificateHolder holder = certGen.build(createSigner(caKeyPair.getPrivate()));
-
-            return new JcaX509CertificateConverter().getCertificate(holder);
-
+            return new X509CertificateBuilder()
+                    .setVersion(1)
+                    .setSerialNumber(BigInteger.valueOf(System.currentTimeMillis()))
+                    .setIssuerDn(issuerDN)
+                    .setSubjectDn(subjectDN)
+                    .setNotValidBefore(ZonedDateTime.now().minusSeconds(10))
+                    .setNotValidAfter(ZonedDateTime.now().plusSeconds(10))
+                    .setPublicKey(caKeyPair.getPublic())
+                    .setSigningKey(caKeyPair.getPrivate())
+                    .setSignatureAlgorithmName("SHA256WithRSA")
+                    .build();
         } catch (Exception e) {
             throw new RuntimeException("Error creating X509v1Certificate.", e);
         }
     }
 
-    /**
-     * Creates the content signer for generation of Version 1
-     * {@link java.security.cert.X509Certificate}.
-     *
-     * @param privateKey the private key
-     * @return the content signer
-     */
-    private static ContentSigner createSigner(PrivateKey privateKey) {
-        try {
-            AlgorithmIdentifier sigAlgId = new DefaultSignatureAlgorithmIdentifierFinder()
-                    .find("SHA256WithRSAEncryption");
-            AlgorithmIdentifier digAlgId = new DefaultDigestAlgorithmIdentifierFinder()
-                    .find(sigAlgId);
-
-            return new BcRSAContentSignerBuilder(sigAlgId, digAlgId)
-                    .build(PrivateKeyFactory.createKey(privateKey.getEncoded()));
-        } catch (Exception e) {
-            throw new RuntimeException("Could not create content signer.", e);
-        }
-    }
 }
