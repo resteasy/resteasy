@@ -14,10 +14,6 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 public final class DerUtils {
-    static {
-        BouncyIntegration.init();
-    }
-
     private DerUtils() {
     }
 
