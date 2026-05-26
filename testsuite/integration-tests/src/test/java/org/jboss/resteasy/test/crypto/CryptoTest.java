@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
-import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
 
@@ -83,9 +82,9 @@ public class CryptoTest {
     public static Archive<?> deploy() throws IOException {
         WebArchive war = TestUtil.prepareArchive(CryptoTest.class.getSimpleName());
         try {
-            BouncyCastleProvider bouncyCastleProvider = new BouncyCastleProvider();
-            Security.addProvider(bouncyCastleProvider);
-            KeyPair keyPair = KeyPairGenerator.getInstance("RSA", "BC").generateKeyPair();
+            //            BouncyCastleProvider bouncyCastleProvider = new BouncyCastleProvider();
+            //            Security.addProvider(bouncyCastleProvider);
+            KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
             privateKey = keyPair.getPrivate();
             cert = KeyTools.generateTestCertificate(keyPair);
             String privateKeyString = toString(privateKey);

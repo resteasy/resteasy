@@ -17,9 +17,6 @@ import org.wildfly.security.x500.cert.X509CertificateBuilder;
  * @version $Revision: 2 $
  */
 public class KeyTools {
-    static {
-        BouncyIntegration.init();
-    }
 
     /**
      * Generate version 1 self signed {@link java.security.cert.X509Certificate}
@@ -71,7 +68,7 @@ public class KeyTools {
                     .setNotValidAfter(ZonedDateTime.now().plusSeconds(10))
                     .setPublicKey(caKeyPair.getPublic())
                     .setSigningKey(caKeyPair.getPrivate())
-                    .setSignatureAlgorithmName("SHA256WithRSA")
+                    .setSignatureAlgorithmName("SHA256withRSA")
                     .build();
         } catch (Exception e) {
             throw new RuntimeException("Error creating X509v1Certificate.", e);
