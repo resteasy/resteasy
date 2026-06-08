@@ -29,6 +29,12 @@ updates:
           - "jakarta.json*"
           - "org.eclipse.parsson*"
           - "org.eclipse:yasson*"
+      # Allow bouncy castle to upgrade the minor versions
+      bouncy-castle-dependencies:
+        patterns:
+          - "org.bouncycastle*"
+        update-types:
+          - "minor"
     ignore:
       - dependency-name: 'jakarta.el:jakarta.el-api'
         update-types: ['version-update:semver-major', 'version-update:semver-minor']
