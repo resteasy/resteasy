@@ -252,7 +252,9 @@ public class ResourceBuilder {
 
             if ((queryParam = findAnnotation(annotations, QueryParam.class)) != null) {
                 parameter.paramType = Parameter.ParamType.QUERY_PARAM;
-                parameter.paramName = queryParam.value();
+                if (queryParam.value() != null && queryParam.value().length() > 0) {
+                    parameter.paramName = queryParam.value();
+                }
             } else if ((queryParam2 = findAnnotation(annotations,
                     org.jboss.resteasy.annotations.jaxrs.QueryParam.class)) != null) {
                 parameter.paramType = Parameter.ParamType.QUERY_PARAM;
@@ -264,7 +266,9 @@ public class ResourceBuilder {
                 parameter.paramName = ""; // TODO query.prefix();
             } else if ((header = findAnnotation(annotations, HeaderParam.class)) != null) {
                 parameter.paramType = Parameter.ParamType.HEADER_PARAM;
-                parameter.paramName = header.value();
+                if (header.value() != null && header.value().length() > 0) {
+                    parameter.paramName = header.value();
+                }
             } else if ((header2 = findAnnotation(annotations,
                     org.jboss.resteasy.annotations.jaxrs.HeaderParam.class)) != null) {
                 parameter.paramType = Parameter.ParamType.HEADER_PARAM;
@@ -273,7 +277,9 @@ public class ResourceBuilder {
                 }
             } else if ((formParam = findAnnotation(annotations, FormParam.class)) != null) {
                 parameter.paramType = Parameter.ParamType.FORM_PARAM;
-                parameter.paramName = formParam.value();
+                if (formParam.value() != null && formParam.value().length() > 0) {
+                    parameter.paramName = formParam.value();
+                }
             } else if ((formParam2 = findAnnotation(annotations,
                     org.jboss.resteasy.annotations.jaxrs.FormParam.class)) != null) {
                 parameter.paramType = Parameter.ParamType.FORM_PARAM;
@@ -282,7 +288,9 @@ public class ResourceBuilder {
                 }
             } else if ((cookie = findAnnotation(annotations, CookieParam.class)) != null) {
                 parameter.paramType = Parameter.ParamType.COOKIE_PARAM;
-                parameter.paramName = cookie.value();
+                if (cookie.value() != null && cookie.value().length() > 0) {
+                    parameter.paramName = cookie.value();
+                }
             } else if ((cookie2 = findAnnotation(annotations,
                     org.jboss.resteasy.annotations.jaxrs.CookieParam.class)) != null) {
                 parameter.paramType = Parameter.ParamType.COOKIE_PARAM;
@@ -291,7 +299,9 @@ public class ResourceBuilder {
                 }
             } else if ((uriParam = findAnnotation(annotations, PathParam.class)) != null) {
                 parameter.paramType = Parameter.ParamType.PATH_PARAM;
-                parameter.paramName = uriParam.value();
+                if (uriParam.value() != null && uriParam.value().length() > 0) {
+                    parameter.paramName = uriParam.value();
+                }
             } else if ((uriParam2 = findAnnotation(annotations,
                     org.jboss.resteasy.annotations.jaxrs.PathParam.class)) != null) {
                 parameter.paramType = Parameter.ParamType.PATH_PARAM;
@@ -305,7 +315,9 @@ public class ResourceBuilder {
                 parameter.paramType = Parameter.ParamType.BEAN_PARAM;
             } else if ((matrix = findAnnotation(annotations, MatrixParam.class)) != null) {
                 parameter.paramType = Parameter.ParamType.MATRIX_PARAM;
-                parameter.paramName = matrix.value();
+                if (matrix.value() != null && matrix.value().length() > 0) {
+                    parameter.paramName = matrix.value();
+                }
             } else if ((matrix2 = findAnnotation(annotations,
                     org.jboss.resteasy.annotations.jaxrs.MatrixParam.class)) != null) {
                 parameter.paramType = Parameter.ParamType.MATRIX_PARAM;
