@@ -1,6 +1,7 @@
 package org.jboss.resteasy.jose.jwe.crypto;
 
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
@@ -254,8 +255,8 @@ class AESCBC {
 
         boolean macCheckPassed = true;
 
-        if (!org.bouncycastle.util.Arrays.constantTimeAreEqual(expectedAuthTag, authTag)) {
-            // Thwart timing attacks by delaying exception until after decryption
+        if (!MessageDigest.isEqual(expectedAuthTag, authTag)) {
+            // Check whether MessageDigest.isEqual is vulnerable to timing attacks
             macCheckPassed = false;
         }
 

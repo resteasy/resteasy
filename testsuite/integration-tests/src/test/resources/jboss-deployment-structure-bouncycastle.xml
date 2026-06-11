@@ -5,6 +5,7 @@
             <module name="org.bouncycastle.bcpkix" export="true" services="export" />
             <module name="org.bouncycastle.bcprov" export="true" services="export" />
             <module name="org.bouncycastle.bcmail" export="true" services="export" />
+            <module name="org.wildfly.security.elytron" export="true" services="export" />
         </dependencies>
     </deployment>
 </jboss-deployment-structure>

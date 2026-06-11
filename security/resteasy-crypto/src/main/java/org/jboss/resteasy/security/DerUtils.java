@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.InputStream;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.CertificateFactory;
@@ -21,9 +20,6 @@ import java.security.spec.X509EncodedKeySpec;
  * @version $Revision: 1 $
  */
 public class DerUtils {
-    static {
-        BouncyIntegration.init();
-    }
 
     @Deprecated(forRemoval = true, since = "6.2")
     public static PrivateKey decodePrivateKey(InputStream is)
@@ -35,14 +31,14 @@ public class DerUtils {
         dis.close();
 
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
-        KeyFactory kf = KeyFactory.getInstance("RSA", "BC");
+        KeyFactory kf = KeyFactory.getInstance("RSA");
         return kf.generatePrivate(spec);
     }
 
     public static PublicKey decodePublicKey(byte[] der)
-            throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
         X509EncodedKeySpec spec = new X509EncodedKeySpec(der);
-        KeyFactory kf = KeyFactory.getInstance("RSA", "BC");
+        KeyFactory kf = KeyFactory.getInstance("RSA");
         return kf.generatePublic(spec);
     }
 
@@ -54,9 +50,9 @@ public class DerUtils {
     }
 
     public static PrivateKey decodePrivateKey(byte[] der)
-            throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(der);
-        KeyFactory kf = KeyFactory.getInstance("RSA", "BC");
+        KeyFactory kf = KeyFactory.getInstance("RSA");
         return kf.generatePrivate(spec);
     }
 }
