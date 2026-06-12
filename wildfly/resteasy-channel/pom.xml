@@ -38,7 +38,7 @@
     <properties>
         <generated.manifest.file>${project.build.directory}/resteasy-${channel.stream.version}-${project.version}-manifest.yaml</generated.manifest.file>
         <!-- Plugin versions -->
-        <version.org.wildfly.wildfly-channel-maven-plugin>1.0.32</version.org.wildfly.wildfly-channel-maven-plugin>
+        <version.org.wildfly.wildfly-channel-maven-plugin>1.0.33</version.org.wildfly.wildfly-channel-maven-plugin>
     </properties>
 
     <dependencyManagement>
