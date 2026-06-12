@@ -126,12 +126,6 @@ public class JsonMergePatchParameterTest {
         // Apply patch using JsonMergePatch parameter
         Response response = patchStudentWithJsonMergePatch(id, patchJson.toString(), DEPLOYMENT_NAME);
 
-        // Print error details if not successful
-        if (response.getStatus() != 200) {
-            System.out.println("Response status: " + response.getStatus());
-            System.out.println("Response body: " + response.readEntity(String.class));
-        }
-
         Assertions.assertEquals(200, response.getStatus());
 
         Student patchedStudent = response.readEntity(Student.class);
