@@ -28,23 +28,16 @@ public class FormInjector implements ValueInjector {
         this.type = type;
         Constructor<?> constructor = null;
 
-        // Debug: Log class being processed
-        System.out.println("=== FormInjector for: " + type.getName() + " ===");
-
         // Check if this is a Record or has an annotated constructor for constructor injection
         constructor = findInjectableConstructor(type);
 
         if (constructor != null) {
             // Use constructor injection for Records and immutable classes
-            System.out.println("✓ Using CONSTRUCTOR injection");
-            System.out.println("  Constructor: " + constructor);
-            System.out.println("  Parameters: " + constructor.getParameterCount());
             useConstructorInjection = true;
             constructorInjector = factory.getInjectorFactory().createConstructor(constructor, factory);
             propertyInjector = null;
         } else {
             // Fall back to no-arg constructor + property injection for mutable classes
-            System.out.println("✓ Using PROPERTY injection (traditional)");
             useConstructorInjection = false;
             try {
                 constructor = type.getDeclaredConstructor();
@@ -64,11 +57,8 @@ public class FormInjector implements ValueInjector {
      * 3. null (fall back to no-arg constructor + property injection)
      */
     private Constructor<?> findInjectableConstructor(Class<?> clazz) {
-        System.out.println("  Checking if Record: " + clazz.getSimpleName());
-
         // Check if this is a Record
         if (clazz.isRecord()) {
-            System.out.println("  ✓ IS A RECORD!");
             // For Records, use the canonical constructor
             Constructor<?>[] constructors = clazz.getDeclaredConstructors();
             if (constructors.length > 0) {
@@ -79,12 +69,9 @@ public class FormInjector implements ValueInjector {
                         canonical = c;
                     }
                 }
-                System.out.println("  Found canonical constructor with " + canonical.getParameterCount() + " parameters");
                 canonical.setAccessible(true);
                 return canonical;
             }
-        } else {
-            System.out.println("  Not a Record, checking for annotated constructors...");
         }
 
         // Check for constructors with JAX-RS parameter annotations
@@ -104,13 +91,11 @@ public class FormInjector implements ValueInjector {
             }
 
             if (hasParamAnnotations) {
-                System.out.println("  ✓ Found annotated constructor with " + constructor.getParameterCount() + " parameters");
                 constructor.setAccessible(true);
                 return constructor;
             }
         }
 
-        System.out.println("  No injectable constructor found, will use property injection");
         return null; // No injectable constructor found
     }
 
@@ -142,11 +127,7 @@ public class FormInjector implements ValueInjector {
         // If using constructor injection only (Records/immutable classes),
         // construct with request/response for parameter injection
         if (useConstructorInjection) {
-            System.out.println("→ Injecting via constructor for: " + type.getSimpleName());
-            Object result = constructorInjector.construct(request, response, unwrapAsync);
-            System.out.println(
-                    "← Constructor injection complete: " + (result != null ? result.getClass().getSimpleName() : "null"));
-            return result;
+            return constructorInjector.construct(request, response, unwrapAsync);
         }
 
         // Otherwise, use no-arg constructor and perform property injection for mutable classes
