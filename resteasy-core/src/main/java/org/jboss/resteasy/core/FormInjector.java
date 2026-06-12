@@ -66,8 +66,8 @@ public class FormInjector implements ValueInjector {
     private Constructor<?> findInjectableConstructor(Class<?> clazz) {
         System.out.println("  Checking if Record: " + clazz.getSimpleName());
 
-        // Check if this is a Record (Java 16+)
-        if (isRecord(clazz)) {
+        // Check if this is a Record
+        if (clazz.isRecord()) {
             System.out.println("  ✓ IS A RECORD!");
             // For Records, use the canonical constructor
             Constructor<?>[] constructors = clazz.getDeclaredConstructors();
@@ -112,21 +112,6 @@ public class FormInjector implements ValueInjector {
 
         System.out.println("  No injectable constructor found, will use property injection");
         return null; // No injectable constructor found
-    }
-
-    /**
-     * Check if the class is a Record (Java 16+).
-     * Uses reflection to avoid compilation issues on older Java versions.
-     */
-    private boolean isRecord(Class<?> clazz) {
-        try {
-            // Use reflection to call Class.isRecord() if available (Java 16+)
-            java.lang.reflect.Method isRecordMethod = Class.class.getMethod("isRecord");
-            return (Boolean) isRecordMethod.invoke(clazz);
-        } catch (Exception e) {
-            // Method doesn't exist (Java < 16) or other error
-            return false;
-        }
     }
 
     /**
