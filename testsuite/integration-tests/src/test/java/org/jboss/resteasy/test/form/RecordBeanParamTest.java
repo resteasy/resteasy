@@ -63,8 +63,7 @@ public class RecordBeanParamTest {
      */
     @Test
     public void testRecordWithFormParam() throws Exception {
-        ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
-        try {
+        try (ResteasyClient client = (ResteasyClient) ClientBuilder.newClient()) {
             Form form = new Form()
                     .param("name", "John Doe")
                     .param("age", "30")
@@ -77,8 +76,6 @@ public class RecordBeanParamTest {
             Assertions.assertEquals(200, response.getStatus());
             String result = response.readEntity(String.class);
             Assertions.assertEquals("John Doe:30:john@example.com", result);
-        } finally {
-            client.close();
         }
     }
 
@@ -88,8 +85,7 @@ public class RecordBeanParamTest {
      */
     @Test
     public void testRecordWithMixedParams() throws Exception {
-        ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
-        try {
+        try (ResteasyClient client = (ResteasyClient) ClientBuilder.newClient()) {
             Form form = new Form()
                     .param("name", "Jane Smith")
                     .param("age", "25");
@@ -102,8 +98,6 @@ public class RecordBeanParamTest {
             Assertions.assertEquals(200, response.getStatus());
             String result = response.readEntity(String.class);
             Assertions.assertEquals("Jane Smith:25:USA:TestClient", result);
-        } finally {
-            client.close();
         }
     }
 
@@ -113,8 +107,7 @@ public class RecordBeanParamTest {
      */
     @Test
     public void testImmutableClassWithConstructorInjection() throws Exception {
-        ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
-        try {
+        try (ResteasyClient client = (ResteasyClient) ClientBuilder.newClient()) {
             Form form = new Form()
                     .param("username", "testuser")
                     .param("password", "secret123");
@@ -126,8 +119,6 @@ public class RecordBeanParamTest {
             Assertions.assertEquals(200, response.getStatus());
             String result = response.readEntity(String.class);
             Assertions.assertEquals("testuser:secret123", result);
-        } finally {
-            client.close();
         }
     }
 
@@ -137,8 +128,7 @@ public class RecordBeanParamTest {
      */
     @Test
     public void testRecordWithDefaultValues() throws Exception {
-        ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
-        try {
+        try (ResteasyClient client = (ResteasyClient) ClientBuilder.newClient()) {
             Form form = new Form()
                     .param("name", "Test User");
             // age is not provided, should use default
@@ -150,8 +140,6 @@ public class RecordBeanParamTest {
             Assertions.assertEquals(200, response.getStatus());
             String result = response.readEntity(String.class);
             Assertions.assertEquals("Test User:18", result);
-        } finally {
-            client.close();
         }
     }
 
@@ -161,8 +149,7 @@ public class RecordBeanParamTest {
      */
     @Test
     public void testRecordWithNullValues() throws Exception {
-        ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
-        try {
+        try (ResteasyClient client = (ResteasyClient) ClientBuilder.newClient()) {
             Form form = new Form()
                     .param("name", "Test User");
             // email is not provided, should be null
@@ -174,8 +161,6 @@ public class RecordBeanParamTest {
             Assertions.assertEquals(200, response.getStatus());
             String result = response.readEntity(String.class);
             Assertions.assertEquals("Test User:null", result);
-        } finally {
-            client.close();
         }
     }
 
@@ -185,8 +170,7 @@ public class RecordBeanParamTest {
      */
     @Test
     public void testRecordWithPrimitives() throws Exception {
-        ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
-        try {
+        try (ResteasyClient client = (ResteasyClient) ClientBuilder.newClient()) {
             Form form = new Form()
                     .param("count", "42")
                     .param("active", "true")
@@ -199,8 +183,6 @@ public class RecordBeanParamTest {
             Assertions.assertEquals(200, response.getStatus());
             String result = response.readEntity(String.class);
             Assertions.assertEquals("42:true:98.5", result);
-        } finally {
-            client.close();
         }
     }
 
@@ -213,8 +195,7 @@ public class RecordBeanParamTest {
      */
     @Test
     public void testMutableClassPropertyInjection() throws Exception {
-        ResteasyClient client = (ResteasyClient) ClientBuilder.newClient();
-        try {
+        try (ResteasyClient client = (ResteasyClient) ClientBuilder.newClient()) {
             Form form = new Form()
                     .param("name", "Alice")
                     .param("age", "25")
@@ -227,8 +208,6 @@ public class RecordBeanParamTest {
             Assertions.assertEquals(200, response.getStatus());
             String result = response.readEntity(String.class);
             Assertions.assertEquals("Alice:25:alice@example.com", result);
-        } finally {
-            client.close();
         }
     }
 
