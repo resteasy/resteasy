@@ -1,3 +1,7 @@
+/*
+ * Copyright The RESTEasy Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
 package org.jboss.resteasy.core;
 
 import java.lang.annotation.Annotation;
