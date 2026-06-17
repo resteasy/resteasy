@@ -89,7 +89,7 @@ public class DisabledProvidersTest {
         return createDeployment("_disabled_application_class_providers", DisabledProvidersApplication.class)
                 .addAsWebInfResource(TestUtil.createWebXml(null, null, Map.of(
                         "resteasy.disable.providers",
-                        "org.jboss.resteasy.plugins.providers.StringTextStar,org.jboss.resteasy.test.providers.disabled.resources.SimpleTextReaderWriter")),
+                        "org.jboss.resteasy.plugins.providers.StringTextStar,org.jboss.resteasy.plugins.providers.jsonb.JsonBindingProvider,org.jboss.resteasy.test.providers.disabled.resources.SimpleTextReaderWriter")),
                         "web.xml");
     }
 
