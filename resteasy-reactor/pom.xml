@@ -53,6 +53,19 @@
     </dependency>
   </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>
+                        --add-opens org.jboss.resteasy.reactor/org.jboss.resteasy.reactor.proxyframework=org.jboss.resteasy.core
+                    </argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
    <profiles>
         <profile>
             <id>i18n</id>

@@ -35,11 +35,6 @@
             <artifactId>jakarta.interceptor-api</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
-        </dependency>
-
         <!-- This is optional and will work at runtime with or without EJB being present -->
         <dependency>
             <groupId>jakarta.ejb</groupId>
@@ -68,6 +63,13 @@
             <artifactId>jboss-logging-annotations</artifactId>
             <!-- This is a compile time only requirement -->
             <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- We use reflection to access weld if it's available. This is optional though. -->
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-core-impl</artifactId>
             <optional>true</optional>
         </dependency>
 

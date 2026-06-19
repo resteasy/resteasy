@@ -241,6 +241,12 @@
                                 <version>${version.org.jboss.logging.jboss-logging-processor}</version>
                             </path>
                         </annotationProcessorPaths>
+                        <compilerArgs>
+                            <!-- Do not add the @Generated annotation to the generated logging source files to avoid
+                                 requiring the java.compiler module dependency.
+                             -->
+                            <arg>-Aorg.jboss.logging.tools.addGeneratedAnnotation=false</arg>
+                        </compilerArgs>
                     </configuration>
                 </plugin>
                 <plugin>

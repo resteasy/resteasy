@@ -121,6 +121,14 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <argLine>
+                        --add-opens org.jboss.resteasy.links/org.jboss.resteasy.links.test=org.jboss.resteasy.core,com.fasterxml.jackson.databind,jakarta.el,jakarta.xml.bind
+                        --add-opens org.jboss.resteasy.links/org.jboss.resteasy.links.test.el=org.jboss.resteasy.core,com.fasterxml.jackson.databind
+                        --add-reads org.jboss.resteasy.links=org.jboss.resteasy.client
+                        --add-reads org.jboss.resteasy.links=org.jboss.resteasy.client.api
+                        --add-reads org.jboss.resteasy.links=com.fasterxml.jackson.databind
+                        --add-reads org.jboss.resteasy.links=com.fasterxml.jackson.module.jakarta.xmlbind
+                    </argLine>
                     <systemPropertyVariables>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <resteasy.original.webapplicationexception.behavior>true</resteasy.original.webapplicationexception.behavior>
