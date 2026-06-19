@@ -133,11 +133,6 @@
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>jakarta.annotation</groupId>
-            <artifactId>jakarta.annotation-api</artifactId>
-            <scope>test</scope>
-        </dependency>
         <!-- Jakarta JSON Processing implementation -->
         <dependency>
             <groupId>org.eclipse.parsson</groupId>
@@ -149,7 +144,17 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <configuration>
+                            <useModulePath>false</useModulePath>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <dependenciesToScan>${project.groupId}:resteasy-embedded-server-tests</dependenciesToScan>
@@ -159,6 +164,7 @@
                     <excludes>
                         <exclude>**/NonCDIValidatorFactoryTest</exclude>
                     </excludes>
+                    <useModulePath>false</useModulePath>
                 </configuration>
             </plugin>
         </plugins>

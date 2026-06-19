@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.undertow;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.jboss.resteasy.test.undertow.TestSupport.generateURL;
 
 import java.util.HashSet;
 import java.util.Set;

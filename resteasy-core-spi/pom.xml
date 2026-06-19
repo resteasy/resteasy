@@ -22,6 +22,10 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+        </dependency>
         <!--
            Needed for jakarta.annotation.security.*
            should this dependency be <scope>provided</scope> and only used if
@@ -87,6 +91,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <!-- We need to load the TestConfigurationFactory, but we can't easily provide the "provides"
+                         directive for tests.
+                      -->
+                    <useModulePath>false</useModulePath>
                     <systemPropertyVariables>
                         <test.config.prop>sys-prop-value</test.config.prop>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>

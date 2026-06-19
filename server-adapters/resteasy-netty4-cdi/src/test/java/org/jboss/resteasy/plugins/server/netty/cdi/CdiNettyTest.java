@@ -7,10 +7,8 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit5.ArquillianExtension;
-import org.jboss.jandex.Index;
 import org.jboss.resteasy.cdi.CdiInjectorFactory;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
-import org.jboss.resteasy.core.scanner.ResourceScanner;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -52,10 +50,9 @@ public class CdiNettyTest {
             port = (int) ((new Random().nextDouble() * 8000) + 1000);
         CdiNettyJaxrsServer netty = new CdiNettyJaxrsServer();
         ResteasyDeployment rd = new ResteasyDeploymentImpl();
-        final ResourceScanner scanner = ResourceScanner.of(Index.of(EchoResource.class, DefaultExceptionMapper.class));
-        rd.getResourceClasses().addAll(scanner.getResources());
+        rd.getResourceClasses().add(EchoResource.class.getName());
         rd.setInjectorFactoryClass(CdiInjectorFactory.class.getName());
-        rd.getProviderClasses().addAll(scanner.getProviders());
+        rd.getProviderClasses().add(DefaultExceptionMapper.class.getName());
         netty.setDeployment(rd);
         netty.setPort(port);
         netty.setRootResourcePath("/api");

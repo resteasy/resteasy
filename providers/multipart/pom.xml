@@ -114,6 +114,11 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <!-- Required for tests -->
+                    <argLine>
+                        --add-reads org.jboss.resteasy.plugins.providers.multipart=org.jboss.resteasy.client
+                        --add-reads org.jboss.resteasy.plugins.providers.multipart=org.jboss.resteasy.client.api
+                    </argLine>
                     <systemPropertyVariables>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                     </systemPropertyVariables>
