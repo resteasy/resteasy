@@ -20,7 +20,11 @@
 package org.jboss.resteasy.plugins.server.embedded;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Parameter;
 import java.util.Optional;
+import java.util.function.Function;
 
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.SeBootstrap;
@@ -126,16 +130,26 @@ public class EmbeddedServers {
      * @return the embedded server found
      */
     public static EmbeddedServer findServer() {
-        return findServer(null);
+        return findServer(SeBootstrap.Configuration.builder().build());
     }
 
     /**
      * Attempts to find the server first in the {@linkplain SeBootstrap.Configuration configuration}, then via a
      * {@linkplain PriorityServiceLoader service loader}.
+     * <p>
+     * The service loader will attempt to instantiate {@link EmbeddedServer} implementations using the following
+     * constructor preference order:
+     * </p>
+     * <ol>
+     * <li>A public constructor accepting {@link SeBootstrap.Configuration} - the provided configuration is passed</li>
+     * <li>A public no-argument constructor - used as fallback</li>
+     * </ol>
      *
-     * @param configuration the configuration to attempt to locate the server in
+     * @param configuration the configuration to attempt to locate the server in and pass to the constructor
      *
      * @return the embedded server found
+     *
+     * @throws IllegalStateException if no {@link EmbeddedServer} implementation is found
      */
     public static EmbeddedServer findServer(final SeBootstrap.Configuration configuration) {
         if (configuration != null && configuration.hasProperty(ConfigurationOption.EMBEDDED_SERVER.key())) {
@@ -146,7 +160,8 @@ public class EmbeddedServers {
             LogMessages.LOGGER.invalidPropertyType(instance, ConfigurationOption.EMBEDDED_SERVER.key(),
                     EmbeddedServer.class.getName());
         }
-        final Optional<EmbeddedServer> found = PriorityServiceLoader.load(EmbeddedServer.class)
+        final Optional<EmbeddedServer> found = PriorityServiceLoader
+                .load(EmbeddedServer.class, new ConstructorFunction(configuration))
                 .first();
         return found.orElseThrow(() -> Messages.MESSAGES.noImplementationFound(EmbeddedServer.class.getName()));
     }
@@ -160,5 +175,41 @@ public class EmbeddedServers {
             return findAnnotation(annotation, type.getSuperclass());
         }
         return result;
+    }
+
+    private static class ConstructorFunction implements Function<Class<? extends EmbeddedServer>, EmbeddedServer> {
+        private final SeBootstrap.Configuration configuration;
+
+        private ConstructorFunction(final SeBootstrap.Configuration configuration) {
+            this.configuration = configuration;
+        }
+
+        @Override
+        public EmbeddedServer apply(final Class<? extends EmbeddedServer> type) {
+            final Constructor<?>[] constructors = type.getConstructors();
+            Constructor<?> noArgConstructor = null;
+            for (Constructor<?> constructor : constructors) {
+                final Parameter[] parameters = constructor.getParameters();
+                if (configuration != null && parameters.length == 1) {
+                    if (parameters[0].getType().isAssignableFrom(SeBootstrap.Configuration.class)) {
+                        try {
+                            return (EmbeddedServer) constructor.newInstance(configuration);
+                        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                            throw Messages.MESSAGES.failedToConstructClass(e, EmbeddedServer.class);
+                        }
+                    }
+                } else if (parameters.length == 0) {
+                    noArgConstructor = constructor;
+                }
+            }
+            if (noArgConstructor != null) {
+                try {
+                    return (EmbeddedServer) noArgConstructor.newInstance();
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                    throw Messages.MESSAGES.failedToConstructClass(e, EmbeddedServer.class);
+                }
+            }
+            throw Messages.MESSAGES.unableToFindConstructor("SeBootstrap.Configuration or no-arg", type.getName());
+        }
     }
 }
