@@ -1,8 +1,10 @@
 package dev.resteasy.embedded.server;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -38,6 +40,7 @@ import io.undertow.servlet.util.ImmediateInstanceFactory;
  */
 @Priority(100)
 public class UndertowCdiEmbeddedServer implements EmbeddedServer {
+    private static final AtomicLong COUNTER = new AtomicLong();
     private final ServletContainer servletContainer;
     private final PathHandler rootHandler;
     private final CdiResteasyDeployment deployment;
@@ -45,9 +48,31 @@ public class UndertowCdiEmbeddedServer implements EmbeddedServer {
     private volatile Runnable undeployAction;
 
     public UndertowCdiEmbeddedServer() {
+        this(null);
+    }
+
+    /**
+     * Creates a new embedded server with an optional configuration.
+     * <p>
+     * The configuration is used to create a unique name for the Weld CDI container. If the configuration
+     * is not {@code null}, the name is derived from {@link Configuration#host()} and {@link Configuration#port()}.
+     * Otherwise, a unique counter-based name is generated.
+     * </p>
+     *
+     * @param configuration the configuration used to derive the container name, may be {@code null}
+     * @since 7.0.3
+     */
+    public UndertowCdiEmbeddedServer(final Configuration configuration) {
         servletContainer = ServletContainer.Factory.newInstance();
         rootHandler = new PathHandler();
-        deployment = new CdiResteasyDeployment();
+        // Determine the context path
+        final String deploymentName;
+        if (configuration == null) {
+            deploymentName = String.format("resteasy-undertow-cdi-%d", COUNTER.incrementAndGet());
+        } else {
+            deploymentName = String.format("resteasy-undertow-cdi-%s-%d", configuration.host(), configuration.port());
+        }
+        deployment = new CdiResteasyDeployment(deploymentName);
     }
 
     @Override
@@ -65,7 +90,7 @@ public class UndertowCdiEmbeddedServer implements EmbeddedServer {
                 break;
             case OPTIONAL:
                 builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.REQUESTED);
-                return;
+                break;
             case MANDATORY:
                 builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, SslClientAuthMode.REQUIRED);
                 break;
@@ -198,9 +223,11 @@ public class UndertowCdiEmbeddedServer implements EmbeddedServer {
                 // Set up deployment specific info
                 .setClassLoader(deployment.getApplication().getClass().getClassLoader())
                 .setContextPath(contextPath)
-                .setDeploymentName("RESTEasy-" + contextPath)
+                .setDeploymentName(deployment.getDeploymentName())
                 // Set up the RESTEasy Servlet
                 .addServletContextAttribute(ResteasyDeployment.class.getName(), deployment)
+                // Add the bean manager
+                .addServletContextAttribute(BeanManager.class.getName(), container.getBeanManager())
                 .addServlet(resteasyServlet)
                 // Configure the Weld listener
                 .addListener(Servlets.listener(Listener.class, new ImmediateInstanceFactory<>(Listener.using(container))));
