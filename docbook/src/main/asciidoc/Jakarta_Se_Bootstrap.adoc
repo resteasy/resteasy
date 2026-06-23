@@ -86,11 +86,66 @@ public static void main(final String[] args) throws Exception {
 === Configuration Options
 
 Configuration options are represented by the `org.jboss.resteasy.core.se.ConfigurationOption` enum.
-This enum includes all the supported configuration options. 
+This enum includes all the supported configuration options.
 [source,java]
 ----
 final SeBootstrap.Configuration configuration = SeBootstrap.Configuration.builder()
         .port(8443)
         .protocol("HTTPS")
         .property(ConfigurationOption.JANDEX_CLASS_PATH_FILTER.key(), Index.of(ItemResource.class, OrderResource.class));
+----
+
+[[_sebootstrap_custom_servers]]
+=== Custom EmbeddedServer Implementations
+
+RESTEasy uses a ServiceLoader to discover `EmbeddedServer` implementations. Custom embedded server implementations
+can be created by implementing the `org.jboss.resteasy.plugins.server.embedded.EmbeddedServer` interface and
+registering it via the ServiceLoader mechanism.
+
+==== Constructor Requirements
+
+Custom `EmbeddedServer` implementations can provide one or both of the following constructors:
+
+* A constructor accepting `jakarta.ws.rs.SeBootstrap.Configuration` - allows access to configuration during initialization
+* A no-argument constructor - used as a fallback if the Configuration constructor is not available
+
+The ServiceLoader will prefer the Configuration constructor when available, allowing implementations to use configuration
+information (such as host and port) during object construction.
+
+Example:
+[source,java]
+----
+public class CustomEmbeddedServer implements EmbeddedServer {
+
+    // Preferred: Constructor with Configuration
+    public CustomEmbeddedServer(SeBootstrap.Configuration configuration) {
+        // Can use configuration.host(), configuration.port(), etc.
+    }
+
+    // Fallback: No-argument constructor
+    public CustomEmbeddedServer() {
+        // Default initialization
+    }
+
+    @Override
+    public void start(Configuration configuration) {
+        // Start the server
+    }
+
+    @Override
+    public void stop() {
+        // Stop the server
+    }
+
+    @Override
+    public ResteasyDeployment getDeployment() {
+        // Return the deployment
+    }
+}
+----
+
+Register the implementation in `META-INF/services/org.jboss.resteasy.plugins.server.embedded.EmbeddedServer`:
+[source]
+----
+com.example.CustomEmbeddedServer
 ----

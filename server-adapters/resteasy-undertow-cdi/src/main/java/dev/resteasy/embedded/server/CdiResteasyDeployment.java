@@ -37,12 +37,14 @@ import org.jboss.weld.environment.se.WeldContainer;
 class CdiResteasyDeployment extends DelegateResteasyDeployment implements ResteasyDeployment {
     private Weld weld;
     private final Object lock = new Object();
+    private final String containerName;
     private WeldContainer container;
     private ResteasyDeployment delegate;
 
-    CdiResteasyDeployment() {
+    CdiResteasyDeployment(final String containerName) {
         super(null);
         delegate = new ResteasyDeploymentImpl();
+        this.containerName = containerName;
     }
 
     @Override
@@ -77,7 +79,7 @@ class CdiResteasyDeployment extends DelegateResteasyDeployment implements Restea
     ContainerInstance getContainer() {
         synchronized (lock) {
             if (weld == null) {
-                weld = new Weld("RESTEasy SE")
+                weld = new Weld(containerName)
                         // Register these as bean defining annotations
                         .addBeanDefiningAnnotations(Path.class, Provider.class, ApplicationPath.class)
                         // Do not register the shutdown hook as stopping the server may execute in a separate shutdown hook.
@@ -88,6 +90,10 @@ class CdiResteasyDeployment extends DelegateResteasyDeployment implements Restea
             }
         }
         return container;
+    }
+
+    String getDeploymentName() {
+        return containerName;
     }
 
     private static ResteasyDeployment newDelegate(final ResteasyDeployment old) {
