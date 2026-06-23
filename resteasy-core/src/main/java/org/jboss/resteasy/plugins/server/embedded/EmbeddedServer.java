@@ -25,9 +25,24 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 
 /**
  * An embedded server for serving Jakarta REST endpoints.
+ * <p>
+ * Implementations are discovered via {@link java.util.ServiceLoader}. Implementations should provide
+ * at least one of the following constructors:
+ * </p>
+ * <ul>
+ * <li>A constructor accepting {@link Configuration}, allows access to configuration during initialization</li>
+ * <li>A no-argument constructor</li>
+ * </ul>
+ * <p>
+ * When both constructors are available, the Configuration constructor will be used, with the configuration
+ * passed to {@link EmbeddedServers#findServer(Configuration)}.
+ * </p>
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  * @since 6.1
+ *
+ * @see EmbeddedServers#findServer()
+ * @see EmbeddedServers#findServer(Configuration)
  */
 public interface EmbeddedServer {
 
