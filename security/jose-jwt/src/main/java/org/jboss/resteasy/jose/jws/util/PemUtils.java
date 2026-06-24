@@ -2,15 +2,13 @@ package org.jboss.resteasy.jose.jws.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-
-import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 
 /**
  * Utility classes to extract PublicKey, PrivateKey, and X509Certificate from openssl generated PEM files
@@ -19,10 +17,6 @@ import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
  * @version $Revision: 1 $
  */
 public final class PemUtils {
-
-    static {
-        BouncyIntegration.init();
-    }
 
     private PemUtils() {
     }
@@ -110,21 +104,32 @@ public final class PemUtils {
     }
 
     private static String encode(Object obj) {
-        if (obj == null) {
+        if (obj == null)
             return null;
+
+        final byte[] encoded;
+        final String type;
+
+        if (obj instanceof PrivateKey) {
+            encoded = ((PrivateKey) obj).getEncoded();
+            type = "PRIVATE KEY";
+        } else if (obj instanceof PublicKey) {
+            encoded = ((PublicKey) obj).getEncoded();
+            type = "PUBLIC KEY";
+        } else if (obj instanceof Certificate) {
+            try {
+                encoded = ((Certificate) obj).getEncoded();
+            } catch (CertificateEncodingException e) {
+                throw new PemException(e);
+            }
+
+        } else {
+            throw new RuntimeException("Unsupported object type: " + obj.getClass());
         }
 
-        try {
-            StringWriter writer = new StringWriter();
-            JcaPEMWriter pemWriter = new JcaPEMWriter(writer);
-            pemWriter.writeObject(obj);
-            pemWriter.flush();
-            pemWriter.close();
-            String s = writer.toString();
-            return PemUtils.removeBeginEnd(s);
-        } catch (Exception e) {
-            throw new PemException(e);
-        }
+        String base64EncodedPem = java.util.Base64.getMimeEncoder(64, "\n".getBytes())
+                .encodeToString(encoded);
+        return base64EncodedPem;
     }
 
     public static byte[] pemToDer(String pem) {

@@ -17,9 +17,6 @@ import java.util.Base64;
  * @version $Revision: 1 $
  */
 public class PemUtils {
-    static {
-        BouncyIntegration.init();
-    }
 
     public static X509Certificate decodeCertificate(InputStream is) throws Exception {
         byte[] der = pemToDer(is);
