@@ -57,12 +57,44 @@ jobs:
           # Downgrade K8s since 1.25 has some problems with https
           kubernetes version: 'v1.28.1'
           github token: ${{ secrets.GITHUB_TOKEN }}
-          start args: "--memory='4gb' --cpus='2'"
+          start args: "--memory='4gb' --cpus='2' --insecure-registry=10.0.0.0/8"
 
-      - name: Enable minikube registry
+      - name: Setup Local Docker Registry
         run: |
-          minikube addons enable registry
-          kubectl port-forward --namespace kube-system service/registry 5000:80 &
+          # Remove any existing registry container to ensure a clean state
+          docker rm -f local-registry || true
+          
+          # Start a new registry container with storage deletion enabled
+          docker run -d -p 5000:5000 --restart=always --name local-registry \
+            -e REGISTRY_STORAGE_DELETE_ENABLED=true \
+            registry:2
+          
+          # Connect the registry to minikube's network
+          docker network disconnect bridge local-registry || true
+          docker network connect minikube local-registry || true
+          
+          # Get the registry's IP on the minikube network
+          REGISTRY_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' local-registry | head -n1)
+          echo "Registry IP: $REGISTRY_IP"
+          
+          # Configure containerd inside minikube to use the registry
+          minikube ssh "sudo mkdir -p /etc/containerd/certs.d/localhost:5000"
+          minikube ssh "echo 'server = \"http://${REGISTRY_IP}:5000\"' | sudo tee /etc/containerd/certs.d/localhost:5000/hosts.toml"
+          minikube ssh "sudo systemctl restart containerd"
+          
+          # Verify the registry is accessible from minikube
+          echo "Verifying registry accessibility from minikube..."
+          if minikube ssh "curl -f http://${REGISTRY_IP}:5000/v2/_catalog"; then
+            echo "Registry is accessible from minikube"
+          else
+            echo "ERROR: Registry is not accessible from minikube"
+            exit 1
+          fi
+          
+          # Verify the registry catalog is empty (fresh start)
+          echo "Verifying registry is empty..."
+          CATALOG=$(curl -s http://localhost:5000/v2/_catalog)
+          echo "Registry catalog: $CATALOG"
       - name: Cloud Tests - JDK ${{ matrix.java }}
         run:  |
           mvn clean install -Pcloud-tests -pl wildfly/resteasy-channel,testsuite/cloud-tests -amd -am '-Ddebug.logs'
