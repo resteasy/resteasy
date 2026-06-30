@@ -139,7 +139,6 @@
         <version.org.jacoco.plugin>0.8.15</version.org.jacoco.plugin>
         <version.org.wildfly.galleon-plugins>7.4.0.Final</version.org.wildfly.galleon-plugins>
         <version.org.wildfly.plugins.wildfly-maven-plugin>5.1.5.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
-        <version.org.wildfly.jar.plugin>12.0.0.Final</version.org.wildfly.jar.plugin>
 
         <!-- Override the checkstyle version to be compatible with Java 17, see https://checkstyle.org/#JRE_and_JDK -->
         <version.checkstyle>12.3.1</version.checkstyle>
@@ -304,11 +303,6 @@
                     <groupId>org.wildfly.plugins</groupId>
                     <artifactId>wildfly-maven-plugin</artifactId>
                     <version>${version.org.wildfly.plugins.wildfly-maven-plugin}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.wildfly.plugins</groupId>
-                    <artifactId>wildfly-jar-maven-plugin</artifactId>
-                    <version>${version.org.wildfly.jar.plugin}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
