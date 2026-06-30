@@ -30,7 +30,6 @@
     </resources>
 
     <dependencies>
-        <module name="com.ibm.async.asyncutil" />
         <module name="java.desktop" />
         <module name="java.logging" />
         <module name="java.management" />

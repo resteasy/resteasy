@@ -110,11 +110,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.ibm.async</groupId>
-            <artifactId>asyncutil</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>io.reactivex.rxjava2</groupId>
             <artifactId>rxjava</artifactId>
         </dependency>

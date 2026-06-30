@@ -12,14 +12,14 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Variant;
 import jakarta.ws.rs.core.Variant.VariantListBuilder;
 
 import org.jboss.resteasy.spi.AsyncOutputStream;
-
-import com.ibm.asyncutil.iteration.AsyncTrampoline;
 
 /**
  * A utility class to provide supporting functionality to various
@@ -145,7 +145,7 @@ public final class ProviderHelper {
      */
     public static CompletionStage<Void> writeTo(final InputStream in, final AsyncOutputStream out) {
         final byte[] buf = new byte[2048];
-        return AsyncTrampoline.asyncWhile(
+        return asyncWhile(
                 read -> read != -1,
                 read -> out.asyncWrite(buf, 0, read).thenApply(v -> asyncRead(in, buf)),
                 asyncRead(in, buf)).thenApply(v -> null);
@@ -171,5 +171,71 @@ public final class ProviderHelper {
         CompletableFuture<Void> ret = new CompletableFuture<>();
         ret.completeExceptionally(t);
         return ret;
+    }
+
+    /**
+     * Executes an asynchronous while-loop that evaluates a condition and processes iterations sequentially without
+     * blocking the calling thread.
+     * <p>
+     * This method optimizes for performance by processing synchronous completions inline using a flat, non-recursive
+     * loop layout. If an iteration completes asynchronously (e.g., waiting on network I/O), the current call stack is
+     * immediately unwound, and subsequent iterations resume on the thread that completes the asynchronous boundary.
+     * </p>
+     * <p>
+     * <strong>Threading and Context Note:</strong> Because synchronous paths execute on the initial calling thread,
+     * this utility preserves {@link ThreadLocal} contexts for all immediate/fast-path operations.
+     * </p>
+     *
+     * @param <T>       the type of the state/accumulator variable being processed through the loop
+     * @param condition a predicate evaluated before each iteration to determine if the loop should continue
+     * @param body      a function representing the loop body, accepting the current state and returning a
+     *                  {@link CompletionStage} that resolves to the next iteration's state
+     * @param initial   the starting value to pass into the first condition evaluation and loop iteration
+     *
+     * @return a {@link CompletionStage} that completes with the final state value when the {@code condition} evaluates
+     *         to {@code false}, or completes exceptionally if any iteration or condition throws an exception
+     */
+    static <T> CompletionStage<T> asyncWhile(
+            final Predicate<T> condition,
+            final Function<T, CompletionStage<T>> body,
+            final T initial) {
+
+        final CompletableFuture<T> result = new CompletableFuture<>();
+
+        // Simple mutable state tracker to wrap our variable inside the closure
+        class LoopState {
+            T current = initial;
+
+            void run() {
+                try {
+                    // If the loop handles data synchronously, this flat 'while' loop keeps it on a single stack frame.
+                    while (condition.test(current)) {
+                        final CompletionStage<T> stage = body.apply(current);
+                        final CompletableFuture<T> future = stage.toCompletableFuture();
+
+                        if (future.isDone() && !future.isCompletedExceptionally()) {
+                            // Fast Path: Data was written synchronously. Advance state, stay in while-loop.
+                            current = future.join();
+                        } else {
+                            // Slow Path: Blocked/async, safely pause and register callback.
+                            stage.thenAccept(next -> {
+                                this.current = next;
+                                run(); // Unwinds the old execution context and recurses on a completely fresh stack.
+                            }).exceptionally(ex -> {
+                                result.completeExceptionally(ex);
+                                return null;
+                            });
+                            return; // Immediately drop out of the current stack frame.
+                        }
+                    }
+                    result.complete(current);
+                } catch (Throwable t) {
+                    result.completeExceptionally(t);
+                }
+            }
+        }
+        // Kick off the loop
+        new LoopState().run();
+        return result;
     }
 }

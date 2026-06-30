@@ -76,6 +76,10 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <dependenciesToScan>${project.groupId}:resteasy-embedded-server-tests</dependenciesToScan>
+                    <argLine>
+                        --add-opens org.jboss.resteasy.undertow/org.jboss.resteasy.test.undertow=org.jboss.resteasy.core
+                        --add-reads org.jboss.resteasy.undertow=org.jboss.resteasy.client
+                    </argLine>
                 </configuration>
             </plugin>
         </plugins>
