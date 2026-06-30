@@ -1,7 +1,5 @@
 package org.jboss.resteasy.reactor;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
-
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
@@ -17,6 +15,7 @@ import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.util.PortProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -112,5 +111,9 @@ public class ReactorTest {
         public Set<Class<?>> getClasses() {
             return Set.of(ReactorResource.class, ReactorInjector.class);
         }
+    }
+
+    private static String generateURL(final String path) {
+        return String.format("http://%s:%d%s", PortProvider.getHost(), PortProvider.getPort(), path);
     }
 }

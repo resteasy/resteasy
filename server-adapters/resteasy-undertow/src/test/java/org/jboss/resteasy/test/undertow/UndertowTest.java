@@ -18,7 +18,6 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Application;
 
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
-import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -67,7 +66,7 @@ public class UndertowTest {
     public void testApplicationPath() throws Exception {
         server.deployOldStyle(MyApp.class);
         Client client = ClientBuilder.newClient();
-        String val = client.target(TestPortProvider.generateURL("/base/test")).request().get(String.class);
+        String val = client.target(TestSupport.generateURL("/base/test")).request().get(String.class);
         Assertions.assertEquals("hello world", val);
         client.close();
     }
@@ -76,7 +75,7 @@ public class UndertowTest {
     public void testApplicationContext() throws Exception {
         server.deployOldStyle(MyApp.class, "/root");
         Client client = ClientBuilder.newClient();
-        String val = client.target(TestPortProvider.generateURL("/root/test")).request().get(String.class);
+        String val = client.target(TestSupport.generateURL("/root/test")).request().get(String.class);
         Assertions.assertEquals("hello world", val);
         client.close();
     }
@@ -89,7 +88,7 @@ public class UndertowTest {
         server.deploy(di);
 
         Client client = ClientBuilder.newClient();
-        String val = client.target(TestPortProvider.generateURL("/di/base/test")).request().get(String.class);
+        String val = client.target(TestSupport.generateURL("/di/base/test")).request().get(String.class);
         Assertions.assertEquals("hello world", val);
         client.close();
     }
@@ -106,7 +105,7 @@ public class UndertowTest {
         server.addResourcePrefixPath("/index.html", resource(new FileResourceManager(staticFile, 0L)));
         server.deploy(MyApp.class);
         Client client = ClientBuilder.newClient();
-        String val = client.target(TestPortProvider.generateURL("/index.html")).request().get(String.class);
+        String val = client.target(TestSupport.generateURL("/index.html")).request().get(String.class);
         Assertions.assertEquals(staticFileContent, val);
         client.close();
     }

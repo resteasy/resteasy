@@ -17,8 +17,6 @@ import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
-import com.ibm.asyncutil.iteration.AsyncTrampoline;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -95,7 +93,7 @@ public class FileRangeWriter implements AsyncMessageBodyWriter<FileRange> {
     private CompletionStage<Void> writeTo(FileInputStream fis, long length, AsyncOutputStream entityStream, byte[] buf) {
         if (length > 0) {
             long[] mutableLength = new long[] { length };
-            return AsyncTrampoline.asyncWhile(
+            return ProviderHelper.asyncWhile(
                     read -> read != -1,
                     read -> entityStream.asyncWrite(buf, 0, read)
                             .thenApply(v -> {

@@ -22,6 +22,11 @@
             <artifactId>resteasy-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
         <!-- jakarta.xml.bind.JAXBElement provider is required by spec -->
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
@@ -89,11 +94,6 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.annotation</groupId>
-            <artifactId>jakarta.annotation-api</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
