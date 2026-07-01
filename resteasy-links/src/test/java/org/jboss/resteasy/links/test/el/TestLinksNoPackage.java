@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 
 @RestBootstrap(TestLinksNoPackage.TestApplication.class)
 public class TestLinksNoPackage {
@@ -23,7 +24,7 @@ public class TestLinksNoPackage {
     private static BookStoreService client;
 
     @BeforeAll
-    public static void before(final ResteasyWebTarget target) {
+    public static void before(@RestResource final ResteasyWebTarget target) {
         client = target.proxy(BookStoreService.class);
         url = target.getUri().toASCIIString();
     }

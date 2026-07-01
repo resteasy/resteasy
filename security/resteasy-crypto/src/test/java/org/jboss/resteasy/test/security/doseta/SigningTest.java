@@ -10,7 +10,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Set;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -53,6 +52,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -64,7 +64,7 @@ public class SigningTest {
     public static KeyPair keys;
     public static DosetaKeyRepository repository;
     public static PrivateKey badKey;
-    @Inject
+    @RestResource
     public Client client;
 
     @Test
@@ -705,7 +705,7 @@ public class SigningTest {
     }
 
     @Test
-    public void testProxy(final ResteasyWebTarget target) throws Exception {
+    public void testProxy(@RestResource final ResteasyWebTarget target) throws Exception {
         target.property(KeyRepository.class.getName(), repository);
         SigningProxy proxy = target.proxy(SigningProxy.class);
         String output = proxy.hello();
@@ -714,7 +714,7 @@ public class SigningTest {
     }
 
     @Test
-    public void testBadSignatureProxy(final ResteasyWebTarget target) throws Exception {
+    public void testBadSignatureProxy(@RestResource final ResteasyWebTarget target) throws Exception {
         target.property(KeyRepository.class.getName(), repository);
         SigningProxy proxy = target.proxy(SigningProxy.class);
         try {

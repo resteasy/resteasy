@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 
 @RestBootstrap(TestLinksInvalidEL.TestApplication.class)
 public class TestLinksInvalidEL {
@@ -23,7 +24,7 @@ public class TestLinksInvalidEL {
     private BookStoreService client;
 
     @BeforeEach
-    public void before(ResteasyWebTarget webTarget) {
+    public void before(@RestResource ResteasyWebTarget webTarget) {
         client = webTarget.proxy(BookStoreService.class);
     }
 

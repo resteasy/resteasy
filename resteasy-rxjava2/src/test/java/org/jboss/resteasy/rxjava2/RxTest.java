@@ -7,7 +7,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -22,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RequestPath;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -38,11 +38,11 @@ public class RxTest {
         latch = new CountDownLatch(1);
     }
 
-    @Inject
+    @RestResource
     private Client client;
 
     @Test
-    public void testSingle(@RequestPath("/single") final URI uri) throws Exception {
+    public void testSingle(@RestResource @RequestPath("/single") final URI uri) throws Exception {
         Single<Response> single = client.target(uri).request().rx(SingleRxInvoker.class).get();
         single.subscribe((Response r) -> {
             value.set(r.readEntity(String.class));
@@ -53,7 +53,7 @@ public class RxTest {
     }
 
     @Test
-    public void testSingleContext(@RequestPath("/context/single") final URI uri) throws Exception {
+    public void testSingleContext(@RestResource @RequestPath("/context/single") final URI uri) throws Exception {
         Single<Response> single = client.target(uri).request().rx(SingleRxInvoker.class).get();
         single.subscribe((Response r) -> {
             value.set(r.readEntity(String.class));
@@ -64,7 +64,7 @@ public class RxTest {
     }
 
     @Test
-    public void testObservable(@RequestPath("/observable") final URI uri) throws Exception {
+    public void testObservable(@RestResource @RequestPath("/observable") final URI uri) throws Exception {
         ObservableRxInvoker invoker = client.target(uri).request().rx(ObservableRxInvoker.class);
         @SuppressWarnings("unchecked")
         Observable<String> observable = (Observable<String>) invoker.get();
@@ -78,7 +78,7 @@ public class RxTest {
     }
 
     @Test
-    public void testObservableContext(@RequestPath("/context/observable") final URI uri) throws Exception {
+    public void testObservableContext(@RestResource @RequestPath("/context/observable") final URI uri) throws Exception {
         ObservableRxInvoker invoker = ClientBuilder.newClient().target(uri).request()
                 .rx(ObservableRxInvoker.class);
         @SuppressWarnings("unchecked")
@@ -93,7 +93,7 @@ public class RxTest {
     }
 
     @Test
-    public void testFlowable(@RequestPath("/flowable") final URI uri) throws Exception {
+    public void testFlowable(@RestResource @RequestPath("/flowable") final URI uri) throws Exception {
         FlowableRxInvoker invoker = client.target(uri).request().rx(FlowableRxInvoker.class);
         @SuppressWarnings("unchecked")
         Flowable<String> flowable = (Flowable<String>) invoker.get();
@@ -107,7 +107,7 @@ public class RxTest {
     }
 
     @Test
-    public void testFlowablecontext(@RequestPath("/context/flowable") final URI uri) throws Exception {
+    public void testFlowablecontext(@RestResource @RequestPath("/context/flowable") final URI uri) throws Exception {
         FlowableRxInvoker invoker = client.target(uri).request().rx(FlowableRxInvoker.class);
         @SuppressWarnings("unchecked")
         Flowable<String> flowable = (Flowable<String>) invoker.get();
@@ -124,7 +124,7 @@ public class RxTest {
     }
 
     // @Test
-    public void testChunked(@RequestPath("/chunked") final URI uri) throws Exception {
+    public void testChunked(@RestResource @RequestPath("/chunked") final URI uri) throws Exception {
         Invocation.Builder request = client.target(uri).request();
         Response response = request.get();
         String entity = response.readEntity(String.class);
@@ -133,8 +133,8 @@ public class RxTest {
     }
 
     @Test
-    public void testInjection(@RequestPath("/injection") final URI injectionUri,
-            @RequestPath("/injection-async") final URI injectionAsyncUri) throws Exception {
+    public void testInjection(@RestResource @RequestPath("/injection") final URI injectionUri,
+            @RestResource @RequestPath("/injection-async") final URI injectionAsyncUri) throws Exception {
         Integer data = client.target(injectionUri).request().get(Integer.class);
         Assertions.assertEquals((Integer) 42, data);
 

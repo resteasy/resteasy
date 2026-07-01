@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -29,6 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RequestPath;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 
 /**
  * @tpSubChapter
@@ -39,7 +39,7 @@ import dev.resteasy.junit.extension.annotations.RestBootstrap;
 @RestBootstrap(ReaderContextTest.TestApplication.class)
 public class ReaderContextTest {
 
-    @Inject
+    @RestResource
     private Client client;
 
     /**
@@ -47,7 +47,7 @@ public class ReaderContextTest {
      * @tpSince RESTEasy 4.1.0
      */
     @Test
-    public void readerContextOnClientTest(@RequestPath("/resource/poststring") final URI uri) {
+    public void readerContextOnClientTest(@RestResource @RequestPath("/resource/poststring") final URI uri) {
         client = ClientBuilder.newClient();
 
         WebTarget target = client.target(uri);

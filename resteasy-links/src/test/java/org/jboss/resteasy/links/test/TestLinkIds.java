@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 
 @RestBootstrap(TestLinkIds.TestApplication.class)
 public class TestLinkIds {
@@ -21,7 +22,7 @@ public class TestLinkIds {
     private static String url;
 
     @BeforeAll
-    public static void beforeClass(final ResteasyWebTarget webTarget) throws Exception {
+    public static void beforeClass(@RestResource final ResteasyWebTarget webTarget) throws Exception {
         client = webTarget.proxy(IDServiceTest.class);
         url = webTarget.getUri().toASCIIString();
         if (url.endsWith("/")) {

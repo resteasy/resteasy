@@ -38,9 +38,11 @@ import org.jboss.jandex.Index;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import dev.resteasy.junit.extension.annotations.RequestPath;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 import dev.resteasy.junit.extension.api.ConfigurationProvider;
 
 /**
@@ -50,7 +52,7 @@ import dev.resteasy.junit.extension.api.ConfigurationProvider;
 public class InjectionTest {
     public static class InjectionConfiguration implements ConfigurationProvider {
         @Override
-        public SeBootstrap.Configuration getConfiguration() {
+        public SeBootstrap.Configuration getConfiguration(final ExtensionContext context) {
             try {
                 final Index index = Index.of(Greeter.class, RootApplication.class, GreeterResource.class);
                 return TestEnvironment.createConfig(index);
@@ -61,7 +63,7 @@ public class InjectionTest {
     }
 
     @Test
-    public void application(@RequestPath("inject/greet/app") final WebTarget target) {
+    public void application(@RestResource @RequestPath("inject/greet/app") final WebTarget target) {
         try (Response response = target.request().get()) {
             Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
             Assertions.assertEquals("Hello App", response.readEntity(String.class));
@@ -69,7 +71,7 @@ public class InjectionTest {
     }
 
     @Test
-    public void resource(@RequestPath("inject/greet/Violet") final WebTarget target) {
+    public void resource(@RestResource @RequestPath("inject/greet/Violet") final WebTarget target) {
         try (Response response = target.request().get()) {
             Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
             Assertions.assertEquals("Hello Violet", response.readEntity(String.class));

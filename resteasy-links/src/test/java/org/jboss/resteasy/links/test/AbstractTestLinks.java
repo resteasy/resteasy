@@ -7,8 +7,6 @@ package org.jboss.resteasy.links.test;
 
 import java.util.List;
 
-import jakarta.inject.Inject;
-
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.RESTServiceDiscovery.AtomLink;
@@ -16,9 +14,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import dev.resteasy.junit.extension.annotations.RestResource;
+
 abstract class AbstractTestLinks {
 
-    @Inject
+    @RestResource
     private ResteasyWebTarget webTarget;
 
     @ParameterizedTest

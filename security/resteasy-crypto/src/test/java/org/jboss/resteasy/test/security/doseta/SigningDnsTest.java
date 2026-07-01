@@ -5,7 +5,6 @@ import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.util.Set;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -34,6 +33,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 import se.unlogic.eagledns.EagleDNS;
 
 /**
@@ -46,7 +46,7 @@ public class SigningDnsTest {
     public static DosetaKeyRepository serverRepository;
     public static PrivateKey badKey;
 
-    @Inject
+    @RestResource
     private Client client;
 
     @BeforeAll

@@ -8,7 +8,6 @@ package org.jboss.resteasy.embedded.test.core.basic;
 import java.net.URI;
 import java.util.Set;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.WebTarget;
@@ -23,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RequestPath;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 
 /**
  *
@@ -31,7 +31,7 @@ import dev.resteasy.junit.extension.annotations.RestBootstrap;
 @RestBootstrap(value = ApplicationExplicitATest.ApplicationTestAExplicitApplication.class)
 public class ApplicationExplicitATest {
 
-    @Inject
+    @RestResource
     private Client client;
 
     /**
@@ -40,8 +40,7 @@ public class ApplicationExplicitATest {
      * @tpSince RESTEasy 4.1.0
      */
     @Test
-    @Inject
-    public void testExplicitA(@RequestPath("/a/explicit") final URI uri) {
+    public void testExplicitA(@RestResource @RequestPath("/a/explicit") final URI uri) {
 
         WebTarget base = client.target(uri);
 
