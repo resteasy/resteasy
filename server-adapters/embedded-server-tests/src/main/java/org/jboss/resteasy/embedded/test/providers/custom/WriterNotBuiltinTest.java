@@ -8,7 +8,6 @@ package org.jboss.resteasy.embedded.test.providers.custom;
 import java.net.URI;
 import java.util.Set;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.SeBootstrap;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.core.Application;
@@ -20,9 +19,11 @@ import org.jboss.resteasy.embedded.test.providers.custom.resource.WriterNotBuilt
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import dev.resteasy.junit.extension.annotations.RequestPath;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 import dev.resteasy.junit.extension.api.ConfigurationProvider;
 
 /**
@@ -34,7 +35,7 @@ import dev.resteasy.junit.extension.api.ConfigurationProvider;
 @RestBootstrap(value = WriterNotBuiltinTest.TestApplication.class, configFactory = WriterNotBuiltinTest.TestConfiguration.class)
 public class WriterNotBuiltinTest {
 
-    @Inject
+    @RestResource
     private Client client;
 
     /**
@@ -45,7 +46,7 @@ public class WriterNotBuiltinTest {
      * @tpSince RESTEasy 4.1.0
      */
     @Test
-    public void test1New(@RequestPath("/string") final URI uri) throws Exception {
+    public void test1New(@RestResource @RequestPath("/string") final URI uri) throws Exception {
         Response response = client.target(uri).request().get();
         Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         Assertions.assertEquals("text/plain;charset=UTF-8", response.getStringHeaders().getFirst("content-type"));
@@ -62,7 +63,7 @@ public class WriterNotBuiltinTest {
 
     public static class TestConfiguration implements ConfigurationProvider {
         @Override
-        public SeBootstrap.Configuration getConfiguration() {
+        public SeBootstrap.Configuration getConfiguration(final ExtensionContext context) {
             return SeBootstrap.Configuration.builder()
                     .property(ConfigurationOption.REGISTER_BUILT_INS.key(), false)
                     .build();

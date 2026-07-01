@@ -3,7 +3,6 @@ package org.jboss.resteasy.links.test;
 import java.net.URI;
 import java.util.Set;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.core.Application;
@@ -13,14 +12,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 
 @RestBootstrap(TestClassLinksProvider.TestApplication.class)
 public class TestClassLinksProvider {
-    @Inject
+    @RestResource
     private Client client;
 
     @Test
-    public void shouldGetBookClassLinks(final URI baseUri) {
+    public void shouldGetBookClassLinks(@RestResource final URI baseUri) {
         RESTServiceDiscovery restServiceDiscovery = client.target(baseUri)
                 .queryParam("className", Book.class.getName())
                 .request()

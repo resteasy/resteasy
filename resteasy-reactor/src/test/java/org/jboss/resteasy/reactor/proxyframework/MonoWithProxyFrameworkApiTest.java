@@ -5,7 +5,6 @@ import static org.jboss.resteasy.reactor.proxyframework.CustomResource.THE_CUSTO
 import java.net.URI;
 import java.util.Set;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -16,6 +15,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 import reactor.core.publisher.Mono;
 
 @RestBootstrap(MonoWithProxyFrameworkApiTest.TestApplication.class)
@@ -37,11 +37,12 @@ public class MonoWithProxyFrameworkApiTest {
         }
     }
 
-    @Inject
+    @RestResource
     private ResteasyClient client;
 
     @Test
-    public void givenRemoteServiceInterfaceAndWorkingRemoteServiceWhenProxyThenGenerateProxyWithMono(final URI uri) {
+    public void givenRemoteServiceInterfaceAndWorkingRemoteServiceWhenProxyThenGenerateProxyWithMono(
+            @RestResource final URI uri) {
         final var proxy = client.target(uri).proxy(RemoteCustomResource.class);
         Assertions.assertEquals(THE_CUSTOM_RESOURCE, proxy.getCustomResource().block());
 

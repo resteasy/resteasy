@@ -8,7 +8,6 @@ package org.jboss.resteasy.embedded.test.core.basic;
 import java.net.URI;
 import java.util.Set;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.WebTarget;
@@ -23,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RequestPath;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 
 /**
  *
@@ -33,7 +33,7 @@ public class ApplicationExplicitBTest {
 
     private static final String CONTENT_ERROR_MESSAGE = "Wrong content of response";
 
-    @Inject
+    @RestResource
     private Client client;
 
     /**
@@ -42,8 +42,7 @@ public class ApplicationExplicitBTest {
      * @tpSince RESTEasy 4.1.0
      */
     @Test
-    @Inject
-    public void testExplicitB(@RequestPath("/b/explicit") final URI uri) {
+    public void testExplicitB(@RestResource @RequestPath("/b/explicit") final URI uri) {
 
         WebTarget base = client.target(uri);
 

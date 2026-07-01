@@ -42,6 +42,7 @@ import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RequestPath;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 
 /**
  * @tpSubChapter
@@ -78,7 +79,7 @@ public class PriorityExecutionTest {
      * @tpSince RESTEasy 4.1.0
      */
     @Test
-    public void testPriority(final Client client, @RequestPath("test") URI uri) throws Exception {
+    public void testPriority(@RestResource final Client client, @RestResource @RequestPath("test") URI uri) throws Exception {
         client.register(PriorityExecutionClientResponseFilter3.class);
         client.register(PriorityExecutionClientResponseFilter1.class);
         client.register(PriorityExecutionClientResponseFilter2.class);

@@ -34,7 +34,6 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -65,6 +64,7 @@ import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RequestPath;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -72,11 +72,11 @@ import dev.resteasy.junit.extension.annotations.RestBootstrap;
 @RestBootstrap(MultipartEntityPartProviderTest.TestApplication.class)
 public class MultipartEntityPartProviderTest {
 
-    @Inject
+    @RestResource
     @RequestPath("/test/form")
     private WebTarget testFormTarget;
 
-    @Inject
+    @RestResource
     @RequestPath("test/multi-injected")
     private WebTarget testMultiInjectedTarget;
 
@@ -348,7 +348,8 @@ public class MultipartEntityPartProviderTest {
      * @throws Exception if an error occurs in the test
      */
     @Test
-    public void multiInjectionNoEntityPart(@RequestPath("test/multi-injected-no-entity-part") final WebTarget target)
+    public void multiInjectionNoEntityPart(
+            @RestResource @RequestPath("test/multi-injected-no-entity-part") final WebTarget target)
             throws Exception {
         final List<EntityPart> multipart = List.of(
                 EntityPart.withName("string-part")
@@ -442,7 +443,7 @@ public class MultipartEntityPartProviderTest {
      * @throws Exception if an error occurs in the test
      */
     @Test
-    public void echo(@RequestPath("test/echo") final WebTarget target) throws Exception {
+    public void echo(@RestResource @RequestPath("test/echo") final WebTarget target) throws Exception {
         final List<EntityPart> multipart = List.of(
                 EntityPart.withName("entity-part")
                         .content("test entity part")
@@ -506,7 +507,7 @@ public class MultipartEntityPartProviderTest {
      * @throws Exception if an error occurs in the test
      */
     @Test
-    public void echoEmptyContent(@RequestPath("/test/echo") final WebTarget target) throws Exception {
+    public void echoEmptyContent(@RestResource @RequestPath("/test/echo") final WebTarget target) throws Exception {
         final List<EntityPart> multipart = List.of(
                 EntityPart.withName("entity-part")
                         .content("test.txt", new ByteArrayInputStream(new byte[0]))
@@ -574,7 +575,7 @@ public class MultipartEntityPartProviderTest {
      * @throws Exception if an error occurs in the test
      */
     @Test
-    public void echoHeaders(@RequestPath("test/echo-headers") final WebTarget target) throws Exception {
+    public void echoHeaders(@RestResource @RequestPath("test/echo-headers") final WebTarget target) throws Exception {
         final List<EntityPart> multipart = List.of(
                 EntityPart.withName("entity-part")
                         .content("test entity part")
@@ -649,7 +650,7 @@ public class MultipartEntityPartProviderTest {
      * @throws Exception if an error occurs in the test
      */
     @Test
-    public void echoHeadersAsync(@RequestPath("test") final ResteasyWebTarget target) throws Exception {
+    public void echoHeadersAsync(@RestResource @RequestPath("test") final ResteasyWebTarget target) throws Exception {
         final List<EntityPart> multipart = List.of(
                 EntityPart.withName("entity-part")
                         .content("test entity part")
