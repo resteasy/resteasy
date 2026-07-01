@@ -65,9 +65,11 @@ import org.jboss.jandex.Index;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import dev.resteasy.junit.extension.annotations.RequestPath;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 import dev.resteasy.junit.extension.api.ConfigurationProvider;
 
 /**
@@ -79,7 +81,7 @@ import dev.resteasy.junit.extension.api.ConfigurationProvider;
 public class ContextInjectionTest {
     public static class InjectionConfiguration implements ConfigurationProvider {
         @Override
-        public SeBootstrap.Configuration getConfiguration() {
+        public SeBootstrap.Configuration getConfiguration(final ExtensionContext context) {
             try {
                 final Index index = Index.of(InjectionResource.class, RootApplication.class, TestExceptionMapper.class);
                 return TestEnvironment.createConfig(index);
@@ -90,42 +92,43 @@ public class ContextInjectionTest {
     }
 
     @Test
-    public void application(@RequestPath("inject/application/test.property") final WebTarget target) throws Exception {
+    public void application(@RestResource @RequestPath("inject/application/test.property") final WebTarget target)
+            throws Exception {
         final Response response = get(target);
         Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
         Assertions.assertEquals("test value", response.readEntity(String.class));
     }
 
     @Test
-    public void client(@RequestPath("inject/client/request") final WebTarget target) throws Exception {
+    public void client(@RestResource @RequestPath("inject/client/request") final WebTarget target) throws Exception {
         final Response response = get(target);
         Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
         Assertions.assertEquals("GET", response.readEntity(String.class));
     }
 
     @Test
-    public void configuration(@RequestPath("inject/configuration") final WebTarget target) {
+    public void configuration(@RestResource @RequestPath("inject/configuration") final WebTarget target) {
         final Response response = get(target);
         Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
         Assertions.assertEquals(RuntimeType.SERVER.name(), response.readEntity(String.class));
     }
 
     @Test
-    public void httpHeader(@RequestPath("inject/httpHeaders/test-header") final WebTarget target) {
+    public void httpHeader(@RestResource @RequestPath("inject/httpHeaders/test-header") final WebTarget target) {
         final Response response = get(target);
         Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
         Assertions.assertEquals("test-value", response.readEntity(String.class));
     }
 
     @Test
-    public void httpRequest(@RequestPath("inject/httpRequest") final WebTarget target) {
+    public void httpRequest(@RestResource @RequestPath("inject/httpRequest") final WebTarget target) {
         final Response response = get(target);
         Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
         Assertions.assertEquals("GET", response.readEntity(String.class));
     }
 
     @Test
-    public void provider(@RequestPath("inject/providers") final WebTarget target) throws Exception {
+    public void provider(@RestResource @RequestPath("inject/providers") final WebTarget target) throws Exception {
         final Response response = get(target);
         Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
         final String value = response.readEntity(String.class);
@@ -134,14 +137,14 @@ public class ContextInjectionTest {
     }
 
     @Test
-    public void request(@RequestPath("inject/request") final WebTarget target) {
+    public void request(@RestResource @RequestPath("inject/request") final WebTarget target) {
         final Response response = get(target);
         Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
         Assertions.assertEquals("GET", response.readEntity(String.class));
     }
 
     @Test
-    public void resourceContext(@RequestPath("inject/resourceContext") final WebTarget target) {
+    public void resourceContext(@RestResource @RequestPath("inject/resourceContext") final WebTarget target) {
         final Response response = get(target);
         Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
         Assertions.assertTrue(response.readEntity(String.class)
@@ -149,28 +152,28 @@ public class ContextInjectionTest {
     }
 
     @Test
-    public void resourceInfo(@RequestPath("inject/resourceInfo") final WebTarget target) {
+    public void resourceInfo(@RestResource @RequestPath("inject/resourceInfo") final WebTarget target) {
         final Response response = get(target);
         Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
         Assertions.assertEquals(response.readEntity(String.class), "resourceInfo");
     }
 
     @Test
-    public void securityContext(@RequestPath("inject/securityContext") final WebTarget target) {
+    public void securityContext(@RestResource @RequestPath("inject/securityContext") final WebTarget target) {
         final Response response = get(target);
         Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
         Assertions.assertEquals("false", response.readEntity(String.class));
     }
 
     @Test
-    public void uriInfo(@RequestPath("inject/uriInfo") final WebTarget target) {
+    public void uriInfo(@RestResource @RequestPath("inject/uriInfo") final WebTarget target) {
         final Response response = get(target);
         Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
         Assertions.assertEquals("/inject/uriInfo", response.readEntity(String.class));
     }
 
     @Test
-    public void sse(@RequestPath("inject/sse") final WebTarget target) throws Exception {
+    public void sse(@RestResource @RequestPath("inject/sse") final WebTarget target) throws Exception {
         final CompletableFuture<String> cf = new CompletableFuture<>();
         try (SseEventSource source = SseEventSource.target(target).build()) {
             source.register(event -> {

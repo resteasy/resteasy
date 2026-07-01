@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RequestPath;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 
 /**
  * @tpSubChapter Verify ValidatorFactory is found in absence of CDI
@@ -55,7 +56,7 @@ public class NonCDIValidatorFactoryTest {
     /// ///////////////////////////////////////////////////////////////////////////
 
     @Test
-    public void testValidate(@RequestPath("/test/validate/x") final WebTarget target) {
+    public void testValidate(@RestResource @RequestPath("/test/validate/x") final WebTarget target) {
         Invocation.Builder request = target.request();
         Response response = request.get();
         Assertions.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());

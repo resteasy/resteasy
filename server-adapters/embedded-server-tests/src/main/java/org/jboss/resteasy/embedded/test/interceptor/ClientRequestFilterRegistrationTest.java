@@ -8,7 +8,6 @@ package org.jboss.resteasy.embedded.test.interceptor;
 import java.net.URI;
 import java.util.Set;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Application;
@@ -21,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RequestPath;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 
 /**
  * @tpSubChapter
@@ -31,11 +31,11 @@ import dev.resteasy.junit.extension.annotations.RestBootstrap;
 @RestBootstrap(ClientRequestFilterRegistrationTest.TestApplication.class)
 public class ClientRequestFilterRegistrationTest {
 
-    @Inject
+    @RestResource
     private Client client;
 
     @Test
-    public void filterRegisteredTest(@RequestPath("/testIt") final URI uri) throws Exception {
+    public void filterRegisteredTest(@RestResource @RequestPath("/testIt") final URI uri) throws Exception {
         WebTarget base = client.target(uri);
         Response response = base.request().get();
         Assertions.assertEquals(456, response.getStatus());

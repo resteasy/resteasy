@@ -22,7 +22,6 @@ package org.jboss.resteasy.plugins.providers.jsonb;
 import java.util.Objects;
 import java.util.Set;
 
-import jakarta.inject.Inject;
 import jakarta.json.JsonValue;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.Consumes;
@@ -40,6 +39,7 @@ import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RequestPath;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -47,7 +47,7 @@ import dev.resteasy.junit.extension.annotations.RestBootstrap;
 @RestBootstrap(EntityTest.TestApplication.class)
 public class EntityTest {
 
-    @Inject
+    @RestResource
     @RequestPath("/json")
     private WebTarget target;
 
