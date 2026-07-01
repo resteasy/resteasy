@@ -9,7 +9,6 @@ import java.security.Principal;
 import java.util.Collection;
 import java.util.Set;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.SeBootstrap;
 import jakarta.ws.rs.core.SecurityContext;
 
@@ -18,12 +17,14 @@ import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.plugins.server.embedded.SimplePrincipal;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import dev.resteasy.client.util.authentication.UserCredentials;
 import dev.resteasy.client.util.authentication.basic.BasicAuthorizationFilter;
 import dev.resteasy.embedded.server.UndertowConfigurationOptions;
+import dev.resteasy.junit.extension.annotations.RestResource;
 import dev.resteasy.junit.extension.api.ConfigurationProvider;
 import io.undertow.security.idm.Account;
 import io.undertow.security.idm.Credential;
@@ -35,7 +36,7 @@ abstract class AbstractTestSecureLinks {
 
     public static class TestConfigurationProvider implements ConfigurationProvider {
         @Override
-        public SeBootstrap.Configuration getConfiguration() {
+        public SeBootstrap.Configuration getConfiguration(final ExtensionContext context) {
             final DeploymentInfo deploymentInfo = new DeploymentInfo();
             deploymentInfo.setLoginConfig(new LoginConfig("BASIC", "default"));
             deploymentInfo.setIdentityManager(new TestingIdentityManager());
@@ -83,7 +84,7 @@ abstract class AbstractTestSecureLinks {
         }
     }
 
-    @Inject
+    @RestResource
     private ResteasyWebTarget webTarget;
 
     @ParameterizedTest

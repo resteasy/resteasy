@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URI;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.SeBootstrap;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.WebTarget;
@@ -23,8 +22,10 @@ import org.jboss.resteasy.embedded.test.core.basic.resource.ApplicationTestSingl
 import org.jboss.resteasy.embedded.test.core.basic.resource.ApplicationTestSingletonB;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 import dev.resteasy.junit.extension.api.ConfigurationProvider;
 
 /**
@@ -36,7 +37,7 @@ public class ApplicationMappedTest {
 
     private static final String CONTENT_ERROR_MESSAGE = "Wrong content of response";
 
-    @Inject
+    @RestResource
     private Client client;
 
     /**
@@ -47,8 +48,7 @@ public class ApplicationMappedTest {
      * @tpSince RESTEasy 4.1.0
      */
     @Test
-    @Inject
-    public void testMapped(final URI uri) {
+    public void testMapped(@RestResource final URI uri) {
 
         WebTarget base = client.target(uri);
 
@@ -70,7 +70,7 @@ public class ApplicationMappedTest {
 
     public static class TestConfigurationProvider implements ConfigurationProvider {
         @Override
-        public SeBootstrap.Configuration getConfiguration() {
+        public SeBootstrap.Configuration getConfiguration(final ExtensionContext context) {
             final Index index;
             try {
                 index = Index.of(ApplicationTestResourceA.class,

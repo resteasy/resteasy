@@ -56,6 +56,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -63,7 +64,7 @@ import dev.resteasy.junit.extension.annotations.RestBootstrap;
 @RestBootstrap(MultipartTest.TestApplication.class)
 public class MultipartTest {
 
-    @Inject
+    @RestResource
     private Client client;
 
     @Test
@@ -92,7 +93,7 @@ public class MultipartTest {
     }
 
     @Test
-    public void checkMultipartFormData(final UriBuilder uriBuilder) {
+    public void checkMultipartFormData(@RestResource final UriBuilder uriBuilder) {
         final var multipart = new MultipartFormDataOutput();
         multipart.addFormData("name", "RESTEasy", MediaType.TEXT_PLAIN_TYPE);
         multipart.addFormData("entity", "plain text", MediaType.APPLICATION_OCTET_STREAM_TYPE);
@@ -106,7 +107,7 @@ public class MultipartTest {
         }
     }
 
-    private static void assertResponse(final Response response) {
+    private static void assertResponse(@RestResource final Response response) {
         Assertions.assertEquals(200, response.getStatus(),
                 () -> String.format("Expected status of 200 got %d. Response: %s", response.getStatus(),
                         response.readEntity(String.class)));

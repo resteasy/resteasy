@@ -44,9 +44,11 @@ import org.jboss.jandex.Index;
 import org.jboss.resteasy.core.se.ConfigurationOption;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import dev.resteasy.junit.extension.annotations.RequestPath;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 import dev.resteasy.junit.extension.api.ConfigurationProvider;
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
@@ -58,7 +60,7 @@ import io.undertow.servlet.api.DeploymentInfo;
 public class ServletTest {
     public static class InjectionConfiguration implements ConfigurationProvider {
         @Override
-        public SeBootstrap.Configuration getConfiguration() {
+        public SeBootstrap.Configuration getConfiguration(final ExtensionContext context) {
             try {
                 final Index index = Index.of(TestServlet.class, RootApplication.class, TestResource.class);
                 final DeploymentInfo deploymentInfo = new DeploymentInfo()
@@ -75,7 +77,7 @@ public class ServletTest {
     }
 
     @Test
-    public void servlet(final URI uri) throws Exception {
+    public void servlet(@RestResource final URI uri) throws Exception {
         final HttpClient client = HttpClient.newHttpClient();
         final HttpResponse<String> response = client.send(HttpRequest
                 .newBuilder(UriBuilder.fromUri(uri).path("test-servlet").build()).GET().build(),
@@ -85,7 +87,7 @@ public class ServletTest {
     }
 
     @Test
-    public void resource(@RequestPath("/test") final WebTarget target) {
+    public void resource(@RestResource @RequestPath("/test") final WebTarget target) {
         try (Response response = target.request().get()) {
             Assertions.assertEquals(200, response.getStatus());
             Assertions.assertEquals("test-resource", response.readEntity(String.class));
