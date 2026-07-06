@@ -28,7 +28,7 @@ import dev.resteasy.junit.extension.annotations.RestResource;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RestBootstrap(value = ApplicationExplicitATest.ApplicationTestAExplicitApplication.class)
+@RestBootstrap(application = ApplicationExplicitATest.ApplicationTestAExplicitApplication.class)
 public class ApplicationExplicitATest {
 
     @RestResource

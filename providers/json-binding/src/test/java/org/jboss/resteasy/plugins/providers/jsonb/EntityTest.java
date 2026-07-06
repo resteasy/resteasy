@@ -20,17 +20,14 @@
 package org.jboss.resteasy.plugins.providers.jsonb;
 
 import java.util.Objects;
-import java.util.Set;
 
 import jakarta.json.JsonValue;
-import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -44,7 +41,7 @@ import dev.resteasy.junit.extension.annotations.RestResource;
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RestBootstrap(EntityTest.TestApplication.class)
+@RestBootstrap(EntityTest.TestResource.class)
 public class EntityTest {
 
     @RestResource
@@ -72,14 +69,6 @@ public class EntityTest {
                         .post(Entity.json(testEntity))) {
             Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
             Assertions.assertEquals(testEntity, response.readEntity(TestEntity.class));
-        }
-    }
-
-    @ApplicationPath("/")
-    public static class TestApplication extends Application {
-        @Override
-        public Set<Class<?>> getClasses() {
-            return Set.of(TestResource.class);
         }
     }
 

@@ -1,10 +1,6 @@
 package org.jboss.resteasy.links.test.el;
 
-import java.util.Set;
-
-import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.InternalServerErrorException;
-import jakarta.ws.rs.core.Application;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -16,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
 import dev.resteasy.junit.extension.annotations.RestResource;
 
-@RestBootstrap(TestLinksInvalidEL.TestApplication.class)
+@RestBootstrap(BookStoreInvalidEL.class)
 public class TestLinksInvalidEL {
 
     private static final Logger LOG = Logger.getLogger(TestLinksInvalidEL.class);
@@ -51,14 +47,6 @@ public class TestLinksInvalidEL {
             Assertions.assertEquals(500, x.getResponse().getStatus());
         } catch (Exception x) {
             Assertions.fail("Expected InternalServerErrorException");
-        }
-    }
-
-    @ApplicationPath("/")
-    public static class TestApplication extends Application {
-        @Override
-        public Set<Class<?>> getClasses() {
-            return Set.of(BookStoreInvalidEL.class);
         }
     }
 }

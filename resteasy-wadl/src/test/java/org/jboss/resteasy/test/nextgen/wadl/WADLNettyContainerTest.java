@@ -1,10 +1,6 @@
 package org.jboss.resteasy.test.nextgen.wadl;
 
-import java.util.Set;
-
-import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.core.Application;
 
 import org.jboss.resteasy.test.nextgen.wadl.resources.BasicResource;
 import org.jboss.resteasy.test.nextgen.wadl.resources.issues.RESTEASY1246;
@@ -16,7 +12,7 @@ import dev.resteasy.junit.extension.annotations.RestResource;
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
-@RestBootstrap(WADLNettyContainerTest.TestApplication.class)
+@RestBootstrap({ BasicResource.class, RESTEASY1246.class, MyWadlResource.class })
 public class WADLNettyContainerTest {
     @RestResource
     private static Client client;
@@ -27,13 +23,5 @@ public class WADLNettyContainerTest {
         basicTest.setClient(client);
         basicTest.testBasicSet();
         basicTest.testResteasy1246();
-    }
-
-    @ApplicationPath("/")
-    public static class TestApplication extends Application {
-        @Override
-        public Set<Class<?>> getClasses() {
-            return Set.of(BasicResource.class, RESTEASY1246.class, MyWadlResource.class);
-        }
     }
 }

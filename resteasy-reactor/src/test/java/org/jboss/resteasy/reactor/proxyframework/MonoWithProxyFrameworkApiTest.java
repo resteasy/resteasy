@@ -3,12 +3,9 @@ package org.jboss.resteasy.reactor.proxyframework;
 import static org.jboss.resteasy.reactor.proxyframework.CustomResource.THE_CUSTOM_RESOURCE;
 
 import java.net.URI;
-import java.util.Set;
 
-import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Application;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.junit.jupiter.api.Assertions;
@@ -18,7 +15,7 @@ import dev.resteasy.junit.extension.annotations.RestBootstrap;
 import dev.resteasy.junit.extension.annotations.RestResource;
 import reactor.core.publisher.Mono;
 
-@RestBootstrap(MonoWithProxyFrameworkApiTest.TestApplication.class)
+@RestBootstrap(CustomResource.class)
 public class MonoWithProxyFrameworkApiTest {
 
     @Path("api/v1")
@@ -27,14 +24,6 @@ public class MonoWithProxyFrameworkApiTest {
         @GET
         @Path("resource/custom")
         Mono<String> getCustomResource();
-    }
-
-    @ApplicationPath("/")
-    public static class TestApplication extends Application {
-        @Override
-        public Set<Class<?>> getClasses() {
-            return Set.of(CustomResource.class);
-        }
     }
 
     @RestResource
