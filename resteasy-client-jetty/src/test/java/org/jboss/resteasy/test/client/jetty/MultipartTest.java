@@ -24,15 +24,12 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
-import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
@@ -42,7 +39,6 @@ import jakarta.ws.rs.ServerErrorException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation;
-import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.EntityPart;
 import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -61,7 +57,7 @@ import dev.resteasy.junit.extension.annotations.RestResource;
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RestBootstrap(MultipartTest.TestApplication.class)
+@RestBootstrap(MultipartTest.TestResource.class)
 public class MultipartTest {
 
     @RestResource
@@ -118,15 +114,6 @@ public class MultipartTest {
         Assertions.assertNotNull(contentType, () -> String.format("Failed to find content-type in %s", headers));
         Assertions.assertTrue(contentType.toString().contains("boundary"),
                 () -> String.format("Failed to find boundary in %s", contentType));
-    }
-
-    @ApplicationPath("/")
-    @ApplicationScoped
-    public static class TestApplication extends Application {
-        @Override
-        public Set<Class<?>> getClasses() {
-            return Set.of(TestResource.class);
-        }
     }
 
     @Path("/echo")

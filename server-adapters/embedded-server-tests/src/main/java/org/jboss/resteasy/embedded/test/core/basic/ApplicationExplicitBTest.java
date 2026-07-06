@@ -28,7 +28,7 @@ import dev.resteasy.junit.extension.annotations.RestResource;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RestBootstrap(value = ApplicationExplicitBTest.ApplicationTestBExplicitApplication.class)
+@RestBootstrap(application = ApplicationExplicitBTest.ApplicationTestBExplicitApplication.class)
 public class ApplicationExplicitBTest {
 
     private static final String CONTENT_ERROR_MESSAGE = "Wrong content of response";

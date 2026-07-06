@@ -8,9 +8,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.logging.Logger;
@@ -27,7 +25,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.context.Context;
 
-@RestBootstrap(value = ReactorTest.TestApplication.class)
+@RestBootstrap({ ReactorResource.class, ReactorInjector.class })
 public class ReactorTest {
 
     private static CountDownLatch latch;
@@ -103,14 +101,6 @@ public class ReactorTest {
 
         data = client.target(generateURL("/injection-async")).request().get(Integer.class);
         Assertions.assertEquals((Integer) 42, data);
-    }
-
-    @ApplicationPath("/")
-    public static class TestApplication extends Application {
-        @Override
-        public Set<Class<?>> getClasses() {
-            return Set.of(ReactorResource.class, ReactorInjector.class);
-        }
     }
 
     private static String generateURL(final String path) {

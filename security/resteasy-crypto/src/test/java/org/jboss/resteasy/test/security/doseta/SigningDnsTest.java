@@ -3,9 +3,7 @@ package org.jboss.resteasy.test.security.doseta;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
-import java.util.Set;
 
-import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
@@ -16,7 +14,6 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation.Builder;
 import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.annotations.security.doseta.Signed;
@@ -40,7 +37,7 @@ import se.unlogic.eagledns.EagleDNS;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@RestBootstrap(SigningDnsTest.TestApplication.class)
+@RestBootstrap(SigningDnsTest.SignedResource.class)
 public class SigningDnsTest {
     public static DosetaKeyRepository clientRepository;
     public static DosetaKeyRepository serverRepository;
@@ -117,14 +114,6 @@ public class SigningDnsTest {
             //         System.out.println(signature);
         }
 
-    }
-
-    @ApplicationPath("/")
-    public static class TestApplication extends Application {
-        @Override
-        public Set<Class<?>> getClasses() {
-            return Set.of(SignedResource.class);
-        }
     }
 
     @Test

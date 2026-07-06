@@ -32,7 +32,7 @@ import dev.resteasy.junit.extension.api.ConfigurationProvider;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RestBootstrap(value = ApplicationMappedTest.ApplicationTestMappedApplication.class, configFactory = ApplicationMappedTest.TestConfigurationProvider.class)
+@RestBootstrap(application = ApplicationMappedTest.ApplicationTestMappedApplication.class, configFactory = ApplicationMappedTest.TestConfigurationProvider.class)
 public class ApplicationMappedTest {
 
     private static final String CONTENT_ERROR_MESSAGE = "Wrong content of response";

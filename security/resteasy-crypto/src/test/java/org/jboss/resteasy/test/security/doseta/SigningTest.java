@@ -8,9 +8,7 @@ import java.security.PublicKey;
 import java.security.SignatureException;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.Set;
 
-import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -24,7 +22,6 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.ResponseProcessingException;
 import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -58,7 +55,7 @@ import dev.resteasy.junit.extension.annotations.RestResource;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@RestBootstrap(SigningTest.TestApplication.class)
+@RestBootstrap(SigningTest.SignedResource.class)
 public class SigningTest {
     private static final Logger LOG = Logger.getLogger(SigningTest.class);
     public static KeyPair keys;
@@ -283,14 +280,6 @@ public class SigningTest {
         @Path("expires-year")
         public String getExpiresYear() {
             return "hello world";
-        }
-    }
-
-    @ApplicationPath("/")
-    public static class TestApplication extends Application {
-        @Override
-        public Set<Class<?>> getClasses() {
-            return Set.of(SignedResource.class);
         }
     }
 

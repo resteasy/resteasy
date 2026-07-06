@@ -5,15 +5,12 @@
 
 package org.jboss.resteasy.embedded.test.core.validate;
 
-import java.util.Set;
-
 import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.api.validation.Validation;
@@ -32,15 +29,8 @@ import dev.resteasy.junit.extension.annotations.RestResource;
  * @tpTestCaseDetails Regression test for RESTEASY-2549
  * @tpSince RESTEasy 3.14.0
  */
-@RestBootstrap(NonCDIValidatorFactoryTest.TestApp.class)
+@RestBootstrap(NonCDIValidatorFactoryTest.TestResource.class)
 public class NonCDIValidatorFactoryTest {
-
-    public static class TestApp extends Application {
-        @Override
-        public Set<Class<?>> getClasses() {
-            return Set.of(TestResource.class);
-        }
-    }
 
     @Path("test")
     public static class TestResource {
