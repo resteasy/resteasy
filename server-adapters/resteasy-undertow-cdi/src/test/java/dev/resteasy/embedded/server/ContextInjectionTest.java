@@ -77,7 +77,7 @@ import dev.resteasy.junit.extension.api.ConfigurationProvider;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RestBootstrap(value = ContextInjectionTest.RootApplication.class, configFactory = ContextInjectionTest.InjectionConfiguration.class)
+@RestBootstrap(application = ContextInjectionTest.RootApplication.class, configFactory = ContextInjectionTest.InjectionConfiguration.class)
 public class ContextInjectionTest {
     public static class InjectionConfiguration implements ConfigurationProvider {
         @Override

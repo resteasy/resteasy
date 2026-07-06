@@ -36,7 +36,7 @@ import dev.resteasy.junit.extension.annotations.RestResource;
  * @tpTestCaseDetails Basic test for reated context
  * @tpSince RESTEasy 4.1.0
  */
-@RestBootstrap(ReaderContextTest.TestApplication.class)
+@RestBootstrap(application = ReaderContextTest.TestApplication.class)
 public class ReaderContextTest {
 
     @RestResource

@@ -56,7 +56,7 @@ import io.undertow.servlet.api.DeploymentInfo;
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@RestBootstrap(value = ServletTest.RootApplication.class, configFactory = ServletTest.InjectionConfiguration.class)
+@RestBootstrap(application = ServletTest.RootApplication.class, configFactory = ServletTest.InjectionConfiguration.class)
 public class ServletTest {
     public static class InjectionConfiguration implements ConfigurationProvider {
         @Override
