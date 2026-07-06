@@ -1,10 +1,5 @@
 package org.jboss.resteasy.links.test;
 
-import java.util.Set;
-
-import jakarta.ws.rs.ApplicationPath;
-import jakarta.ws.rs.core.Application;
-
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.RESTServiceDiscovery.AtomLink;
@@ -15,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
 import dev.resteasy.junit.extension.annotations.RestResource;
 
-@RestBootstrap(TestLinkIds.TestApplication.class)
+@RestBootstrap(IDServiceTestBean.class)
 public class TestLinkIds {
 
     private static IDServiceTest client;
@@ -74,13 +69,5 @@ public class TestLinkIds {
         AtomLink link = links.get(0);
         Assertions.assertEquals("self", link.getRel());
         Assertions.assertEquals(url + relativeUrl, link.getHref());
-    }
-
-    @ApplicationPath("/")
-    public static class TestApplication extends Application {
-        @Override
-        public Set<Class<?>> getClasses() {
-            return Set.of(IDServiceTestBean.class);
-        }
     }
 }

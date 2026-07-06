@@ -6,11 +6,9 @@
 package org.jboss.resteasy.embedded.test.interceptor;
 
 import java.net.URI;
-import java.util.Set;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.embedded.test.interceptor.resource.ClientRequestFilterImpl;
@@ -28,7 +26,7 @@ import dev.resteasy.junit.extension.annotations.RestResource;
  * @tpTestCaseDetails Tests @Provider annotation on ClientRequestFilter
  * @tpSince RESTEasy 4.1.0
  */
-@RestBootstrap(ClientRequestFilterRegistrationTest.TestApplication.class)
+@RestBootstrap({ ClientResource.class, ClientRequestFilterImpl.class })
 public class ClientRequestFilterRegistrationTest {
 
     @RestResource
@@ -39,13 +37,6 @@ public class ClientRequestFilterRegistrationTest {
         WebTarget base = client.target(uri);
         Response response = base.request().get();
         Assertions.assertEquals(456, response.getStatus());
-    }
-
-    public static class TestApplication extends Application {
-        @Override
-        public Set<Class<?>> getClasses() {
-            return Set.of(ClientResource.class, ClientRequestFilterImpl.class);
-        }
     }
 
 }

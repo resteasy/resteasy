@@ -50,7 +50,7 @@ import dev.resteasy.junit.extension.annotations.RestResource;
  * @tpSince RESTEasy 4.1.0
  * @tpTestCaseDetails Regression test for RESTEASY-1294
  */
-@RestBootstrap(PriorityExecutionTest.PriorityApplication.class)
+@RestBootstrap(application = PriorityExecutionTest.PriorityApplication.class)
 public class PriorityExecutionTest {
     public static volatile Queue<String> interceptors = new ConcurrentLinkedQueue<>();
     public static Logger logger = Logger.getLogger(PriorityExecutionTest.class);

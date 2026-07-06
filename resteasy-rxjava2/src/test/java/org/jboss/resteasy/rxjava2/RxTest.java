@@ -7,11 +7,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Invocation;
-import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
 
 import org.jboss.logging.Logger;
@@ -26,7 +24,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
-@RestBootstrap(RxTest.TestApplication.class)
+@RestBootstrap({ RxResource.class, RxInjector.class })
 public class RxTest {
 
     private static CountDownLatch latch;
@@ -140,13 +138,5 @@ public class RxTest {
 
         data = client.target(injectionAsyncUri).request().get(Integer.class);
         Assertions.assertEquals((Integer) 42, data);
-    }
-
-    @ApplicationPath("/")
-    public static class TestApplication extends Application {
-        @Override
-        public Set<Class<?>> getClasses() {
-            return Set.of(RxResource.class, RxInjector.class);
-        }
     }
 }

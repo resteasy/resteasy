@@ -1,11 +1,8 @@
 package org.jboss.resteasy.links.test;
 
 import java.net.URI;
-import java.util.Set;
 
-import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.core.Application;
 
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.junit.jupiter.api.Assertions;
@@ -14,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
 import dev.resteasy.junit.extension.annotations.RestResource;
 
-@RestBootstrap(TestClassLinksProvider.TestApplication.class)
+@RestBootstrap({ BookStore.class, ClassLinksProviderService.class })
 public class TestClassLinksProvider {
     @RestResource
     private Client client;
@@ -29,13 +26,5 @@ public class TestClassLinksProvider {
         Assertions.assertEquals(2, restServiceDiscovery.size());
         Assertions.assertTrue(restServiceDiscovery.contains(new RESTServiceDiscovery.AtomLink(baseUri + "books", "list")));
         Assertions.assertTrue(restServiceDiscovery.contains(new RESTServiceDiscovery.AtomLink(baseUri + "books", "add")));
-    }
-
-    @ApplicationPath("/")
-    public static class TestApplication extends Application {
-        @Override
-        public Set<Class<?>> getClasses() {
-            return Set.of(BookStore.class, ClassLinksProviderService.class);
-        }
     }
 }
