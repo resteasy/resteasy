@@ -233,19 +233,17 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- Do not provision WildFly for bootable JAR tests -->
+                    <!-- Provisions WildFly for bootable JAR tests -->
                     <plugin>
                         <groupId>org.wildfly.plugins</groupId>
                         <artifactId>wildfly-maven-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.wildfly.plugins</groupId>
-                        <artifactId>wildfly-jar-maven-plugin</artifactId>
                         <executions>
-                            <!-- Package a jaxrs-server layer with a few other layers -->
+                            <!-- Disable configure-test-server for bootable JAR tests -->
+                            <execution>
+                                <id>configure-test-server</id>
+                                <phase>none</phase>
+                            </execution>
+                            <!-- Package a jaxrs-server layer with a few other layers to be tested as a bootable jar -->
                             <execution>
                                 <id>bootable-jar-observability-packaging</id>
                                 <goals>
@@ -253,13 +251,14 @@
                                 </goals>
                                 <phase>process-test-resources</phase>
                                 <configuration>
-                                    <output-file-name>jaxrs-server.jar</output-file-name>
-                                    <hollowJar>true</hollowJar>
-                                    <record-state>false</record-state>
-                                    <log-time>true</log-time>
-                                    <plugin-options>
+                                    <provisioning-dir>${project.build.directory}/server</provisioning-dir>
+                                    <bootable-jar-name>jaxrs-server.jar</bootable-jar-name>
+                                    <skipDeployment>true</skipDeployment>
+                                    <record-provisioning-state>false</record-provisioning-state>
+                                    <log-provisioning-time>true</log-provisioning-time>
+                                    <galleon-options>
                                         <jboss-fork-embedded>true</jboss-fork-embedded>
-                                    </plugin-options>
+                                    </galleon-options>
                                     <feature-packs>
                                         <feature-pack>
                                             <groupId>${server.test.feature.pack.groupId}</groupId>
@@ -287,13 +286,14 @@
                                             </manifest>
                                         </channel>
                                     </channels>
-                                    <cli-sessions>
-                                        <cli-session>
-                                            <script-files>
+                                    <packaging-scripts>
+                                        <execution>
+                                            <scripts>
                                                 <script>${basedir}/../config/configure-bootable-jar.cli</script>
-                                            </script-files>
-                                        </cli-session>
-                                    </cli-sessions>
+                                            </scripts>
+                                        </execution>
+                                    </packaging-scripts>
+                                    <bootable-jar>true</bootable-jar>
                                 </configuration>
                             </execution>
                         </executions>
