@@ -140,7 +140,13 @@
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
         <version.org.jacoco.plugin>0.8.14</version.org.jacoco.plugin>
         <version.org.wildfly.galleon-plugins>7.0.0.Final</version.org.wildfly.galleon-plugins>
+        <groupId.org.wildfly.plugins.wildfly-maven-plugin>org.wildfly.plugins</groupId.org.wildfly.plugins.wildfly-maven-plugin>
+        <artifactId.org.wildfly.plugins.wildfly-maven-plugin>wildfly-maven-plugin</artifactId.org.wildfly.plugins.wildfly-maven-plugin>
         <version.org.wildfly.plugins.wildfly-maven-plugin>5.1.5.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
+        <groupId.org.wildfly.plugins.wildfly-maven-plugin.ci>org.wildfly.plugins</groupId.org.wildfly.plugins.wildfly-maven-plugin.ci>
+        <artifactId.org.wildfly.plugins.wildfly-maven-plugin.ci>wildfly-maven-plugin</artifactId.org.wildfly.plugins.wildfly-maven-plugin.ci>
+        <version.org.wildfly.plugins.wildfly-maven-plugin.ci>${version.org.wildfly.plugins.wildfly-maven-plugin}</version.org.wildfly.plugins.wildfly-maven-plugin.ci>
+
         <version.org.wildfly.jar.plugin>11.0.2.Final</version.org.wildfly.jar.plugin>
 
         <!-- Override the checkstyle version to be compatible with Java 11, see https://checkstyle.org/#JRE_and_JDK -->
@@ -295,9 +301,9 @@
                 </plugin>
 
                 <plugin>
-                    <groupId>org.wildfly.plugins</groupId>
-                    <artifactId>wildfly-maven-plugin</artifactId>
-                    <version>${version.org.wildfly.plugins.wildfly-maven-plugin}</version>
+                    <groupId>${groupId.org.wildfly.plugins.wildfly-maven-plugin.ci}</groupId>
+                    <artifactId>${artifactId.org.wildfly.plugins.wildfly-maven-plugin.ci}</artifactId>
+                    <version>${version.org.wildfly.plugins.wildfly-maven-plugin.ci}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
