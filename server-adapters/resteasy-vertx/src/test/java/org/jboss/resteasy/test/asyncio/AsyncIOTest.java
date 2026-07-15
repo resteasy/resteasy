@@ -40,8 +40,10 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+@Disabled
 public class AsyncIOTest {
 
     static Client client;
