@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.ref.Cleaner;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.Configurable;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -493,13 +495,23 @@ public class ManualClosingApacheHttpClient43Engine implements ApacheHttpClientEn
     }
 
     /**
-     * If passed httpMethod is of type HttpPost then obtain its entity. If the entity has an enclosing File then
-     * delete it by invoking this method after the request has completed. The entity will have an enclosing File
-     * only if it was too huge to fit into memory.
+     * Cleans up any temporary file backing the request entity after the
+     * request/response cycle (including auth retries) has completed.
      *
-     * @param httpMethod - the httpMethod to clean up.
+     * @param httpMethod the executed HTTP method to clean up
      */
     protected void cleanUpAfterExecute(final HttpRequestBase httpMethod) {
+        if (httpMethod instanceof HttpEntityEnclosingRequestBase) {
+            final HttpEntity entity = ((HttpEntityEnclosingRequestBase) httpMethod).getEntity();
+            if (entity instanceof ClientEntityOutputStream.PathHttpEntity) {
+                final Path file = ((ClientEntityOutputStream.PathHttpEntity) entity).getFile();
+                try {
+                    Files.deleteIfExists(file);
+                } catch (IOException e) {
+                    LogMessages.LOGGER.debugf(e, "Failed to delete temporary entity file %s", file);
+                }
+            }
+        }
     }
 
     /**

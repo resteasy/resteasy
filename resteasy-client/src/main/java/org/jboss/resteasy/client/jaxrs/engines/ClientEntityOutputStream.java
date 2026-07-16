@@ -65,25 +65,29 @@ class ClientEntityOutputStream extends EntityOutputStream {
         synchronized (lock) {
             final Path path = getFile();
             if (path != null) {
-                return new PathHttpEntity(path, contentInputStream(path));
+                return new PathHttpEntity(path);
             }
             return new ByteArrayEntity(getAndClearMemory());
         }
     }
 
-    private static class PathHttpEntity extends AbstractHttpEntity {
+    static class PathHttpEntity extends AbstractHttpEntity {
         private final Path file;
-        private final InputStream content;
 
-        private PathHttpEntity(final Path file, final InputStream content) {
+        private PathHttpEntity(final Path file) {
             this.file = file;
-            this.content = content;
+        }
+
+        Path getFile() {
+            return file;
         }
 
         @Override
         public boolean isRepeatable() {
-            // We delete the file once the getContent().close() happens
-            return false;
+            // The entity is backed by a temp file that can be re-read on auth retries.
+            // The file is deleted by the engine via cleanUpAfterExecute() once the
+            // full request/response cycle (including any retries) has completed.
+            return true;
         }
 
         @Override
@@ -99,7 +103,7 @@ class ClientEntityOutputStream extends EntityOutputStream {
 
         @Override
         public InputStream getContent() throws IOException, UnsupportedOperationException {
-            return content;
+            return Files.newInputStream(file);
         }
 
         @Override
