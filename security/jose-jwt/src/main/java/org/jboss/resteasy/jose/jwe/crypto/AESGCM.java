@@ -1,19 +1,17 @@
 package org.jboss.resteasy.jose.jwe.crypto;
 
+import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 
+import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
-import org.bouncycastle.crypto.BlockCipher;
-import org.bouncycastle.crypto.InvalidCipherTextException;
-import org.bouncycastle.crypto.modes.GCMBlockCipher;
-import org.bouncycastle.crypto.params.AEADParameters;
-import org.bouncycastle.crypto.params.KeyParameter;
 import org.jboss.resteasy.jose.i18n.Messages;
 
 /**
- * AES/GSM/NoPadding encryption and decryption methods. Uses the
- * BouncyCastle.org provider.
+ * AES/GSM/NoPadding encryption and decryption methods.
  *
  * <p>
  * See draft-ietf-jose-json-web-algorithms-10, section 4.9.
@@ -66,24 +64,21 @@ class AESGCM {
      *
      * @return The AES/GCM/NoPadding cipher.
      */
-    private static GCMBlockCipher createAESGCMCipher(final SecretKey secretKey,
+    private static Cipher createAESGCMCipher(final SecretKey secretKey,
             final boolean forEncryption,
             final byte[] iv,
-            final byte[] authData) {
+            final byte[] authData) throws GeneralSecurityException {
 
         // Initialise AES cipher
-        BlockCipher cipher = AES.createCipher(secretKey, forEncryption);
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
 
         // Create GCM cipher with AES
-        GCMBlockCipher gcm = new GCMBlockCipher(cipher);
+        GCMParameterSpec gcmSpec = new GCMParameterSpec(AUTH_TAG_BIT_LENGTH, iv);
 
-        AEADParameters aeadParams = new AEADParameters(new KeyParameter(secretKey.getEncoded()),
-                AUTH_TAG_BIT_LENGTH,
-                iv,
-                authData);
-        gcm.init(forEncryption, aeadParams);
-
-        return gcm;
+        cipher.init(forEncryption ? Cipher.ENCRYPT_MODE : Cipher.DECRYPT_MODE,
+                new SecretKeySpec(secretKey.getEncoded(), "AES"), gcmSpec);
+        cipher.updateAAD(authData);
+        return cipher;
     }
 
     /**
@@ -106,34 +101,25 @@ class AESGCM {
             throws RuntimeException {
 
         // Initialise AES/GCM cipher for encryption
-        GCMBlockCipher cipher = createAESGCMCipher(secretKey, true, iv, authData);
-
-        // Prepare output buffer
-        int outputLength = cipher.getOutputSize(plainText.length);
-        byte[] output = new byte[outputLength];
-
-        // Produce cipher text
-        int outputOffset = cipher.processBytes(plainText, 0, plainText.length, output, 0);
-
-        // Produce authentication tag
         try {
-            outputOffset += cipher.doFinal(output, outputOffset);
+            Cipher cipher = createAESGCMCipher(secretKey, true, iv, authData);
 
-        } catch (InvalidCipherTextException e) {
+            // Encrypt the plain text and produce authentication tag
+            byte[] output = cipher.doFinal(plainText);
 
+            // Split output into cipher text and authentication tag
+            int authTagLength = AUTH_TAG_BIT_LENGTH / 8;
+            int cipherTextLength = output.length - authTagLength;
+            byte[] cipherText = new byte[cipherTextLength];
+            byte[] authTag = new byte[authTagLength];
+            System.arraycopy(output, 0, cipherText, 0, cipherTextLength);
+            System.arraycopy(output, cipherTextLength, authTag, 0, authTagLength);
+
+            return new AuthenticatedCipherText(cipherText, authTag);
+
+        } catch (GeneralSecurityException e) {
             throw new RuntimeException(Messages.MESSAGES.couldntGenerateGCMAuthentication(e.getLocalizedMessage()), e);
         }
-
-        // Split output into cipher text and authentication tag
-        int authTagLength = AUTH_TAG_BIT_LENGTH / 8;
-
-        byte[] cipherText = new byte[outputOffset - authTagLength];
-        byte[] authTag = new byte[authTagLength];
-
-        System.arraycopy(output, 0, cipherText, 0, cipherText.length);
-        System.arraycopy(output, outputOffset - authTagLength, authTag, 0, authTag.length);
-
-        return new AuthenticatedCipherText(cipherText, authTag);
     }
 
     /**
@@ -157,32 +143,22 @@ class AESGCM {
             final byte[] authTag)
             throws RuntimeException {
 
-        // Initialise AES/GCM cipher for decryption
-        GCMBlockCipher cipher = createAESGCMCipher(secretKey, false, iv, authData);
-
-        // Join cipher text and authentication tag to produce cipher input
-        byte[] input = new byte[cipherText.length + authTag.length];
-
-        System.arraycopy(cipherText, 0, input, 0, cipherText.length);
-        System.arraycopy(authTag, 0, input, cipherText.length, authTag.length);
-
-        int outputLength = cipher.getOutputSize(input.length);
-
-        byte[] output = new byte[outputLength];
-
-        // Decrypt
-        int outputOffset = cipher.processBytes(input, 0, input.length, output, 0);
-
-        // Validate authentication tag
         try {
-            outputOffset += cipher.doFinal(output, outputOffset);
 
-        } catch (InvalidCipherTextException e) {
+            // Initialise AES/GCM cipher for decryption
+            Cipher cipher = createAESGCMCipher(secretKey, false, iv, authData);
 
+            // Join cipher text and authentication tag to produce cipher input
+            byte[] input = new byte[cipherText.length + authTag.length];
+
+            System.arraycopy(cipherText, 0, input, 0, cipherText.length);
+            System.arraycopy(authTag, 0, input, cipherText.length, authTag.length);
+            // Decrypt
+            return cipher.doFinal(input);
+
+        } catch (GeneralSecurityException e) {
             throw new RuntimeException(Messages.MESSAGES.couldntValidateGCMAuthentication(e.getLocalizedMessage()), e);
         }
-
-        return output;
     }
 
     /**

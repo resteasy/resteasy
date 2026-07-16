@@ -631,6 +631,12 @@
             <artifactId>wildfly-testing-tools</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.wildfly.security</groupId>
+            <artifactId>wildfly-elytron-x500-cert</artifactId>
+            <version>${version.org.wildfly.security.elytron}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

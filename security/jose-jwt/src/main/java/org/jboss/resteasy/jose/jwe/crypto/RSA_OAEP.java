@@ -1,21 +1,17 @@
 package org.jboss.resteasy.jose.jwe.crypto;
 
-import java.math.BigInteger;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
+import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.bouncycastle.crypto.AsymmetricBlockCipher;
-import org.bouncycastle.crypto.encodings.OAEPEncoding;
-import org.bouncycastle.crypto.engines.RSAEngine;
-import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.jboss.resteasy.jose.i18n.Messages;
 
 /**
  * RSAES OAEP methods for Content Encryption Key (CEK) encryption and
- * decryption. Uses the BouncyCastle.org provider.
+ * decryption.
  *
  * @author Vladimir Dzhuvinov
  * @version $version$ (2013-05-06)
@@ -37,26 +33,10 @@ class RSA_OAEP {
             throws RuntimeException {
 
         try {
-            AsymmetricBlockCipher engine = new RSAEngine();
-
-            // JCA identifier RSA/ECB/OAEPWithSHA-1AndMGF1Padding ?
-            OAEPEncoding cipher = new OAEPEncoding(engine);
-
-            BigInteger mod = pub.getModulus();
-            BigInteger exp = pub.getPublicExponent();
-            RSAKeyParameters keyParams = new RSAKeyParameters(false, mod, exp);
-            cipher.init(true, keyParams);
-
-            int inputBlockSize = cipher.getInputBlockSize();
-            int outputBlockSize = cipher.getOutputBlockSize();
-
-            byte[] keyBytes = cek.getEncoded();
-
-            return cipher.processBlock(keyBytes, 0, keyBytes.length);
-
+            Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-1AndMGF1Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, pub);
+            return cipher.doFinal(cek.getEncoded());
         } catch (Exception e) {
-
-            // org.bouncycastle.crypto.InvalidCipherTextException
             throw new RuntimeException(Messages.MESSAGES.couldntEncryptCEK(e.getLocalizedMessage()), e);
         }
     }
@@ -77,20 +57,12 @@ class RSA_OAEP {
             throws RuntimeException {
 
         try {
-            RSAEngine engine = new RSAEngine();
-            OAEPEncoding cipher = new OAEPEncoding(engine);
-
-            BigInteger mod = priv.getModulus();
-            BigInteger exp = priv.getPrivateExponent();
-
-            RSAKeyParameters keyParams = new RSAKeyParameters(true, mod, exp);
-            cipher.init(false, keyParams);
-            byte[] secretKeyBytes = cipher.processBlock(encryptedCEK, 0, encryptedCEK.length);
+            Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-1AndMGF1Padding");
+            cipher.init(Cipher.DECRYPT_MODE, priv);
+            byte[] secretKeyBytes = cipher.doFinal(encryptedCEK);
             return new SecretKeySpec(secretKeyBytes, "AES");
 
         } catch (Exception e) {
-
-            // org.bouncycastle.crypto.InvalidCipherTextException
             throw new RuntimeException(Messages.MESSAGES.couldntDecryptCEK(e.getLocalizedMessage()), e);
         }
     }
