@@ -13,6 +13,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Variant;
 
 import org.jboss.resteasy.core.request.ServerDrivenNegotiation;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -114,6 +115,45 @@ public class VariantSelectionTest {
         assertEquals(q07plus, negotiation.getBestMatch(available), ERROR_MSG);
         available.add(q10);
         assertEquals(q10, negotiation.getBestMatch(available), ERROR_MSG);
+    }
+
+    @Test
+    public void mostSpecificVariant() {
+        final List<Variant> available = List.of(
+                new Variant(null, "en", "US", null),
+                new Variant(null, "en", "", null),
+                new Variant(null, "en", "GB", null),
+                new Variant(null, "ja", "", null),
+                new Variant(null, "ja", "JP", null),
+                new Variant(null, "de", "CH", null),
+                new Variant(null, "de", "DE", null),
+                new Variant(null, "de", "", null));
+
+        ServerDrivenNegotiation negotiation = new ServerDrivenNegotiation();
+
+        //"Check for de-DE"
+        negotiation.setAcceptLanguageHeaders(List.of("de-DE", "de"));
+        Assertions.assertEquals(Locale.forLanguageTag("de-DE"), negotiation.getBestMatch(available).getLanguage(),
+                () -> String.format("Failed to match de-DE in %s", available));
+        //"Check when no match is found"
+        negotiation.setAcceptLanguageHeaders(List.of("de-LU"));
+        Assertions.assertEquals(Locale.forLanguageTag("de"), negotiation.getBestMatch(available).getLanguage(),
+                () -> String.format("Failed to match de-LU in %s", available));
+        negotiation.setAcceptLanguageHeaders(List.of("de-CH"));
+        Assertions.assertEquals(Locale.forLanguageTag("de-CH"), negotiation.getBestMatch(available).getLanguage(),
+                () -> String.format("Failed to match de-CH in %s", available));
+
+        negotiation.setAcceptLanguageHeaders(List.of("en-GB;q=0.7", "en"));
+        Assertions.assertEquals(Locale.forLanguageTag("en"), negotiation.getBestMatch(available).getLanguage(),
+                () -> String.format("Failed to match en with a quality level of 0.7 in %s", available));
+
+        negotiation.setAcceptLanguageHeaders(List.of("en-GB", "en-US"));
+        Assertions.assertEquals(Locale.forLanguageTag("en-GB"), negotiation.getBestMatch(available).getLanguage(),
+                () -> String.format("Failed to match en-GB in %s", available));
+        negotiation.setAcceptLanguageHeaders(List.of("en-GB", "en"));
+        Assertions.assertEquals(Locale.forLanguageTag("en-GB"), negotiation.getBestMatch(available).getLanguage(),
+                () -> String.format("Failed to match en in %s", available));
+
     }
 
 }

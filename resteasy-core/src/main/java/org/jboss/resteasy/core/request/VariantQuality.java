@@ -59,6 +59,10 @@ public class VariantQuality {
         this.requestMediaType = requestMediaType;
     }
 
+    protected QualityValue getLanguageQuality() {
+        return languageQualityValue;
+    }
+
     /**
      * @return the quality value between zero and one with five decimal places after the point.
      * @see "3.3 Computing overall quality values"

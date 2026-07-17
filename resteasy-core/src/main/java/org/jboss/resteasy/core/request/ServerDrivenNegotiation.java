@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core.request;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -21,6 +22,7 @@ public class ServerDrivenNegotiation {
     private Map<String, QualityValue> requestedCharacterSets = null;
     private Map<String, QualityValue> requestedEncodings = null;
     private Map<Locale, QualityValue> requestedLanguages = null;
+    private Map<Locale, QualityValue> matchedRequestedLanguage = null;
     private int mediaRadix = 1;
 
     public ServerDrivenNegotiation() {
@@ -97,8 +99,68 @@ public class ServerDrivenNegotiation {
         requestedLanguages = requested;
     }
 
+    private void filterRequestedLanguages(List<Variant> available) {
+
+        List<Entry<Locale, QualityValue>> matchingLanguage = new ArrayList<>();
+        Entry<Locale, QualityValue> bestEntry = null;
+
+        if (requestedLanguages == null)
+            return;
+
+        /*
+         * Let's first filter the requested languages (language + region) to add only the language
+         * that matches the available languages into the "matchingLanguage" list. For information
+         * about the filtering logic, see https://datatracker.ietf.org/doc/html/rfc4647#section-3.4
+         */
+        for (Entry<Locale, QualityValue> entry : requestedLanguages.entrySet()) {
+            Locale requestedLanguage = entry.getKey();
+            if (requestedLanguage == null) {
+                return;
+            }
+            for (Variant variant : available) {
+                if (available == null)
+                    break;
+
+                Locale availableLanguage = variant.getLanguage();
+                if (availableLanguage == null)
+                    break;
+
+                if (requestedLanguage.getLanguage().equalsIgnoreCase(availableLanguage.getLanguage())) {
+                    if (hasCountry(requestedLanguage) && hasCountry(availableLanguage)) {
+                        if (requestedLanguage.getCountry().equalsIgnoreCase(availableLanguage.getCountry())) {
+                            matchingLanguage.add(entry);
+                            break;
+                        }
+                    } else {
+                        matchingLanguage.add(entry);
+                        break;
+                    }
+                }
+            }
+        }
+
+        /*
+         * Now that we have the matching language, let's find the entry containing the language
+         * with higher QualityValue.
+         */
+        for (Entry<Locale, QualityValue> entry : matchingLanguage) {
+            if (bestEntry == null)
+                bestEntry = entry;
+
+            else if (entry.getValue().compareTo(bestEntry.getValue()) > 1)
+                bestEntry = entry;
+        }
+
+        if (bestEntry != null) {
+            matchedRequestedLanguage.clear();
+            matchedRequestedLanguage.put(bestEntry.getKey(), bestEntry.getValue());
+        }
+    }
+
     public Variant getBestMatch(List<Variant> available) {
         //      BigDecimal bestQuality = BigDecimal.ZERO;
+        matchedRequestedLanguage = requestedLanguages;
+        filterRequestedLanguages(available);
         VariantQuality bestQuality = null;
         Variant bestOption = null;
         for (Variant option : available) {
@@ -128,7 +190,7 @@ public class ServerDrivenNegotiation {
      */
     //   private static boolean isBetterOption(BigDecimal bestQuality, Variant best,
     //                                         BigDecimal optionQuality, Variant option)
-    private static boolean isBetterOption(VariantQuality bestQuality, Variant best,
+    private boolean isBetterOption(VariantQuality bestQuality, Variant best,
             VariantQuality optionQuality, Variant option) {
         if (best == null)
             return true;
@@ -197,14 +259,18 @@ public class ServerDrivenNegotiation {
         return getExplicitness(best) < getExplicitness(option);
     }
 
-    private static int getExplicitness(Variant variant) {
+    private int getExplicitness(Variant variant) {
         int explicitness = 0;
         if (variant.getMediaType() != null)
             ++explicitness;
         if (variant.getEncoding() != null)
             ++explicitness;
-        if (variant.getLanguage() != null)
+        if (variant.getLanguage() != null) {
             ++explicitness;
+            if (requestedLanguages != null && requestedLanguages.containsKey(variant.getLanguage())) {
+                ++explicitness;
+            }
+        }
         return explicitness;
     }
 
@@ -340,7 +406,7 @@ public class ServerDrivenNegotiation {
         if (language == null)
             return true;
         QualityValue value = null;
-        for (Entry<Locale, QualityValue> entry : requestedLanguages.entrySet()) {
+        for (Entry<Locale, QualityValue> entry : matchedRequestedLanguage.entrySet()) {
             Locale locale = entry.getKey();
             QualityValue qualityValue = entry.getValue();
             if (locale == null)
