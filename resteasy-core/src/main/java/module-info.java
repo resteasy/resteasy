@@ -33,6 +33,7 @@ module org.jboss.resteasy.core {
     requires transitive org.jboss.resteasy.spi;
 
     // Exports
+    exports org.jboss.resteasy.core.config;
     exports org.jboss.resteasy.core;
     exports org.jboss.resteasy.core.interception.jaxrs;
     exports org.jboss.resteasy.core.messagebody;
@@ -60,6 +61,7 @@ module org.jboss.resteasy.core {
     uses jakarta.ws.rs.core.Feature;
     uses org.jboss.resteasy.plugins.server.embedded.EmbeddedServer;
     uses org.jboss.resteasy.spi.Registry;
+    uses org.jboss.resteasy.spi.config.ConfigurationFactory;
 
     // Provides
     provides jakarta.ws.rs.ext.Providers with
@@ -68,4 +70,6 @@ module org.jboss.resteasy.core {
         org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
     provides org.jboss.resteasy.spi.concurrent.ThreadContext with
         org.jboss.resteasy.core.concurrent.ResteasyThreadContext;
+    provides org.jboss.resteasy.spi.config.ConfigurationFactoryResolver with
+        org.jboss.resteasy.core.config.ResteasyConfigurationFactoryResolver;
 }
