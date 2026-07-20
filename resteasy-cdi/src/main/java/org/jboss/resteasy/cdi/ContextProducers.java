@@ -23,7 +23,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
-import jakarta.inject.Singleton;
 import jakarta.ws.rs.container.ResourceContext;
 import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Configuration;
@@ -43,7 +42,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@Singleton
+@ApplicationScoped
 public class ContextProducers {
 
     @Dependent
