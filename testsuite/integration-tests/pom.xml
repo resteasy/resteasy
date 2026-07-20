@@ -54,6 +54,11 @@
                 <plugin>
                     <groupId>org.wildfly.plugins</groupId>
                     <artifactId>wildfly-maven-plugin</artifactId>
+                    <configuration>
+                        <system-properties>
+                            <maven.repo.local>${settings.localRepository}</maven.repo.local>
+                        </system-properties>
+                    </configuration>
                     <executions>
                         <execution>
                             <id>server-provisioning</id>
@@ -438,6 +443,29 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>enhanced-cdi-enabled</id>
+            <activation>
+                <property>
+                    <name>enhanced.cdi.enabled</name>
+                </property>
+            </activation>
+            <properties>
+                <wildfly.system.properties>-Ddev.resteasy.cdi.enhanced.enabled=true</wildfly.system.properties>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <dev.resteasy.cdi.enhanced.enabled>true</dev.resteasy.cdi.enhanced.enabled>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <dependencies>
@@ -560,7 +588,7 @@
             <artifactId>resteasy-wadl</artifactId>
             <scope>test</scope>
         </dependency>
-
+        
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-wadl-undertow-connector</artifactId>
@@ -661,10 +689,23 @@
             <artifactId>resteasy-rxjava2</artifactId>
             <scope>test</scope>
         </dependency>
+
         <!-- Used as a slf4j binder -->
         <dependency>
             <groupId>org.jboss.slf4j</groupId>
             <artifactId>slf4j-jboss-logmanager</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!--
+            WildFly and WildFly Arquillian both require this newer version of JBoss Logging. RESTEasy still uses
+            the older version for backwards compatibility issues. For now, we will need override the dependency for
+            the test suite.
+        -->
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <version>3.6.3.Final</version>
             <scope>test</scope>
         </dependency>
         <dependency>
