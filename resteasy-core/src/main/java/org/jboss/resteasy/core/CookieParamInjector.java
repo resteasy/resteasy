@@ -3,12 +3,12 @@ package org.jboss.resteasy.core;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
-import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.core.Cookie;
 
+import org.jboss.resteasy.core.extractors.ParameterExtractors;
+import org.jboss.resteasy.core.extractors.RequestParameterExtractor;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -19,32 +19,23 @@ import org.jboss.resteasy.spi.ValueInjector;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class CookieParamInjector extends StringParameterInjector implements ValueInjector {
+public class CookieParamInjector implements ValueInjector {
+    private final RequestParameterExtractor extractor;
 
     public CookieParamInjector(final Class type, final Type genericType, final AccessibleObject target, final String cookieName,
             final String defaultValue, final Annotation[] annotations, final ResteasyProviderFactory factory) {
         if (type.equals(Cookie.class)) {
-            this.type = type;
-            this.paramName = cookieName;
-            this.paramType = CookieParam.class;
-            this.defaultValue = defaultValue;
+            extractor = ParameterExtractors.forCookieParam(type, null, Set.of(), cookieName, defaultValue, factory);
 
         } else {
-            initialize(type, genericType, cookieName, CookieParam.class, defaultValue, target, annotations, factory);
+            extractor = ParameterExtractors.forCookieParam(type, genericType, Set.of(annotations), cookieName, defaultValue,
+                    factory);
         }
     }
 
     @Override
     public Object inject(HttpRequest request, HttpResponse response, boolean unwrapAsync) {
-        Cookie cookie = request.getHttpHeaders().getCookies().get(paramName);
-        if (type.equals(Cookie.class))
-            return cookie;
-
-        if (cookie == null)
-            return extractValues(null);
-        List<String> values = new ArrayList<String>();
-        values.add(cookie.getValue());
-        return extractValues(values);
+        return extractor.extract(request);
     }
 
     @Override

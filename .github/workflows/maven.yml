@@ -73,6 +73,38 @@ jobs:
           name: server-logs-${{ matrix.os }}-${{ matrix.java }}
           path: '**/server.log'
 
+  additional-profiles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        profile:
+          - '-Denhanced.cdi.disabled'
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          java-version: 25
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: Test with ${{ matrix.profile }} - JDK 25
+        run:  |
+          mvn clean install -U -B -DskipTests
+          cd testsuite
+          mvn verify -U -B -fae ${{ matrix.profile }}
+      - name: Upload test logs for failed run
+        uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: failure-reports
+          path: |
+            **/surefire-reports/**
+            **/failsafe-reports/**
+            **/*.log
+
   build-java-docs:
     runs-on: ubuntu-latest
     timeout-minutes: 20

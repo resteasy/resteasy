@@ -1,0 +1,6 @@
+#
+# Copyright The RESTEasy Authors
+# SPDX-License-Identifier: Apache-2.0
+#
+
+org.jboss.resteasy.cdi.CdiFeature

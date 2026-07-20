@@ -363,6 +363,44 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>enhanced-cdi-disabled</id>
+            <activation>
+                <property>
+                    <name>enhanced.cdi.disabled</name>
+                </property>
+            </activation>
+            <properties>
+                <additional.surefire.excluded.groups>requires-enhanced-cdi,managed-bean-support-required</additional.surefire.excluded.groups>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>disable-enhanced-cdi</id>
+                                <phase>process-test-resources</phase>
+                                <goals>
+                                    <goal>execute-commands</goal>
+                                </goals>
+                                <configuration>
+                                    <jboss-home>${jboss.home}</jboss-home>
+                                    <offline>true</offline>
+                                    <stdout>${project.build.directory}/configure-test-server.out</stdout>
+                                    <commands>
+                                        <command>embed-server --server-config=${jboss.server.config.file.name}</command>
+                                        <command>/system-property=dev.resteasy.cdi.enhanced.enabled:add(value=false)</command>
+                                        <command>stop-embedded-server</command>
+                                    </commands>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <dependencies>

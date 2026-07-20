@@ -92,6 +92,166 @@ Resources can use `public`, `protected`, or package-private no-arg constructors.
 Using `protected` or package-private constructors follows CDI best practices by hiding implementation details.
 ====
 
+=== Parameter Injection with CDI Qualifiers
+
+{spec-name} parameter annotations (`@PathParam`, `@QueryParam`, `@HeaderParam`, `@MatrixParam`, `@CookieParam`,
+`@FormParam`, and `@BeanParam`) are registered as CDI qualifiers by RESTEasy. This allows parameter values to be
+injected directly via CDI without requiring a no-arg constructor at all.
+
+==== Constructor Parameter Injection
+
+Resource classes can receive {spec-name} parameter values directly in an `@Inject` constructor:
+
+[source,java]
+----
+@Path("/items/{id}")
+@RequestScoped
+public class ItemResource {
+
+    private final String id;
+    private final ItemService service;
+
+    @Inject
+    public ItemResource(@PathParam("id") String id, ItemService service) {
+        this.id = id;
+        this.service = service;
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Item getItem() {
+        return service.findById(id);
+    }
+}
+----
+
+No no-arg constructor is needed. CDI resolves the `@PathParam` qualifier through a RESTEasy-provided producer that
+extracts the value from the current request context. Standard CDI beans (like `ItemService`) and {spec-name} parameter
+values can be mixed freely in the same constructor.
+
+==== Field Injection
+
+Fields annotated with `@Inject` and a {spec-name} parameter annotation receive parameter values from the current request:
+
+[source,java]
+----
+@Path("/items/{id}")
+@RequestScoped
+public class ItemResource {
+
+    @Inject
+    @PathParam("id")
+    private String id;
+
+    @Inject
+    @QueryParam("expand")
+    private boolean expand;
+
+    @Inject
+    @HeaderParam("Accept-Language")
+    private String language;
+
+    @Inject
+    @DefaultValue("10")
+    @QueryParam("limit")
+    private int limit;
+}
+----
+
+==== Setter Method Injection
+
+Setter methods annotated with `@Inject` can receive parameter values. The parameter annotation may be placed on either
+the method or the method parameter:
+
+[source,java]
+----
+@Path("/items/{id}")
+@RequestScoped
+public class ItemResource {
+
+    private String id;
+    private String filter;
+
+    // Annotation on parameter
+    @Inject
+    public void setId(@PathParam("id") String id) {
+        this.id = id;
+    }
+
+    // Annotation on method
+    @Inject
+    @QueryParam("filter")
+    public void setFilter(String filter) {
+        this.filter = filter;
+    }
+}
+----
+
+When the annotation is placed on the method, the parameter name is derived from the method name using JavaBean
+conventions (e.g. `setUserId` resolves to `userId`). When the annotation is placed on the parameter, the parameter
+name is taken from the annotation value.
+
+==== Bean Parameter Injection
+
+The `@BeanParam` annotation aggregates multiple parameters into a single object:
+
+[source,java]
+----
+public class SearchParams {
+    @Inject
+    @QueryParam("q")
+    private String query;
+
+    @Inject
+    @QueryParam("limit")
+    @DefaultValue("10")
+    private int limit;
+
+    @Inject
+    @HeaderParam("Accept-Language")
+    private String language;
+}
+
+@Path("/search")
+@RequestScoped
+public class SearchResource {
+
+    @Inject
+    @BeanParam
+    private SearchParams params;
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Item> search() {
+        return searchItems(params);
+    }
+}
+----
+
+==== Type Conversion
+
+Parameter values are converted from their string representation to the target Java type using the same conversion rules
+as standard {spec-name} parameter handling (see the {spec-name} specification for details on `ParamConverterProvider`,
+`valueOf`, and `fromString` resolution).
+
+==== Disabling Enhanced CDI Support
+
+The enhanced CDI support, which includes `@Context` injection and parameter qualifier injection, can be disabled by
+setting the `dev.resteasy.cdi.enhanced.enabled` configuration property to `false`. This is useful when upgrading from
+an older version of RESTEasy and you want to opt out of the new behavior.
+
+The property can be set via a system property:
+
+[source]
+----
+-Ddev.resteasy.cdi.enhanced.enabled=false
+----
+
+Or via MicroProfile Config if available.
+
+When disabled, `@Context` and `@*Param` annotations are not treated as CDI qualifiers, and resource classes must use
+traditional {spec-name} injection or provide a public no-arg constructor.
+
 === Configuration within WildFly
 
 CDI integration is provided with no additional configuration with WildFly. 
