@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.NoSuchElementException;
@@ -79,7 +80,6 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
 
     private static final String PREFIX = "META-INF/services/";
 
-    private final Object lock = new Object();
     private final Supplier<String> toString;
     // Guarded by lock
     private final Holder<S>[] holders;
@@ -182,9 +182,7 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
      */
     public Optional<S> first() {
         if (size > 0) {
-            synchronized (lock) {
-                return Optional.of(holders[0].getInstance());
-            }
+            return Optional.of(holders[0].getInstance());
         }
         return Optional.empty();
     }
@@ -199,9 +197,7 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
      */
     public Optional<S> last() {
         if (size > 0) {
-            synchronized (lock) {
-                return Optional.of(holders[size - 1].getInstance());
-            }
+            return Optional.of(holders[size - 1].getInstance());
         }
         return Optional.empty();
     }
@@ -215,12 +211,7 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
      * @return the types found for this service
      */
     public Set<Class<S>> getTypes() {
-        final Holder<S>[] holders;
-        synchronized (lock) {
-            holders = this.holders.clone();
-        }
-        final int len = holders.length;
-        final Set<Class<S>> result = new LinkedHashSet<>(len);
+        final Set<Class<S>> result = new LinkedHashSet<>(size);
         for (Holder<S> holder : holders) {
             result.add(holder.type);
         }
@@ -235,10 +226,6 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
      */
     @Override
     public Iterator<S> iterator() {
-        final Holder<S>[] holders;
-        synchronized (lock) {
-            holders = this.holders.clone();
-        }
         return new Iterator<>() {
             final AtomicInteger current = new AtomicInteger();
 
@@ -267,6 +254,8 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
     @SuppressWarnings("unchecked")
     private static <S> Holder<S>[] findClasses(final Class<S> type, final ClassLoader cl,
             final Function<Class<? extends S>, S> constructor) throws IOException {
+        int sequence = 0;
+        final Set<Class<S>> seen = new HashSet<>();
         final Set<Holder<S>> holders = new TreeSet<>();
         final Enumeration<URL> resources = cl.getResources(PREFIX + type.getName());
         while (resources.hasMoreElements()) {
@@ -279,16 +268,19 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
                         line = line.substring(0, commentIdx);
                     }
                     line = line.trim();
-                    if (line.equals(""))
+                    if (line.isEmpty())
                         continue;
                     try {
                         final Class<S> found = (Class<S>) cl.loadClass(line);
+                        if (!seen.add(found)) {
+                            continue;
+                        }
                         final Priority priority = found.getAnnotation(Priority.class);
                         int p = Integer.MAX_VALUE;
                         if (priority != null) {
                             p = priority.value();
                         }
-                        holders.add(new Holder<>(found, p, constructor));
+                        holders.add(new Holder<>(sequence++, found, p, constructor));
                     } catch (ClassNotFoundException e) {
                         LogMessages.LOGGER.failedToLoad(e, line);
                     }
@@ -312,12 +304,15 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
     }
 
     private static class Holder<S> implements Comparable<Holder<S>> {
+        final int sequence;
         final Class<S> type;
         final int priority;
         final Function<Class<? extends S>, S> constructor;
         volatile S instance;
 
-        private Holder(final Class<S> type, final int priority, final Function<Class<? extends S>, S> constructor) {
+        private Holder(final int sequence, final Class<S> type, final int priority,
+                final Function<Class<? extends S>, S> constructor) {
+            this.sequence = sequence;
             this.type = type;
             this.priority = priority;
             this.constructor = constructor;
@@ -341,23 +336,27 @@ public class PriorityServiceLoader<S> implements Iterable<S> {
         }
 
         @Override
-        public int compareTo(final Holder o) {
-            return Integer.compare(priority, o.priority);
+        public int compareTo(final Holder<S> o) {
+            int result = Integer.compare(priority, o.priority);
+            return result != 0 ? result : Integer.compare(sequence, o.sequence);
         }
 
         @Override
         public String toString() {
-            return "Holder[type=" + type + ", priority=" + priority + ", currentInstance=" + instance + "]";
+            return "Holder[sequence=" + sequence + ", type=" + type + ", priority=" + priority + ", currentInstance=" + instance
+                    + "]";
         }
 
         S getInstance() {
             if (instance == null) {
                 synchronized (this) {
-                    try {
-                        instance = createInstance();
-                    } catch (NoSuchMethodException | InvocationTargetException | InstantiationException
-                            | IllegalAccessException e) {
-                        throw Messages.MESSAGES.failedToConstructClass(e, type);
+                    if (instance == null) {
+                        try {
+                            instance = createInstance();
+                        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException
+                                | IllegalAccessException e) {
+                            throw Messages.MESSAGES.failedToConstructClass(e, type);
+                        }
                     }
                 }
             }

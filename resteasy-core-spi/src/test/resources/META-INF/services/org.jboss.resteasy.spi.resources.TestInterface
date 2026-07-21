@@ -20,4 +20,7 @@
 org.jboss.resteasy.spi.resources.TestImpl
 org.jboss.resteasy.spi.resources.TestImplLast
 org.jboss.resteasy.spi.resources.TestImplNoPriority
+org.jboss.resteasy.spi.resources.TestImplDuplicateNoPriority
+# Add the same implementation twice to ensure it gets ignored
+org.jboss.resteasy.spi.resources.TestImplDuplicateNoPriority
 org.jboss.resteasy.spi.resources.TestImplFirst

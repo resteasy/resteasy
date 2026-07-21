@@ -27,6 +27,7 @@ import java.util.Set;
 import org.jboss.resteasy.spi.resources.AbstractResolver;
 import org.jboss.resteasy.spi.resources.NoEntriesInterface;
 import org.jboss.resteasy.spi.resources.TestImpl;
+import org.jboss.resteasy.spi.resources.TestImplDuplicateNoPriority;
 import org.jboss.resteasy.spi.resources.TestImplFirst;
 import org.jboss.resteasy.spi.resources.TestImplLast;
 import org.jboss.resteasy.spi.resources.TestImplNoPriority;
@@ -43,7 +44,7 @@ public class PriorityServiceLoaderTestCase {
     public void firstAndLast() {
         final PriorityServiceLoader<TestInterface> loader1 = PriorityServiceLoader.load(TestInterface.class);
         check(true, TestImplFirst.class, loader1);
-        check(false, TestImplNoPriority.class, loader1);
+        check(false, TestImplDuplicateNoPriority.class, loader1);
 
         final PriorityServiceLoader<TestInterface.InnerInterface> loader2 = PriorityServiceLoader
                 .load(TestInterface.InnerInterface.class);
@@ -58,11 +59,12 @@ public class PriorityServiceLoaderTestCase {
     @Test
     public void iteratorOrder() {
         final Iterator<TestInterface> iterator = PriorityServiceLoader.load(TestInterface.class).iterator();
-        // We should have 4 total
+        // We should have 5 total
         checkNext(TestImplFirst.class, 1, iterator);
         checkNext(TestImpl.class, 2, iterator);
         checkNext(TestImplLast.class, 3, iterator);
         checkNext(TestImplNoPriority.class, 4, iterator);
+        checkNext(TestImplDuplicateNoPriority.class, 5, iterator);
         checkNoMore(iterator);
     }
 
@@ -84,13 +86,14 @@ public class PriorityServiceLoaderTestCase {
         final PriorityServiceLoader<TestInterface> loader = PriorityServiceLoader.load(TestInterface.class);
         final Set<Class<TestInterface>> found = loader.getTypes();
         // Should have 4 implementations
-        Assertions.assertEquals(4, found.size(), () -> "Expected 4 implementations found " + found.size());
+        Assertions.assertEquals(5, found.size(), () -> "Expected 5 implementations found " + found.size());
         final Iterator<Class<TestInterface>> iterator = found.iterator();
         // These should be in a specific order
         Assertions.assertEquals(TestImplFirst.class, iterator.next());
         Assertions.assertEquals(TestImpl.class, iterator.next());
         Assertions.assertEquals(TestImplLast.class, iterator.next());
         Assertions.assertEquals(TestImplNoPriority.class, iterator.next());
+        Assertions.assertEquals(TestImplDuplicateNoPriority.class, iterator.next());
     }
 
     @Test
