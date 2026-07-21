@@ -191,10 +191,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
             return;
         }
 
-        Cleanables cleanables = ResteasyContext.getContextData(Cleanables.class);
-        if (cleanables == null) {
-            return;
-        }
+        Cleanables cleanables = ResteasyContext.computeIfAbsent(Cleanables.class, Cleanables::new);
 
         entityStreamCleanupRegistered = true;
         cleanables.addCleanable(() -> {
