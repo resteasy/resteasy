@@ -198,6 +198,9 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
 
         entityStreamCleanupRegistered = true;
         cleanables.addCleanable(() -> {
+            if (httpRequest.getAsyncContext().isSuspended()) {
+                return;
+            }
             InputStream entityStream = replacementEntityStream;
             if (entityStream != null && entityStream != originalEntityStream) {
                 entityStream.close();
