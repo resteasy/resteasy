@@ -67,20 +67,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.logmanager</groupId>
-            <artifactId>jboss-logmanager</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <!-- Transitively io.undertow:undertow-core -> org.jboss.threads:jboss-threads with a newer version.
-                     Excluding here resolves issues with the lower version winning.
-                 -->
-                <exclusion>
-                    <groupId>io.smallrye.common</groupId>
-                    <artifactId>smallrye-common-constraint</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
             <version>${project.version}</version>
@@ -119,9 +105,6 @@
                         --add-reads org.jboss.resteasy.plugins.providers.multipart=org.jboss.resteasy.client
                         --add-reads org.jboss.resteasy.plugins.providers.multipart=org.jboss.resteasy.client.api
                     </argLine>
-                    <systemPropertyVariables>
-                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>
