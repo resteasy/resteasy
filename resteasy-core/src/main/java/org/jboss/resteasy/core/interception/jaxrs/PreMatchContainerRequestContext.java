@@ -28,6 +28,7 @@ import org.jboss.resteasy.core.PostResourceMethodInvokers;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.plugins.server.Cleanables;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.ApplicationException;
@@ -51,6 +52,9 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
     private Map<Class<?>, Object> contextDataMap;
     private boolean inFilter;
     private Throwable throwable;
+    private boolean entityStreamCleanupRegistered;
+    private final InputStream originalEntityStream;
+    private InputStream replacementEntityStream;
     private boolean startedContinuation;
 
     @Deprecated
@@ -61,6 +65,7 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
     public PreMatchContainerRequestContext(final HttpRequest request,
             final ContainerRequestFilter[] requestFilters, final Supplier<BuiltResponse> continuation) {
         this.httpRequest = request;
+        this.originalEntityStream = request.getInputStream();
         this.requestFilters = requestFilters;
         this.continuation = continuation;
         contextDataMap = ResteasyContext.getContextDataMap();
@@ -177,6 +182,27 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
     @Override
     public void setEntityStream(InputStream entityStream) {
         httpRequest.setInputStream(entityStream);
+        replacementEntityStream = entityStream;
+        registerEntityStreamCleanup();
+    }
+
+    private void registerEntityStreamCleanup() {
+        if (entityStreamCleanupRegistered) {
+            return;
+        }
+
+        Cleanables cleanables = ResteasyContext.getContextData(Cleanables.class);
+        if (cleanables == null) {
+            return;
+        }
+
+        entityStreamCleanupRegistered = true;
+        cleanables.addCleanable(() -> {
+            InputStream entityStream = replacementEntityStream;
+            if (entityStream != null && entityStream != originalEntityStream) {
+                entityStream.close();
+            }
+        });
     }
 
     @Override

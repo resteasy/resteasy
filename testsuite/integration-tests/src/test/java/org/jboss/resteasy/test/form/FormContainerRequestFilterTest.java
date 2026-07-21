@@ -90,4 +90,53 @@ public class FormContainerRequestFilterTest {
             Assertions.assertEquals("abc xyz", response.readEntity(String.class), "Wrong response");
         }
     }
+
+    private void resetClosedState(Client client) {
+        try (Response response = client.target(generateURL("/reset")).request().get()) {
+            Assertions.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        }
+    }
+
+    private boolean isReplacementClosed(Client client) {
+        try (Response response = client.target(generateURL("/closed")).request().get()) {
+            Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            return response.readEntity(Boolean.class);
+        }
+    }
+
+    @Test
+    public void testReplacementEntityStreamIsClosed() {
+        try (Client client = ClientBuilder.newClient()) {
+            resetClosedState(client);
+
+            Form form = new Form().param("fp", "value");
+            try (Response response = client.target(generateURL("/a")).request()
+                    .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE))) {
+                Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+                Assertions.assertEquals("value", response.readEntity(String.class));
+            }
+
+            Assertions.assertTrue(isReplacementClosed(client),
+                    "The replacement request entity stream was not closed");
+        }
+    }
+
+    @Test
+    public void testRestoredOriginalEntityStreamDoesNotCloseReplacement() {
+        try (Client client = ClientBuilder.newClient()) {
+            resetClosedState(client);
+
+            Form form = new Form().param("fp", "value");
+            try (Response response = client.target(generateURL("/a")).request()
+                    .header(FormContainerRequestFilterFilter.RESTORE_ORIGINAL_HEADER, Boolean.TRUE.toString())
+                    .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE))) {
+                Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+                Assertions.assertEquals("value", response.readEntity(String.class));
+            }
+
+            Assertions.assertFalse(isReplacementClosed(client),
+                    "The replacement request entity stream was closed after restoring the original stream");
+        }
+    }
+
 }
