@@ -52,9 +52,6 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
     private Map<Class<?>, Object> contextDataMap;
     private boolean inFilter;
     private Throwable throwable;
-    private volatile boolean entityStreamCleanupRegistered;
-    private final InputStream originalEntityStream;
-    private volatile InputStream replacementEntityStream;
     private boolean startedContinuation;
 
     @Deprecated
@@ -65,7 +62,6 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
     public PreMatchContainerRequestContext(final HttpRequest request,
             final ContainerRequestFilter[] requestFilters, final Supplier<BuiltResponse> continuation) {
         this.httpRequest = request;
-        this.originalEntityStream = request.getInputStream();
         this.requestFilters = requestFilters;
         this.continuation = continuation;
         contextDataMap = ResteasyContext.getContextDataMap();
@@ -181,28 +177,44 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
 
     @Override
     public void setEntityStream(InputStream entityStream) {
+        EntityStreamTracker tracker = ResteasyContext.computeIfAbsent(EntityStreamTracker.class,
+                () -> new EntityStreamTracker(httpRequest));
         httpRequest.setInputStream(entityStream);
-        replacementEntityStream = entityStream;
-        registerEntityStreamCleanup();
+        tracker.setReplacement(entityStream);
     }
 
-    private void registerEntityStreamCleanup() {
-        if (entityStreamCleanupRegistered) {
-            return;
+    private static final class EntityStreamTracker {
+        private final HttpRequest httpRequest;
+        private final InputStream originalEntityStream;
+        private volatile InputStream replacementEntityStream;
+        private boolean cleanupRegistered;
+
+        private EntityStreamTracker(HttpRequest httpRequest) {
+            this.httpRequest = httpRequest;
+            this.originalEntityStream = httpRequest.getInputStream();
         }
 
-        Cleanables cleanables = ResteasyContext.computeIfAbsent(Cleanables.class, Cleanables::new);
+        private synchronized void setReplacement(InputStream entityStream) {
+            replacementEntityStream = entityStream;
+            if (cleanupRegistered) {
+                return;
+            }
 
-        entityStreamCleanupRegistered = true;
-        cleanables.addCleanable(() -> {
+            Cleanables cleanables = ResteasyContext.computeIfAbsent(Cleanables.class, Cleanables::new);
+            cleanupRegistered = true;
+            cleanables.addCleanable(this::close);
+        }
+
+        private void close() throws IOException {
             if (httpRequest.getAsyncContext().isSuspended()) {
                 return;
             }
+
             InputStream entityStream = replacementEntityStream;
             if (entityStream != null && entityStream != originalEntityStream) {
                 entityStream.close();
             }
-        });
+        }
     }
 
     @Override
