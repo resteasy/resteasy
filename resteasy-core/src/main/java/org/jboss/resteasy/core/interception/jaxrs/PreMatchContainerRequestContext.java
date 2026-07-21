@@ -52,9 +52,9 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
     private Map<Class<?>, Object> contextDataMap;
     private boolean inFilter;
     private Throwable throwable;
-    private boolean entityStreamCleanupRegistered;
+    private volatile boolean entityStreamCleanupRegistered;
     private final InputStream originalEntityStream;
-    private InputStream replacementEntityStream;
+    private volatile InputStream replacementEntityStream;
     private boolean startedContinuation;
 
     @Deprecated
