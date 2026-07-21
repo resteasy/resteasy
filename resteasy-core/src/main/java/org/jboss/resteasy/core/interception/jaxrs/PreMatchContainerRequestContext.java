@@ -206,10 +206,6 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
         }
 
         private void close() throws IOException {
-            if (httpRequest.getAsyncContext().isSuspended()) {
-                return;
-            }
-
             InputStream entityStream = replacementEntityStream;
             if (entityStream != null && entityStream != originalEntityStream) {
                 entityStream.close();
