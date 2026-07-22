@@ -92,7 +92,7 @@ public class FormContainerRequestFilterTest {
     }
 
     private void resetClosedState(Client client) {
-        try (Response response = client.target(generateURL("/reset")).request().get()) {
+        try (Response response = client.target(generateURL("/reset")).request().post(null)) {
             Assertions.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
         }
     }

@@ -50,7 +50,7 @@ public class FormContainerRequestFilterResource {
         return FormContainerRequestFilterFilter.isClosed();
     }
 
-    @GET
+    @POST
     @Path("reset")
     public void reset() {
         FormContainerRequestFilterFilter.reset();
