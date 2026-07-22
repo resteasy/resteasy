@@ -131,7 +131,13 @@ public class MethodInjectorImpl implements MethodInjector {
 
         @SuppressWarnings("unchecked")
         CompletionStage<Object[]> stagedArgs = (CompletionStage<Object[]>) argsObj;
-        return stagedArgs.thenApply(args -> invokeAfterArgumentInjection(request, httpResponse, resource, args));
+        return stagedArgs
+                .whenComplete((args, failure) -> {
+                    if (failure != null) {
+                        closeReplacementEntityStream(request);
+                    }
+                })
+                .thenApply(args -> invokeAfterArgumentInjection(request, httpResponse, resource, args));
     }
 
     private Object invokeAfterArgumentInjection(HttpRequest request, HttpResponse httpResponse, Object resource,
