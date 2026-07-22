@@ -28,7 +28,6 @@ import org.jboss.resteasy.core.PostResourceMethodInvokers;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.plugins.server.Cleanables;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.ApplicationException;
@@ -177,44 +176,9 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
 
     @Override
     public void setEntityStream(InputStream entityStream) {
-        EntityStreamTracker tracker = ResteasyContext.computeIfAbsent(EntityStreamTracker.class,
-                () -> new EntityStreamTracker(httpRequest));
+        RequestEntityStreamTracker tracker = RequestEntityStreamTracker.getOrCreate(httpRequest);
         httpRequest.setInputStream(entityStream);
         tracker.setReplacement(entityStream);
-    }
-
-    private static final class EntityStreamTracker {
-        private final HttpRequest httpRequest;
-        private final InputStream originalEntityStream;
-        private volatile InputStream replacementEntityStream;
-        private boolean cleanupRegistered;
-
-        private EntityStreamTracker(HttpRequest httpRequest) {
-            this.httpRequest = httpRequest;
-            this.originalEntityStream = httpRequest.getInputStream();
-        }
-
-        private synchronized void setReplacement(InputStream entityStream) {
-            replacementEntityStream = entityStream;
-            if (cleanupRegistered) {
-                return;
-            }
-
-            Cleanables cleanables = ResteasyContext.computeIfAbsent(Cleanables.class, Cleanables::new);
-            cleanupRegistered = true;
-            cleanables.addCleanable(this::close);
-        }
-
-        private void close() throws IOException {
-            if (httpRequest.getAsyncContext().isSuspended()) {
-                return;
-            }
-
-            InputStream entityStream = replacementEntityStream;
-            if (entityStream != null && entityStream != originalEntityStream) {
-                entityStream.close();
-            }
-        }
     }
 
     @Override

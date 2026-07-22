@@ -106,6 +106,10 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
         return this.interceptors;
     }
 
+    boolean injectsInputStream() {
+        return InputStream.class.isAssignableFrom(type);
+    }
+
     public boolean isFormData(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         if (mediaType.isWildcardType() || mediaType.isWildcardSubtype() ||
                 !mediaType.isCompatible(MediaType.APPLICATION_FORM_URLENCODED_TYPE))
