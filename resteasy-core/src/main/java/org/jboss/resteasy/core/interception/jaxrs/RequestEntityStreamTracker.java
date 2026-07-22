@@ -52,6 +52,7 @@ public final class RequestEntityStreamTracker {
             }
             closed = true;
             entityStream = replacementEntityStream;
+            replacementEntityStream = originalEntityStream;
         }
 
         try {
