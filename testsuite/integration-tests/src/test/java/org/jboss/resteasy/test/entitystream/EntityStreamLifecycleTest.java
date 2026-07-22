@@ -29,6 +29,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.test.entitystream.resource.EntityStreamLifecycleFilter;
+import org.jboss.resteasy.test.entitystream.resource.EntityStreamLifecyclePreMatchFilter;
 import org.jboss.resteasy.test.entitystream.resource.EntityStreamLifecycleResource;
 import org.jboss.resteasy.test.entitystream.resource.EntityStreamLifecycleState;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -47,6 +48,7 @@ public class EntityStreamLifecycleTest {
         WebArchive war = TestUtil.prepareArchive(EntityStreamLifecycleTest.class.getSimpleName());
         return TestUtil.finishContainerPrepare(war, null,
                 EntityStreamLifecycleFilter.class,
+                EntityStreamLifecyclePreMatchFilter.class,
                 EntityStreamLifecycleResource.class,
                 EntityStreamLifecycleState.class);
     }
@@ -95,6 +97,23 @@ public class EntityStreamLifecycleTest {
     }
 
     @Test
+    public void closesOnlyFinalPreAndPostMatchReplacement() {
+        try (Client client = ClientBuilder.newClient()) {
+            reset(client);
+            try (Response response = client.target(generateURL("/entity-stream/entity")).request()
+                    .header(EntityStreamLifecycleFilter.MULTIPLE_REPLACEMENTS, Boolean.TRUE.toString())
+                    .post(Entity.text("entity"))) {
+                Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+                Assertions.assertEquals("true:entity", response.readEntity(String.class));
+            }
+            try (Response response = client.target(generateURL("/entity-stream/replacement-close-state")).request().get()) {
+                Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+                Assertions.assertEquals("false:true", response.readEntity(String.class));
+            }
+        }
+    }
+
+    @Test
     public void restoringOriginalDoesNotCloseReplacement() {
         try (Client client = ClientBuilder.newClient()) {
             reset(client);
@@ -113,10 +132,9 @@ public class EntityStreamLifecycleTest {
         try (Client client = ClientBuilder.newClient()) {
             reset(client);
 
-            try (Response response =
-                    client.target(generateURL("/entity-stream/reader"))
-                            .request()
-                            .post(Entity.text("reader"))) {
+            try (Response response = client.target(generateURL("/entity-stream/reader"))
+                    .request()
+                    .post(Entity.text("reader"))) {
 
                 Assertions.assertEquals(
                         Response.Status.OK.getStatusCode(),

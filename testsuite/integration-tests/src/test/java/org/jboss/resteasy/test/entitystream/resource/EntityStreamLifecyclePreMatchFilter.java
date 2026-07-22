@@ -26,39 +26,26 @@ import jakarta.annotation.Priority;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.container.PreMatching;
 import jakarta.ws.rs.ext.Provider;
 
 @Provider
+@PreMatching
 @Priority(Priorities.ENTITY_CODER)
-public class EntityStreamLifecycleFilter implements ContainerRequestFilter {
-    public static final String RESTORE_ORIGINAL = "X-Restore-Original-Entity-Stream";
-    public static final String MULTIPLE_REPLACEMENTS = "X-Multiple-Replacement-Entity-Streams";
-
+public class EntityStreamLifecyclePreMatchFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        if (!requestContext.hasEntity()) {
+        if (!requestContext.hasEntity()
+                || !Boolean.parseBoolean(requestContext.getHeaderString(EntityStreamLifecycleFilter.MULTIPLE_REPLACEMENTS))) {
             return;
         }
         InputStream original = requestContext.getEntityStream();
-        if (Boolean.parseBoolean(requestContext.getHeaderString(MULTIPLE_REPLACEMENTS))) {
-            requestContext.setEntityStream(new FilterInputStream(original) {
-                @Override
-                public void close() {
-                    EntityStreamLifecycleState.CLOSED.set(true);
-                    EntityStreamLifecycleState.POST_MATCH_CLOSED.set(true);
-                }
-            });
-        } else {
-            requestContext.setEntityStream(new FilterInputStream(original) {
-                @Override
-                public void close() throws IOException {
-                    EntityStreamLifecycleState.CLOSED.set(true);
-                    super.close();
-                }
-            });
-        }
-        if (Boolean.parseBoolean(requestContext.getHeaderString(RESTORE_ORIGINAL))) {
-            requestContext.setEntityStream(original);
-        }
+        requestContext.setEntityStream(new FilterInputStream(original) {
+            @Override
+            public void close() throws IOException {
+                EntityStreamLifecycleState.PRE_MATCH_CLOSED.set(true);
+                super.close();
+            }
+        });
     }
 }

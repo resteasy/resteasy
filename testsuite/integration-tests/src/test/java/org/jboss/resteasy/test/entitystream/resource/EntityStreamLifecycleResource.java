@@ -38,6 +38,8 @@ public class EntityStreamLifecycleResource {
     @Path("/reset")
     public Response reset() {
         EntityStreamLifecycleState.CLOSED.set(false);
+        EntityStreamLifecycleState.PRE_MATCH_CLOSED.set(false);
+        EntityStreamLifecycleState.POST_MATCH_CLOSED.set(false);
         return Response.noContent().build();
     }
 
@@ -46,6 +48,14 @@ public class EntityStreamLifecycleResource {
     @Produces(MediaType.TEXT_PLAIN)
     public boolean closed() {
         return EntityStreamLifecycleState.CLOSED.get();
+    }
+
+    @GET
+    @Path("/replacement-close-state")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String replacementCloseState() {
+        return EntityStreamLifecycleState.PRE_MATCH_CLOSED.get() + ":"
+                + EntityStreamLifecycleState.POST_MATCH_CLOSED.get();
     }
 
     @POST
@@ -79,8 +89,7 @@ public class EntityStreamLifecycleResource {
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public String reader(Reader reader) throws IOException {
-        boolean closedDuringInvocation =
-                EntityStreamLifecycleState.CLOSED.get();
+        boolean closedDuringInvocation = EntityStreamLifecycleState.CLOSED.get();
 
         StringBuilder value = new StringBuilder();
         char[] buffer = new char[256];

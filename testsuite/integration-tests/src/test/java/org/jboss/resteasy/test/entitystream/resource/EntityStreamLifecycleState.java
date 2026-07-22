@@ -22,6 +22,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class EntityStreamLifecycleState {
     static final AtomicBoolean CLOSED = new AtomicBoolean();
+    static final AtomicBoolean PRE_MATCH_CLOSED = new AtomicBoolean();
+    static final AtomicBoolean POST_MATCH_CLOSED = new AtomicBoolean();
 
     private EntityStreamLifecycleState() {
     }
