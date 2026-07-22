@@ -33,7 +33,7 @@ public class MethodInjectorImpl implements MethodInjector {
     protected ResourceLocator method;
     protected Method interfaceBasedMethod;
     protected boolean expectsBody;
-    protected boolean injectsInputStream;
+    protected boolean injectsRawStream;
 
     public MethodInjectorImpl(final ResourceLocator resourceMethod, final ResteasyProviderFactory factory) {
         this.factory = factory;
@@ -46,7 +46,7 @@ public class MethodInjectorImpl implements MethodInjector {
             params[i] = factory.getInjectorFactory().createParameterExtractor(parameter, factory);
             if (params[i] instanceof MessageBodyParameterInjector) {
                 expectsBody = true;
-                injectsInputStream |= ((MessageBodyParameterInjector) params[i]).injectsInputStream();
+                injectsRawStream |= ((MessageBodyParameterInjector) params[i]).injectsRawStream();
             }
             i++;
         }
@@ -142,7 +142,7 @@ public class MethodInjectorImpl implements MethodInjector {
 
     private Object invokeAfterArgumentInjection(HttpRequest request, HttpResponse httpResponse, Object resource,
             Object[] args) {
-        if (!injectsInputStream) {
+        if (!injectsRawStream) {
             closeReplacementEntityStream(request);
         }
 
@@ -150,7 +150,7 @@ public class MethodInjectorImpl implements MethodInjector {
         try {
             returnObj = invoke(request, httpResponse, resource, args);
         } catch (RuntimeException failure) {
-            if (injectsInputStream) {
+            if (injectsRawStream) {
                 closeReplacementEntityStream(request);
             }
             throw failure;
@@ -158,13 +158,13 @@ public class MethodInjectorImpl implements MethodInjector {
 
         if (returnObj instanceof CompletionStage) {
             CompletionStage<?> stage = (CompletionStage<?>) returnObj;
-            if (injectsInputStream) {
+            if (injectsRawStream) {
                 stage = stage.whenComplete((result, failure) -> closeReplacementEntityStream(request));
             }
             return new CompletionStageHolder(stage);
         }
 
-        if (injectsInputStream) {
+        if (injectsRawStream) {
             closeReplacementEntityStream(request);
         }
         return returnObj;

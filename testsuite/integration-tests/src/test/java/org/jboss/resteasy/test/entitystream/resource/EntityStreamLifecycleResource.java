@@ -20,6 +20,7 @@ package org.jboss.resteasy.test.entitystream.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
 import jakarta.ws.rs.Consumes;
@@ -70,6 +71,25 @@ public class EntityStreamLifecycleResource {
     public String raw(InputStream stream) throws IOException {
         boolean closedDuringInvocation = EntityStreamLifecycleState.CLOSED.get();
         String value = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        return closedDuringInvocation + ":" + value;
+    }
+
+    @POST
+    @Path("/reader")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String reader(Reader reader) throws IOException {
+        boolean closedDuringInvocation =
+                EntityStreamLifecycleState.CLOSED.get();
+
+        StringBuilder value = new StringBuilder();
+        char[] buffer = new char[256];
+        int count;
+
+        while ((count = reader.read(buffer)) != -1) {
+            value.append(buffer, 0, count);
+        }
+
         return closedDuringInvocation + ":" + value;
     }
 }

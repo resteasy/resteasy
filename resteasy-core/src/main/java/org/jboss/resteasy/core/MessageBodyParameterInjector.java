@@ -2,6 +2,7 @@ package org.jboss.resteasy.core;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.ParameterizedType;
@@ -106,8 +107,9 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
         return this.interceptors;
     }
 
-    boolean injectsInputStream() {
-        return InputStream.class.isAssignableFrom(type);
+    boolean injectsRawStream() {
+        return InputStream.class.isAssignableFrom(type)
+                || Reader.class.isAssignableFrom(type);
     }
 
     public boolean isFormData(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {

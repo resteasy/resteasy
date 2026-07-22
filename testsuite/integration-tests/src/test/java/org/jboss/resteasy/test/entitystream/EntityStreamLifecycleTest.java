@@ -108,6 +108,31 @@ public class EntityStreamLifecycleTest {
         }
     }
 
+    @Test
+    public void keepsRawReaderOpenDuringResourceInvocation() {
+        try (Client client = ClientBuilder.newClient()) {
+            reset(client);
+
+            try (Response response =
+                    client.target(generateURL("/entity-stream/reader"))
+                            .request()
+                            .post(Entity.text("reader"))) {
+
+                Assertions.assertEquals(
+                        Response.Status.OK.getStatusCode(),
+                        response.getStatus());
+
+                Assertions.assertEquals(
+                        "false:reader",
+                        response.readEntity(String.class));
+            }
+
+            Assertions.assertTrue(
+                    isClosed(client),
+                    "The replacement stream was not closed after raw Reader resource invocation");
+        }
+    }
+
     private void reset(Client client) {
         try (Response response = client.target(generateURL("/entity-stream/reset")).request().post(null)) {
             Assertions.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
