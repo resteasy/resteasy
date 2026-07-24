@@ -41,8 +41,8 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.wildfly.plugins</groupId>
-                <artifactId>wildfly-maven-plugin</artifactId>
+                <groupId>${groupId.org.wildfly.plugins.wildfly-maven-plugin.ci}</groupId>
+                <artifactId>${artifactId.org.wildfly.plugins.wildfly-maven-plugin.ci}</artifactId>
                 <configuration>
                     <skip>${skipTests}</skip>
                     <!-- some tests check for the provisioned galleon layers -->
