@@ -101,6 +101,7 @@ import org.jboss.resteasy.spi.config.Options;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClassProcessor;
+import org.jboss.resteasy.spi.model.EntityProvider;
 import org.jboss.resteasy.spi.statistics.StatisticsController;
 import org.jboss.resteasy.spi.util.PickConstructor;
 import org.jboss.resteasy.spi.util.Types;
@@ -1132,6 +1133,30 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
             }
         }
         return map;
+    }
+
+    // TODO (jrp) the return type might need to be a list here so we end up with the order being the @Produces order... ....maybe
+    @Override
+    public List<EntityProvider<MessageBodyWriter<?>>> resolveMessageBodyWriters(final Class<?> type, final Type genericType,
+            final Annotation[] annotations, final MediaType accept) {
+        final MediaTypeMap<SortedKey<MessageBodyWriter>> serverMessageBodyWriters = getServerMessageBodyWriters();
+        if (serverMessageBodyWriters == null) {
+            return List.of();
+        }
+
+        final List<EntityProvider<MessageBodyWriter<?>>> entityProviders = new ArrayList<>();
+
+        for (var entityProvider : serverMessageBodyWriters.getPossible(accept, type)) {
+            // TODO (jrp) we need to somehow check the generic type as well. The catch is the generic type may not be
+            // TODO (jrp) resolved. The issue is for responses like Response.ok(List<String>), we can't get the
+            // TODO (jrp) generic type for that as we're guessing. However, it's potentially worth a guess.
+            // TODO (jrp) that said, we'll also need to get the generic type for things like MessageBodyWriter<List<String>>
+            if (entityProvider.isAssignableTo(type) && !entityProviders.contains(entityProvider)) {
+                final EntityProvider<MessageBodyWriter<?>> e = (EntityProvider) entityProvider;
+                entityProviders.add(e);
+            }
+        }
+        return List.copyOf(entityProviders);
     }
 
     // use the tracingLogger enabled version please

@@ -116,6 +116,12 @@ public class Options<T> {
             Integer.class,
             Functions.singleton(() -> 204));
 
+    // TODO (jrp) is this the right name?
+    public static final Options<Boolean> USE_OLD_MEDIA_TYPE_RESOLUTION = new Options<>(
+            "dev.resteasy.response.media.type.old.resolution",
+            Boolean.class,
+            Functions.singleton(() -> false));
+
     private final String key;
     private final Class<T> name;
     private final Supplier<T> dftValue;
