@@ -680,6 +680,26 @@ will use service loading to look for one or more implementations of the interfac
 value returned by `ConfigurationFactory.priority()`. Smaller numbers indicate higher priority. The default
 `ConfigurationFactory` is `org.jboss.resteasy.core.config.DefaultConfigurationFactory` with a priority of 500.
 
+[[_configuration_factory_resolver]]
+===== Per-deployment factory resolution
+
+By default, the selected `ConfigurationFactory` is cached statically (singleton behavior). This implementation works in
+many cases, while it could cause classloader and deployment isolation issues in environments where multiple deployments
+provide their own `ConfigurationFactory` implementations.
+
+When the system property `dev.resteasy.configuration.factory.resolver.enabled` (`false` by default) is set to `true`,
+`ConfigurationFactory.getInstance()` delegates to a `ConfigurationFactoryResolver` discovered via `ServiceLoader`.
+The default resolver (`ResteasyConfigurationFactoryResolver` in `resteasy-core`) discovers `ConfigurationFactory`
+implementations using the thread context classloader and caches the result per-request in `ResteasyContext`, enabling
+per-deployment isolation.
+
+Custom `ConfigurationFactoryResolver` implementations can be registered via `ServiceLoader`. When multiple resolvers
+are present, the one with the lowest `priority()` value is selected (default priority is 100).
+
+NOTE: Containers like WildFly that manage their own `ConfigurationFactory` lifecycle should leave this property
+disabled (the default). The resolver mechanism is intended for environments like embedded servers (e.g., via
+`SeBootstrap`) or custom containers that do not pre-populate the `ResteasyContext`.
+
 [[_configuration_switches]]
 === Configuration switches
 
