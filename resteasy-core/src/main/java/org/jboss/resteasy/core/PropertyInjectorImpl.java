@@ -59,6 +59,11 @@ public class PropertyInjectorImpl implements PropertyInjector {
             Annotation[] annotations = field.getAnnotations();
             if (annotations == null || annotations.length == 0)
                 continue;
+            // Skip any setters with @Inject as those will be handled by CDI
+            // For now, check the string. However, we could just add a dependency to Jakarta Inject
+            if (FindAnnotation.findAnnotation(annotations, "jakarta.inject.Inject") != null) {
+                continue;
+            }
             Class<?> type = field.getType();
             Type genericType = field.getGenericType();
 
@@ -76,6 +81,11 @@ public class PropertyInjectorImpl implements PropertyInjector {
                 continue;
             if (method.getParameterCount() != 1)
                 continue;
+            // Skip any setters with @Inject as those will be handled by CDI
+            // For now, check the string. However, we could just add a dependency to Jakarta Inject
+            if (FindAnnotation.findAnnotation(method.getAnnotations(), "jakarta.inject.Inject") != null) {
+                continue;
+            }
 
             Annotation[] annotations = method.getAnnotations();
             if (annotations == null || annotations.length == 0)

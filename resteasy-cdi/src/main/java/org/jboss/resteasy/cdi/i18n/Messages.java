@@ -103,4 +103,10 @@ public interface Messages {
 
     @Message(id = 10635, value = "Unable to resolve CDI bean for resource class %s.")
     IllegalStateException unableToResolveBean(String classname);
+
+    @Message(id = 10640, value = "Cannot resolve parameter name from annotation @%s(\"%s\"). Ensure -parameters was passed when compiling.")
+    IllegalStateException cannotResolveParamName(String annotationName, String value);
+
+    @Message(id = 10645, value = "Cannot resolve annotation @%s on %s")
+    IllegalStateException failedToFindAnnotation(String annotationName, String typeDescription);
 }
