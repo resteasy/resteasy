@@ -90,7 +90,7 @@
         <version.commons-codec.commons-codec>1.15</version.commons-codec.commons-codec>
         <version.commons-logging.commons-logging>1.3.2</version.commons-logging.commons-logging>
         <version.dev.resteasy.junit.extension>1.0.0.Beta5</version.dev.resteasy.junit.extension>
-        <version.io.netty.netty4>4.1.135.Final</version.io.netty.netty4>
+        <version.io.netty.netty4>4.1.136.Final</version.io.netty.netty4>
         <version.io.smallrye.common>2.8.0</version.io.smallrye.common>
         <version.io.vertx>4.4.9</version.io.vertx>
         <version.io.undertow>2.3.24.Final</version.io.undertow>
