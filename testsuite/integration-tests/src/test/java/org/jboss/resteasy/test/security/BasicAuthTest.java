@@ -2,10 +2,14 @@ package org.jboss.resteasy.test.security;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Hashtable;
+import java.util.stream.Stream;
 
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.Response;
 
 import org.apache.http.auth.AuthScope;
@@ -20,9 +24,12 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClientEngine;
 import org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup;
 import org.jboss.resteasy.spi.HttpResponseCodes;
+import org.jboss.resteasy.spi.config.SizeUnit;
+import org.jboss.resteasy.spi.config.Threshold;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseProxy;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResource;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResourceAnybody;
@@ -56,6 +63,7 @@ public class BasicAuthTest {
     private static final String ACCESS_FORBIDDEN_MESSAGE = "Access forbidden: role not allowed";
 
     private static ResteasyClient authorizedClient;
+    private static ResteasyClient authorizedClient2;
     private static ResteasyClient unauthorizedClient;
     private static ResteasyClient noAutorizationClient;
 
@@ -105,11 +113,22 @@ public class BasicAuthTest {
             unauthorizedClientUsingRequestFilterWithWrongPassword = (ResteasyClient) builder
                     .register(new BasicAuthRequestFilter("bill", "password2")).build();
         }
+
+        {
+            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password1");
+            CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+            credentialsProvider.setCredentials(new AuthScope(AuthScope.ANY), credentials);
+            CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
+            ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(client);
+            engine.setFileUploadMemoryThreshold(Threshold.of(1, SizeUnit.BYTE));
+            authorizedClient2 = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).httpEngine(engine).build();
+        }
     }
 
     @AfterAll
     public static void after() throws Exception {
         authorizedClient.close();
+        authorizedClient2.close();
         unauthorizedClient.close();
         noAutorizationClient.close();
         authorizedClientUsingRequestFilter.close();
@@ -134,6 +153,86 @@ public class BasicAuthTest {
 
     private String generateURL(String path) {
         return PortProviderUtil.generateURL(path, BasicAuthTest.class.getSimpleName());
+    }
+
+    /**
+     * @tpTestDetails Test for RESTEASY-3721.
+     *                Verifies that a file-backed POST request with non-preemptive auth succeeds —
+     *                the entity is re-sent after the initial 401 challenge without throwing
+     *                NonRepeatableRequestException.
+     * @tpSince RESTEasy 7.0.3
+     */
+    @Test
+    public void testSecurity2() throws Exception {
+        Response response = authorizedClient2.target(generateURL("/secured")).request()
+                .build("POST", Entity.text("xxxxx")).invoke();
+        Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        response.close();
+    }
+
+    /**
+     * @tpTestDetails Test for RESTEASY-3721.
+     *                Verifies that a file-backed POST request with wrong credentials receives a 401
+     *                without throwing NonRepeatableRequestException, and that the temp file is
+     *                deleted by cleanUpAfterExecute() after the request cycle completes.
+     * @tpSince RESTEasy 7.0.3
+     */
+    @Test
+    public void testSecurity2WrongCredentialsTempFileDeleted() throws Exception {
+        UsernamePasswordCredentials wrongCredentials = new UsernamePasswordCredentials("bill", "wrongpassword");
+        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(new AuthScope(AuthScope.ANY), wrongCredentials);
+        CloseableHttpClient httpClient = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
+        ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient);
+        engine.setFileUploadMemoryThreshold(Threshold.of(1, SizeUnit.BYTE));
+
+        Path tmpDir = Path.of(System.getProperty("java.io.tmpdir"));
+        long tmpFilesBefore = countTmpFiles(tmpDir);
+
+        try (ResteasyClient client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).httpEngine(engine).build()) {
+            Response response = client.target(generateURL("/secured")).request()
+                    .build("POST", Entity.text("xxxxx")).invoke();
+            Assertions.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
+            response.close();
+        }
+
+        Assertions.assertEquals(tmpFilesBefore, countTmpFiles(tmpDir),
+                "Temp file was not deleted after failed auth request");
+    }
+
+    /**
+     * @tpTestDetails Test for RESTEASY-3721.
+     *                Verifies that a successful file-backed POST with non-preemptive auth (auth retry
+     *                after 401) correctly deletes the temp file after the full request cycle completes.
+     * @tpSince RESTEasy 7.0.3
+     */
+    @Test
+    public void testSecurity2TempFileDeletedAfterAuthRetry() throws Exception {
+        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password1");
+        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(new AuthScope(AuthScope.ANY), credentials);
+        CloseableHttpClient httpClient = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
+        ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient);
+        engine.setFileUploadMemoryThreshold(Threshold.of(1, SizeUnit.BYTE));
+
+        Path tmpDir = Path.of(System.getProperty("java.io.tmpdir"));
+        long tmpFilesBefore = countTmpFiles(tmpDir);
+
+        try (ResteasyClient client = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).httpEngine(engine).build()) {
+            Response response = client.target(generateURL("/secured")).request()
+                    .build("POST", Entity.text("xxxxx")).invoke();
+            Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            response.close();
+        }
+
+        Assertions.assertEquals(tmpFilesBefore, countTmpFiles(tmpDir),
+                "Temp file was not deleted after successful auth retry");
+    }
+
+    private static long countTmpFiles(final Path dir) throws IOException {
+        try (Stream<Path> stream = Files.list(dir)) {
+            return stream.filter(p -> p.getFileName().toString().endsWith(".tmp")).count();
+        }
     }
 
     /**
