@@ -52,8 +52,8 @@
           <build>
             <plugins>
                 <plugin>
-                    <groupId>org.wildfly.plugins</groupId>
-                    <artifactId>wildfly-maven-plugin</artifactId>
+                    <groupId>${groupId.org.wildfly.plugins.wildfly-maven-plugin.ci}</groupId>
+                    <artifactId>${artifactId.org.wildfly.plugins.wildfly-maven-plugin.ci}</artifactId>
                     <configuration>
                         <system-properties>
                             <maven.repo.local>${settings.localRepository}</maven.repo.local>
@@ -127,8 +127,8 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.wildfly.plugins</groupId>
-                        <artifactId>wildfly-maven-plugin</artifactId>
+                        <groupId>${groupId.org.wildfly.plugins.wildfly-maven-plugin.ci}</groupId>
+                        <artifactId>${artifactId.org.wildfly.plugins.wildfly-maven-plugin.ci}</artifactId>
                         <executions>
                             <execution>
                                 <id>server-provisioning</id>
@@ -235,8 +235,8 @@
                     </plugin>
                     <!-- Provisions WildFly for bootable JAR tests -->
                     <plugin>
-                        <groupId>org.wildfly.plugins</groupId>
-                        <artifactId>wildfly-maven-plugin</artifactId>
+                        <groupId>${groupId.org.wildfly.plugins.wildfly-maven-plugin.ci}</groupId>
+                        <artifactId>${artifactId.org.wildfly.plugins.wildfly-maven-plugin.ci}</artifactId>
                         <executions>
                             <!-- Disable configure-test-server for bootable JAR tests -->
                             <execution>
@@ -683,6 +683,7 @@
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
+                <version>${version.org.wildfly.plugins.wildfly-maven-plugin}</version>
                 <configuration>
                     <provisioning-dir>${jboss.home}</provisioning-dir>
                     <skip>${wildfly.skip}</skip>
