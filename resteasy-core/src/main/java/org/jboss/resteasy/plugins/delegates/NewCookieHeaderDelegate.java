@@ -2,13 +2,16 @@ package org.jboss.resteasy.plugins.delegates;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.ext.RuntimeDelegate;
 
+import org.jboss.resteasy.cookies.NewCookie6265;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.ParameterParser;
@@ -36,6 +39,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
         boolean httpOnly = false;
         Date expiry = null;
         NewCookie.SameSite sameSite = null;
+        List<String> extensions = new ArrayList<String>();
 
         ParameterParser parser = new ParameterParser();
         Map<String, String> map = parser.parse(newCookie, ';');
@@ -68,6 +72,8 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
                 }
             } else if (name.equalsIgnoreCase("SameSite")) {
                 sameSite = NewCookie.SameSite.valueOf(value.toUpperCase(Locale.ROOT));
+            } else {
+                extensions.add(value == null ? name : name + "=" + value);
             }
 
         }
@@ -76,6 +82,19 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
             cookieValue = "";
         }
 
+        if (extensions.size() > 0) {
+            return new NewCookie6265.Builder(cookieName)
+                    .value(cookieValue)
+                    .path(path)
+                    .domain(domain)
+                    .maxAge(maxAge)
+                    .expiry(expiry)
+                    .secure(secure)
+                    .httpOnly(httpOnly)
+                    .sameSite(sameSite)
+                    .extensions(extensions)
+                    .build();
+        }
         return new NewCookie.Builder(cookieName)
                 .value(cookieValue)
                 .path(path)
@@ -104,6 +123,9 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
     public String toString(NewCookie cookie) {
         if (cookie == null)
             throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
+        if (cookie instanceof NewCookie6265) {
+            return toString6265((NewCookie6265) cookie);
+        }
         StringBuilder b = new StringBuilder();
 
         b.append(cookie.getName()).append('=');
@@ -142,6 +164,46 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<N
         if (cookie.getSameSite() != null) {
             b.append(";SameSite=");
             appendCorrectCase(b, cookie.getSameSite());
+        }
+        return b.toString();
+    }
+
+    private String toString6265(NewCookie6265 cookie) {
+        StringBuilder b = new StringBuilder();
+
+        b.append(cookie.getName()).append('=');
+
+        if (cookie.getValue() != null) {
+            quote(b, cookie.getValue());
+        }
+
+        if (cookie.getDomain() != null) {
+            b.append(";Domain=");
+            quote(b, cookie.getDomain());
+        }
+        if (cookie.getPath() != null) {
+            b.append(";Path=");
+            b.append(cookie.getPath());
+        }
+        if (cookie.getMaxAge() != -1) {
+            b.append(";Max-Age=");
+            b.append(cookie.getMaxAge());
+        }
+        if (cookie.getExpiry() != null) {
+            b.append(";Expires=");
+            b.append(DateUtil.formatDate(cookie.getExpiry(), OLD_COOKIE_PATTERN));
+        }
+        if (cookie.isSecure())
+            b.append(";Secure");
+        if (cookie.isHttpOnly())
+            b.append(";HttpOnly");
+
+        if (cookie.getSameSite() != null) {
+            b.append(";SameSite=");
+            appendCorrectCase(b, cookie.getSameSite());
+        }
+        for (String s : cookie.getExtensions()) {
+            b.append(";").append(s);
         }
         return b.toString();
     }
