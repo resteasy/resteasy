@@ -28,7 +28,8 @@
         <version.org.wildfly.cloud-tests>1.0.0.Alpha2</version.org.wildfly.cloud-tests>
 
         <!-- Provisioning properties -->
-        <server.version />
+        <!-- Lock the server version to WildFly 41 which is last version of WildFly to support EE 10 -->
+        <server.version>41.0.0.Final</server.version>
         <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
         <server.test.feature.pack.artifactId>wildfly-ee-10-feature-pack</server.test.feature.pack.artifactId>
 
