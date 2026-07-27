@@ -48,6 +48,16 @@ jobs:
       - uses: actions/download-artifact@v8
       - uses: wildfly-extras/wildfly-nightly-download@v1
         id: wildfly-nightly
+        # 41.0.0.Final
+      - name: Set server version
+        id: server-version
+        shell: bash
+        run: |
+          if [[ "${{ github.ref_name }}" == "6.2" || "${{ github.ref_name }}" == v6.2.* ]]; then
+            echo "version=41.0.0.Final" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${{ steps.wildfly-nightly.outputs.wildfly-version }}" >> "$GITHUB_OUTPUT"
+          fi
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
@@ -58,11 +68,11 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
       - name: Build with Maven Java 21 and test with 17
-        run: mvn -V clean install '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Djvm=${{env.JAVA_HOME_17_X64}}/bin/java'
+        run: mvn -V clean install '-Dserver.version=${{steps.server-version.outputs.version}}' '-Djvm=${{env.JAVA_HOME_17_X64}}/bin/java'
       - name: Build with Maven Java 21
-        run: mvn -V clean install '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Djvm=${{env.JAVA_HOME_21_X64}}/bin/java'
+        run: mvn -V clean install '-Dserver.version=${{steps.server-version.outputs.version}}' '-Djvm=${{env.JAVA_HOME_21_X64}}/bin/java'
       - name: Test with ${{ matrix.profile }} - JDK 25
-        run:  mvn -V clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
+        run:  mvn -V clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{steps.server-version.outputs.version}}'
       - name: Upload surefire reports
         uses: actions/upload-artifact@v7
         if: failure()
@@ -90,6 +100,15 @@ jobs:
       - uses: actions/checkout@v6
       - uses: wildfly-extras/wildfly-nightly-download@v1
         id: wildfly-nightly
+      - name: Set server version
+        id: server-version
+        shell: bash
+        run: |
+          if [[ "${{ github.ref_name }}" == "6.2" || "${{ github.ref_name }}" == v6.2.* ]]; then
+            echo "version=41.0.0.Final" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${{ steps.wildfly-nightly.outputs.wildfly-version }}" >> "$GITHUB_OUTPUT"
+          fi
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
@@ -100,10 +119,10 @@ jobs:
           cache: 'maven'
       - name: Test with ${{ matrix.profile }} - JDK 17
         run:  |
-          mvn -V clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Djvm=${{env.JAVA_HOME_17_X64}}/bin/java'
+          mvn -V clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{steps.server-version.outputs.version}}' '-Djvm=${{env.JAVA_HOME_17_X64}}/bin/java'
       - name: Test with ${{ matrix.profile }} - JDK 21
         run:  |
-          mvn -V clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
+          mvn -V clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{steps.server-version.outputs.version}}'
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
