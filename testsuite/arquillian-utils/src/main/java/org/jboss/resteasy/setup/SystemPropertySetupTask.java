@@ -19,10 +19,14 @@
 
 package org.jboss.resteasy.setup;
 
+import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Map;
 
 import org.jboss.as.arquillian.api.ServerSetupTask;
 import org.jboss.as.arquillian.container.ManagementClient;
+import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.as.controller.client.helpers.Operations;
 import org.jboss.as.controller.client.helpers.Operations.CompositeOperationBuilder;
 import org.jboss.dmr.ModelNode;
@@ -35,6 +39,7 @@ import org.jboss.dmr.ModelNode;
 public abstract class SystemPropertySetupTask implements ServerSetupTask {
 
     private final Map<String, String> properties;
+    private final Deque<ModelNode> tearDownOps;
 
     /**
      * Creates a new setup task which defines the provided properties.
@@ -43,33 +48,63 @@ public abstract class SystemPropertySetupTask implements ServerSetupTask {
      */
     protected SystemPropertySetupTask(final Map<String, String> properties) {
         this.properties = properties;
+        this.tearDownOps = new ArrayDeque<>();
     }
 
     @Override
     public void setup(final ManagementClient managementClient, final String containerId) throws Exception {
+        boolean opsAdded = false;
         final CompositeOperationBuilder builder = CompositeOperationBuilder.create();
         for (Map.Entry<String, String> entry : properties.entrySet()) {
             final ModelNode address = Operations.createAddress("system-property", entry.getKey());
-            final ModelNode op = Operations.createAddOperation(address);
-            op.get("value").set(entry.getValue());
-            builder.addStep(op);
+            if (createAddOrUpdateOp(managementClient.getControllerClient(), address, builder, entry.getValue())) {
+                opsAdded = true;
+            }
         }
-        executeOperation(managementClient, builder.build(),
-                (result) -> String.format("Failed to add system properties %s%n%s", properties,
-                        Operations.getFailureDescription(result)
-                                .asString()));
+        if (opsAdded) {
+            executeOperation(managementClient, builder.build(),
+                    (result) -> String.format("Failed to add system properties %s%n%s", properties,
+                            Operations.getFailureDescription(result)
+                                    .asString()));
+        }
     }
 
     @Override
     public void tearDown(final ManagementClient managementClient, final String containerId) throws Exception {
         final CompositeOperationBuilder builder = CompositeOperationBuilder.create();
-        for (Map.Entry<String, String> entry : properties.entrySet()) {
-            final ModelNode address = Operations.createAddress("system-property", entry.getKey());
-            builder.addStep(Operations.createRemoveOperation(address));
+        ModelNode revertOp;
+        while ((revertOp = tearDownOps.pollLast()) != null) {
+            builder.addStep(revertOp);
         }
         executeOperation(managementClient, builder.build(),
                 (result) -> String.format("Failed to remove system properties %s%n%s", properties,
                         Operations.getFailureDescription(result)
                                 .asString()));
+    }
+
+    private boolean createAddOrUpdateOp(final ModelControllerClient client, final ModelNode address,
+            final CompositeOperationBuilder builder, final String value) throws IOException {
+        ModelNode op = Operations.createReadResourceOperation(address);
+        final ModelNode response = client.execute(op);
+        if (Operations.isSuccessfulOutcome(response)) {
+            final ModelNode model = Operations.readResult(response);
+            if (model.hasDefined("value")) {
+                final String currentValue = model.get("value").asString();
+                if (!currentValue.equals(value)) {
+                    builder.addStep(Operations.createWriteAttributeOperation(address, "value", value));
+                    tearDownOps.add(Operations.createWriteAttributeOperation(address, "value", currentValue));
+                    return true;
+                }
+                return false;
+            } else {
+                throw new RuntimeException(String.format("Could not find value in %s", response));
+            }
+        } else {
+            op = Operations.createAddOperation(address);
+            op.get("value").set(value);
+            builder.addStep(op);
+            tearDownOps.add(Operations.createRemoveOperation(address));
+            return true;
+        }
     }
 }
