@@ -29,6 +29,8 @@
         <!-- Skip deploying tests -->
         <maven.deploy.skip>true</maven.deploy.skip>
         <central.skipPublishing>${maven.deploy.skip}</central.skipPublishing>
+
+        <configure-test-server.phase>process-test-resources</configure-test-server.phase>
     </properties>
 
     <artifactId>resteasy-integration-tests</artifactId>
@@ -210,6 +212,10 @@
                     <name>ts.bootable</name>
                 </property>
             </activation>
+            <properties>
+                <!-- Disable configure-test-server for bootable JAR tests -->
+                <configure-test-server.phase>none</configure-test-server.phase>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.wildfly.arquillian</groupId>
@@ -235,14 +241,10 @@
                     </plugin>
                     <!-- Provisions WildFly for bootable JAR tests -->
                     <plugin>
-                        <groupId>org.wildfly.plugins</groupId>
-                        <artifactId>wildfly-maven-plugin</artifactId>
+                        <groupId>${groupId.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar}</groupId>
+                        <artifactId>${artifactId.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar}</artifactId>
+                        <version>${version.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar}</version>
                         <executions>
-                            <!-- Disable configure-test-server for bootable JAR tests -->
-                            <execution>
-                                <id>configure-test-server</id>
-                                <phase>none</phase>
-                            </execution>
                             <!-- Package a jaxrs-server layer with a few other layers to be tested as a bootable jar -->
                             <execution>
                                 <id>bootable-jar-observability-packaging</id>
@@ -718,7 +720,7 @@
                 <executions>
                     <execution>
                         <id>configure-test-server</id>
-                        <phase>process-test-resources</phase>
+                        <phase>${configure-test-server.phase}</phase>
                         <goals>
                             <goal>execute-commands</goal>
                         </goals>
