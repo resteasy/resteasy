@@ -399,6 +399,7 @@
                                         <exclude>javax.xml.soap:saaj-api</exclude>
                                         <exclude>javax.xml.stream:stax-api</exclude>
                                         <exclude>log4j:log4j</exclude>
+                                        <exclude>org.eclipse:yasson</exclude>
                                     </excludes>
                                 </bannedDependencies>
                             </rules>
