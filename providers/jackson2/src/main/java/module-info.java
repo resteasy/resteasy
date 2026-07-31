@@ -23,7 +23,7 @@ module org.jboss.resteasy.plugins.providers.jackson {
 
     // RESTEasy modules
     requires org.jboss.resteasy.core;
-    requires static org.jboss.resteasy.tracing.api;
+    requires org.jboss.resteasy.tracing.api;
 
     // Exports
     exports org.jboss.resteasy.annotations.providers.jackson;
