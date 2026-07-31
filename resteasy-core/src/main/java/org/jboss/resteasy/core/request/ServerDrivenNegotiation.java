@@ -98,7 +98,6 @@ public class ServerDrivenNegotiation {
     }
 
     public Variant getBestMatch(List<Variant> available) {
-        //      BigDecimal bestQuality = BigDecimal.ZERO;
         VariantQuality bestQuality = null;
         Variant bestOption = null;
         for (Variant option : available) {
@@ -112,10 +111,7 @@ public class ServerDrivenNegotiation {
             if (!applyLanguage(option, quality))
                 continue;
 
-            //         BigDecimal optionQuality = quality.getOverallQuality();
-            //         if (isBetterOption(bestQuality, bestOption, optionQuality, option))
             if (isBetterOption(bestQuality, bestOption, quality, option)) {
-                //            bestQuality = optionQuality;
                 bestQuality = quality;
                 bestOption = option;
             }
@@ -125,9 +121,23 @@ public class ServerDrivenNegotiation {
 
     /**
      * Tests whether {@code option} is preferable over the current {@code bestOption}.
+     *
+     * <p>
+     * Tiebreaker hierarchy (each level is applied only when all prior levels are equal):
+     * </p>
+     * <ol>
+     * <li>Overall quality -- RFC 2296 Section 3.3: {@code round5(qt * qc * qe * ql)}</li>
+     * <li>Request media type specificity -- more specific Accept entry wins</li>
+     * <li>Variant media type specificity -- more specific variant type wins</li>
+     * <li>Variant explicitness -- more dimensions (media type, encoding, language) wins</li>
+     * <li>Non-wildcard language match beats wildcard</li>
+     * <li>Accept-Language position -- earlier position in header wins</li>
+     * <li>Language match precision -- EXACT_COUNTRY &gt; EXACT &gt; BASE_LANGUAGE</li>
+     * </ol>
+     *
+     * @see "RFC 2296 Section 3.3"
+     * @see "RFC 2296 Section 3.5"
      */
-    //   private static boolean isBetterOption(BigDecimal bestQuality, Variant best,
-    //                                         BigDecimal optionQuality, Variant option)
     private static boolean isBetterOption(VariantQuality bestQuality, Variant best,
             VariantQuality optionQuality, Variant option) {
         if (best == null)
@@ -193,8 +203,25 @@ public class ServerDrivenNegotiation {
             }
         }
 
-        // Finally, compare specificity of the variants.
-        return getExplicitness(best) < getExplicitness(option);
+        // Compare specificity of the variants.
+        final int bestExplicitness = getExplicitness(best);
+        final int optionExplicitness = getExplicitness(option);
+        if (bestExplicitness != optionExplicitness)
+            return bestExplicitness < optionExplicitness;
+
+        // Language tiebreaker hierarchy (applied when overall quality is equal):
+        // 1. Non-wildcard match always beats wildcard match
+        // 2. Position in Accept-Language header (lower position = higher priority)
+        // 3. Match precision (EXACT_COUNTRY > EXACT > BASE_LANGUAGE)
+        boolean bestIsWildcard = bestQuality.getLanguageMatchPrecision() == LanguageMatchPrecision.WILDCARD;
+        boolean optionIsWildcard = optionQuality.getLanguageMatchPrecision() == LanguageMatchPrecision.WILDCARD;
+        if (bestIsWildcard != optionIsWildcard)
+            return bestIsWildcard;
+
+        if (bestQuality.getLanguageMatchPosition() != optionQuality.getLanguageMatchPosition())
+            return bestQuality.getLanguageMatchPosition() > optionQuality.getLanguageMatchPosition();
+
+        return bestQuality.getLanguageMatchPrecision().compareTo(optionQuality.getLanguageMatchPrecision()) < 0;
     }
 
     private static int getExplicitness(Variant variant) {
@@ -330,46 +357,134 @@ public class ServerDrivenNegotiation {
     }
 
     private boolean hasCountry(Locale locale) {
-        return locale.getCountry() != null && !"".equals(locale.getCountry().trim());
+        return !locale.getCountry().isBlank();
     }
 
+    /**
+     * Finds the best matching Accept-Language range for the variant's language and assigns the
+     * corresponding quality value, match position, and match precision to the {@link VariantQuality} bean.
+     *
+     * <p>
+     * The quality value comes from the <b>longest matching range</b> in the Accept-Language header
+     * (RFC 7231 Section 5.3.5). Matching follows RFC 4647 Section 3.3.1 (Basic Filtering): a range
+     * matches a tag if it equals the tag or is a prefix where the next character is {@code '-'}.
+     * </p>
+     *
+     * <p>
+     * As a practical extension beyond strict RFC 4647, a "reverse prefix" match is allowed: range
+     * {@code en-US} matches tag {@code en} at {@link LanguageMatchPrecision#BASE_LANGUAGE} priority.
+     * This avoids 406 responses when the server has only a base-language variant.
+     * </p>
+     *
+     * <p>
+     * When an EXACT or EXACT_COUNTRY match is found, the loop exits immediately (this is the longest
+     * possible match). BASE_LANGUAGE matches continue looping because a longer match may exist later
+     * in the header.
+     * </p>
+     *
+     * <p>
+     * "Family position inheritance": when a more specific range (e.g. {@code en-US}) produces an
+     * EXACT_COUNTRY match at the same quality as a prior BASE_LANGUAGE match from a family range
+     * (e.g. {@code en}), the position from the earlier family match is retained. This prevents
+     * penalizing specific variants that belong to a requested language family.
+     * </p>
+     *
+     * @param option  the variant being evaluated
+     * @param quality the quality bean to populate
+     * @return {@code true} if the variant's language is acceptable, {@code false} otherwise
+     *
+     * @see "RFC 7231 Section 5.3.5"
+     * @see "RFC 4647 Section 3.3.1"
+     */
     private boolean applyLanguage(Variant option, VariantQuality quality) {
         if (requestedLanguages == null)
             return true;
-        Locale language = option.getLanguage();
-        if (language == null)
+        Locale variantLanguage = option.getLanguage();
+        if (variantLanguage == null)
             return true;
-        QualityValue value = null;
+
+        final boolean variantHasCountry = hasCountry(variantLanguage);
+        final String variantLang = variantLanguage.getLanguage().toLowerCase(Locale.ROOT);
+        final String variantCountry = variantHasCountry ? variantLanguage.getCountry().toLowerCase(Locale.ROOT) : "";
+        final QualityValue wildcardQuality = requestedLanguages.get(null);
+        QualityValue bestQuality = null;
+        int bestPosition = Integer.MAX_VALUE;
+        int wildcardPosition = 0;
+        LanguageMatchPrecision bestPrecision = LanguageMatchPrecision.WILDCARD;
+        int position = 0;
+
         for (Entry<Locale, QualityValue> entry : requestedLanguages.entrySet()) {
-            Locale locale = entry.getKey();
-            QualityValue qualityValue = entry.getValue();
-            if (locale == null)
+            Locale range = entry.getKey();
+            QualityValue rangeQuality = entry.getValue();
+            position++;
+
+            if (range == null) {
+                wildcardPosition = position;
+                continue;
+            }
+
+            if (!range.getLanguage().toLowerCase(Locale.ROOT).equals(variantLang))
                 continue;
 
-            if (locale.getLanguage().equalsIgnoreCase(language.getLanguage())) {
-                if (hasCountry(locale) && hasCountry(language)) {
-                    if (locale.getCountry().equalsIgnoreCase(language.getCountry())) {
-                        value = qualityValue;
-                        break;
-                    } else {
-                        continue;
+            boolean rangeHasCountry = hasCountry(range);
+
+            if (rangeHasCountry && variantHasCountry) {
+                if (range.getCountry().toLowerCase(Locale.ROOT).equals(variantCountry)) {
+                    // EXACT_COUNTRY: longest possible match -- use this quality (RFC 7231 Section 5.3.5).
+                    // Preserve earlier family position when quality is unchanged.
+                    if (bestQuality == null || rangeQuality.compareTo(bestQuality) != 0) {
+                        bestPosition = position;
                     }
-                } else if (hasCountry(locale) == hasCountry(language)) {
-                    value = qualityValue;
+                    bestQuality = rangeQuality;
+                    bestPrecision = LanguageMatchPrecision.EXACT_COUNTRY;
                     break;
                 } else {
-                    value = qualityValue; // might be a better match so re-loop
+                    // Country mismatch (e.g. range en-GB, variant en-US): not a match per RFC 4647.
+                    continue;
+                }
+            } else if (rangeHasCountry == variantHasCountry) {
+                // EXACT: language matches, neither side has a country.
+                // Preserve earlier family position when quality is unchanged.
+                if (bestQuality == null || rangeQuality.compareTo(bestQuality) != 0) {
+                    bestPosition = position;
+                }
+                bestQuality = rangeQuality;
+                bestPrecision = LanguageMatchPrecision.EXACT;
+                break;
+            } else {
+                // BASE_LANGUAGE: language matches but country presence differs.
+                // Either range "en" matching variant "en-US" (RFC 4647 prefix match),
+                // or range "en-US" matching variant "en" (practical reverse-prefix extension).
+                // Keep looping -- a longer EXACT/EXACT_COUNTRY match may appear later.
+                if (bestQuality == null || rangeQuality.compareTo(bestQuality) > 0) {
+                    bestQuality = rangeQuality;
+                    bestPosition = position;
+                    bestPrecision = LanguageMatchPrecision.BASE_LANGUAGE;
                 }
             }
         }
 
-        if (value == null) // try wildcard
-            value = requestedLanguages.get(null);
-        if (value == null) // no match
+        // Wildcard fallback: when no explicit range matched, or when the only match is a
+        // reverse-prefix BASE_LANGUAGE match with q=0. An EXACT or EXACT_COUNTRY match with q=0
+        // means the user explicitly excluded this language and must NOT be overridden by a wildcard
+        // (RFC 7231 Section 5.3.5: quality comes from the longest matching range).
+        if (bestQuality == null
+                || (!bestQuality.isAcceptable() && bestPrecision == LanguageMatchPrecision.BASE_LANGUAGE)) {
+            if (wildcardQuality != null) {
+                bestQuality = wildcardQuality;
+                bestPosition = wildcardPosition;
+                bestPrecision = LanguageMatchPrecision.WILDCARD;
+            }
+        }
+
+        if (bestQuality == null)
             return false;
-        if (!value.isAcceptable())
+        if (!bestQuality.isAcceptable())
             return false;
-        quality.setLanguageQualityValue(value);
+
+        quality.setLanguageQualityValue(bestQuality);
+        quality.setLanguageMatchPosition(bestPosition);
+        quality.setLanguageMatchPrecision(bestPrecision);
         return true;
     }
 
