@@ -29,29 +29,34 @@ updates:
           - "jakarta.json*"
           - "org.eclipse.parsson*"
           - "org.eclipse.yasson*"
-      # Allow bouncy castle to upgrade the minor versions
-      bouncy-castle-dependencies:
-        patterns:
-          - "org.bouncycastle*"
-        update-types:
-          - "minor"
     ignore:
-      - dependency-name: 'jakarta.el:jakarta.el-api'
-        update-types: ['version-update:semver-major', 'version-update:semver-minor']
-      - dependency-name: 'org.glassfish:jakarta.el'
-        update-types: ['version-update:semver-major', 'version-update:semver-minor']
-      - dependency-name: 'jakarta.persistence:jakarta.persistence-api'
-        update-types: ['version-update:semver-major', 'version-update:semver-minor']
-      - dependency-name: 'jakarta.servlet:jakarta.servlet-api'
-        update-types: ['version-update:semver-major', 'version-update:semver-minor']
-      - dependency-name: 'jakarta.xml.bind:jakarta.xml.bind-api'
-        update-types: ['version-update:semver-major', 'version-update:semver-minor']
-        # Version 4.2.x removes security manager support, currently we will not be upgrading to that version as we
-        # cannot lose that support.
-      - dependency-name: 'com.sun.istack:*'
-        update-types: ['version-update:semver-major', 'version-update:semver-minor']
-      - dependency-name: '*'
-        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      # --- Core Jakarta & EE Specs (Locked for patch releases) ---
+      - dependency-name: "jakarta.*:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.glassfish*:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "com.sun.*:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
+      # --- Core Server & Frameworks (Locked for patch releases) ---
+      - dependency-name: "com.google.guava:guava"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "com.fasterxml.jackson:jackson-bom"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.eclipse.jetty*:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "io.undertow:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.jboss.weld*:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.hibernate.validator:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "io.projectreactor:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "io.smallrye:jandex"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.wildfly.common:wildfly-common"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
     open-pull-requests-limit: 10
     registries:
       - maven-central
@@ -73,12 +78,6 @@ updates:
     schedule:
       interval: "daily"
     groups:
-      # Allow bouncy castle to upgrade the minor versions
-      bouncy-castle-dependencies:
-        patterns:
-          - "org.bouncycastle*"
-        update-types:
-          - "minor"
       fasterxml-dependencies:
         patterns:
           - "com.fasterxml*"
@@ -96,14 +95,40 @@ updates:
         patterns:
           - "jakarta.json*"
           - "org.eclipse.parsson*"
-          - "org.eclipse:yasson*"
+          - "org.eclipse.yasson*"
         update-types:
           - "minor"
           - "patch"
     ignore:
-      - dependency-name: 'io.projectreactor:*'
-      - dependency-name: '*'
-        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      # --- Core Jakarta & EE Specs (Locked for patch releases) ---
+      - dependency-name: "jakarta.*:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.glassfish*:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "com.sun.*:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
+      # --- Core Server & Frameworks (Locked for patch releases) ---
+      - dependency-name: "com.google.guava:guava"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "com.fasterxml.jackson:jackson-bom"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.eclipse.jetty*:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "io.undertow:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.jboss.weld*:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.hibernate.validator:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "io.projectreactor:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "io.smallrye:jandex"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.junit:junit-bom"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.wildfly.common:wildfly-common"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
     open-pull-requests-limit: 10
     registries:
       - maven-central
