@@ -121,13 +121,21 @@ updates:
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "org.hibernate.validator:*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "io.netty*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "io.vertx*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "io.projectreactor:*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
-      - dependency-name: "io.smallrye:jandex"
+      - dependency-name: "org.jboss:jandex"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.jboss.logmanager:*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "org.junit:junit-bom"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "org.wildfly.common:wildfly-common"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.wildfly:*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
     open-pull-requests-limit: 10
     registries:
