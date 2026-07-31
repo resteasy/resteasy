@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>52</version>
+        <version>53</version>
         <relativePath />
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -149,17 +149,12 @@
         <signTag>true</signTag>
         <tagNameFormat>v@{project.version}</tagNameFormat>
         <arguments>-DskipTests -DpushChanges=${pushChanges} -Dcentral.autoPublish=${central.autoPublish}</arguments>
-        <!-- Push changes by default when using the maven-release-plugin:prepare -->
-        <pushChanges>true</pushChanges>
+        <!-- Do not push changes by default when using the maven-release-plugin:prepare -->
+        <pushChanges>false</pushChanges>
         <!-- Use the local directory when using perform -->
         <localCheckout>true</localCheckout>
         <!-- Maven Central properties -->
-        <central.sonatype.url>https://central.sonatype.com</central.sonatype.url>
-        <central.serverId>central</central.serverId>
         <central.deploymentName>resteasy-${project.version}</central.deploymentName>
-        <central.autoPublish>true</central.autoPublish>
-        <central.waitUntil>validated</central.waitUntil>
-        <central.skipPublishing>false</central.skipPublishing>
     </properties>
 
     <dependencyManagement>

@@ -34,6 +34,9 @@ concurrency:
   group: '${{ github.ref || github.run_id }}'
   cancel-in-progress: true
 
+env:
+  MVN_ARGS: '-V -B -fae'
+
 jobs:
 
   resteasy-build:
@@ -42,32 +45,50 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        java: ['17', '21', '25']
 
     steps:
       - uses: actions/checkout@v7
       - uses: wildfly-extras/wildfly-nightly-download@v1
         id: wildfly-nightly
-      - name: Set up JDK ${{ matrix.java }}
+      - name: Set up JDKs
         uses: actions/setup-java@v5
         with:
-          java-version: ${{ matrix.java }}
           distribution: 'temurin'
           cache: 'maven'
-      - name: Build with Maven Java ${{ matrix.java }}
-        run: mvn clean install '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
-      - name: Upload surefire reports
+          # Please note the order here of having 25 last as that is the version we want to compile with
+          java-version: |
+            17
+            21
+            26
+            25
+      - name: Build RESTEasy
+        run: |
+          ./mvnw ${{ env.MVN_ARGS }} clean install -DskipTests '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
+      - name: Test on ${{ matrix.os }} WildFly ${{steps.wildfly-nightly.outputs.wildfly-version}} - Java 25
+        run: |
+          cd testsuite/integration-tests
+          mvn ${{ env.MVN_ARGS }} verify
+      - name: Test on ${{ matrix.os }} WildFly ${{steps.wildfly-nightly.outputs.wildfly-version}} - Java 26
+        run:  |
+          cd testsuite/integration-tests
+          mvn ${{ env.MVN_ARGS }} verify '-Dtest.java.home=${{env.JAVA_HOME_26_X64}}${{env.JAVA_HOME_26_ARM64}}' '-Dversion.org.wildfly=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Dtest.report.dir=java26'
+      - name: Test on ${{ matrix.os }} WildFly ${{steps.wildfly-nightly.outputs.wildfly-version}} - Java 21
+        run:  |
+          cd testsuite/integration-tests
+          mvn ${{ env.MVN_ARGS }} verify '-Dtest.java.home=${{env.JAVA_HOME_21_X64}}${{env.JAVA_HOME_21_ARM64}}' '-Dversion.org.wildfly=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Dtest.report.dir=java21'
+      - name: Test on ${{ matrix.os }} WildFly ${{steps.wildfly-nightly.outputs.wildfly-version}} - Java 17
+        run:  |
+          cd testsuite/integration-tests
+          mvn ${{ env.MVN_ARGS }} verify '-Dtest.java.home=${{env.JAVA_HOME_17_X64}}${{env.JAVA_HOME_17_ARM64}}' '-Dversion.org.wildfly=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Dtest.report.dir=java17'
+      - name: Upload test logs for failed run
         uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}
-          path: '**/surefire-reports/*'
-      - name: Upload server logs
-        uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: server-logs-${{ matrix.os }}-${{ matrix.java }}
-          path: '**/*.log'
+          name: failure-report-${{ matrix.os }}
+          path: |
+            **/failsafe-reports/**
+            **/surefire-reports/**
+            **/*.log
 
   additional-profiles:
     runs-on: ubuntu-latest
@@ -75,30 +96,43 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: ['17', '21']
         profile:
-          - '-am -Pprovision-without-resteasy,without-jackson -pl wildfly/resteasy-channel,/resteasy-dependencies-bom,testsuite/integration-tests'
+          - '-Pprovision-without-resteasy,without-jackson'
 
     steps:
       - uses: actions/checkout@v7
       - uses: wildfly-extras/wildfly-nightly-download@v1
         id: wildfly-nightly
-      - name: Set up JDK ${{ matrix.java }}
+      - name: Set up JDKs
         uses: actions/setup-java@v5
         with:
-          java-version: ${{ matrix.java }}
           distribution: 'temurin'
           cache: 'maven'
-      - name: Test with ${{ matrix.profile }} - JDK ${{ matrix.java }}
+          java-version: |
+            17
+            21
+            25
+      - name: Build RESTEasy
+        run: |
+          ./mvnw ${{ env.MVN_ARGS }} clean install -DskipTests '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
+      - name: Test with WildFly ${{steps.wildfly-nightly.outputs.wildfly-version}} - Java 25
         run:  |
-          mvn clean install -U -B -fae ${{ matrix.profile }} '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
-      - uses: actions/upload-artifact@v7
+          cd testsuite/integration-tests
+          mvn ${{ env.MVN_ARGS }} verify ${{ matrix.profile }} '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
+      - name: Test with WildFly ${{steps.wildfly-nightly.outputs.wildfly-version}} - Java 21
+        run:  |
+          cd testsuite/integration-tests
+          mvn ${{ env.MVN_ARGS }} verify ${{ matrix.profile }} '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Dtest.java.home=${{env.JAVA_HOME_21_X64}}${{env.JAVA_HOME_21_ARM64}}' '-Dtest.report.dir=java21'
+      - name: Test with WildFly ${{steps.wildfly-nightly.outputs.wildfly-version}} - Java 17
+        run:  |
+          cd testsuite/integration-tests
+          mvn ${{ env.MVN_ARGS }} verify ${{ matrix.profile }} '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Dtest.java.home=${{env.JAVA_HOME_17_X64}}${{env.JAVA_HOME_17_ARM64}}' '-Dtest.report.dir=java17'
+      - name: Upload test logs for failed run
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: surefire-reports-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
-          path: '**/surefire-reports/*'
-      - uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: server-logs-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.wildfly-version }}
-          path: '**/server.log'
+          name: failure-report
+          path: |
+            **/failsafe-reports/**
+            **/surefire-reports/**
+            **/*.log

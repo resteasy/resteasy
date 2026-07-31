@@ -34,7 +34,7 @@ Issues are kept in https://issues.redhat.com/browse/RESTEASY/[JIRA].
 
 == Build
 
-Currently, RESTEasy requires JDK 17+.
+Currently, RESTEasy requires JDK 25+ to build. It compiles down to Java 17.
 
 If you want to build the project without running the tests, you need to pull down a clone of the RESTEasy repository and
 run:

@@ -26,6 +26,9 @@ on:
         default: "wildfly/wildfly"
         type: string
 
+env:
+  MVN_ARGS: '-V -B'
+
 jobs:
   wildfly-build:
     uses: wildfly/wildfly/.github/workflows/shared-wildfly-build.yml@main
@@ -54,17 +57,20 @@ jobs:
           java-version: ${{ inputs.javaVersion }}
           distribution: 'temurin'
           cache: 'maven'
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          java-version: 25
+          distribution: 'temurin'
+          cache: 'maven'
       - name: Build on ${{ inputs.os }} with Java ${{ inputs.javaVersion }}
-        run: mvn clean install '-Dserver.version=${{needs.wildfly-build.outputs.wildfly-version}}'
-      - name: Upload surefire reports
+        run: ./mvnw ${{ env.MVN_ARGS }} clean install '-Dserver.version=${{needs.wildfly-build.outputs.wildfly-version}}' '-Dtest.java.home=${{ env[format('JAVA_HOME_{0}_X64', inputs.javaVersion)] }}'
+      - name: Upload test logs for failed run
         uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: surefire-reports
-          path: '**/surefire-reports/*'
-      - name: Upload server logs
-        uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: server-logs
-          path: '**/*.log'
+          name: failure-report
+          path: |
+            **/surefire-reports/**
+            **/failsafe-reports/**
+            **/*.log
