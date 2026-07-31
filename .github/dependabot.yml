@@ -28,7 +28,7 @@ updates:
         patterns:
           - "jakarta.json*"
           - "org.eclipse.parsson*"
-          - "org.eclipse:yasson*"
+          - "org.eclipse.yasson*"
       # Allow bouncy castle to upgrade the minor versions
       bouncy-castle-dependencies:
         patterns:

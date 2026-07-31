@@ -401,6 +401,7 @@
                                         <exclude>javax.xml.stream:stax-api</exclude>
                                         <exclude>log4j:log4j</exclude>
                                         <exlude>org.jboss:jandex</exlude>
+                                        <exclude>org.eclipse:yasson</exclude>
                                     </excludes>
                                 </bannedDependencies>
                             </rules>
