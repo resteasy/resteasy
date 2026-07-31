@@ -144,11 +144,11 @@
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
         <version.org.jacoco.plugin>0.8.15</version.org.jacoco.plugin>
         <version.org.wildfly.galleon-plugins>7.0.0.Final</version.org.wildfly.galleon-plugins>
-        <version.org.wildfly.plugins.wildfly-maven-plugin>5.1.5.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
+        <version.org.wildfly.plugins.wildfly-maven-plugin>6.0.1.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
         <!-- Default wildfly-maven-plugin GAV for executions other than those running goal execute-commands -->
         <groupId.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar>org.wildfly.plugins</groupId.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar>
         <artifactId.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar>wildfly-maven-plugin</artifactId.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar>
-        <version.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar>${version.org.wildfly.plugins.wildfly-maven-plugin}</version.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar>
+        <version.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar>6.0.1.Final</version.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar>
 
         <!-- Override the checkstyle version to be compatible with Java 11, see https://checkstyle.org/#JRE_and_JDK -->
         <version.checkstyle>10.26.1</version.checkstyle>
