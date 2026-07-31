@@ -140,7 +140,7 @@
 
         <!-- Plugins versions -->
         <version.formatter.maven.plugin>2.23.0</version.formatter.maven.plugin>
-        <version.impsort.maven.plugin>1.9.0</version.impsort.maven.plugin>
+        <version.impsort.maven.plugin>1.13.0</version.impsort.maven.plugin>
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
         <version.org.jacoco.plugin>0.8.15</version.org.jacoco.plugin>
         <version.org.wildfly.galleon-plugins>7.0.0.Final</version.org.wildfly.galleon-plugins>
