@@ -22,6 +22,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-cdi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
               <groupId>jakarta.enterprise</groupId>
               <artifactId>jakarta.enterprise.cdi-api</artifactId>
         </dependency>
@@ -54,13 +59,7 @@
             <groupId>org.jboss.weld.se</groupId>
             <artifactId>weld-se-core</artifactId>
             <scope>test</scope>
-       </dependency>  
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-cdi</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
+       </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
@@ -109,6 +108,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <dependenciesToScan>${project.groupId}:resteasy-embedded-server-tests</dependenciesToScan>
+                    <argLine>--add-reads org.jboss.resteasy.cdi=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
         </plugins>

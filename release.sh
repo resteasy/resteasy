@@ -41,6 +41,7 @@ printHelp() {
     printArgHelp "-f" "--force" "Forces to allow a SNAPSHOT suffix in release version and not require one for the development version."
     printArgHelp "-h" "--help" "Displays this help."
     printArgHelp "" "--notes-start-tag" "When doing a GitHub release, indicates the tag to use as the starting point for generating release notes."
+    printArgHelp "" "--no-push" "Performs the release locally but does not push changes or create a GitHub release."
     printArgHelp "-p" "--prerelease" "Indicates this is a prerelease and the GitHub release should be marked as such."
     printArgHelp "-r" "--release" "The version to be released. Also used for the tag."
     printArgHelp "" "--dry-run" "Executes the release as a dry-run. Nothing will be updated or pushed."
@@ -73,17 +74,18 @@ fi
 # ============================================================================
 
 DRY_RUN=false
+NO_PUSH=false
 FORCE=false
 DEVEL_VERSION=""
 RELEASE_VERSION=""
 SCRIPT_PATH=$(realpath "${0}")
 SCRIPT_DIR=$(dirname "${SCRIPT_PATH}")
+MVN="${SCRIPT_DIR}/mvnw"
 LOCAL_REPO="/tmp/m2/repository/$(basename "${SCRIPT_DIR}")"
 VERBOSE=false
 GH_RELEASE_TYPE="--latest"
 START_TAG=()
 MAVEN_ARGS=()
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 DAYS="${DAYS:-5}" # Default to 5 if not set
 
 # ============================================================================
@@ -109,6 +111,9 @@ while [ "$#" -gt 0 ]; do
         --notes-start-tag)
             START_TAG=("--notes-from-tag" "${2}")
             shift
+            ;;
+        --no-push)
+            NO_PUSH=true
             ;;
         -p|--prerelease)
             GH_RELEASE_TYPE="--prerelease"
@@ -152,7 +157,7 @@ fi
 # Find the expected Server ID
 # We temporarily disable set -e here because mvn might fail if args are bad, and we want to capture that
 set +e
-SERVER_ID=$(./mvnw help:evaluate -Dexpression=central.serverId -q -DforceStdout "${MAVEN_ARGS[@]}" 2>/dev/null | sed 's/^\[INFO\] \[stdout\] //')
+SERVER_ID=$("${MVN}" help:evaluate -Dexpression=central.serverId -q -DforceStdout "${MAVEN_ARGS[@]}" 2>/dev/null | sed 's/^\[INFO\] \[stdout\] //')
 RET_CODE=$?
 set -e
 
@@ -165,7 +170,7 @@ if [ -z "${SERVER_ID}" ]; then
 fi
 
 # Check the settings to ensure a server defined with that value
-if ! ./mvnw help:effective-settings 2>/dev/null | grep -q "<id>${SERVER_ID}</id>"; then
+if ! "${MVN}" help:effective-settings 2>/dev/null | grep -q "<id>${SERVER_ID}</id>"; then
     failNoHelp "A server with the id of \"${SERVER_ID}\" was not found in your settings.xml file."
 fi
 
@@ -180,7 +185,11 @@ MVN_FLAGS=()
 
 if ${DRY_RUN}; then
     echo "This will be a dry run and nothing will be updated or pushed."
-    MVN_FLAGS+=("-DdryRun" "-DpushChanges=false")
+    MVN_FLAGS+=("-DdryRun")
+fi
+
+if ${NO_PUSH}; then
+    MVN_FLAGS+=("-Dcentral.autoPublish=false")
 fi
 
 # ============================================================================
@@ -204,7 +213,7 @@ if [ -d "${LOCAL_REPO}" ]; then
 
     # Delete directories associated with this project
     set +e
-    PROJECT_PATH="$(./mvnw help:evaluate -Dexpression=project.groupId -q -DforceStdout "${MAVEN_ARGS[@]}" 2>/dev/null)"
+    PROJECT_PATH="$("${MVN}" help:evaluate -Dexpression=project.groupId -q -DforceStdout "${MAVEN_ARGS[@]}" 2>/dev/null)"
     RET_CODE=$?
     set -e
 
@@ -223,7 +232,7 @@ fi
 # ============================================================================
 
 # Create the command as an array
-CMD=(./mvnw clean release:clean release:prepare release:perform)
+CMD=("${MVN}" clean release:clean release:prepare release:perform)
 CMD+=("-Dmaven.repo.local=${LOCAL_REPO}")
 CMD+=("-Prelease,central-release,cloud-tests")
 CMD+=("-DdevelopmentVersion=${DEVEL_VERSION}")
@@ -247,33 +256,70 @@ fi
 # Execute the command
 # "${CMD[@]}" expands the array respecting spaces within arguments
 "${CMD[@]}"
-status=$?
+
+# ============================================================================
+# Git push
+# ============================================================================
+
+SCM_URL=$("${MVN}" help:evaluate -Dexpression=project.scm.developerConnection -q -DforceStdout "${MAVEN_ARGS[@]}")
+# Strip the scm:git: prefix if present
+SCM_URL="${SCM_URL#scm:git:}"
+
+# Find matching remote
+GIT_REMOTE=""
+while IFS=$'\t' read -r remote_name remote_url; do
+    if [[ "${remote_url}" == *"${SCM_URL}"* ]] || [[ "${SCM_URL}" == *"${remote_url}"* ]]; then
+        GIT_REMOTE="${remote_name}"
+        break
+    fi
+done < <(git remote -v | grep "(push)" | awk '{print $1"\t"$2}')
+
+if [ -z "${GIT_REMOTE}" ]; then
+    failNoHelp "Could not find a git remote matching SCM URL: ${SCM_URL}"
+fi
+
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Push changes to remote (skipped during dry-run or no-push)
+if ! ${DRY_RUN} && ! ${NO_PUSH}; then
+    if ${VERBOSE}; then
+        printf "Pushing to remote '%s' branch '%s' (matched from SCM URL: %s)\n" "${GIT_REMOTE}" "${CURRENT_BRANCH}" "${SCM_URL}"
+    fi
+
+    git push "${GIT_REMOTE}" "${CURRENT_BRANCH}" --follow-tags
+else
+    if ${DRY_RUN}; then
+        printf "${YELLOW}Dry run would execute:${CLEAR}\ngit push %s %s --follow-tags\n" "${GIT_REMOTE}" "${CURRENT_BRANCH}"
+    else
+        printf "${YELLOW}Skipping push (--no-push mode). To push manually, run:${CLEAR}\ngit push %s %s --follow-tags\n" "${GIT_REMOTE}" "${CURRENT_BRANCH}"
+    fi
+fi
 
 # ============================================================================
 # Post-release
 # ============================================================================
 
-if [ ${status} -eq 0 ]; then
+if ! ${NO_PUSH}; then
     # Get the path to the ZIP files
     distZip=$(readlink -e distribution/target/distribution/*.zip 2>/dev/null || echo "")
     srcZip=$(readlink -e distribution/src-distribution/target/distribution/*.zip 2>/dev/null || echo "")
 
     # ============================================================================
-    # GitHub Release Instructions
+    # GitHub Release
     # ============================================================================
 
     echo ""
     if command -v gh &>/dev/null; then
         # Check for default repo quietly
         if ! gh repo set-default --view &>/dev/null; then
-            echo -e "${RED}No default repository has been set. You must use gh repo set-default to set a default repository before executing the following commands.${CLEAR}"
+            echo -e "${RED}No default repository has been set. You must use 'gh repo set-default' to set a default repository before executing the following commands.${CLEAR}"
             echo ""
             echo "gh release create --generate-notes ${START_TAG[*]} ${GH_RELEASE_TYPE} --verify-tag ${TAG_NAME}"
         else
             if ${DRY_RUN}; then
                 printf "${YELLOW}Dry run would execute:${CLEAR}\ngh release create --generate-notes %s %s --verify-tag %s\n" "${START_TAG[*]}" "${GH_RELEASE_TYPE}" "${TAG_NAME}"
             else
-                if gh release create --generate-notes "${START_TAG[@]}" ${GH_RELEASE_TYPE} --verify-tag "${TAG_NAME}"; then
+                if gh release create --generate-notes "${START_TAG[@]}" "${GH_RELEASE_TYPE}" --verify-tag "${TAG_NAME}"; then
                     echo "GitHub release created successfully."
                 else
                     echo "${RED}Warning: Failed to create GitHub release.${CLEAR}"
@@ -301,7 +347,7 @@ if [ ${status} -eq 0 ]; then
     fi
 
     # ============================================================================
-    # Documentation Publishing Instructions
+    # Documentation Publishing
     # ============================================================================
 
     echo ""
@@ -328,10 +374,5 @@ if [ ${status} -eq 0 ]; then
         echo "${YELLOW}Warning: Distribution ZIP not found. Documentation may not have been packaged.${CLEAR}"
     fi
 else
-    printf "\n%sThe release has failed.%s See the previous errors and try again.\n" "${RED}" "${CLEAR}"
-    if ${VERBOSE}; then
-        printf "The command executed was:\n%s\n" "${CMD[*]}"
-    fi
+    printf "${YELLOW}Skipping GitHub release creation (--no-push mode).${CLEAR}\n"
 fi
-
-exit ${status}

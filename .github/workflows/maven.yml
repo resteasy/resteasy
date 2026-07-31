@@ -43,6 +43,9 @@ concurrency:
   group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
   cancel-in-progress: true
 
+env:
+  MVN_ARGS: '-V -B -fae'
+
 jobs:
   build:
 
@@ -55,37 +58,31 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - name: Set up JDK
+      - name: Set up JDKs
         uses: actions/setup-java@v5
         with:
+          distribution: 'temurin'
+          cache: 'maven'
+          # Please note the order here of having 25 last as that is the version we want to compile with
           java-version: |
             17
             21
             25
-          distribution: 'temurin'
-          cache: 'maven'
-
-      - name: Build with Maven Java 21 test with Java 17 - ${{ matrix.os }}
-        run:  |
-          mvn -V clean install -U -B -fae '-Dgithub.actions' '-Djvm=${{env.JAVA_HOME_17_X64}}/bin/java'
-
-      - name: Build with Maven Java 21 - ${{ matrix.os }}
-        run:  |
-          mvn -V clean install -U -B -fae '-Dgithub.actions' '-Djvm=${{env.JAVA_HOME_21_X64}}/bin/java'
-
-      - name: Build with Maven Java 25 - ${{ matrix.os }}
-        run:  |
-          mvn -V clean install -U -B -fae '-Dgithub.actions'
-      - uses: actions/upload-artifact@v7
+      - name: Build and Test on ${{ matrix.os }} - Java 25
+        run: ./mvnw ${{ env.MVN_ARGS }} clean install
+      - name: Build and Test on ${{ matrix.os }} - Java 21
+        run: ./mvnw ${{ env.MVN_ARGS }} verify '-Dtest.java.home=${{env.JAVA_HOME_21_X64}}${{env.JAVA_HOME_21_ARM64}}' '-Dtest.report.dir=java21'
+      - name: Build and Test on ${{ matrix.os }} - Java 17
+        run: ./mvnw ${{ env.MVN_ARGS }} verify '-Dtest.java.home=${{env.JAVA_HOME_17_X64}}${{env.JAVA_HOME_17_ARM64}}' '-Dtest.report.dir=java17'
+      - name: Upload test logs for failed run
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: surefire-reports-${{ matrix.os }}
-          path: '**/surefire-reports/'
-      - uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: server-logs-${{ matrix.os }}
-          path: '**/server.log'
+          name: failure-report-${{ matrix.os }}
+          path: |
+            **/surefire-reports/**
+            **/failsafe-reports/**
+            **/*.log
 
   additional-profiles:
     runs-on: ubuntu-latest
@@ -99,25 +96,28 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - name: Set up JDK
+      - name: Set up JDK 25
         uses: actions/setup-java@v5
         with:
-          java-version: 21
           distribution: 'temurin'
           cache: 'maven'
+          java-version: |
+            21
+            25
       - name: Test with ${{ matrix.profile }} - JDK 21
         run:  |
-          mvn clean install -U -B -fae ${{ matrix.profile }} '-Dgithub.actions'
-      - uses: actions/upload-artifact@v7
+          ./mvnw ${{ env.MVN_ARGS }} clean install -DskipTests
+          cd testsuite
+          mvn ${{ env.MVN_ARGS }} verify ${{ matrix.profile }} '-Dtest.java.home=${{env.JAVA_HOME_21_X64}}${{env.JAVA_HOME_21_ARM64}}'
+      - name: Upload test logs for failed run
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: surefire-reports-${{ matrix.os }}
-          path: '**/surefire-reports/'
-      - uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: server-logs-${{ matrix.os }}
-          path: '**/server.log'
+          name: failure-reports${{ matrix.profile }}
+          path: |
+            **/surefire-reports/**
+            **/failsafe-reports/**
+            **/*.log
 
   java-11-build:
     runs-on: ${{ matrix.os }}
@@ -129,38 +129,36 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - name: Set up JDK
+      - name: Set up JDKs
         uses: actions/setup-java@v5
         with:
-          java-version: |
-            11
-            17
           distribution: 'temurin'
           cache: 'maven'
+          java-version: 11
       - name: Test with Java 11 on WildFly 34 - ${{ matrix.os }}
-        run:  |
-          mvn clean install -U -B -fae '-Dserver.version=34.0.0.Final' '-Dgithub.actions' '-Djvm=${{env.JAVA_HOME_11_X64}}/bin/java' '-Plegacy-wildfly-channels'
-      - uses: actions/upload-artifact@v7
+        run: ./mvnw ${{ env.MVN_ARGS }} clean install '-Dserver.version=34.0.0.Final' '-Plegacy-wildfly-channels'
+      - name: Upload test logs for failed run
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: surefire-reports-${{ matrix.os }}}-34
-          path: '**/surefire-reports/'
-      - uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: server-logs-${{ matrix.os }}-34
-          path: '**/server.log'
+          name: failure-report-${{ matrix.os }}-java11
+          path: |
+            **/surefire-reports/**
+            **/failsafe-reports/**
+            **/*.log
 
   build-java-docs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
-      - name: Set up JDK 17
+      - name: Set up JDK 25
         uses: actions/setup-java@v5
         with:
-          java-version: 17
+          java-version: 25
           distribution: 'temurin'
           cache: 'maven'
-      - name: Build Java Docs with Java 17
-        run: mvn clean site install -B -DskipTests -Dmpir.skip=true
+      - name: Build Java Docs with Java 25
+        run: |
+          ./mvnw ${{ env.MVN_ARGS }} clean install -DskipTests
+          ./mvnw ${{ env.MVN_ARGS }} site -DskipTests -Dmpir.skip=true

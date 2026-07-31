@@ -48,6 +48,9 @@ concurrency:
   group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
   cancel-in-progress: true
 
+env:
+  MVN_ARGS: '-V -B -fae'
+
 jobs:
   run-tck:
 
@@ -65,59 +68,48 @@ jobs:
           repository: resteasy/resteasy-tck-runner
           path: resteasy-tck-runner
           ref: 'jakarta-rest-3.1'
-      - name: Set up JDK
+      - name: Set up JDKs
         uses: actions/setup-java@v5
         with:
+          distribution: 'temurin'
+          cache: 'maven'
+          # Please note the order here of having 25 last as that is the version we want to compile with
           java-version: |
             17
             21
-          distribution: 'temurin'
-          cache: 'maven'
+            25
       - name: Build RESTEasy
         id: resteasy-build
         run:  |
           cd resteasy
-          mvn clean install -U -B -fae -DskipTests
+          ./mvnw ${{ env.MVN_ARGS }} clean install -DskipTests
           RESTEASY_VERSION="$(mvn -B help:evaluate -Dexpression=project.version -DforceStdout -q)"
           echo "RESTEASY_VERSION=$RESTEASY_VERSION"
           echo "RESTEASY_VERSION=$RESTEASY_VERSION" >> "$GITHUB_OUTPUT"
-      - name: Run the Jakarta REST TCK - JDK 17
+      - name: Run the Jakarta REST TCK - Java 25
         run:  |
           echo "RESTEASY_VERSION=${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
           cd resteasy-tck-runner
-          JAVA_HOME="${{env.JAVA_HOME_17_X64}}"
-          echo JAVA_HOME="${JAVA_HOME}"
-          export JAVA_HOME
-          mvn -version
-          mvn clean install -U -B -fae -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
-      - name: Run the Jakarta REST TCK - JDK 17
+          mvn ${{ env.MVN_ARGS }} clean verify -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
+      - name: Run the Jakarta REST TCK - Java 21
         run:  |
           echo "RESTEASY_VERSION=${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
           cd resteasy-tck-runner
-          JAVA_HOME="${{env.JAVA_HOME_17_X64}}"
-          echo JAVA_HOME="${JAVA_HOME}"
-          export JAVA_HOME
-          mvn -version
-          mvn clean install -U -B -fae -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
-      - name: Run the Jakarta REST TCK - JDK 21
+          mvn ${{ env.MVN_ARGS }} verify -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}" -Djvm="${{env.JAVA_HOME_21_X64}}/bin/java"
+      - name: Run the Jakarta REST TCK - Java 17
         run:  |
           echo "RESTEASY_VERSION=${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
           cd resteasy-tck-runner
-          java -version
-          mvn -version
-          mvn clean install -U -B -fae -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
-      - uses: actions/upload-artifact@v7
+          mvn ${{ env.MVN_ARGS }} verify -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}" -Djvm="${{env.JAVA_HOME_17_X64}}/bin/java"
+      - name: Upload test logs for failed run
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: test-reports
+          name: failure-report
           path: |
-            '**/surefire-reports/'
-            '**/failsafe-reports/'
-      - uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: server-logs
-          path: '**/server.log'
+            **/surefire-reports/**
+            **/failsafe-reports/**
+            **/*.log
 
   legacy-run-tck:
     runs-on: ubuntu-latest
@@ -134,19 +126,17 @@ jobs:
           repository: resteasy/resteasy-tck-runner
           path: resteasy-tck-runner
           ref: 'jakarta-rest-3.1'
-      - name: Set up JDK
+      - name: Set up JDKs
         uses: actions/setup-java@v5
         with:
-          java-version: |
-            11
-            21
           distribution: 'temurin'
           cache: 'maven'
+          java-version: 11
       - name: Build RESTEasy
         id: resteasy-build
         run:  |
           cd resteasy
-          mvn clean install -U -B -fae -DskipTests
+          mvn ${{ env.MVN_ARGS }} clean install -DskipTests
           RESTEASY_VERSION="$(mvn -B help:evaluate -Dexpression=project.version -DforceStdout -q)"
           echo "RESTEASY_VERSION=$RESTEASY_VERSION"
           echo "RESTEASY_VERSION=$RESTEASY_VERSION" >> "$GITHUB_OUTPUT"
@@ -154,20 +144,13 @@ jobs:
         run:  |
           echo "RESTEASY_VERSION=${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
           cd resteasy-tck-runner
-          JAVA_HOME="${{env.JAVA_HOME_11_X64}}"
-          echo JAVA_HOME="${JAVA_HOME}"
-          export JAVA_HOME
-          mvn -version
-          mvn clean install -U -B -fae -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}" -Dversion.org.wildfly=34.0.1.Final -Plegacy-wildfly-channels  -Dwildfly.channel.manifest.artifactId=wildfly-ee -Dserver.test.feature.pack.artifactId=wildfly-ee-galleon-pack
-      - uses: actions/upload-artifact@v7
+          mvn ${{ env.MVN_ARGS }} clean verify -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}" -Dversion.org.wildfly=34.0.1.Final -Plegacy-wildfly-channels -Dwildfly.channel.manifest.artifactId=wildfly-ee -Dserver.test.feature.pack.artifactId=wildfly-ee-galleon-pack
+      - name: Upload test logs for failed run
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: legacy-test-reports
+          name: legacy-failure-report
           path: |
-            '**/surefire-reports/'
-            '**/failsafe-reports/'
-      - uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: server-logs
-          path: '**/server.log'
+            **/surefire-reports/**
+            **/failsafe-reports/**
+            **/*.log

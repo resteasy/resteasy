@@ -19,6 +19,7 @@ module org.jboss.resteasy.netty.cdi {
     // RESTEasy modules
     requires org.jboss.resteasy.core;
     requires org.jboss.resteasy.spi;
+    requires org.jboss.resteasy.cdi;
     requires transitive org.jboss.resteasy.netty;
 
     // Exports

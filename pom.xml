@@ -2,7 +2,7 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>52</version>
+        <version>53</version>
         <relativePath />
     </parent>
 
@@ -128,6 +128,9 @@
         <maven.test.skip>false</maven.test.skip>
         <skipTests>${maven.test.skip}</skipTests>
         <wildfly.skip>${skipTests}</wildfly.skip>
+        <test.java.home>${java.home}</test.java.home>
+        <test.report.dir />
+        <surefire.reportsDirectory>${project.build.directory}/surefire-reports/${test.report.dir}</surefire.reportsDirectory>
 
         <!-- Provisioning settings -->
         <galleon.fork.embedded>true</galleon.fork.embedded>
@@ -162,17 +165,12 @@
         <signTag>true</signTag>
         <tagNameFormat>v@{project.version}</tagNameFormat>
         <arguments>-DskipTests -DpushChanges=${pushChanges} -Dcentral.autoPublish=${central.autoPublish}</arguments>
-        <!-- Push changes by default when using the maven-release-plugin:prepare -->
-        <pushChanges>true</pushChanges>
+        <!-- Do not push changes by default when using the maven-release-plugin:prepare -->
+        <pushChanges>false</pushChanges>
         <!-- Use the local directory when using perform -->
         <localCheckout>true</localCheckout>
         <!-- Maven Central properties -->
-        <central.sonatype.url>https://central.sonatype.com</central.sonatype.url>
-        <central.serverId>central</central.serverId>
         <central.deploymentName>resteasy-${project.version}</central.deploymentName>
-        <central.autoPublish>true</central.autoPublish>
-        <central.waitUntil>validated</central.waitUntil>
-        <central.skipPublishing>false</central.skipPublishing>
     </properties>
 
     <dependencyManagement>
@@ -269,8 +267,26 @@
                     <configuration>
                         <runOrder>alphabetical</runOrder>
                         <argLine>${surefire.system.args}</argLine>
-                        <redirectTestOutputToFile>${maven.test.redirectTestOutputToFile}</redirectTestOutputToFile>
+                        <jvm>${test.java.home}${file.separator}bin${file.separator}java</jvm>
+                        <reportsDirectory>${surefire.reportsDirectory}</reportsDirectory>
                         <systemPropertyVariables>
+                            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                            <!-- Please note this is an undocumented and fragile property as it may not work in the future.
+                                 However, for now it is all we have to find the root project directory. -->
+                            <logging.configuration>file:///${maven.multiModuleProjectDirectory}/logging.properties</logging.configuration>
+                            <client.log.dir>${project.build.directory}</client.log.dir>
+                        </systemPropertyVariables>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <configuration>
+                        <argLine>${surefire.system.args}</argLine>
+                        <jvm>${test.java.home}${file.separator}bin${file.separator}java</jvm>
+                        <reportsDirectory>${surefire.reportsDirectory}</reportsDirectory>
+                        <systemPropertyVariables>
+                            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                             <!-- Please note this is an undocumented and fragile property as it may not work in the future.
                                  However, for now it is all we have to find the root project directory. -->
                             <logging.configuration>file:///${maven.multiModuleProjectDirectory}/logging.properties</logging.configuration>
@@ -505,6 +521,10 @@
                     <name>release</name>
                 </property>
             </activation>
+            <properties>
+                <!-- Require Java 25 for releasing -->
+                <jdk.min.version>25</jdk.min.version>
+            </properties>
             <modules>
                 <module>docbook</module>
                 <module>distribution</module>
