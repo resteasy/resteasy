@@ -1,3 +1,8 @@
+/*
+ * Copyright The RESTEasy Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package org.jboss.resteasy.core.request;
 
 import java.math.BigDecimal;
@@ -17,6 +22,9 @@ public class VariantQuality {
     private QualityValue characterSetQualityValue = QualityValue.DEFAULT;
     private QualityValue encodingQualityValue = QualityValue.DEFAULT;
     private QualityValue languageQualityValue = QualityValue.DEFAULT;
+
+    private int languageMatchPosition = Integer.MAX_VALUE;
+    private LanguageMatchPrecision languageMatchPrecision = LanguageMatchPrecision.WILDCARD;
 
     private MediaType requestMediaType;
 
@@ -49,6 +57,42 @@ public class VariantQuality {
             languageQualityValue = QualityValue.DEFAULT;
         else
             languageQualityValue = value;
+    }
+
+    /**
+     * The position in the list of languages this descriptor was created for.
+     *
+     * @return the position in the list of the languages
+     */
+    public int getLanguageMatchPosition() {
+        return languageMatchPosition;
+    }
+
+    /**
+     * Sets the position of this language value was set at.
+     *
+     * @param languageMatchPosition the position
+     */
+    public void setLanguageMatchPosition(int languageMatchPosition) {
+        this.languageMatchPosition = languageMatchPosition;
+    }
+
+    /**
+     * Returns how precisely the variant's language matched the request entry.
+     *
+     * @return the match precision
+     */
+    public LanguageMatchPrecision getLanguageMatchPrecision() {
+        return languageMatchPrecision;
+    }
+
+    /**
+     * Sets the language match precision.
+     *
+     * @param languageMatchPrecision the precision
+     */
+    public void setLanguageMatchPrecision(LanguageMatchPrecision languageMatchPrecision) {
+        this.languageMatchPrecision = languageMatchPrecision;
     }
 
     public MediaType getRequestMediaType() {
