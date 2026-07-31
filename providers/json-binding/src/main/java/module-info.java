@@ -18,7 +18,7 @@ module org.jboss.resteasy.plugins.providers.json.bind {
     // RESTEasy modules
     requires org.jboss.resteasy.core;
     requires org.jboss.resteasy.spi;
-    requires static org.jboss.resteasy.tracing.api;
+    requires org.jboss.resteasy.tracing.api;
 
     // Exports
     exports org.jboss.resteasy.plugins.providers.jsonb;
