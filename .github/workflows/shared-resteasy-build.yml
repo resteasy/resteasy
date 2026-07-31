@@ -50,12 +50,10 @@ on:
     inputs:
       resteasy-branch:
         description: "RESTEasy Branch"
-        required: true
         default: "6.2"
         type: string
       resteasy-repo:
         description: "RESTEasy Repository"
-        required: true
         default: "resteasy/resteasy"
         type: string
 
@@ -70,14 +68,14 @@ jobs:
         with:
           repository: ${{ inputs.resteasy-repo }}
           ref: ${{ inputs.resteasy-branch }}
-      - name: Set up JDK 17
+      - name: Set up JDK 25
         uses: actions/setup-java@v5
         with:
-          java-version: 17
+          java-version: 25
           distribution: 'temurin'
           cache: 'maven'
       - name: Build RESTEasy
-        run: mvn clean install -DskipTests -Dcheckstyle.skip=true -Denforcer.skip=true -DskipFormatting=true
+        run: ./mvnw -V -B clean install -DskipTests -Dcheckstyle.skip=true -Denforcer.skip=true -DskipFormatting=true
       - id: version
         run: echo "resteasy-version=$(mvn -B help:evaluate -Dexpression=project.version -DforceStdout -q)" >> $GITHUB_OUTPUT
       - name: Archive the repository
