@@ -80,7 +80,7 @@ jobs:
           repository: resteasy/resteasy-tck-runner
           path: resteasy-tck-runner
       - name: Set up JDKs
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v5.6.0
         with:
           distribution: 'temurin'
           cache: 'maven'
