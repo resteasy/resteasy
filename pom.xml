@@ -141,7 +141,7 @@
         <version.impsort.maven.plugin>1.9.0</version.impsort.maven.plugin>
         <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
         <version.org.jacoco.plugin>0.8.15</version.org.jacoco.plugin>
-        <version.org.wildfly.galleon-plugins>7.4.0.Final</version.org.wildfly.galleon-plugins>
+        <version.org.wildfly.galleon-plugins>8.1.7.Final</version.org.wildfly.galleon-plugins>
         <version.org.wildfly.plugins.wildfly-maven-plugin>5.1.5.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
         <!-- Default wildfly-maven-plugin GAV for executions other than those running goal execute-commands -->
         <groupId.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar>org.wildfly.plugins</groupId.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar>
