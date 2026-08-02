@@ -52,13 +52,13 @@ jobs:
         run: |
           tar -xzf wildfly-maven-repository.tar.gz -C ~
       - name: Set up JDK ${{ inputs.javaVersion }}
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v5.6.0
         with:
           java-version: ${{ inputs.javaVersion }}
           distribution: 'temurin'
           cache: 'maven'
       - name: Set up JDK 25
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v5.6.0
         with:
           java-version: 25
           distribution: 'temurin'
