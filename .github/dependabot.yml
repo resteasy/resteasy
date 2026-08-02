@@ -113,6 +113,8 @@ updates:
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "com.fasterxml.jackson:jackson-bom"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "net.revelc.code*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "org.eclipse.jetty*:*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "io.undertow:*"
@@ -131,11 +133,17 @@ updates:
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "org.jboss.logmanager:*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.jboss.slf4j:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "org.junit:junit-bom"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "org.wildfly.common:wildfly-common"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "org.wildfly:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.wildfly.plugins:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.wildfly.galleon-plugins:*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
     open-pull-requests-limit: 10
     registries:
