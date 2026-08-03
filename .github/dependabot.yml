@@ -47,6 +47,8 @@ updates:
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "io.undertow:*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.jboss.arquillian.container:arquillian-weld-embedded"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "org.jboss.weld*:*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "org.hibernate.validator:*"
@@ -55,7 +57,11 @@ updates:
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "io.smallrye:jandex"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "io.smallrye.common:smallrye-common-bom"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "org.wildfly.common:wildfly-common"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.wildfly.security:wildfly-elytron-ssl"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
     open-pull-requests-limit: 10
     registries:
