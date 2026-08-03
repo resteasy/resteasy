@@ -139,7 +139,6 @@
         <version.central.publishing.maven.plugin>0.9.0</version.central.publishing.maven.plugin>
         <version.formatter.maven.plugin>2.23.0</version.formatter.maven.plugin>
         <version.impsort.maven.plugin>1.9.0</version.impsort.maven.plugin>
-        <version.javadoc.plugin>3.3.1</version.javadoc.plugin>
         <version.org.jacoco.plugin>0.8.15</version.org.jacoco.plugin>
         <version.org.wildfly.galleon-plugins>8.1.7.Final</version.org.wildfly.galleon-plugins>
         <version.org.wildfly.plugins.wildfly-maven-plugin>6.0.1.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
@@ -159,7 +158,7 @@
 
         <!-- maven-release-plugin configuration -->
         <autoVersionSubmodules>true</autoVersionSubmodules>
-        <preparationGoals>clean install javadoc:aggregate-no-fork site</preparationGoals>
+        <preparationGoals>install site</preparationGoals>
         <preparationProfiles>release,central-release</preparationProfiles>
         <releaseProfiles>${preparationProfiles}</releaseProfiles>
         <signTag>true</signTag>
@@ -305,6 +304,10 @@
                         <excludePackageNames>
                             com.restfully.*:org.jboss.resteasy.examples.*:se.unlogic.*:org.jboss.resteasy.tests.*
                         </excludePackageNames>
+                        <sourceFileExcludes>
+                            <sourceFileExclude>**/i18n/*.java</sourceFileExclude>
+                        </sourceFileExcludes>
+                        <skippedModules>resteasy-wadl,resteasy-wadl-undertow-connector,resteasy-jdk-http,resteasy-embedded-server-tests,server-adapter-test-base,arquillian-utils,test-utils,client-tests</skippedModules>
                         <header><![CDATA[<b>${project.name} ${project.version}</b>
                             <br>References in this document to JAX-RS refer to the Jakarta RESTful Web Services unless otherwise noted.
                             <br>References in this document to JAXB refer to the Jakarta XML Binding unless otherwise noted.
