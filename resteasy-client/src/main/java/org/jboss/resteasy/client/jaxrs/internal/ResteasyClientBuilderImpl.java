@@ -17,6 +17,7 @@ import javax.net.ssl.SSLContext;
 
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.RuntimeType;
+import jakarta.ws.rs.client.ClientListener;
 import jakarta.ws.rs.core.Configuration;
 
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
@@ -75,6 +76,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
     protected boolean disableAutomaticRetries = false;
     protected boolean followRedirects;
     private boolean useAsyncHttpClient;
+    protected List<ClientListener> listeners = new ArrayList<>();
 
     static ResteasyProviderFactory PROVIDER_FACTORY;
 
@@ -398,7 +400,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
         }
         final ContextualExecutorService executor = getExecutorService();
         return createResteasyClient(engine, executor, !executor.isManaged(),
-                ContextualExecutors.wrapOrLookup(scheduledExecutorService), config);
+                ContextualExecutors.wrapOrLookup(scheduledExecutorService), config, listeners);
 
     }
 
@@ -432,9 +434,10 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
     }
 
     protected ResteasyClient createResteasyClient(ClientHttpEngine engine, ExecutorService executor, boolean cleanupExecutor,
-            ScheduledExecutorService scheduledExecutorService, ClientConfiguration config) {
+            ScheduledExecutorService scheduledExecutorService, ClientConfiguration config,
+            List<ClientListener> listeners) {
         return new ResteasyClientImpl(engine, executor, cleanupExecutor,
-                ContextualExecutors.wrapOrLookup(scheduledExecutorService), config);
+                ContextualExecutors.wrapOrLookup(scheduledExecutorService), config, listeners);
     }
 
     @Override
@@ -674,6 +677,12 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
     @Override
     public boolean isFollowRedirects() {
         return followRedirects;
+    }
+
+    @Override
+    public ResteasyClientBuilderImpl listener(ClientListener listener) {
+        this.listeners.add(listener);
+        return this;
     }
 
     private ContextualExecutorService getExecutorService() {

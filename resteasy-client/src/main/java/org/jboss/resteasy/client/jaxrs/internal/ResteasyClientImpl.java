@@ -1,6 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -8,6 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
+import jakarta.ws.rs.client.ClientListener;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Configuration;
@@ -32,6 +34,7 @@ public class ResteasyClientImpl implements ResteasyClient {
     protected ClientConfiguration configuration;
     protected boolean closed;
     protected boolean cleanupExecutor;
+    private final List<ClientListener> listeners;
 
     protected ResteasyClientImpl(final ClientHttpEngine httpEngine, final ExecutorService asyncInvocationExecutor,
             final boolean cleanupExecutor,
@@ -43,11 +46,20 @@ public class ResteasyClientImpl implements ResteasyClient {
     protected ResteasyClientImpl(final ClientHttpEngine httpEngine, final ExecutorService asyncInvocationExecutor,
             final boolean cleanupExecutor,
             final ContextualScheduledExecutorService scheduledExecutorService, final ClientConfiguration configuration) {
+        this(httpEngine, asyncInvocationExecutor, cleanupExecutor, scheduledExecutorService, configuration,
+                List.of());
+    }
+
+    protected ResteasyClientImpl(final ClientHttpEngine httpEngine, final ExecutorService asyncInvocationExecutor,
+            final boolean cleanupExecutor,
+            final ContextualScheduledExecutorService scheduledExecutorService, final ClientConfiguration configuration,
+            final List<ClientListener> listeners) {
         this.cleanupExecutor = cleanupExecutor;
         this.httpEngine = httpEngine;
         this.asyncInvocationExecutor = asyncInvocationExecutor;
         this.configuration = configuration;
         this.scheduledExecutorService = scheduledExecutorService;
+        this.listeners = List.copyOf(listeners);
     }
 
     protected ResteasyClientImpl(final ClientHttpEngine httpEngine, final ExecutorService asyncInvocationExecutor,
@@ -81,6 +93,9 @@ public class ResteasyClientImpl implements ResteasyClient {
 
     @Override
     public void close() {
+        if (closed) {
+            return;
+        }
         closed = true;
         try {
             httpEngine.close();
@@ -92,6 +107,9 @@ public class ResteasyClientImpl implements ResteasyClient {
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+        for (ClientListener listener : listeners) {
+            listener.closed(this);
         }
     }
 
