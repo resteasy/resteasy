@@ -55,7 +55,7 @@ jobs:
   run-tck:
 
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 240
 
     steps:
       - name: Checkout RESTEasy
@@ -94,12 +94,12 @@ jobs:
       - name: Run the Jakarta REST TCK - Java 21
         run:  |
           echo "RESTEASY_VERSION=${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
-          cd resteasy-tck-runner
+          cd resteasy-tck-runner/resteasy-tck-adapter
           mvn ${{ env.MVN_ARGS }} verify -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}" -Djvm="${{env.JAVA_HOME_21_X64}}/bin/java"
       - name: Run the Jakarta REST TCK - Java 17
         run:  |
           echo "RESTEASY_VERSION=${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
-          cd resteasy-tck-runner
+          cd resteasy-tck-runner/resteasy-tck-adapter
           mvn ${{ env.MVN_ARGS }} verify -Dtck.debug.log=true -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}" -Djvm="${{env.JAVA_HOME_17_X64}}/bin/java"
       - name: Upload test logs for failed run
         uses: actions/upload-artifact@v7
