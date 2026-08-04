@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.jboss.resteasy.cloud.tests</groupId>
         <artifactId>cloud-tests</artifactId>
-        <version>6.2.17.Final</version>
+        <version>6.2.18.Final-SNAPSHOT</version>
     </parent>
 
     <artifactId>client-tests</artifactId>
