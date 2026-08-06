@@ -201,6 +201,13 @@ public class ClientRequestContextImpl implements ClientRequestContext {
         return invocation.getHeaders().getHeader(name);
     }
 
+    // TODO (jrp) add @Override
+    //@Override
+    public String getHeaderString(final String name, final String separator) {
+        // TODO (jrp) implement
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public boolean containsHeaderString(final String name, final Predicate<String> valuePredicate) {
         return containsHeaderString(name, ",", valuePredicate);
