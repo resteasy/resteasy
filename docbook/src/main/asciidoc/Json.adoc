@@ -1,6 +1,10 @@
 [[_json]]
 == JSON Support via Jackson
 
+NOTE: This chapter documents the `resteasy-jackson2-provider` for Jackson 2. For Jackson 3 support, see the
+standalone https://docs.resteasy.dev/resteasy-jackson-provider[RESTEasy Jackson Provider] project
+(`dev.resteasy.providers:resteasy-jackson-provider`).
+
 RESTEasy supports integration with the Jackson project.
 For more on Jackson 2, see https://github.com/FasterXML/jackson-databind/wiki.
 Besides having {xml-binding} like APIs, it has a JavaBean based model, described at
