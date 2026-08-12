@@ -93,41 +93,46 @@ public class ProcessorFactory {
                 Encoded.class) != null;
 
         if ((query = FindAnnotation.findAnnotation(annotations, QueryParam.class)) != null) {
-            processor = new QueryParamProcessor(query.value(), genericType, annotations, configuration);
+            processor = new QueryParamProcessor(getParamName(defaultParameterName, query.value()), genericType, annotations,
+                    configuration);
         } else if ((queryParam2 = FindAnnotation.findAnnotation(annotations,
                 org.jboss.resteasy.annotations.jaxrs.QueryParam.class)) != null) {
             processor = new QueryParamProcessor(getParamName(defaultParameterName, queryParam2.value()), genericType,
                     annotations, configuration);
         } else if ((header = FindAnnotation.findAnnotation(annotations,
                 HeaderParam.class)) != null) {
-            processor = new HeaderParamProcessor(header.value(), genericType, annotations, configuration);
+            processor = new HeaderParamProcessor(getParamName(defaultParameterName, header.value()), genericType, annotations,
+                    configuration);
         } else if ((header2 = FindAnnotation.findAnnotation(annotations,
                 org.jboss.resteasy.annotations.jaxrs.HeaderParam.class)) != null) {
             processor = new HeaderParamProcessor(getParamName(defaultParameterName, header2.value()), genericType, annotations,
                     configuration);
         } else if ((cookie = FindAnnotation.findAnnotation(annotations,
                 CookieParam.class)) != null) {
-            processor = new CookieParamProcessor(cookie.value(), genericType, annotations);
+            processor = new CookieParamProcessor(getParamName(defaultParameterName, cookie.value()), genericType, annotations);
         } else if ((cookie2 = FindAnnotation.findAnnotation(annotations,
                 org.jboss.resteasy.annotations.jaxrs.CookieParam.class)) != null) {
             processor = new CookieParamProcessor(getParamName(defaultParameterName, cookie2.value()), genericType, annotations);
         } else if ((uriParam = FindAnnotation.findAnnotation(annotations,
                 PathParam.class)) != null) {
-            processor = new PathParamProcessor(uriParam.value(), isEncoded, genericType, annotations, configuration);
+            processor = new PathParamProcessor(getParamName(defaultParameterName, uriParam.value()), isEncoded, genericType,
+                    annotations, configuration);
         } else if ((uriParam2 = FindAnnotation.findAnnotation(annotations,
                 org.jboss.resteasy.annotations.jaxrs.PathParam.class)) != null) {
             processor = new PathParamProcessor(getParamName(defaultParameterName, uriParam2.value()), isEncoded, genericType,
                     annotations, configuration);
         } else if ((matrix = FindAnnotation.findAnnotation(annotations,
                 MatrixParam.class)) != null) {
-            processor = new MatrixParamProcessor(matrix.value(), genericType, annotations, configuration);
+            processor = new MatrixParamProcessor(getParamName(defaultParameterName, matrix.value()), genericType, annotations,
+                    configuration);
         } else if ((matrix2 = FindAnnotation.findAnnotation(annotations,
                 org.jboss.resteasy.annotations.jaxrs.MatrixParam.class)) != null) {
             processor = new MatrixParamProcessor(getParamName(defaultParameterName, matrix2.value()), genericType, annotations,
                     configuration);
         } else if ((formParam = FindAnnotation.findAnnotation(annotations,
                 FormParam.class)) != null) {
-            processor = new FormParamProcessor(formParam.value(), genericType, annotations, configuration);
+            processor = new FormParamProcessor(getParamName(defaultParameterName, formParam.value()), genericType, annotations,
+                    configuration);
         } else if ((formParam2 = FindAnnotation.findAnnotation(annotations,
                 org.jboss.resteasy.annotations.jaxrs.FormParam.class)) != null) {
             processor = new FormParamProcessor(getParamName(defaultParameterName, formParam2.value()), genericType, annotations,
