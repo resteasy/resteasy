@@ -217,89 +217,9 @@ The packages have remained the same, but the Maven GAV has changed:
 
 === Vert.x
 
-RESTEasy has integration with the popular Vert.x project. 
+RESTEasy provides an embedded server implementation backed by Eclipse Vert.x.
 
-[source,java]
-----
-public static void start(VertxResteasyDeployment deployment) throws Exception {
-    VertxJaxrsServer server = new VertxJaxrsServer();
-    server.setDeployment(deployment);
-    server.setPort(TestPortProvider.getPort());
-    server.setRootResourcePath("");
-    server.setSecurityDomain(null);
-    server.start();
-}
-----
-
-Include this archive to use the Vertx feature
-
-[source,xml,subs="attributes+"]
-----
-<dependency>
-    <groupId>dev.resteasy.vertx</groupId>
-    <artifactId>resteasy-vertx-embedded-server</artifactId>
-</dependency>
-----
-
-The server will bootstrap its own Vert.x instance and Http server.
-
-When a resource is called, it is done with the Vert.x Event Loop thread, keep in mind not block this thread and respect the Vert.x programming model, see the related Vert.x http://vertx.io/docs/vertx-core/java/#_don_t_block_me[manual page].
-
-Vert.x extends the RESTEasy registry to  provide a new binding scope that creates resources per Event Loop:
-
-[source,java]
-----
-VertxResteasyDeployment deployment = new VertxResteasyDeployment();
-// Create an instance of resource per Event Loop
-deployment.getRegistry().addPerInstanceResource(Resource.class);
-----
-
-The per instance binding scope caches the same resource instance for each event loop providing the same concurrency model than a verticle deployed multiple times.
-
-Vert.x can also embed a RESTEasy deployment, making it easy to use {spec-name} annotated controller in Vert.x applications:
-
-[source,java]
-----
-public static void main(final String[] args) throws Exception {
-    Vertx vertx = Vertx.vertx();
-    HttpServer server = vertx.createHttpServer();
-
-    // Set an handler calling Resteasy
-    server.requestHandler(new VertxRequestHandler(vertx, deployment));
-
-    // Start the server
-    server.listen(8080, "localhost");
-}
-----
-
-Vert.x objects can be injected in annotated resources:
-
-[source,java]
-----
-@GET
-@Path("/somepath")
-@Produces("text/plain")
-public String context(
-        @Context io.vertx.core.Context context,
-        @Context io.vertx.core.Vertx vertx,
-        @Context io.vertx.core.http.HttpServerRequest req,
-        @Context io.vertx.core.http.HttpServerResponse resp) {
-    return "the-response";
-}
-----
-
-[IMPORTANT]
-====
-The Vert.x embedded has moved to its own project which can be found at https://github.com/resteasy/resteasy-vertx.
-The packages have remained the same, but the Maven GAV has changed:
-[source,xml]
-----
-<dependency>
-    <groupId>dev.resteasy.vertx</groupId>
-    <artifactId>resteasy-vertx-embedded-server</artifactId>
-</dependency>
-----
-====
+For RESTEasy Vert.x embedded server documentation, see https://docs.resteasy.dev/resteasy-vertx[docs.resteasy.dev/resteasy-vertx].
 
 === EmbeddedJaxrsServer
 
