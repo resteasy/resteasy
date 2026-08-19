@@ -34,7 +34,7 @@
 
     <properties>
         <!-- Version properties -->
-        <version.io.fabric8.docker-maven-plugin>0.48.1</version.io.fabric8.docker-maven-plugin>
+        <version.io.fabric8.docker-maven-plugin>0.49.0</version.io.fabric8.docker-maven-plugin>
         <version.wildfly.cloud.galleon.pack>6.0.0.Final</version.wildfly.cloud.galleon.pack>
 
         <!-- Container configuration properties -->
