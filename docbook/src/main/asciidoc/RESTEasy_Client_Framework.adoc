@@ -807,49 +807,9 @@ The Jetty engine is enabled by adding a dependency to the `dev.resteasy.jetty:re
 [[_vertx_client]]
 ==== Vertx Client Engine
 
-Still as a drop in replacement, RESTEasy allows selecting a Vert.x-based HTTP engine.
-The Vert.x implementation can perform asynchronous client invocations.
-It provides the following features: 
+RESTEasy provides a Vert.x-backed HTTP client engine with support for HTTP/1.1, HTTP/2, SSL/TLS, and asynchronous invocations.
 
-* HTTP/1.1
-* HTTP/2
-* SSL/TLS (including native SSL engine)
-* Efficient client connection pooling
-* Optional native IO on Linux and BSD for greater performance
-* Domain sockets
-* HTTP Metrics with Dropwizard or Micrometer
-
-The Vert.x engine is enabled by adding a dependency to the `org.jboss.resteasy:resteasy-client-vertx` artifact to your runtime environment.
-
-A Vert.x instance can also be provided when creating the client engine, as well as options configuration: 
-
-[source,java]
-----
-public HttpEngine createVertxEngine() {
-  HttpClientOptions options = new HttpClientOptions()
-   .setSsl(true)
-   .setTrustStoreOptions(new JksOptions()
-     .setPath("/path/to/your/truststore.jks")
-     .setPassword("password-of-your-truststore")
-  );
-  return new VertxClientHttpEngine(vertx, options);
-}
-----
-
-You can read more about HttpClient configuration https://vertx.io/docs/vertx-core/java/#_making_requests[here].
-
-[IMPORTANT]
-====
-The Vert.x client has moved to its own project which can be found at https://github.com/resteasy/resteasy-vertx.
-The packages have remained the same, but the Maven GAV has changed:
-[source,xml]
-----
-<dependency>
-    <groupId>dev.resteasy.vertx</groupId>
-    <artifactId>resteasy-vertx-client</artifactId>
-</dependency>
-----
-====
+For RESTEasy Vert.x client documentation, see https://docs.resteasy.dev/resteasy-vertx[docs.resteasy.dev/resteasy-vertx].
 
 [[_reactor_netty_client]]
 ==== Reactor Netty Client Engine
