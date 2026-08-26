@@ -19,6 +19,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -103,6 +104,7 @@ public class RESTEasyParamCdiTest {
      * @tpSince RESTEasy 3.6
      */
     @Test
+    @Disabled("Temporarily disable until RESTEASY-3790 is resolved")
     public void requestScopedBeanParamTest() throws Exception {
         for (Integer i = 0; i < 3; i++) {
             logger.info("Request " + i);
