@@ -215,6 +215,12 @@ The packages have remained the same, but the Maven GAV has changed:
 ----
 ====
 
+=== Jetty
+
+RESTEasy provides an embedded server implementation backed by Eclipse Jetty.
+
+For RESTEasy Jetty embedded server documentation, see https://docs.resteasy.dev/resteasy-jetty[docs.resteasy.dev/resteasy-jetty].
+
 === Vert.x
 
 RESTEasy provides an embedded server implementation backed by Eclipse Vert.x.
