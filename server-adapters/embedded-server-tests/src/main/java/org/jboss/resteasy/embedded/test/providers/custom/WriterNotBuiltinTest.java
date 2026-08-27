@@ -48,7 +48,10 @@ public class WriterNotBuiltinTest {
     public void test1New(@RestResource @RequestPath("/string") final URI uri) throws Exception {
         Response response = client.target(uri).request().get();
         Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assertions.assertEquals("text/plain;charset=UTF-8", response.getStringHeaders().getFirst("content-type"));
+        final String contentType = response.getStringHeaders().getFirst("content-type");
+        // The charset parameter value is case-insensitive (RFC 2046) and some containers, e.g. Jetty, normalize it.
+        Assertions.assertTrue("text/plain;charset=UTF-8".equalsIgnoreCase(contentType),
+                () -> "Unexpected content type: " + contentType);
         Assertions.assertEquals("hello world", response.readEntity(String.class), "Response contains wrong content");
         Assertions.assertTrue(WriterNotBuiltinTestWriter.used, "Wrong MessageBodyWriter was used");
     }

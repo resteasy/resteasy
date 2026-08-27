@@ -24,6 +24,7 @@ import org.xnio.Options;
 import org.xnio.SslClientAuthMode;
 
 import io.undertow.Undertow;
+import io.undertow.UndertowOptions;
 import io.undertow.server.handlers.PathHandler;
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
@@ -78,7 +79,8 @@ public class UndertowCdiEmbeddedServer implements EmbeddedServer {
     @Override
     public void start(final Configuration configuration) {
         final Undertow.Builder builder = Undertow.builder()
-                .setHandler(rootHandler);
+                .setHandler(rootHandler)
+                .setServerOption(UndertowOptions.ENABLE_HTTP2, true);
         if ("HTTPS".equalsIgnoreCase(configuration.protocol())) {
             builder.addHttpsListener(configuration.port(), configuration.host(), configuration.sslContext());
         } else {
