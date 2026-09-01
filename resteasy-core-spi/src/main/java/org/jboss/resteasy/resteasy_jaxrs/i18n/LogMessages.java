@@ -331,6 +331,10 @@ public interface LogMessages extends BasicLogger {
     @Message(id = 2390, value = "Unable to commit SSE response headers, client connection may have closed")
     void failedToCommitSseHeaders();
 
+    @LogMessage(level = Level.WARN)
+    @Message(id = 2400, value = "Failed to set attribute '%s' to value '%s'")
+    void transformerPropertyNotSupported(@Cause Throwable cause, String name, String value);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                                                  TRACE                                                //
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
