@@ -195,6 +195,20 @@ For example, the document
 
 could cause the passwd file to be loaded. 
 
+Similarly, RESTEasy's built-in provider for `javax.xml.transform.Source` (used when resource methods accept or return
+`Source` objects) applies XXE protections when writing `StreamSource` instances. The `StreamSource` is wrapped with a
+securely configured `XMLReader` that disables external entity resolution by default. The `TransformerFactory` used for
+serialization is also configured with secure processing enabled.
+
+These protections are controlled by the same configuration parameters described below
+(`resteasy.document.expand.entity.references`, `resteasy.document.secure.processing.feature`, and
+`resteasy.document.secure.disableDTDs`). Setting these parameters to allow entity expansion or disable secure
+processing will weaken the XXE protections for `Source` types as well.
+
+NOTE: If a custom `MessageBodyReader` produces a non-`StreamSource` type (e.g. `SAXSource`), the application is
+responsible for ensuring the source is securely configured. RESTEasy only applies XXE hardening to `StreamSource`
+instances produced by its built-in reader.
+
 By default, RESTEasy's built-in unmarshaller for `org.w3c.dom.Document` documents will not expand external entities, replacing them by the empty string instead.
 It can be configured to replace external entities by values defined in the DTD by setting the parameter
 `resteasy.document.expand.entity.references` to "true". If configured in the `web.xml` file, it would be:
