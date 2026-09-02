@@ -89,6 +89,7 @@ public class ResteasyCdiExtension implements Extension {
     private boolean generateClientBean = true;
     private boolean addContextProducers = true;
     private boolean noApplicationFound = true;
+    private volatile ResteasyBeanContainer resteasyBeanContainer;
 
     public ResteasyCdiExtension() {
         enhancedCdiSupportEnabled = CdiOptions.ENHANCED_CDI_SUPPORT.getValue();
@@ -134,10 +135,7 @@ public class ResteasyCdiExtension implements Extension {
         }
         final Set<Class<?>> resources = Set.copyOf(beanContainer);
         beanContainer.clear();
-        final ResteasyBeanContainer instance = resources::contains;
-        event.addBean().addType(ResteasyBeanContainer.class)
-                .scope(ApplicationScoped.class)
-                .createWith(ctx -> instance);
+        resteasyBeanContainer = resources::contains;
     }
 
     /**
@@ -335,6 +333,10 @@ public class ResteasyCdiExtension implements Extension {
 
     public Map<Class<?>, Type> getSessionBeanInterface() {
         return sessionBeanInterface;
+    }
+
+    ResteasyBeanContainer beanContainer() {
+        return resteasyBeanContainer;
     }
 
     private boolean isSessionBean(AnnotatedType<?> annotatedType) {
