@@ -76,7 +76,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
     protected boolean disableAutomaticRetries = false;
     protected boolean followRedirects;
     private boolean useAsyncHttpClient;
-    protected List<ClientListener> listeners = new ArrayList<>();
+    private final List<ClientListener> listeners = new ArrayList<>();
 
     static ResteasyProviderFactory PROVIDER_FACTORY;
 
