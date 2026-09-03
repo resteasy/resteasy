@@ -319,7 +319,13 @@ public class TestUtil {
             if (containerQualifier == null) {
                 return new File(getJbossHome(), "standalone").getAbsolutePath();
             } else {
-                return new File("target", containerQualifier).getAbsolutePath();
+                File containerQualifierDir = new File("target", containerQualifier);
+                File containerQualifierStandaloneDir = new File(containerQualifierDir, "standalone");
+                if (containerQualifierStandaloneDir.exists()) {
+                    return containerQualifierStandaloneDir.getAbsolutePath();
+                } else {
+                    return containerQualifierDir.getAbsolutePath();
+                }
             }
         } else {
             return System.getProperty("jboss.server.base.dir", "");
