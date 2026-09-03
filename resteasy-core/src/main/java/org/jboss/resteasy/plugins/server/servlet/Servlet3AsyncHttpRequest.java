@@ -303,6 +303,10 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage {
 
             @Override
             public void close() {
+                final ScheduledFuture<?> timeout = timeoutFuture;
+                if (timeout != null) {
+                    timeout.cancel(false);
+                }
                 asyncScheduler.shutdown();
             }
         }
