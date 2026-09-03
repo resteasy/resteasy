@@ -37,10 +37,22 @@ public class ThreadContexts {
     private final List<ThreadContext<Object>> contexts;
 
     /**
-     * Creates a new collection instance.
+     * Creates a new collection instance. The {@link ThreadContext} providers are loaded from the current thread's
+     * context class loader.
      */
     public ThreadContexts() {
-        contexts = createContexts();
+        this(Thread.currentThread().getContextClassLoader());
+    }
+
+    /**
+     * Creates a new collection instance. The {@link ThreadContext} providers are loaded from the given class loader,
+     * or from the {@linkplain ClassLoader#getSystemClassLoader() system class loader} if the given class loader is
+     * {@code null}.
+     *
+     * @param classLoader the class loader used to load the {@code ThreadContext} providers
+     */
+    public ThreadContexts(final ClassLoader classLoader) {
+        contexts = createContexts(classLoader);
     }
 
     /**
@@ -87,9 +99,9 @@ public class ThreadContexts {
         return this;
     }
 
-    private static List<ThreadContext<Object>> createContexts() {
+    private static List<ThreadContext<Object>> createContexts(final ClassLoader classLoader) {
         final List<ThreadContext<Object>> contexts = new ArrayList<>();
-        ServiceLoader.load(ThreadContext.class).forEach(contexts::add);
+        ServiceLoader.load(ThreadContext.class, classLoader).forEach(contexts::add);
         return contexts;
     }
 }
