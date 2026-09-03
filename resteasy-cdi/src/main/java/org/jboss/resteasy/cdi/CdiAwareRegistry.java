@@ -5,11 +5,7 @@
 
 package org.jboss.resteasy.cdi;
 
-import java.util.Set;
-
 import jakarta.annotation.Priority;
-import jakarta.enterprise.context.spi.CreationalContext;
-import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
 
 import org.jboss.resteasy.cdi.i18n.LogMessages;
@@ -138,14 +134,12 @@ public class CdiAwareRegistry extends ResourceMethodRegistry implements Registry
             synchronized (this) {
                 if (beanContainer == null) {
                     final BeanManager manager = getBeanManager();
-                    final Set<Bean<?>> beans = manager.getBeans(ResteasyBeanContainer.class);
-                    final Bean<?> bean = manager.resolve(beans);
-                    if (bean == null) {
+                    final ResteasyCdiExtension extension = manager.getExtension(ResteasyCdiExtension.class);
+                    final ResteasyBeanContainer container = extension.beanContainer();
+                    if (container == null) {
                         throw Messages.MESSAGES.unableToResolveBean(ResteasyBeanContainer.class.getName());
                     }
-                    final CreationalContext<?> creationalContext = beanManager.createCreationalContext(bean);
-                    beanContainer = (ResteasyBeanContainer) beanManager.getReference(bean, ResteasyBeanContainer.class,
-                            creationalContext);
+                    beanContainer = container;
                 }
             }
         }
