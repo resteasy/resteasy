@@ -17,6 +17,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 import jakarta.validation.ElementKind;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
@@ -898,4 +899,13 @@ public interface Messages {
 
     @Message(id = 5110, value = "The annotation @%s is not supported for parameter extraction.")
     IllegalArgumentException unsupportedAnnotation(String annotationName);
+
+    @Message(id = 5120, value = "Invalid image dimensions: %dx%d")
+    BadRequestException invalidImageDimensions(int width, int height);
+
+    @Message(id = 5121, value = "Invalid thumbnail dimensions: %dx%d")
+    BadRequestException invalidThumbnailDimensions(int width, int height);
+
+    @Message(id = 5122, value = "Image size %dx%d (%s) exceeds maximum threshold %s")
+    BadRequestException imageThresholdExceeded(int width, int height, String calculated, Threshold threshold);
 }

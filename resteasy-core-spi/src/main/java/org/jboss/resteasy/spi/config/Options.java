@@ -105,6 +105,20 @@ public class Options<T> {
             () -> "TLS");
 
     /**
+     * An option for defining the maximum estimated size of an image to process, including any thumbnails. This is
+     * used to reject oversized images before they are fully decoded, to avoid excessive memory use. A value of
+     * {@code -1} disables the validation.
+     * <p>
+     * The default is 200MB.
+     * </p>
+     *
+     * @since 7.0.5
+     */
+    public static final Options<Threshold> MAX_IMAGE_THRESHOLD = new Options<>("dev.resteasy.image.threshold",
+            Threshold.class,
+            Functions.singleton(() -> Threshold.of(200L, SizeUnit.MEGABYTE)));
+
+    /**
      * An option which allows which HTTP status code should be sent when the {@link SseEventSink#close()} is invoked.
      * In some implementations 200 (OK) is the default. However, RESTEasy prefers 204 (No Content) as no content has
      * been sent the response.

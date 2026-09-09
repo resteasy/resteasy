@@ -841,6 +841,19 @@ written to a file. Note that the directory must already exist.
 | When a `ClientBuilder.keyStore()` or `ClientBuilder.trustStore()` is set and no `SSLContext` is set on a client builder
   this value is used to set the `SSLContext` algorithm to use when invoking `SSLContext.getInstance()` for client
   connections.
+
+| `dev.resteasy.image.threshold`
+| 200MB
+| The maximum estimated size of a decoded image, including its thumbnails, which the
+  `org.jboss.resteasy.plugins.providers.IIOImageProvider` will read. Images whose estimated size exceeds this value are
+  rejected with a 400 before being decoded. +
+  Please note this is the estimated size of the decoded image in memory, not the size of the request body, and it is a
+  per-image estimate rather than a limit on the memory used across concurrent requests. A value of `-1` disables the
+  validation. +
+  The value is a number followed by an optional unit of `B`, `KB`, `MB`, `GB`, `TB`, `PB`, `EB` or `ZB`. The unit is
+  case-insensitive and may be separated from the number by a space, so `200MB`, `200mb` and `200 MB` are equivalent.
+  The units are binary, making `200MB` 209715200 bytes. A value with no unit, or with a unit other than those listed,
+  is read as a number of bytes; `200` and `200MiB` both mean 200 bytes rather than 200 megabytes.
 |===
 
 NOTE: The resteasy.servlet.mapping.prefix context param variable must be set if the servlet-mapping for the RESTEasy
