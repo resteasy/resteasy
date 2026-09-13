@@ -2,10 +2,30 @@
 
 RESTEasy has a `ContainerRequestFilter` that can be used to handle CORS preflight and actual requests. `org.jboss.resteasy.plugins.interceptors.CorsFilter`.
 You must allocate this and register it as a singleton provider from your Application class.
-See the javadoc or its various settings. 
+See the javadoc or its various settings.
 
 [source,java]
 ----
 CorsFilter filter = new CorsFilter();
 filter.getAllowedOrigins().add("http://localhost");
 ----
+
+=== Credentials
+
+Credentials are disabled by default. `Access-Control-Allow-Credentials` is only sent if
+`CorsFilter.setAllowCredentials(true)` is called.
+
+[source,java]
+----
+CorsFilter filter = new CorsFilter();
+filter.getAllowedOrigins().add("http://localhost");
+filter.setAllowCredentials(true);
+----
+
+NOTE: In previous releases credentials were enabled by default. A deployment which relies on
+`Access-Control-Allow-Credentials` being sent must now opt in explicitly.
+
+WARNING: Credentials cannot be combined with a wildcard origin. If `"*"` is added to the allowed origins,
+`Access-Control-Allow-Origin: *` is returned and `Access-Control-Allow-Credentials` is never sent, even if
+credentials are enabled. A warning is logged the first time this combination is used. Configure an explicit
+list of allowed origins if credentials are required.
