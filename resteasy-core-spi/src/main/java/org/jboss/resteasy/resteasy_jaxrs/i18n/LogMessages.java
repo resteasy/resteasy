@@ -336,6 +336,12 @@ public interface LogMessages extends BasicLogger {
     @Message(id = 2400, value = "Failed to set attribute '%s' to value '%s'")
     void transformerPropertyNotSupported(@Cause Throwable cause, String name, String value);
 
+    @LogMessage(level = Level.WARN)
+    @Message(id = 2410, value = "The CORS filter allows all origins (\"*\") and credentials. Credentials are not "
+            + "supported with a wildcard origin, so Access-Control-Allow-Credentials will not be sent. Configure an "
+            + "explicit list of allowed origins if credentials are required.")
+    void corsCredentialsIgnoredForWildcardOrigin();
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                                                  TRACE                                                //
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
