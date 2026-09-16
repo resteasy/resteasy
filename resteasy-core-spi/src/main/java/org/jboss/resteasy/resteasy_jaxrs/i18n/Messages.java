@@ -841,8 +841,8 @@ public interface Messages {
     @Message(id = 5050, value = "The executor has been shutdown and is no longer available.")
     IllegalStateException executorShutdown();
 
-    @Message(id = 5051, value = "Required context value not found.")
-    IllegalArgumentException requiredContextParameterNotFound();
+    @Message(id = 5051, value = "Required context value for \"%s\" not found.")
+    IllegalArgumentException requiredContextParameterNotFound(String typeName);
 
     @Message(id = 5060, value = "Failed to load services for type %s")
     UncheckedIOException failedToLoadService(@Cause IOException e, Class<?> type);

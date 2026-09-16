@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiConsumer;
 
+import jakarta.inject.Inject;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.container.ResourceContext;
 import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Application;
@@ -38,41 +40,43 @@ import org.jboss.resteasy.spi.HttpRequest;
 /**
  * @author <a href="mailto:jperkins@ibm.com">James R. Perkins</a>
  */
-@Path("/context")
+@Path("/inject")
 @Produces(MediaType.TEXT_PLAIN)
-public class RequiredInjectableContextResource {
+public class RequiredCdiInjectableContextResource {
 
-    @Context
+    @Inject
     Application application;
-    @Context
+    @Inject
+    Client client;
+    @Inject
     Configuration configuration;
-    @Context
+    @Inject
     HttpHeaders httpHeaders;
-    @Context
+    @Inject
     HttpRequest httpRequest;
-    @Context
+    @Inject
     Providers providers;
-    @Context
+    @Inject
     Request request;
-    @Context
+    @Inject
     ResourceContext resourceContext;
-    @Context
+    @Inject
     ResourceInfo resourceInfo;
-    @Context
+    @Inject
     SecurityContext securityContext;
-    @Context
+    @Inject
     Sse sse;
-    @Context
+    @Inject
     UriInfo uriInfo;
 
     // Servlet types given we're in a Jakarta EE Container
-    @Context
+    @Inject
     HttpServletRequest httpServletRequest;
-    @Context
+    @Inject
     HttpServletResponse httpServletResponse;
-    @Context
+    @Inject
     ServletConfig servletConfig;
-    @Context
+    @Inject
     ServletContext servletContext;
 
     @GET
@@ -151,6 +155,14 @@ public class RequiredInjectableContextResource {
     @Path("/uriInfo")
     public Response uriInfo() {
         return Response.ok(uriInfo.getPath()).build();
+    }
+
+    @GET
+    @Path("/client/{path}")
+    public Response client(@PathParam("path") final String path) {
+        return client.target(uriInfo.getBaseUriBuilder().path("inject/" + path))
+                .request()
+                .get();
     }
 
     @GET

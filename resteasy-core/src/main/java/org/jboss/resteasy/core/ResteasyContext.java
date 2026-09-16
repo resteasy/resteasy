@@ -55,7 +55,7 @@ public final class ResteasyContext {
     public static <T> T getRequiredContextData(final Class<T> type) {
         final T result = getContextData(type);
         if (result == null) {
-            throw Messages.MESSAGES.requiredContextParameterNotFound();
+            throw Messages.MESSAGES.requiredContextParameterNotFound(type.getName());
         }
         return result;
     }
