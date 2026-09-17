@@ -12,6 +12,7 @@ import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.container.PreMatching;
 import jakarta.ws.rs.core.Response;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.CorsHeaders;
 
@@ -24,7 +25,10 @@ import org.jboss.resteasy.spi.CorsHeaders;
  */
 @PreMatching
 public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilter {
-    protected boolean allowCredentials = true;
+    private volatile boolean wildcardCredentialsWarned;
+
+    // Default is false to secure endpoints by default (CVE Remediation)
+    protected boolean allowCredentials = false;
     protected String allowedMethods;
     protected String allowedHeaders;
     protected String exposedHeaders;
@@ -41,7 +45,7 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
     }
 
     /**
-     * Defaults to true.
+     * Defaults to false.
      *
      * @return allow credentials
      */
@@ -128,10 +132,20 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
             // don't do anything if origin is null, its an OPTIONS request, or cors.failure is set
             return;
         }
-        responseContext.getHeaders().putSingle(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
-        responseContext.getHeaders().putSingle(CorsHeaders.VARY, CorsHeaders.ORIGIN);
-        if (isAllowCredentials())
-            responseContext.getHeaders().putSingle(CorsHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+
+        // Evaluate wildcard properly for standard requests
+        if (getAllowedOrigins().contains("*")) {
+            responseContext.getHeaders().putSingle(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+            // We do NOT append "Vary: Origin" or Access-Control-Allow-Credentials for wildcards
+            warnIfCredentialsIgnored();
+        } else {
+            responseContext.getHeaders().putSingle(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+            // Append rather than replace, the resource may already vary on the content negotiation headers
+            responseContext.getHeaders().add(CorsHeaders.VARY, CorsHeaders.ORIGIN);
+            if (isAllowCredentials()) {
+                responseContext.getHeaders().putSingle(CorsHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+            }
+        }
 
         if (getExposedHeaders() != null) {
             responseContext.getHeaders().putSingle(CorsHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, getExposedHeaders());
@@ -142,10 +156,19 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
         checkOrigin(requestContext, origin);
 
         Response.ResponseBuilder builder = Response.ok();
-        builder.header(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
-        builder.header(CorsHeaders.VARY, CorsHeaders.ORIGIN);
-        if (isAllowCredentials())
-            builder.header(CorsHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+
+        // Evaluate wildcard properly for preflight requests
+        if (getAllowedOrigins().contains("*")) {
+            builder.header(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+            warnIfCredentialsIgnored();
+        } else {
+            builder.header(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+            builder.header(CorsHeaders.VARY, CorsHeaders.ORIGIN);
+            if (isAllowCredentials()) {
+                builder.header(CorsHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+            }
+        }
+
         String requestMethods = requestContext.getHeaderString(CorsHeaders.ACCESS_CONTROL_REQUEST_METHOD);
         if (requestMethods != null) {
             if (getAllowedMethods() != null) {
@@ -171,6 +194,18 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
         if (!getAllowedOrigins().contains("*") && !getAllowedOrigins().contains(origin)) {
             requestContext.setProperty("cors.failure", true);
             throw new ForbiddenException(Messages.MESSAGES.originNotAllowed(origin));
+        }
+    }
+
+    /**
+     * Warns that credentials were requested for a wildcard origin and are being dropped. Without this the
+     * configuration silently stops working for the client. Concurrent requests may log this more than once, which
+     * is harmless and cheaper than synchronizing a request path.
+     */
+    private void warnIfCredentialsIgnored() {
+        if (isAllowCredentials() && !wildcardCredentialsWarned) {
+            wildcardCredentialsWarned = true;
+            LogMessages.LOGGER.corsCredentialsIgnoredForWildcardOrigin();
         }
     }
 }
