@@ -89,7 +89,7 @@
         <version.commons-io.commons-io>2.22.0</version.commons-io.commons-io>
         <version.commons-codec.commons-codec>1.22.1</version.commons-codec.commons-codec>
         <version.commons-logging.commons-logging>1.4.0</version.commons-logging.commons-logging>
-        <version.dev.resteasy.junit.extension>1.0.0.Beta6</version.dev.resteasy.junit.extension>
+        <version.dev.resteasy.junit.extension>1.0.0.Final</version.dev.resteasy.junit.extension>
         <version.io.smallrye.common>2.20.0</version.io.smallrye.common>
         <version.io.undertow>2.3.26.Final</version.io.undertow>
         <version.jakarta.activation>2.1.4</version.jakarta.activation>
