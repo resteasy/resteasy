@@ -1,20 +1,6 @@
 /*
- * JBoss, Home of Professional Open Source.
- *
- * Copyright 2022 Red Hat, Inc., and individual contributors
- * as indicated by the @author tags.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright The RESTEasy Authors
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 package dev.resteasy.embedded.server;
@@ -25,6 +11,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.BiConsumer;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,6 +22,8 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.SeBootstrap;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.container.ResourceContext;
 import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Configuration;
@@ -51,18 +40,32 @@ import jakarta.ws.rs.sse.SseEventSink;
 
 import org.jboss.jandex.Index;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import dev.resteasy.junit.extension.annotations.RequestPath;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 import dev.resteasy.junit.extension.api.ConfigurationProvider;
 
 /**
- * Tests fields annotated with {@link Context @Context} are injected with the expected values.
+ * Tests fields annotated with {@link Inject @Inject} are injected with the expected values.
  *
  * @author <a href="mailto:jperkins@ibm.com">James R. Perkins</a>
  */
-@RestBootstrap(application = ContextInjectionTest.RootApplication.class, configFactory = ContextInjectionTest.InjectionConfiguration.class)
-public class ContextInjectionTest extends AbstractContextInjectionTest {
+@SuppressWarnings("JUnitMalformedDeclaration")
+@RestBootstrap(application = CdiContextInjectionTest.RootApplication.class, configFactory = CdiContextInjectionTest.InjectionConfiguration.class)
+public class CdiContextInjectionTest extends AbstractContextInjectionTest {
+
+    @Test
+    public void client(@RestResource @RequestPath("inject/client/request") final WebTarget target) {
+        try (Response response = target.request().get()) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals("GET", response.readEntity(String.class));
+        }
+    }
+
     public static class InjectionConfiguration implements ConfigurationProvider {
         @Override
         public SeBootstrap.Configuration getConfiguration(final ExtensionContext context) {
@@ -78,38 +81,41 @@ public class ContextInjectionTest extends AbstractContextInjectionTest {
     @Path("/inject")
     @Produces(MediaType.TEXT_PLAIN)
     @RequestScoped
+    @SuppressWarnings("CdiInjectionPointsInspection")
     public static class InjectionResource {
-        @Context
+        @Inject
         RootApplication application;
-        @Context
+        @Inject
+        Client client;
+        @Inject
         Configuration configuration;
-        @Context
+        @Inject
         HttpHeaders httpHeaders;
-        @Context
+        @Inject
         HttpRequest httpRequest;
-        @Context
+        @Inject
         Providers providers;
-        @Context
+        @Inject
         Request request;
-        @Context
+        @Inject
         ResourceContext resourceContext;
-        @Context
+        @Inject
         ResourceInfo resourceInfo;
-        @Context
+        @Inject
         SecurityContext securityContext;
-        @Context
+        @Inject
         Sse sse;
-        @Context
+        @Inject
         UriInfo uriInfo;
 
         // Servlet types given we're in a Jakarta Servlet Container
-        @Context
+        @Inject
         HttpServletRequest httpServletRequest;
-        @Context
+        @Inject
         HttpServletResponse httpServletResponse;
-        @Context
+        @Inject
         ServletConfig servletConfig;
-        @Context
+        @Inject
         ServletContext servletContext;
 
         @GET
@@ -193,6 +199,14 @@ public class ContextInjectionTest extends AbstractContextInjectionTest {
         @Path("/uriInfo")
         public Response uriInfo() {
             return Response.ok(uriInfo.getPath()).build();
+        }
+
+        @GET
+        @Path("/client/{path}")
+        public Response client(@PathParam("path") final String path) {
+            return client.target(uriInfo.getBaseUriBuilder().path("inject/" + path))
+                    .request()
+                    .get();
         }
 
         @GET
