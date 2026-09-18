@@ -226,6 +226,36 @@ public class SynchronousDispatcher implements Dispatcher {
     }
 
     public void invoke(HttpRequest request, HttpResponse response) {
+        dispatch(request, response, false);
+    }
+
+    /**
+     * Propagate NotFoundException. This is used for Filters.
+     *
+     * @param request  http request
+     * @param response http response
+     */
+    public void invokePropagateNotFound(HttpRequest request, HttpResponse response) throws NotFoundException {
+        dispatch(request, response, true);
+    }
+
+    /**
+     * Shared entry point for {@link #invoke(HttpRequest, HttpResponse)} and
+     * {@link #invokePropagateNotFound(HttpRequest, HttpResponse)}. Tracing is initialized here, before anything
+     * calls {@link RESTEasyTracingLogger#getInstance(HttpRequest)}, so that both dispatch paths are traced.
+     * <p>
+     * When {@code propagateNotFound} is {@code true} an unmatched request leaves through the
+     * {@link NotFoundException}. The FINISHED event is logged so the trace is paired, but the tracing headers are
+     * not flushed: RESTEasy has declined the request and the response belongs to whatever handles it next in the
+     * filter chain.
+     * </p>
+     *
+     * @param request           http request
+     * @param response          http response
+     * @param propagateNotFound {@code true} to rethrow a {@link NotFoundException} from resource matching instead of
+     *                          writing a 404 response
+     */
+    private void dispatch(HttpRequest request, HttpResponse response, boolean propagateNotFound) {
         RESTEasyTracingLogger.initTracingSupport(providerFactory, request);
         RESTEasyTracingLogger.logStart(request);
 
@@ -236,9 +266,12 @@ public class SynchronousDispatcher implements Dispatcher {
                 try {
                     try {
                         invoker = getInvoker(request);
-                    } catch (Exception exception) {
-                        //logger.error("getInvoker() failed mapping exception", exception);
-                        writeException(request, response, exception, t -> {
+                    } catch (Exception failure) {
+                        if (propagateNotFound && failure instanceof NotFoundException nfe) {
+                            RESTEasyTracingLogger.getInstance(request).log("FINISHED", nfe.getResponse().getStatus());
+                            throw nfe;
+                        }
+                        writeException(request, response, failure, t -> {
                         });
                         return;
                     }
@@ -251,42 +284,6 @@ public class SynchronousDispatcher implements Dispatcher {
         } finally {
             clearContextData();
         }
-    }
-
-    /**
-     * Propagate NotFoundException. This is used for Filters.
-     *
-     * @param request  http request
-     * @param response http response
-     */
-    public void invokePropagateNotFound(HttpRequest request, HttpResponse response) throws NotFoundException {
-        try {
-            pushContextObjects(request, response);
-            preprocess(request, response, () -> {
-                ResourceInvoker invoker = null;
-                try {
-                    try {
-                        invoker = getInvoker(request);
-                    } catch (Exception failure) {
-                        if (failure instanceof NotFoundException) {
-                            throw ((NotFoundException) failure);
-                        } else {
-                            //logger.error("getInvoker() failed mapping exception", failure);
-                            writeException(request, response, failure, t -> {
-                            });
-                            return;
-                        }
-                    }
-                    invoke(request, response, invoker);
-                } finally {
-                    // we're probably clearing it twice but still required
-                    clearContextData();
-                }
-            });
-        } finally {
-            clearContextData();
-        }
-
     }
 
     public ResourceInvoker getInvoker(HttpRequest request)
