@@ -10,6 +10,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
 import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientListener;
 import jakarta.ws.rs.core.Configuration;
 
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -282,4 +283,7 @@ public abstract class ResteasyClientBuilder extends ClientBuilder {
     public abstract ResteasyClientBuilder setFollowRedirects(boolean followRedirects);
 
     public abstract boolean isFollowRedirects();
+
+    @Override
+    public abstract ResteasyClientBuilder listener(ClientListener listener);
 }
