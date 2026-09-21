@@ -12,7 +12,7 @@
 
     <properties>
         <!-- Version properties -->
-        <version.arquillian.jetty>2.0.0.Final</version.arquillian.jetty>
+        <version.arquillian.jetty>2.0.1.Final</version.arquillian.jetty>
         <!-- Skip deploying tests -->
         <maven.deploy.skip>true</maven.deploy.skip>
         <central.skipPublishing>${maven.deploy.skip}</central.skipPublishing>
