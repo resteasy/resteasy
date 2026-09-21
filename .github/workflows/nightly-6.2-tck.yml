@@ -9,6 +9,6 @@ permissions:
 
 jobs:
   tck:
-    uses: resteasy/resteasy/.github/workflows/resteasy-tck.yml@6.2
+    uses: resteasy/resteasy/.github/workflows/resteasy-tck.yml@7.0
     with:
       resteasy-ref: '6.2'
