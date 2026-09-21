@@ -1,7 +1,7 @@
 = RESTEasy
 :allow-uri-read:
 
-image:https://github.com/resteasy/resteasy/actions/workflows/maven.yml/badge.svg[Github CI,link=https://github.com/resteasy/resteasy/actions/workflows/main.yml]
+image:https://github.com/resteasy/resteasy/actions/workflows/maven.yml/badge.svg?branch=main[Github CI,link=https://github.com/resteasy/resteasy/actions/workflows/maven.yml?query=branch%3Amain]
 
 RESTEasy is a link:https://commonhaus.org[Commonhaus] project aimed at providing productivity frameworks
 for developing client and server RESTful applications and services in Java. It is mainly a Jakarta RESTful Web Services
@@ -16,6 +16,17 @@ Services and RESTful Java applications. It is a portable implementation of the J
 The Jakarta RESTful Web Services provides a Java API for RESTful Web Services over the HTTP protocol. Please note that
 the specification is now under the https://github.com/jakartaee[Jakarta EE Project]. You can read the entire specification
 at https://jakarta.ee/specifications/restful-ws/[Jakarta RESTful Web Services].
+
+== Branch & Version Support
+
+[cols="1,1,1,1,2", options="header"]
+|===
+| RESTEasy Version | Branch | Jakarta REST Spec | JDK Required | Status
+
+| *8.0.x* | `main` | 5.0 (In Development) | 21+ | Active Development
+| *7.0.x* | `7.0` | 4.0 | 17+ | Active / Bug Fixes
+| *6.2.x* | `6.2` | 3.1 | 11+ | Maintenance / Security Only
+|===
 
 == Getting started with RESTEasy
 

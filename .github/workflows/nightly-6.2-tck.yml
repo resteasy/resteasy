@@ -1,0 +1,14 @@
+name: Nightly RESTEasy 6.2 TCK
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  tck:
+    uses: resteasy/resteasy/.github/workflows/resteasy-tck.yml@6.2
+    with:
+      resteasy-ref: '6.2'

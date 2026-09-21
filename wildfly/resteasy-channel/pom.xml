@@ -23,12 +23,12 @@
     <parent>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <groupId>org.jboss.resteasy</groupId>
-        <version>7.0.6.Final-SNAPSHOT</version>
+        <version>8.0.0.Alpha1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.jboss.resteasy.channels</groupId>
-    <artifactId>resteasy-7.0</artifactId>
+    <artifactId>resteasy-8.0</artifactId>
     <packaging>pom</packaging>
 
     <name>RESTEasy: Channel Manifest</name>
@@ -46,14 +46,14 @@
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-dependencies</artifactId>
-                <version>7.0.6.Final-SNAPSHOT</version>
+                <version>8.0.0.Alpha1-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-bom</artifactId>
-                <version>7.0.6.Final-SNAPSHOT</version>
+                <version>8.0.0.Alpha1-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

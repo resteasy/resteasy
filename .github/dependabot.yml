@@ -77,6 +77,74 @@ updates:
       dependencies:
         patterns:
           - "*"
+  # 7.0 branch
+  - package-ecosystem: "maven"
+    directory: "/"
+    target-branch: "7.0"
+    schedule:
+      interval: "daily"
+    groups:
+      fasterxml-dependencies:
+        patterns:
+          - "com.fasterxml*"
+          - "com.github.java-json-tools*"
+      guava-dependencies:
+        patterns:
+          - "com.google.guava*"
+      jakarta-json-dependencies:
+        patterns:
+          - "jakarta.json*"
+          - "org.eclipse.parsson*"
+          - "org.eclipse.yasson*"
+    ignore:
+      # --- Core Jakarta & EE Specs (Locked for patch releases) ---
+      - dependency-name: "jakarta.*:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.glassfish*:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "com.sun.*:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
+      # --- Core Server & Frameworks (Locked for patch releases) ---
+      - dependency-name: "com.google.guava:guava"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "com.fasterxml.jackson:jackson-bom"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.eclipse.jetty*:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "io.undertow:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.jboss.arquillian.container:arquillian-weld-embedded"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.jboss.weld*:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.hibernate.validator:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "io.projectreactor:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "io.smallrye:jandex"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "io.smallrye.common:smallrye-common-bom"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.wildfly.common:wildfly-common"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.wildfly.security:wildfly-elytron-ssl"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+    open-pull-requests-limit: 10
+    registries:
+      - maven-central
+      - jboss-public-repository-group
+  - package-ecosystem: "github-actions"
+    # Workflow files stored in the
+    # default location of `.github/workflows`
+    directory: "/"
+    target-branch: "7.0"
+    schedule:
+      interval: "daily"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
   # 6.2 branch
   - package-ecosystem: "maven"
     directory: "/"
