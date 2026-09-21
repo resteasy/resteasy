@@ -5,7 +5,7 @@ name: WildFly Test Build
 on:
   push:
     branches:
-      - 'main'
+      - '7.0'
     paths:
       - 'pom.xml'
       - 'providers/**'
@@ -26,12 +26,16 @@ on:
     paths:
       - '.github/workflows/wildfly-build.yml'
       - 'testsuite/integration-tests/**'
-  schedule:
-    - cron: '0 0 * * *' # Every day at 00:00 UTC
+  workflow_call:
+    inputs:
+      resteasy-ref:
+        description: "RESTEasy branch, tag, or commit to build"
+        required: true
+        type: string
 
 # Only run the latest job and cancel previous ones
 concurrency:
-  group: '${{ github.ref || github.run_id }}'
+  group: '${{ github.workflow }} @ ${{ inputs.resteasy-ref || github.event.pull_request.head.label || github.head_ref || github.ref }}'
   cancel-in-progress: true
 
 env:
@@ -48,10 +52,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.resteasy-ref || github.sha }}
       - uses: wildfly-extras/wildfly-nightly-download@v1
         id: wildfly-nightly
       - name: Set up JDKs
-        uses: actions/setup-java@v6.0.1
+        uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
           cache: 'maven'
@@ -67,19 +73,19 @@ jobs:
       - name: Test on ${{ matrix.os }} WildFly ${{steps.wildfly-nightly.outputs.wildfly-version}} - Java 25
         run: |
           cd testsuite/integration-tests
-          mvn ${{ env.MVN_ARGS }} verify
+          mvn ${{ env.MVN_ARGS }} verify '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}'
       - name: Test on ${{ matrix.os }} WildFly ${{steps.wildfly-nightly.outputs.wildfly-version}} - Java 26
         run:  |
           cd testsuite/integration-tests
-          mvn ${{ env.MVN_ARGS }} verify '-Dtest.java.home=${{env.JAVA_HOME_26_X64}}${{env.JAVA_HOME_26_ARM64}}' '-Dversion.org.wildfly=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Dtest.report.dir=java26'
+          mvn ${{ env.MVN_ARGS }} verify '-Dtest.java.home=${{env.JAVA_HOME_26_X64}}${{env.JAVA_HOME_26_ARM64}}' '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Dtest.report.dir=java26'
       - name: Test on ${{ matrix.os }} WildFly ${{steps.wildfly-nightly.outputs.wildfly-version}} - Java 21
         run:  |
           cd testsuite/integration-tests
-          mvn ${{ env.MVN_ARGS }} verify '-Dtest.java.home=${{env.JAVA_HOME_21_X64}}${{env.JAVA_HOME_21_ARM64}}' '-Dversion.org.wildfly=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Dtest.report.dir=java21'
+          mvn ${{ env.MVN_ARGS }} verify '-Dtest.java.home=${{env.JAVA_HOME_21_X64}}${{env.JAVA_HOME_21_ARM64}}' '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Dtest.report.dir=java21'
       - name: Test on ${{ matrix.os }} WildFly ${{steps.wildfly-nightly.outputs.wildfly-version}} - Java 17
         run:  |
           cd testsuite/integration-tests
-          mvn ${{ env.MVN_ARGS }} verify '-Dtest.java.home=${{env.JAVA_HOME_17_X64}}${{env.JAVA_HOME_17_ARM64}}' '-Dversion.org.wildfly=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Dtest.report.dir=java17'
+          mvn ${{ env.MVN_ARGS }} verify '-Dtest.java.home=${{env.JAVA_HOME_17_X64}}${{env.JAVA_HOME_17_ARM64}}' '-Dserver.version=${{steps.wildfly-nightly.outputs.wildfly-version}}' '-Dtest.report.dir=java17'
       - name: Upload test logs for failed run
         uses: actions/upload-artifact@v7
         if: failure()
@@ -101,10 +107,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.resteasy-ref || github.sha }}
       - uses: wildfly-extras/wildfly-nightly-download@v1
         id: wildfly-nightly
       - name: Set up JDKs
-        uses: actions/setup-java@v6.0.1
+        uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
           cache: 'maven'

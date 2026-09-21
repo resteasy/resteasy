@@ -1,7 +1,7 @@
 = RESTEasy
 :allow-uri-read:
 
-image:https://github.com/resteasy/resteasy/actions/workflows/maven.yml/badge.svg[Github CI,link=https://github.com/resteasy/resteasy/actions/workflows/main.yml]
+image:https://github.com/resteasy/resteasy/actions/workflows/maven.yml/badge.svg?branch=7.0[Github CI,link=https://github.com/resteasy/resteasy/actions/workflows/maven.yml?query=branch%3A7.0]
 
 RESTEasy is a link:https://commonhaus.org[Commonhaus] project aimed at providing productivity frameworks
 for developing client and server RESTful applications and services in Java. It is mainly a Jakarta RESTful Web Services
