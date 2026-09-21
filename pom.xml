@@ -10,7 +10,7 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>7.0.6.Final-SNAPSHOT</version>
+    <version>8.0.0.Alpha1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>RESTEasy</name>

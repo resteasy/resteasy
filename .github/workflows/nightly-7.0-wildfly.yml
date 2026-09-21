@@ -1,0 +1,14 @@
+name: Nightly RESTEasy 7.0 WildFly
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  wildfly:
+    uses: resteasy/resteasy/.github/workflows/wildfly-build.yml@7.0
+    with:
+      resteasy-ref: '7.0'
