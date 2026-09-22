@@ -55,7 +55,7 @@ jobs:
     if: >-
       ${{ github.event_name == 'workflow_dispatch'
           || ((contains(github.event.pull_request.labels.*.name, 'requires-spec-snapshot')
-               || contains(github.event.pull_request.body, 'jakartaee/rest#'))
+               || contains(github.event.pull_request.body, 'implements jakartaee/rest#'))
               && (github.event.action != 'edited' || github.event.changes.body)) }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 240
