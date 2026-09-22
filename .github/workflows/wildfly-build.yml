@@ -23,6 +23,7 @@ on:
   pull_request:
     branches:
       - '**'
+    types: [opened, synchronize, reopened, labeled, unlabeled]
     paths:
       - '.github/workflows/wildfly-build.yml'
       - 'testsuite/integration-tests/**'
@@ -40,6 +41,7 @@ env:
 jobs:
 
   resteasy-build:
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'requires-spec-snapshot') }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -91,6 +93,7 @@ jobs:
             **/*.log
 
   additional-profiles:
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'requires-spec-snapshot') }}
     runs-on: ubuntu-latest
     timeout-minutes: 240
     strategy:

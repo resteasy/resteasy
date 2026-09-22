@@ -1,0 +1,227 @@
+# Builds and tests RESTEasy against a snapshot of the Jakarta REST API, for changes which cannot
+# build against a released API.
+#
+# This runs automatically on a pull request which is labeled requires-spec-snapshot, or whose description
+# contains a line like "Implements jakartaee/rest#1234". The usual builds are skipped for such a PR,
+# so this takes their place. Which ref of jakartaee/rest is used is resolved as follows:
+#
+#   1. the spec_ref input, when dispatched manually
+#   2. the pull request referenced by an "Implements jakartaee/rest#1234" line, if it is still open
+#   3. the spec's main branch, which is also used once that pull request is merged
+#
+# It can also be dispatched manually against any branch or pull request of jakartaee/rest, in which
+# case the result is reported back to a RESTEasy PR as a commit status. That is not needed on the
+# automatic path, where the run already reports itself as a check on the PR.
+#
+# Note this deliberately uses pull_request and not pull_request_target, as it builds and runs code
+# from the pull request. Values taken from the PR are passed to scripts through the environment,
+# never interpolated into them.
+
+name: Test against Jakarta REST Spec
+
+on:
+  workflow_dispatch:
+    inputs:
+      spec_ref:
+        description: 'Jakarta REST PR Number (e.g. 1340) or Branch (e.g. main)'
+        required: false
+        default: 'main'
+        type: string
+      resteasy_pr_number:
+        description: 'RESTEasy PR Number to report results to (optional)'
+        required: false
+        type: string
+  pull_request:
+    branches:
+      - '**'
+    types: [opened, reopened, synchronize, edited, labeled, unlabeled]
+
+permissions:
+  contents: read
+  statuses: write
+
+# Only run the latest job and cancel previous ones
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+env:
+  MVN_ARGS: '-V -B -fae'
+
+jobs:
+  test-spec-pr:
+    # On a PR this only applies to changes which opted in, and a description edit which did not
+    # touch the body cannot have changed that.
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch'
+          || ((contains(github.event.pull_request.labels.*.name, 'requires-spec-snapshot')
+               || contains(github.event.pull_request.body, 'jakartaee/rest#'))
+              && (github.event.action != 'edited' || github.event.changes.body)) }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      # Checkout RESTEasy PR branch (or fallback to main)
+      - name: Checkout RESTEasy
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.resteasy_pr_number != '' && format('refs/pull/{0}/head', inputs.resteasy_pr_number) || github.ref }}
+      - name: Checkout RESTEasy TCK Runner
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: actions/checkout@v7
+        with:
+          repository: resteasy/resteasy-tck-runner
+          path: resteasy-tck-runner
+
+      # Set Pending Status Check on RESTEasy PR commit. Only needed when dispatched manually, as a
+      # run triggered by the PR itself is already reported as a check on that PR.
+      - name: Set Pending Status on RESTEasy PR
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.resteasy_pr_number != '' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPEC_REF: ${{ inputs.spec_ref }}
+        run: |
+          SHA=$(git rev-parse HEAD)
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/statuses/$SHA" \
+            -f state="pending" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            -f description="Running against Jakarta REST $SPEC_REF" \
+            -f context="Spec Integration (${{ matrix.os }})"
+
+      - name: Set up JDKs
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: |
+            21
+            25
+          cache: 'maven'
+
+      # Resolve which ref of jakartaee/rest to build. A merged pull request is already in main, so
+      # main is used for it, which means the marker does not need updating once it is merged.
+      - name: Resolve Spec Git Ref
+        id: resolve-spec
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DISPATCH_REF: ${{ inputs.spec_ref }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          INPUT="$DISPATCH_REF"
+          if [ -z "$INPUT" ]; then
+            MARKER="$(printf '%s' "$PR_BODY" | tr -d '\r' \
+              | grep -oiE '^[[:space:]]*Implements[[:space:]]+jakartaee/rest#[0-9]+' | head -1 || true)"
+            INPUT="${MARKER##*#}"
+          fi
+          INPUT="${INPUT:-main}"
+
+          if [[ "$INPUT" =~ ^[0-9]+$ ]]; then
+            if [ "$(gh api "repos/jakartaee/rest/pulls/$INPUT" --jq '.merged')" = "true" ]; then
+              echo "git_ref=main" >> "$GITHUB_OUTPUT"
+              echo "display_name=main, as jakartaee/rest#$INPUT is merged" >> "$GITHUB_OUTPUT"
+            else
+              echo "git_ref=refs/pull/$INPUT/head" >> "$GITHUB_OUTPUT"
+              echo "display_name=jakartaee/rest#$INPUT" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "git_ref=$INPUT" >> "$GITHUB_OUTPUT"
+            echo "display_name=branch '$INPUT'" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout Jakarta REST Spec (${{ steps.resolve-spec.outputs.display_name }})
+        uses: actions/checkout@v7
+        with:
+          repository: 'jakartaee/rest'
+          ref: ${{ steps.resolve-spec.outputs.git_ref }}
+          path: 'jakarta-rest-spec'
+
+      # Only the API and the TCK are needed. The specification document and the examples are not
+      # what is being tested here and should not be able to fail this build.
+      - name: Build and Install Spec API
+        run: |
+          cd jakarta-rest-spec
+          mvn ${{ env.MVN_ARGS }} clean install -DskipTests -pl jaxrs-api,jaxrs-tck -am
+
+      - name: Determine Jakarta REST Specification version
+        id: spec-version
+        shell: bash
+        run: |
+          cd jakarta-rest-spec
+          SPEC_VERSION="$(mvn -B help:evaluate -Dexpression=project.version -DforceStdout -q)"
+          if [ -z "$SPEC_VERSION" ]; then
+            echo "::error::Could not determine the Jakarta REST spec version."
+            exit 1
+          fi
+          echo "SPEC_VERSION=$SPEC_VERSION" >> "$GITHUB_OUTPUT"
+
+      # Determine the RESTEasy version
+      - name: Determine RESTEasy Version
+        id: resteasy-version
+        shell: bash
+        run: |
+          RESTEASY_VERSION="$(mvn -B help:evaluate -Dexpression=project.version -DforceStdout -q)"
+          echo "RESTEASY_VERSION=$RESTEASY_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Build and Test RESTEasy on ${{ matrix.os }}
+        run: |
+          ./mvnw ${{ env.MVN_ARGS }} clean install '-Dversion.jakarta.ws.rs=${{ steps.spec-version.outputs.SPEC_VERSION }}' '-Dtest.java.home=${{env.JAVA_HOME_21_X64}}' '-Dtest.report.dir=java21'
+
+      # Run Jakarta REST TCK (Linux only). The TCK installed by the spec build above is used, so the
+      # resteasy-tck-setup module, which downloads a released TCK, is deliberately skipped.
+      - name: Run Jakarta REST TCK
+        if: ${{ !cancelled() && matrix.os == 'ubuntu-latest' }}
+        run: |
+          cd resteasy-tck-runner/resteasy-tck-adapter
+          mvn ${{ env.MVN_ARGS }} clean verify -Dtck.log.debug=true -Dresteasy.channel.manifest.artifactId=resteasy-8.0 -Dversion.org.jboss.resteasy="${{ steps.resteasy-version.outputs.RESTEASY_VERSION }}" '-Dversion.jakarta.ws.rs=${{ steps.spec-version.outputs.SPEC_VERSION }}' '-Dversion.jakarta.ws.rs.tck=${{ steps.spec-version.outputs.SPEC_VERSION }}' -Djvm="${{env.JAVA_HOME_21_X64}}/bin/java"
+
+      - name: Upload test logs for failed run
+        uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: failure-report-${{ matrix.os }}
+          path: |
+            **/surefire-reports/**
+            **/failsafe-reports/**
+            **/*.log
+
+      # Report Commit Status Check result back to RESTEasy PR
+      - name: Post Result Status to RESTEasy PR
+        if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.resteasy_pr_number != '' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STATUS: ${{ job.status }}
+          SPEC_REF: ${{ inputs.spec_ref }}
+        run: |
+          SHA=$(git rev-parse HEAD)
+
+          case "$STATUS" in
+            success)
+              STATE="success"
+              DESC="Passed against Jakarta REST $SPEC_REF"
+              ;;
+            cancelled)
+              STATE="error"
+              DESC="Cancelled against Jakarta REST $SPEC_REF"
+              ;;
+            *)
+              STATE="failure"
+              DESC="Failed against Jakarta REST $SPEC_REF"
+              ;;
+          esac
+
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/statuses/$SHA" \
+            -f state="$STATE" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            -f description="$DESC" \
+            -f context="Spec Integration (${{ matrix.os }})"

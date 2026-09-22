@@ -10,6 +10,7 @@ on:
   pull_request:
     branches:
       - '**'
+    types: [opened, synchronize, reopened, labeled, unlabeled]
     paths:
       - '.github/workflows/distribution-build.yml'
       - 'docbook/**'
@@ -23,6 +24,7 @@ concurrency:
 jobs:
 
   build-doc-dist:
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'requires-spec-snapshot') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
 

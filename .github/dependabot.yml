@@ -77,6 +77,9 @@ updates:
       dependencies:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "resteasy/resteasy/.github/workflows/resteasy-tck.yml"
+      - dependency-name: "resteasy/resteasy/.github/workflows/wildfly-build.yml"
   # 7.0 branch
   - package-ecosystem: "maven"
     directory: "/"
@@ -145,6 +148,9 @@ updates:
       dependencies:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "resteasy/resteasy/.github/workflows/resteasy-tck.yml"
+      - dependency-name: "resteasy/resteasy/.github/workflows/wildfly-build.yml"
   # 6.2 branch
   - package-ecosystem: "maven"
     directory: "/"
@@ -240,3 +246,6 @@ updates:
       dependencies:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "resteasy/resteasy/.github/workflows/resteasy-tck.yml"
+      - dependency-name: "resteasy/resteasy/.github/workflows/wildfly-build.yml"

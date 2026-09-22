@@ -69,6 +69,31 @@ You are most welcome to contribute to RESTEasy!
 
 Read the link:https://github.com/resteasy/.github/blob/main/CONTRIBUTING.md[Contribution guidelines]
 
+=== Changes Requiring an Unreleased Jakarta REST API
+
+Some changes cannot build against a released version of the Jakarta REST API, either because they
+implement a specification change which is still under review, or one which is merged but not yet
+released. Note this in the pull request description so the `requires-spec-snapshot` label can be
+applied.
+
+If the change implements a specific Jakarta REST pull request, include a line like the following in
+the description:
+
+----
+Implements jakartaee/rest#1234
+----
+
+This links the two pull requests together and is also read by CI, which then builds and tests
+RESTEasy against that pull request. Once it is merged, or if there is no pull request to reference,
+the specification's `main` branch is used instead. The line does not need updating after the
+specification change is merged.
+
+A pull request labeled `requires-spec-snapshot` is converted to a draft and cannot be merged until
+the Jakarta REST API it needs is released and the label is removed. The usual builds are skipped
+while the label is present, and the
+link:.github/workflows/jakarta-rest-snapshot-pr.yml[Test against Jakarta REST Spec] workflow takes
+their place.
+
 == Releasing
 
 Releasing the project requires permission to deploy to Maven Central see https://central.sonatype.org/publish/requirements/[Maven Central Release Requirements].
