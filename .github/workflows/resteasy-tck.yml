@@ -24,6 +24,7 @@ on:
   pull_request:
     branches:
       - '**'
+    types: [opened, synchronize, reopened, labeled, unlabeled]
     paths:
       - '.github/workflows/resteasy-tck.yml'
       - 'pom.xml'
@@ -53,7 +54,7 @@ env:
 
 jobs:
   run-tck:
-
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'requires-spec-snapshot') }}
     runs-on: ubuntu-latest
     timeout-minutes: 240
 

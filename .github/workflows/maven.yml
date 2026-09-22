@@ -10,6 +10,7 @@ on:
   pull_request:
     branches:
       - '**'
+    types: [opened, synchronize, reopened, labeled, unlabeled]
     paths:
       - '.github/workflows/maven.yml'
       - '**/pom.xml'
@@ -46,7 +47,7 @@ env:
 
 jobs:
   build:
-
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'requires-spec-snapshot') }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 240
     strategy:
@@ -86,6 +87,7 @@ jobs:
             **/*.log
 
   additional-profiles:
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'requires-spec-snapshot') }}
     runs-on: ubuntu-latest
     timeout-minutes: 240
     strategy:
@@ -118,6 +120,7 @@ jobs:
             **/*.log
 
   build-java-docs:
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'requires-spec-snapshot') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
