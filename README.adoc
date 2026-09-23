@@ -88,8 +88,8 @@ RESTEasy against that pull request. Once it is merged, or if there is no pull re
 the specification's `main` branch is used instead. The line does not need updating after the
 specification change is merged.
 
-A pull request labeled `requires-spec-snapshot` is converted to a draft and cannot be merged until
-the Jakarta REST API it needs is released and the label is removed. The usual builds are skipped
+A pull request labeled `requires-spec-snapshot` must not be merged until the Jakarta REST API it
+needs is released and the label is removed. The usual builds are skipped
 while the label is present, and the
 link:.github/workflows/jakarta-rest-snapshot-pr.yml[Test against Jakarta REST Spec] workflow takes
 their place.

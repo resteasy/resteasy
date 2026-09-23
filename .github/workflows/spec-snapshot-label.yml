@@ -1,0 +1,61 @@
+# Labels pull requests which require a snapshot build of the Jakarta REST API.
+#
+# A PR opts in with an "Implements jakartaee/rest#1234" line in its description, or by a maintainer
+# adding the label. The label selects the snapshot build in jakarta-rest-snapshot-pr.yml in place of
+# the usual builds, and marks the PR as one which must not be merged until the API it needs is
+# released. Not merging it, and removing the label afterwards, are both left to a human.
+#
+# This uses pull_request_target so that PRs from forks also get a token which can write to the PR.
+# The job deliberately checks out nothing and runs no code from the PR.
+
+name: Label Spec Snapshot PRs
+
+on:
+  pull_request_target:
+    types: [opened, reopened, edited, labeled]
+
+# Writing the label and the comment is all this needs. Nothing here reads the repository.
+permissions:
+  pull-requests: write
+
+# Serialized rather than cancelled, so a run which has already applied the label is never killed
+# part way through and repeated by the next event on the same pull request.
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.number }}'
+  cancel-in-progress: false
+
+jobs:
+  label-spec-snapshot-pr:
+    # An edit which did not touch the description cannot have changed whether the PR opted in.
+    if: >-
+      ${{ (contains(github.event.pull_request.labels.*.name, 'requires-spec-snapshot')
+           || contains(github.event.pull_request.body, 'implements jakartaee/rest#'))
+          && (github.event.action != 'edited' || github.event.changes.body) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      LABEL: requires-spec-snapshot
+      PR: ${{ github.event.pull_request.number }}
+      REPO: ${{ github.repository }}
+    steps:
+      - name: Add the label
+        id: label
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'requires-spec-snapshot') }}
+        run: gh pr edit "$PR" --repo "$REPO" --add-label "$LABEL"
+
+      # Only when the label is first applied, either by the step above or by a maintainer, so this
+      # is not repeated every time the description is edited. An event raised by GITHUB_TOKEN does
+      # not trigger another workflow run, so the step above cannot come back around as "labeled".
+      - name: Explain why the PR is blocked
+        if: ${{ steps.label.outcome == 'success' || github.event.action == 'labeled' }}
+        run: |
+          gh pr comment "$PR" --repo "$REPO" --body \
+          "This pull request is labeled \`$LABEL\`, because it builds against an unreleased version
+          of the Jakarta REST API. It must not be merged until that API is released and the label is
+          removed.
+
+          The label also means the PR is tested against a snapshot of the API instead of the usual
+          builds. See
+          [Changes Requiring an Unreleased Jakarta REST API](https://github.com/$REPO/blob/main/README.adoc#changes-requiring-an-unreleased-jakarta-rest-api)
+          for how to choose which version of the specification is used."
