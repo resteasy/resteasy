@@ -188,6 +188,8 @@ public abstract class ResteasyClientBuilder extends ClientBuilder {
 
     public abstract String getDefaultProxyScheme();
 
+    public abstract boolean isUseJvmProxySettings();
+
     /**
      * Specify a default proxy host and port. Default schema will be used.
      *
@@ -206,6 +208,15 @@ public abstract class ResteasyClientBuilder extends ClientBuilder {
      * @return an updated client builder instance
      */
     public abstract ResteasyClientBuilder defaultProxy(String hostname, int port, String scheme);
+
+    /**
+     * Specify if the JVM proxy settings should be used.
+     *
+     * @param useJvmProxySettings a boolean indicating whether the JVM's global proxy
+     *                            settings should be used for the client connections.
+     * @return an updated client builder instance
+     */
+    public abstract ResteasyClientBuilder useJvmProxySettings(boolean useJvmProxySettings);
 
     /**
      * Enable state (cookie) management.
