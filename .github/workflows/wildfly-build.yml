@@ -50,7 +50,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - uses: wildfly-extras/wildfly-nightly-download@v1
+      - uses: wildfly-extras/wildfly-nightly-download@v2
         id: wildfly-nightly
       - name: Set up JDKs
         uses: actions/setup-java@v6
@@ -104,7 +104,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - uses: wildfly-extras/wildfly-nightly-download@v1
+      - uses: wildfly-extras/wildfly-nightly-download@v2
         id: wildfly-nightly
       - name: Set up JDKs
         uses: actions/setup-java@v6
