@@ -420,16 +420,31 @@ public class ContextualExecutors {
     private static Map<ThreadContext<Object>, Object> getContexts() {
         final Map<ThreadContext<Object>, Object> contexts = new LinkedHashMap<>();
         // Load any registered providers
-        ThreadContexts threadContexts = ResteasyProviderFactory.getInstance()
-                .getContextData(ThreadContexts.class);
-        // Create a new ThreadContexts which will load at least the ones from services
+        final ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
+        ThreadContexts threadContexts = factory.getContextData(ThreadContexts.class);
         if (threadContexts == null) {
-            threadContexts = new ThreadContexts();
+            threadContexts = fallbackContexts(factory);
         }
         for (ThreadContext<Object> context : threadContexts.getThreadContexts()) {
             contexts.put(context, context.capture());
         }
         return contexts;
+    }
+
+    /**
+     * Returns the source of thread contexts for a thread with no {@link ThreadContexts} in its context data. When the
+     * thread's context class loader sees the services of the class loader that defined the provider factory, the
+     * factory's cached contexts are used. Otherwise a new {@link ThreadContexts} is created, as before, so that a
+     * shared factory does not cache one deployment's provider view, or retain one deployment's class loader, for all
+     * others.
+     */
+    private static ThreadContexts fallbackContexts(final ResteasyProviderFactory factory) {
+        final ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+        final ClassLoader factoryLoader = factory.getClass().getClassLoader();
+        if (tccl == factoryLoader || (tccl == null && factoryLoader == ClassLoader.getSystemClassLoader())) {
+            return factory.getThreadContexts();
+        }
+        return new ThreadContexts();
     }
 
     private static void reset(final Map<ThreadContext<Object>, Object> contexts) {

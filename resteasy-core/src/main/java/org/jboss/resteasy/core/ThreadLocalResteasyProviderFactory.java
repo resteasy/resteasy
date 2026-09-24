@@ -40,6 +40,7 @@ import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
+import org.jboss.resteasy.spi.concurrent.ThreadContexts;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.util.ThreadLocalStack;
 
@@ -476,6 +477,11 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
     @Override
     public <T> T getContextData(Class<T> rawType, Type genericType, Annotation[] annotations, boolean unwrapAsync) {
         return getDelegate().getContextData(rawType, genericType, annotations, unwrapAsync);
+    }
+
+    @Override
+    public ThreadContexts getThreadContexts() {
+        return getDelegate().getThreadContexts();
     }
 
     @Override
