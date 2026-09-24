@@ -1,0 +1,36 @@
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+
+    <display-name>Filter dispatcher tracing</display-name>
+
+    <context-param>
+        <param-name>resteasy.server.tracing.type</param-name>
+        <param-value>ALL</param-value>
+    </context-param>
+
+    <filter>
+        <filter-name>Resteasy</filter-name>
+        <filter-class>org.jboss.resteasy.plugins.server.servlet.Filter30Dispatcher</filter-class>
+        <async-supported>true</async-supported>
+        <init-param>
+            <param-name>jakarta.ws.rs.Application</param-name>
+            <param-value>org.jboss.resteasy.test.tracing.filter.TracingApplication</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>Resteasy</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <servlet>
+        <servlet-name>FallThrough</servlet-name>
+        <servlet-class>org.jboss.resteasy.test.tracing.filter.FallThroughServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>FallThrough</servlet-name>
+        <url-pattern>/servlet/*</url-pattern>
+    </servlet-mapping>
+
+</web-app>
