@@ -26,6 +26,7 @@ import org.jboss.logging.annotations.Cause;
 import org.jboss.logging.annotations.LogMessage;
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageLogger;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -42,4 +43,7 @@ interface LogMessages {
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 900010, value = "Failed to stop the deployment manager for servlet %s")
     void failedToStopDeploymentManager(@Cause Throwable cause, String servletName);
+
+    @Message(id = 900020, value = "Failed to resolve application class from %s")
+    IllegalStateException failedToResolveApplicationClass(@Cause Throwable cause, ResteasyDeployment deployment);
 }
