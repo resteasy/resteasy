@@ -242,8 +242,10 @@ public class ContextualExecutors {
      */
     public static ContextualScheduledExecutorService newScheduledThreadPool() {
         final int poolSize = CoreThreads.getCoreThreads("resteasy.async.timeout.scheduler.min.pool.size");
-        final ScheduledExecutorService delegate = Executors.newScheduledThreadPool(poolSize,
+        final ScheduledThreadPoolExecutor delegate = new ScheduledThreadPoolExecutor(poolSize,
                 new ContextualThreadFactory("contextual-scheduled-pool"));
+        // Cancelled timeout watchdogs must not sit in the queue until their delay elapses.
+        delegate.setRemoveOnCancelPolicy(true);
         return new ContextualScheduledExecutorService(delegate, false);
     }
 
