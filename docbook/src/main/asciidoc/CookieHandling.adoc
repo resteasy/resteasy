@@ -1,0 +1,158 @@
+[[_cookiehandling]]
+== Cookie handling
+
+The Jakarta REST specification requires support for the Cookie specification
+https://datatracker.ietf.org/doc/html/rfc2109[RFC 2109], which is now considered
+outdated and superseded by https://datatracker.ietf.org/doc/html/rfc6265[RFC 6265].
+RESTEasy supports both versions. 
+
+Syntactically, the two specifications differ as follows:
+
+* The three Cookie fields in RFC 2109
+
+----
+cookie-version  =       "$Version" "=" value
+path            =       "$Path" "=" value
+domain          =       "$Domain" "=" value
+----
+
+are removed in RFC 6265. As a result, an RFC 6265 cookie is simply a "name = value" pair.
+An instance of `jakarta.ws.rs.core.Cookie` may be considered to be an RFC 6265 cookie if those three
+fields are set to null.
+
+* An RFC 6265 NewCookie differs from an RFC 2109 NewCookie in the following ways:
+
+1. The "$Version", "$Path", and "$Domain", and "Comment" fields are eliminated.
+
+2. Fields "Path" and "Domain" are added, along with "Expires", "HttpOnly", and "SameSite".
+
+3. The RFC 6265 spec provides for arbitrary fields to be included. These can be of the
+    form "x=y" or simply "z".
+    
+RESTEasy adds a new class, `org.jboss.resteasy.cookies.NewCookie6265`, a subclass of
+`jakarta.ws.rs.core.NewCookie`. Being derived from `NewCookie`, it has `version`
+and `comment` fields, but the former always holds
+
+----
+public static final int NO_VERSION = -2;
+----
+
+and the latter is always null.
+
+*Note.* The `jakarta.ws.rs.core.NewCookie` class actually extends the RFC 2109
+specification with the "Expires" and "HttpOnly" fields.
+
+RESTEasy can distinguish the two types of cookies. Suppose a resource method creates
+and returns an RFC 2019 `NewCookie`:
+
+----
+NewCookie.Builder builder2109 = new NewCookie.Builder("name2109");
+NewCookie newCookie2109 = builder2109.value("value1")
+        .version(17)
+        .path("/path1")
+        .domain("domain1")
+        .comment("comment1")
+        .maxAge(23)
+        .expiry(new Date(3, 5, 7))
+        .secure(false)
+        .httpOnly(true)
+        .sameSite(SameSite.LAX)
+        .build();
+return Response.ok().cookie(newCookie2109).build();
+----
+
+Then the client
+
+----
+NewCookie newCookie2109 = response.getCookies().get("name2109");
+System.out.println("newCookie2109: " + newCookie2109.toString());
+----
+
+gets
+
+----
+newCookie2109: name2109=value1;Version=17;Comment=comment1;Domain=domain1;Path=/path1;Max-Age=23;Expires=Sun, 07-Jun-1903 05:00:00 GMT;HttpOnly;SameSite=Lax
+----
+
+If the client then returns it to another resource method:
+
+----
+response = client.target("http://localhost:8081/checkCookies/cookies/2109")
+                 .request()
+                 .cookie(newCookie2109)
+                 .get();
+----
+
+then the resource method at "http://localhost:8081/checkCookies/cookies/2109"
+
+----
+@GET
+@Path("checkCookies/cookies/2109")
+public Response checkCookiesCookies2109(@CookieParam("name2109") Cookie cookie2109) {
+    System.out.println("cookie2109: " + cookie2109.toString());
+}
+----
+
+displays
+
+----
+cookie2109: name2109=value1; $Domain=domain1; $Path=/path1
+----
+
+On the other hand, if a resource method returns a `NewCookie6265`:
+
+----
+NewCookie6265.Builder builder6265 = new NewCookie6265.Builder("name6265");
+NewCookie6265 newCookie6265 = builder6265a.value("value1")
+        .version(17)
+        .path("/path1")
+        .domain("domain1")
+        .comment("comment1")
+        .maxAge(23)
+        .expiry(new Date(3, 5, 7))
+        .secure(false)
+        .httpOnly(true)
+        .sameSite(SameSite.LAX)
+        .extension("a=b")
+        .extension("c")
+        .build();
+return Response.ok().cookie(newCookie6265).build();
+----
+
+then the client
+
+----
+NewCookie6265 newCookie6265 = response.getCookies().get("name6265");
+System.out.println("newCookie6265: " + newCookie6265.toString());
+----
+
+gets
+
+----
+newCookie6265: name6265=value1;Domain=domain1;Path=/path1;Max-Age=23;Expires=Sun, 07-Jun-1903 05:00:00 GMT;HttpOnly;SameSite=Lax;a=b;c
+----
+
+If the client then returns it to another resource method:
+
+----
+response = client.target("http://localhost:8081/checkCookies/cookies/6265")
+                 .request()
+                 .cookie(newCookie6265)
+                 .get();
+----
+
+then the resource method at "http://localhost:8081/checkCookies/cookies/6265"
+
+----
+@GET
+@Path("checkCookies/cookies/6265")
+public Response checkCookiesCookies6265(@CookieParam("name6265") Cookie cookie6265) {
+   System.out.println("cookie6265: " + cookie6265.toString());
+...
+----
+
+displays
+
+----
+cookie6265: name6265=value1
+----

@@ -125,6 +125,8 @@ include::RESTEasy_Client_Framework.adoc[]
 
 include::MicroProfile_Rest_Client.adoc[]
 
+include::CookieHandling.adoc[]
+
 include::AJAX_Client.adoc[]
 
 include::WADL.adoc[]

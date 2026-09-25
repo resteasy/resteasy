@@ -169,7 +169,7 @@ public class ServerCookie implements Serializable {
         // Add version 1 specific information
         if (version == 1) {
             // Version=1 ... required
-            buf.append("; Version=1");
+            buf.append("; $Version=1");
 
             // Comment=comment
             if (comment != null) {
@@ -180,7 +180,7 @@ public class ServerCookie implements Serializable {
 
         // Add domain information, if present
         if (domain != null) {
-            buf.append("; Domain=");
+            buf.append("; $Domain=");
             maybeQuote2(version, buf, domain);
         }
 
@@ -206,7 +206,7 @@ public class ServerCookie implements Serializable {
 
         // Path=path
         if (path != null) {
-            buf.append("; Path=");
+            buf.append("; $Path=");
             maybeQuote2(version, buf, path);
         }
 

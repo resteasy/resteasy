@@ -20,6 +20,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
+import org.jboss.resteasy.cookies.NewCookie6265;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -95,12 +96,18 @@ public class ClientInvocationBuilder implements Invocation.Builder {
     @Override
     public Invocation.Builder cookie(Cookie cookie) {
         if (!(Cookie.class.equals(cookie.getClass()))) {
-            cookie = new Cookie.Builder(cookie.getName())
-                    .value(cookie.getValue())
-                    .path(cookie.getPath())
-                    .domain(cookie.getDomain())
-                    .version(cookie.getVersion())
-                    .build();
+            if (cookie.getVersion() == NewCookie6265.NO_VERSION) {
+                cookie = new Cookie.Builder(cookie.getName())
+                        .value(cookie.getValue())
+                        .build();
+            } else {
+                cookie = new Cookie.Builder(cookie.getName())
+                        .value(cookie.getValue())
+                        .path(cookie.getPath())
+                        .domain(cookie.getDomain())
+                        .version(cookie.getVersion())
+                        .build();
+            }
         }
         getHeaders().cookie(cookie);
         return this;
