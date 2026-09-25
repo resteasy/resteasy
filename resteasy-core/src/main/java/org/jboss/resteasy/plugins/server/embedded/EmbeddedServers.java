@@ -28,6 +28,7 @@ import java.util.function.Function;
 
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.SeBootstrap;
+import jakarta.ws.rs.core.Application;
 
 import org.jboss.resteasy.core.se.ConfigurationOption;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
@@ -56,6 +57,34 @@ public class EmbeddedServers {
     }
 
     /**
+     * Resolves the {@linkplain Application application} from the deployment. If the
+     * {@link ResteasyDeployment#getApplication()} is set, that is the application type returned. If it's not set, the
+     * {@link ResteasyDeployment#getApplicationClass()} and {@linkplain ClassLoader#loadClass(String) loaded}.
+     *
+     * @param deployment the deployment used to resolve the {@linkplain Application application} from
+     *
+     * @return the class, if found, or an empty optional
+     *
+     * @throws ClassNotFoundException if the {@link ResteasyDeployment#getApplicationClass()} is used and the class is not found
+     *                                in the class loader
+     * @throws ClassCastException     if the {@link ResteasyDeployment#getApplicationClass()} does not name a subtype of
+     *                                {@link Application}
+     */
+    public static Optional<Class<? extends Application>> resolveApplication(final ResteasyDeployment deployment)
+            throws ClassNotFoundException {
+        // First check if a deployment was
+        if (deployment.getApplication() != null) {
+            return Optional.of(deployment.getApplication().getClass());
+
+        }
+        if (deployment.getApplicationClass() != null) {
+            final Class<?> clazz = getClassLoader().loadClass(deployment.getApplicationClass());
+            return Optional.of(clazz.asSubclass(Application.class));
+        }
+        return Optional.empty();
+    }
+
+    /**
      * Attempts to resolve the {@link ApplicationPath} on the deployments {@linkplain jakarta.ws.rs.core.Application
      * application}.
      * If the application is not set or is not annotated, {@code null} is returned.
@@ -65,17 +94,9 @@ public class EmbeddedServers {
      * @return the value of the {@link ApplicationPath} or {@code null} if the type is not annotated
      */
     public static String resolveContext(final ResteasyDeployment deployment) {
-        // First check if a deployment was
-        if (deployment.getApplication() != null) {
-            return resolveContext(deployment.getApplication().getClass());
-
-        }
-        if (deployment.getApplicationClass() != null) {
-            try {
-                final Class<?> clazz = Class.forName(deployment.getApplicationClass());
-                return resolveContext(clazz);
-            } catch (ClassNotFoundException ignore) {
-            }
+        try {
+            return resolveApplication(deployment).map(EmbeddedServers::resolveContext).orElse(null);
+        } catch (ClassNotFoundException | ClassCastException ignore) {
         }
         return null;
     }
@@ -175,6 +196,14 @@ public class EmbeddedServers {
             return findAnnotation(annotation, type.getSuperclass());
         }
         return result;
+    }
+
+    private static ClassLoader getClassLoader() {
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        if (loader == null) {
+            loader = EmbeddedServers.class.getClassLoader();
+        }
+        return loader;
     }
 
     private static class ConstructorFunction implements Function<Class<? extends EmbeddedServer>, EmbeddedServer> {
