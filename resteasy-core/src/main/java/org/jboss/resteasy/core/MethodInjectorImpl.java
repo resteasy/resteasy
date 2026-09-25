@@ -8,6 +8,7 @@ import java.util.concurrent.CompletionStage;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.WebApplicationException;
 
+import org.jboss.resteasy.core.interception.jaxrs.RequestEntityStreamTracker;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
@@ -32,6 +33,7 @@ public class MethodInjectorImpl implements MethodInjector {
     protected ResourceLocator method;
     protected Method interfaceBasedMethod;
     protected boolean expectsBody;
+    protected boolean injectsRawStream;
 
     public MethodInjectorImpl(final ResourceLocator resourceMethod, final ResteasyProviderFactory factory) {
         this.factory = factory;
@@ -42,8 +44,10 @@ public class MethodInjectorImpl implements MethodInjector {
         int i = 0;
         for (MethodParameter parameter : resourceMethod.getParams()) {
             params[i] = factory.getInjectorFactory().createParameterExtractor(parameter, factory);
-            if (params[i] instanceof MessageBodyParameterInjector)
+            if (params[i] instanceof MessageBodyParameterInjector) {
                 expectsBody = true;
+                injectsRawStream |= ((MessageBodyParameterInjector) params[i]).injectsRawStream();
+            }
             i++;
         }
     }
@@ -113,20 +117,64 @@ public class MethodInjectorImpl implements MethodInjector {
 
     @Override
     public Object invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure, ApplicationException {
-        Object argsObj = injectArguments(request, httpResponse);
-        if (argsObj == null || !(argsObj instanceof CompletionStage)) {
-            Object returnObj = invoke(request, httpResponse, resource, (Object[]) argsObj);
-            if (returnObj instanceof CompletionStage) {
-                @SuppressWarnings("rawtypes")
-                CompletionStage cs = (CompletionStage) returnObj;
-                return new CompletionStageHolder(cs);
-            } else {
-                return returnObj;
-            }
+        final Object argsObj;
+        try {
+            argsObj = injectArguments(request, httpResponse);
+        } catch (RuntimeException failure) {
+            closeReplacementEntityStream(request);
+            throw failure;
         }
+
+        if (argsObj == null || !(argsObj instanceof CompletionStage)) {
+            return invokeAfterArgumentInjection(request, httpResponse, resource, (Object[]) argsObj);
+        }
+
         @SuppressWarnings("unchecked")
         CompletionStage<Object[]> stagedArgs = (CompletionStage<Object[]>) argsObj;
-        return stagedArgs.thenApply(args -> invoke(request, httpResponse, resource, args));
+        return stagedArgs
+                .whenComplete((args, failure) -> {
+                    if (failure != null) {
+                        closeReplacementEntityStream(request);
+                    }
+                })
+                .thenApply(args -> invokeAfterArgumentInjection(request, httpResponse, resource, args));
+    }
+
+    private Object invokeAfterArgumentInjection(HttpRequest request, HttpResponse httpResponse, Object resource,
+            Object[] args) {
+        if (!injectsRawStream) {
+            closeReplacementEntityStream(request);
+        }
+
+        final Object returnObj;
+        try {
+            returnObj = invoke(request, httpResponse, resource, args);
+        } catch (RuntimeException failure) {
+            if (injectsRawStream) {
+                closeReplacementEntityStream(request);
+            }
+            throw failure;
+        }
+
+        if (returnObj instanceof CompletionStage) {
+            CompletionStage<?> stage = (CompletionStage<?>) returnObj;
+            if (injectsRawStream) {
+                stage = stage.whenComplete((result, failure) -> closeReplacementEntityStream(request));
+            }
+            return new CompletionStageHolder(stage);
+        }
+
+        if (injectsRawStream) {
+            closeReplacementEntityStream(request);
+        }
+        return returnObj;
+    }
+
+    private static void closeReplacementEntityStream(HttpRequest request) {
+        RequestEntityStreamTracker tracker = RequestEntityStreamTracker.get(request);
+        if (tracker != null) {
+            tracker.closeReplacement();
+        }
     }
 
     private Object invoke(HttpRequest request, HttpResponse httpResponse, Object resource, Object[] args) {
