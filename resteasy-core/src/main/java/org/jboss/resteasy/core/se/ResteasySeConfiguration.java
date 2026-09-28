@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -87,6 +88,15 @@ public class ResteasySeConfiguration implements Configuration {
     @Override
     public boolean hasProperty(final String name) {
         return properties.containsKey(name);
+    }
+
+    /**
+     * Returns the names of all the properties this configuration contains.
+     *
+     * @return a collection of the property names
+     */
+    public Set<String> propertyNames() {
+        return Set.copyOf(properties.keySet());
     }
 
     private static class Builder implements Configuration.Builder {
