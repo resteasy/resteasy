@@ -99,7 +99,8 @@ public class ExceptionHandlerTest {
         try {
             Response result = eHandler.handleException(request, sdbe);
             Assertions.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, result.getStatusInfo());
-            Assertions.assertEquals("SprocketDBException test", result.readEntity(String.class));
+            Assertions.assertFalse(result.hasEntity(),
+                    "Default exception mapper must not disclose the exception message in the response body");
         } catch (UnhandledException ue) {
             try (
                     StringWriter sw = new StringWriter();

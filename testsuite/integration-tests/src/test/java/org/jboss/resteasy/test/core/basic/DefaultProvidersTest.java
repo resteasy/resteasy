@@ -83,7 +83,9 @@ public class DefaultProvidersTest {
                 .request()
                 .get();
         Assertions.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
-        Assertions.assertEquals(ExceptionResource.EXCEPTION_MESSAGE, response.readEntity(String.class));
+        final String body = response.readEntity(String.class);
+        Assertions.assertTrue(body == null || body.isBlank(),
+                "Default exception mapper must not disclose the exception message in the response body, got: " + body);
     }
 
     @Test
