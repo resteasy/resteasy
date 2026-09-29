@@ -54,7 +54,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.resteasy-ref || github.sha }}
-      - uses: wildfly-extras/wildfly-nightly-download@v1
+      - uses: wildfly-extras/wildfly-nightly-download@v2
         id: wildfly-nightly
       - name: Set up JDKs
         uses: actions/setup-java@v6
@@ -109,7 +109,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.resteasy-ref || github.sha }}
-      - uses: wildfly-extras/wildfly-nightly-download@v1
+      - uses: wildfly-extras/wildfly-nightly-download@v2
         id: wildfly-nightly
       - name: Set up JDKs
         uses: actions/setup-java@v6
