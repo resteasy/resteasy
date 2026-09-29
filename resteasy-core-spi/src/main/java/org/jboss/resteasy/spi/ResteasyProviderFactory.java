@@ -28,6 +28,7 @@ import jakarta.ws.rs.ext.ReaderInterceptor;
 import jakarta.ws.rs.ext.RuntimeDelegate;
 import jakarta.ws.rs.ext.WriterInterceptor;
 
+import org.jboss.resteasy.spi.concurrent.ThreadContexts;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.statistics.StatisticsController;
@@ -42,6 +43,8 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate
     private static volatile ResteasyProviderFactory instance;
 
     private static boolean registerBuiltinByDefault = true;
+
+    private volatile ThreadContexts threadContexts;
 
     public abstract Set<DynamicFeature> getServerDynamicFeatures();
 
@@ -87,6 +90,31 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate
             instance = factory;
         }
         RuntimeDelegate.setInstance(factory);
+    }
+
+    /**
+     * Returns the {@link ThreadContexts} associated with this provider factory. This is the source of thread
+     * contexts for threads whose {@linkplain #getContextData(Class) context data} does not contain a
+     * {@code ThreadContexts} entry and whose context class loader is the class loader that defined this provider
+     * factory. The instance is created lazily; creation {@linkplain java.util.ServiceLoader loads} the
+     * {@link org.jboss.resteasy.spi.concurrent.ThreadContext ThreadContext} providers from the defining class loader
+     * once for the lifetime of this provider factory. Binding the providers to the defining class loader keeps this
+     * cache from holding another deployment's class loader, and from fixing one deployment's provider view for all
+     * others, when the factory is shared.
+     *
+     * @return the thread contexts for this provider factory
+     */
+    public ThreadContexts getThreadContexts() {
+        ThreadContexts result = threadContexts;
+        if (result == null) {
+            synchronized (this) {
+                result = threadContexts;
+                if (result == null) {
+                    threadContexts = result = new ThreadContexts(getClass().getClassLoader());
+                }
+            }
+        }
+        return result;
     }
 
     static final Object RD_LOCK = new Object();

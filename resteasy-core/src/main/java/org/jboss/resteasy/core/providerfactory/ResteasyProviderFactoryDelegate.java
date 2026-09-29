@@ -62,6 +62,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
+import org.jboss.resteasy.spi.concurrent.ThreadContexts;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.statistics.StatisticsController;
@@ -266,6 +267,11 @@ public class ResteasyProviderFactoryDelegate extends ResteasyProviderFactory {
     @Override
     public <T> T getContextData(Class<T> rawType, Type genericType, Annotation[] annotations, boolean unwrapAsync) {
         return resteasyProviderFactoryDelegator.getContextData(rawType, genericType, annotations, unwrapAsync);
+    }
+
+    @Override
+    public ThreadContexts getThreadContexts() {
+        return resteasyProviderFactoryDelegator.getThreadContexts();
     }
 
     @Override
