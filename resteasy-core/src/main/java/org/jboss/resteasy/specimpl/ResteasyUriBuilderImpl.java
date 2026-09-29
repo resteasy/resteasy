@@ -1079,10 +1079,7 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
 
     @Override
     public UriBuilder resolveTemplates(Map<String, Object> templateValues) throws IllegalArgumentException {
-        if (templateValues == null)
-            throw new IllegalArgumentException(Messages.MESSAGES.templateValuesParamNull());
-        if (templateValues.containsKey(null))
-            throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
+        validateTemplateValues(templateValues);
         return uriTemplate(buildCharSequence(templateValues, false, true, true));
     }
 
@@ -1111,19 +1108,13 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
     @Override
     public UriBuilder resolveTemplates(Map<String, Object> templateValues, boolean encodeSlashInPath)
             throws IllegalArgumentException {
-        if (templateValues == null)
-            throw new IllegalArgumentException(Messages.MESSAGES.templateValuesParamNull());
-        if (templateValues.containsKey(null))
-            throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
+        validateTemplateValues(templateValues);
         return uriTemplate(buildCharSequence(templateValues, false, true, encodeSlashInPath));
     }
 
     @Override
     public UriBuilder resolveTemplatesFromEncoded(Map<String, Object> templateValues) throws IllegalArgumentException {
-        if (templateValues == null)
-            throw new IllegalArgumentException(Messages.MESSAGES.templateValuesParamNull());
-        if (templateValues.containsKey(null))
-            throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
+        validateTemplateValues(templateValues);
         return uriTemplate(buildCharSequence(templateValues, true, true, true));
     }
 
@@ -1308,5 +1299,16 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
             }
         }
         return isPathParamRegexText;
+    }
+
+    private static void validateTemplateValues(final Map<String, Object> map) {
+        if (map == null) {
+            throw new IllegalArgumentException(Messages.MESSAGES.templateValuesParamNull());
+        }
+        for (String key : map.keySet()) {
+            if (key == null) {
+                throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
+            }
+        }
     }
 }
