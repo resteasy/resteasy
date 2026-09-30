@@ -1079,10 +1079,7 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
 
     @Override
     public UriBuilder resolveTemplates(Map<String, Object> templateValues) throws IllegalArgumentException {
-        if (templateValues == null)
-            throw new IllegalArgumentException(Messages.MESSAGES.templateValuesParamNull());
-        if (templateValues.containsKey(null))
-            throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
+        validateTemplateValues(templateValues);
         return uriTemplate(buildCharSequence(templateValues, false, true, true));
     }
 
@@ -1111,19 +1108,13 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
     @Override
     public UriBuilder resolveTemplates(Map<String, Object> templateValues, boolean encodeSlashInPath)
             throws IllegalArgumentException {
-        if (templateValues == null)
-            throw new IllegalArgumentException(Messages.MESSAGES.templateValuesParamNull());
-        if (templateValues.containsKey(null))
-            throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
+        validateTemplateValues(templateValues);
         return uriTemplate(buildCharSequence(templateValues, false, true, encodeSlashInPath));
     }
 
     @Override
     public UriBuilder resolveTemplatesFromEncoded(Map<String, Object> templateValues) throws IllegalArgumentException {
-        if (templateValues == null)
-            throw new IllegalArgumentException(Messages.MESSAGES.templateValuesParamNull());
-        if (templateValues.containsKey(null))
-            throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
+        validateTemplateValues(templateValues);
         return uriTemplate(buildCharSequence(templateValues, true, true, true));
     }
 
@@ -1139,25 +1130,58 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
      * @return the result of applying the regex expression to the srcStringValue
      */
     private String regexEval(String srcSegment, String srcStringValue, String param) {
-        Matcher matcher = Pattern.compile("\\{[^/\\$]*").matcher(srcSegment);
-
-        // check for regex text something like {someVar: (regex_text)+}
-        if (matcher.find()) {
-            String group = matcher.group();
-            if (group != null && !group.isEmpty()) {
-                if (group.indexOf(":") != -1 && group.startsWith("{") && group.endsWith("}")) {
-                    // extract the regex text and use pattern to eval user param input
-                    String regexText = group.substring(group.indexOf(":") + 1, (group.length() - 1)).trim();
-                    Matcher regexMatch = Pattern.compile(regexText).matcher(srcStringValue);
-                    if (regexMatch.matches()) {
-                        return srcStringValue;
-                    } else {
-                        throw new IllegalArgumentException(Messages.MESSAGES.regexPathParameterResultEmpty(param, regexText));
-                    }
-                }
-            }
+        if (srcStringValue == null) {
+            return null;
         }
-        return srcStringValue;
+        // Find the template parameter {param} or {param:regex}
+        // The regex may contain braces, e.g., {b:B{0,10}}
+        final String searchStr = "{" + param;
+        int colonIdx;
+        int fromIdx = 0;
+        while (true) {
+            final int candidate = srcSegment.indexOf(searchStr, fromIdx);
+            if (candidate == -1) {
+                return srcStringValue;
+            }
+            final int afterName = candidate + searchStr.length();
+            if (afterName < srcSegment.length()
+                    && (srcSegment.charAt(afterName) == ':' || srcSegment.charAt(afterName) == '}')) {
+                colonIdx = afterName;
+                break;
+            }
+            fromIdx = candidate + 1;
+        }
+
+        if (srcSegment.charAt(colonIdx) != ':') {
+            // No regex pattern, just {param}
+            return srcStringValue;
+        }
+
+        // Find the closing brace that matches the opening brace of the template parameter, accounting for
+        // nested braces in the regex (e.g. {b:B{0,10}}). Inner braces are replaced with sentinel characters so
+        // the first literal '}' after the colon is the true closing brace.
+        final String normalized = PathHelper.replaceEnclosedCurlyBracesCS(srcSegment).toString();
+        final int closingBraceIdx = normalized.indexOf('}', colonIdx + 1);
+
+        if (closingBraceIdx == -1) {
+            // Malformed template - no closing brace found
+            throw Messages.MESSAGES.malformedUriTemplate(param);
+        }
+
+        // Extract the regex pattern between the colon and the closing brace
+        final String regexText = srcSegment.substring(colonIdx + 1, closingBraceIdx).trim();
+
+        if (regexText.isEmpty()) {
+            // Empty regex pattern - throw exception for consistency with URI template validation
+            throw Messages.MESSAGES.emptyUriTemplatePattern(param);
+        }
+
+        final Matcher regexMatch = Pattern.compile(regexText).matcher(srcStringValue);
+        if (regexMatch.matches()) {
+            return srcStringValue;
+        } else {
+            throw new IllegalArgumentException(Messages.MESSAGES.regexPathParameterResultEmpty(param, regexText));
+        }
     }
 
     /**
@@ -1308,5 +1332,16 @@ public class ResteasyUriBuilderImpl extends ResteasyUriBuilder {
             }
         }
         return isPathParamRegexText;
+    }
+
+    private static void validateTemplateValues(final Map<String, Object> map) {
+        if (map == null) {
+            throw new IllegalArgumentException(Messages.MESSAGES.templateValuesParamNull());
+        }
+        for (String key : map.keySet()) {
+            if (key == null) {
+                throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
+            }
+        }
     }
 }

@@ -19,6 +19,11 @@
 
 package org.jboss.resteasy.specimpl;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import jakarta.ws.rs.core.UriBuilder;
+
 import org.jboss.resteasy.specimpl.ResteasyUriBuilderImpl.PathSegments;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -75,5 +80,98 @@ public class ResteasyUriBuilderTest {
             Assertions.assertEquals(pathComponents.path, "/a/b/{string:[0-9 ?]+}/c", () -> PATH_SEGMENT_PARSER_ERROR);
             Assertions.assertEquals(pathComponents.query, "a=x&b=ye/s?", () -> PATH_SEGMENT_PARSER_ERROR);
         }
+    }
+
+    @Test
+    void resolveUriTemplate() {
+        final UriBuilder builder = UriBuilder.fromUri("https://{hostname}:{port}/");
+        // We have to use a HashMap or a map that supports null values as resolveTemplates() checks the map for a null key
+        final Map<String, Object> map = new HashMap<>();
+        map.put("hostname", "localhost");
+        map.put("port", 8443);
+        Assertions.assertEquals("https://localhost:8443/", builder.resolveTemplates(map).build().toString());
+    }
+
+    @Test
+    void resolveUriTemplateParamNamePrefix() {
+        final UriBuilder builder = UriBuilder.fromUri("https://localhost/{namespace}/{name}");
+        final Map<String, Object> map = Map.of("namespace", "ns", "name", "abc");
+        Assertions.assertEquals("https://localhost/ns/abc", builder.resolveTemplates(map).build().toString());
+    }
+
+    @Test
+    void resolveUriTemplateWithRegexParamNamePrefixMatches() {
+        // "name" is a prefix-match target inside the literal "{namespace}" segment; the regex on "name" must
+        // still be enforced and not be skipped due to the earlier, unrelated "{namespace}" match.
+        final UriBuilder builder = UriBuilder.fromUri("https://localhost/{namespace}/{name:[a-z]+}");
+        final Map<String, Object> map = Map.of("namespace", "ns", "name", "abc");
+        Assertions.assertEquals("https://localhost/ns/abc", builder.resolveTemplates(map).build().toString());
+    }
+
+    @Test
+    void resolveUriTemplateWithRegexParamNamePrefixThrows() {
+        final UriBuilder builder = UriBuilder.fromUri("https://localhost/{namespace}/{name:[a-z]+}");
+        final Map<String, Object> map = Map.of("namespace", "ns", "name", "ABC123");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> builder.resolveTemplates(map).build());
+    }
+
+    @Test
+    void resolveUriTemplateWithNestedBracesInRegexMatches() {
+        // The regex itself contains braces, e.g. a quantifier like {0,10}. The closing brace of the
+        // template parameter must not be confused with the braces inside the regex.
+        final UriBuilder builder = UriBuilder.fromUri("https://localhost/{b:B{0,10}}");
+        final Map<String, Object> map = Map.of("b", "BBB");
+        Assertions.assertEquals("https://localhost/BBB", builder.resolveTemplates(map).build().toString());
+    }
+
+    @Test
+    void resolveUriTemplateWithNestedBracesInRegexThrows() {
+        final UriBuilder builder = UriBuilder.fromUri("https://localhost/{b:B{0,10}}");
+        final Map<String, Object> map = Map.of("b", "C");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> builder.resolveTemplates(map).build());
+    }
+
+    @Test
+    void resolveUriTemplateWithBlankRegexThrows() {
+        final UriBuilder builder = UriBuilder.fromUri("https://localhost/{id: }");
+        final Map<String, Object> map = Map.of("id", "");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> builder.resolveTemplates(map).build());
+    }
+
+    @Test
+    void resolveUriTemplateRegexMismatchThrows() {
+        final UriBuilder builder = UriBuilder.fromUri("https://localhost/{id:[0-9]+}");
+        final Map<String, Object> map = Map.of("id", "abc");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> builder.resolveTemplates(map).build());
+    }
+
+    @Test
+    void resolveUriTemplateNullValueWithRegexThrows() {
+        final UriBuilder builder = UriBuilder.fromUri("https://localhost/{id:[0-9]+}");
+        // Map.of() does not permit null values, so a HashMap is required here.
+        final Map<String, Object> map = new HashMap<>();
+        map.put("id", null);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> builder.resolveTemplates(map).build());
+    }
+
+    @Test
+    void resolveUriTemplateNonStringValueWithRegex() {
+        final UriBuilder builder = UriBuilder.fromUri("https://localhost/{port:[0-9]+}");
+        final Map<String, Object> map = Map.of("port", 8080);
+        Assertions.assertEquals("https://localhost/8080", builder.resolveTemplates(map).build().toString());
+    }
+
+    @Test
+    void resolveUriTemplateMultipleRegexParams() {
+        final UriBuilder builder = UriBuilder.fromUri("https://localhost/{a:[0-9]+}/{b:[a-z]+}");
+        final Map<String, Object> map = Map.of("a", "123", "b", "abc");
+        Assertions.assertEquals("https://localhost/123/abc", builder.resolveTemplates(map).build().toString());
+    }
+
+    @Test
+    void resolveUriTemplateMultipleRegexParamsSecondInvalidThrows() {
+        final UriBuilder builder = UriBuilder.fromUri("https://localhost/{a:[0-9]+}/{b:[a-z]+}");
+        final Map<String, Object> map = Map.of("a", "123", "b", "ABC");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> builder.resolveTemplates(map).build());
     }
 }

@@ -908,4 +908,10 @@ public interface Messages {
 
     @Message(id = 5122, value = "Image size %dx%d (%s) exceeds maximum threshold %s")
     BadRequestException imageThresholdExceeded(int width, int height, String calculated, Threshold threshold);
+
+    @Message(id = 5230, value = "Malformed URI template parameter: missing closing brace for {%s")
+    IllegalArgumentException malformedUriTemplate(String uriTemplate);
+
+    @Message(id = 5231, value = "Empty regex pattern for parameter {%s}")
+    IllegalArgumentException emptyUriTemplatePattern(String uriTemplate);
 }
