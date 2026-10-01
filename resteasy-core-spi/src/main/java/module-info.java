@@ -49,4 +49,5 @@ module org.jboss.resteasy.spi {
     uses org.jboss.resteasy.spi.Registry;
     uses org.jboss.resteasy.spi.concurrent.ThreadContext;
     uses org.jboss.resteasy.spi.config.ConfigurationFactory;
+    uses org.jboss.resteasy.spi.config.ConfigurationFactoryResolver;
 }
