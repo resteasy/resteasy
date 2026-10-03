@@ -19,8 +19,10 @@
 
 package org.jboss.resteasy.test.form.resource;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -28,9 +30,41 @@ import jakarta.ws.rs.ext.Provider;
 
 @Provider
 public class FormContainerRequestFilterFilter implements ContainerRequestFilter {
+    public static final String RESTORE_ORIGINAL_HEADER = "Restore-Original-Stream";
+
+    private static final AtomicBoolean CLOSED = new AtomicBoolean();
+
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        InputStream is = requestContext.getEntityStream();
-        requestContext.setEntityStream(is);
+        if (!requestContext.hasEntity()) {
+            return;
+        }
+
+        InputStream original = requestContext.getEntityStream();
+        requestContext.setEntityStream(new CloseTrackingInputStream(original));
+
+        if (Boolean.parseBoolean(requestContext.getHeaderString(RESTORE_ORIGINAL_HEADER))) {
+            requestContext.setEntityStream(original);
+        }
+    }
+
+    public static boolean isClosed() {
+        return CLOSED.get();
+    }
+
+    public static void reset() {
+        CLOSED.set(false);
+    }
+
+    private static final class CloseTrackingInputStream extends FilterInputStream {
+        private CloseTrackingInputStream(InputStream inputStream) {
+            super(inputStream);
+        }
+
+        @Override
+        public void close() throws IOException {
+            CLOSED.set(true);
+            super.close();
+        }
     }
 }
