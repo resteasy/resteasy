@@ -140,7 +140,7 @@
         <version.formatter.maven.plugin>2.29.0</version.formatter.maven.plugin>
         <version.impsort.maven.plugin>1.13.0</version.impsort.maven.plugin>
         <version.org.jacoco.plugin>0.8.15</version.org.jacoco.plugin>
-        <version.org.wildfly.galleon-plugins>8.1.7.Final</version.org.wildfly.galleon-plugins>
+        <version.org.wildfly.galleon-plugins>8.2.0.Final</version.org.wildfly.galleon-plugins>
         <version.org.wildfly.plugins.wildfly-maven-plugin>6.0.1.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
         <!-- Default wildfly-maven-plugin GAV for executions other than those running goal execute-commands -->
         <groupId.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar>org.wildfly.plugins</groupId.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar>
