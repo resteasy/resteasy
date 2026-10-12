@@ -50,6 +50,29 @@ import org.jboss.resteasy.util.MediaTypeHelper;
  * @version $Revision: 1 $
  */
 public class ServerResponseWriter {
+
+    private static final Map<String, MediaType> mediaTypeCache = Map.ofEntries(
+            Map.entry(MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_ATOM_XML_TYPE),
+            Map.entry(MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_FORM_URLENCODED_TYPE),
+            Map.entry(MediaType.APPLICATION_JSON_PATCH_JSON, MediaType.APPLICATION_JSON_PATCH_JSON_TYPE),
+            Map.entry(MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON_TYPE),
+            Map.entry(MediaType.APPLICATION_OCTET_STREAM, MediaType.APPLICATION_OCTET_STREAM_TYPE),
+            Map.entry(MediaType.APPLICATION_XHTML_XML, MediaType.APPLICATION_XHTML_XML_TYPE),
+            Map.entry(MediaType.APPLICATION_XML, MediaType.APPLICATION_XML_TYPE),
+            Map.entry(MediaType.MULTIPART_FORM_DATA, MediaType.MULTIPART_FORM_DATA_TYPE),
+            Map.entry(MediaType.SERVER_SENT_EVENTS, MediaType.SERVER_SENT_EVENTS_TYPE),
+            Map.entry(MediaType.TEXT_HTML, MediaType.TEXT_HTML_TYPE),
+            Map.entry(MediaType.TEXT_PLAIN, MediaType.TEXT_PLAIN_TYPE),
+            Map.entry(MediaType.TEXT_XML, MediaType.TEXT_XML_TYPE));
+
+    private static final Map<MediaType, MediaType> mediaTypeCharsetCache = Map.of(
+            MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE.withCharset(StandardCharsets.UTF_8.toString()),
+            MediaType.TEXT_HTML_TYPE, MediaType.TEXT_HTML_TYPE.withCharset(StandardCharsets.UTF_8.toString()),
+            MediaType.TEXT_PLAIN_TYPE, MediaType.TEXT_PLAIN_TYPE.withCharset(StandardCharsets.UTF_8.toString()),
+            MediaType.TEXT_XML_TYPE, MediaType.TEXT_XML_TYPE.withCharset(StandardCharsets.UTF_8.toString()),
+            MediaType.SERVER_SENT_EVENTS_TYPE,
+            MediaType.SERVER_SENT_EVENTS_TYPE.withCharset(StandardCharsets.UTF_8.toString()));
+
     @FunctionalInterface
     public interface RunnableWithIOException {
         void run(Consumer<Throwable> onComplete) throws IOException;
@@ -211,7 +234,12 @@ public class ServerResponseWriter {
             if (addCharset) {
                 if (!mt.getParameters().containsKey(MediaType.CHARSET_PARAMETER)) {
                     if (MediaTypeHelper.isTextLike(mt)) {
-                        mt = mt.withCharset(StandardCharsets.UTF_8.toString());
+                        MediaType cached = mediaTypeCharsetCache.get(mt);
+                        if (cached != null) {
+                            mt = cached;
+                        } else {
+                            mt = mt.withCharset(StandardCharsets.UTF_8.toString());
+                        }
                     }
                 }
             }
@@ -265,10 +293,15 @@ public class ServerResponseWriter {
         // chosen and method can be null.
 
         MediaType chosen = (MediaType) request.getAttribute(SegmentNode.RESTEASY_CHOSEN_ACCEPT);
-        boolean hasProduces = chosen != null
-                && Boolean.valueOf(chosen.getParameters().get(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES));
-        hasProduces |= method != null && method.getProduces() != null && method.getProduces().length > 0;
-        hasProduces |= method != null && method.getMethod().getDeclaringClass().getAnnotation(Produces.class) != null;
+        Map<String, String> params = null;
+        boolean resteasyServerHasProducesTrue = false;
+        if (chosen != null) {
+            params = chosen.getParameters();
+            resteasyServerHasProducesTrue = Boolean.valueOf(params.get(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES));
+        }
+        boolean hasProduces = resteasyServerHasProducesTrue
+                || (method != null && ((method.getProduces() != null && method.getProduces().length > 0)
+                        || method.getMethod().getDeclaringClass().getAnnotation(Produces.class) != null));
 
         if (hasProduces) {
             //we have @Produces on the resource (method or class), so we're not going to scan for @Produces on MBws
@@ -308,6 +341,7 @@ public class ServerResponseWriter {
                     }
                 }
                 chosen = chooseFromM(chosen, M, hasStarStar, hasApplicationStar);
+                params = null;
             }
         } else {
             //no @Produces on resource (class / method), use MBWs
@@ -376,24 +410,66 @@ public class ServerResponseWriter {
                 }
             }
             chosen = chooseFromM(chosen, M, hasStarStar, hasApplicationStar);
+            params = null;
         }
-        if (chosen.getParameters().containsKey(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES)) {
-            Map<String, String> map = new HashMap<String, String>(chosen.getParameters());
-            map.remove(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES);
-            map.remove(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES_LC);
-            chosen = new MediaType(chosen.getType(), chosen.getSubtype(), map);
+        if (params == null) {
+            params = chosen.getParameters();
+            resteasyServerHasProducesTrue = false;
         }
-        boolean hasQ = chosen.getParameters().containsKey("q");
-        boolean hasQs = chosen.getParameters().containsKey("qs");
-        if (hasQ || hasQs) {
-            Map<String, String> map = new HashMap<String, String>(chosen.getParameters());
-            if (hasQ) {
-                map.remove("q");
+        int paramsSize = params.size();
+        if (paramsSize > 0) {
+            boolean containsProduces = false;
+            boolean containsQ = false;
+            boolean containsQS = false;
+            int foundParams = 0;
+            if (containsProduces = (resteasyServerHasProducesTrue
+                    || params.containsKey(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES))) {
+                foundParams++;
             }
-            if (hasQs) {
-                map.remove("qs");
+            if (foundParams != paramsSize) {
+                if (containsQ = params.containsKey("q")) {
+                    foundParams++;
+                }
+                if (foundParams != paramsSize) {
+                    if (containsQS = params.containsKey("qs")) {
+                        foundParams++;
+                    }
+                }
             }
-            chosen = new MediaType(chosen.getType(), chosen.getSubtype(), map);
+            if (foundParams > 0) {
+                if (foundParams == paramsSize) {
+                    String key = chosen.getType() + "/" + chosen.getSubtype();
+                    MediaType cached = mediaTypeCache.get(key);
+                    if (cached != null) {
+                        chosen = cached;
+                    } else {
+                        chosen = new MediaType(chosen.getType(), chosen.getSubtype());
+                    }
+                } else {
+                    Map<String, String> map = new HashMap<String, String>(chosen.getParameters());
+                    if (containsProduces) {
+                        map.remove(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES);
+                        map.remove(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES_LC);
+                    }
+                    if (containsQ) {
+                        map.remove("q");
+                    }
+                    if (containsQS) {
+                        map.remove("qs");
+                    }
+                    if (map.isEmpty()) {
+                        String key = chosen.getType() + "/" + chosen.getSubtype();
+                        MediaType cached = mediaTypeCache.get(key);
+                        if (cached != null) {
+                            chosen = cached;
+                        } else {
+                            chosen = new MediaType(chosen.getType(), chosen.getSubtype());
+                        }
+                    } else {
+                        chosen = new MediaType(chosen.getType(), chosen.getSubtype(), map);
+                    }
+                }
+            }
         }
         return chosen;
     }
