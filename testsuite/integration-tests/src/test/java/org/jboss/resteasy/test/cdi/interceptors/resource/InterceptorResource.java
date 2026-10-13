@@ -89,6 +89,8 @@ public class InterceptorResource {
         stereotyped.test();
         ArrayList<Class<?>> expectedList = new ArrayList<Class<?>>();
         expectedList.add(InterceptorRequestFilterInterceptor.class); // InterceptorRequestFilter.filter()                 0
+        // The resource is created after the request filters are invoked, before the entity is read
+        expectedList.add(InterceptorPostConstructInterceptor.class); // InterceptorResource.postConstruct()
         expectedList.add(InterceptorBookReaderInterceptorInterceptor.class); // InterceptorBookReaderInterceptor.aroundReadFrom()
         expectedList.add(InterceptorBookReaderInterceptor.class); // InterceptorBookReader.[isReadable() and readFrom()]
         expectedList.add(InterceptorOne.class); // InterceptorBookReader.isReadable()
@@ -97,7 +99,6 @@ public class InterceptorResource {
         expectedList.add(InterceptorTwo.class); // InterceptorBookReader.readFrom()
         expectedList.add(InterceptorThree.class); // InterceptorBookReader.readFrom()
         expectedList.add(InterceptorFour.class); // InterceptorBookReader.readFrom()
-        expectedList.add(InterceptorPostConstructInterceptor.class); // InterceptorResource.postConstruct()
         expectedList.add(InterceptorOne.class); // InterceptorResource.createBook()           10
         expectedList.add(InterceptorTwo.class); // InterceptorResource.createBook()
         expectedList.add(InterceptorThree.class); // InterceptorResource.createBook()

@@ -1,8 +1,6 @@
 package org.jboss.resteasy.core;
 
-import java.io.OutputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -36,27 +34,12 @@ import org.jboss.resteasy.spi.util.Types;
  */
 @SuppressWarnings("unchecked")
 public class ContextParameterInjector implements ValueInjector {
-    private static final Constructor<?> constructor;
 
     private Class<?> rawType;
     private Class<?> proxy;
     private ResteasyProviderFactory factory;
     private Type genericType;
     private Annotation[] annotations;
-    private volatile boolean outputStreamWasWritten = false;
-
-    static {
-        Constructor<?> c;
-        try {
-            Class.forName("jakarta.servlet.http.HttpServletResponse", false,
-                    Thread.currentThread().getContextClassLoader());
-            Class<?> clazz = Class.forName("org.jboss.resteasy.core.ContextServletOutputStream");
-            c = clazz.getDeclaredConstructor(ContextParameterInjector.class, OutputStream.class);
-        } catch (Exception ignore) {
-            c = null;
-        }
-        constructor = c;
-    }
 
     public ContextParameterInjector(final Class<?> proxy, final Class<?> rawType, final Type genericType,
             final Annotation[] annotations, final ResteasyProviderFactory factory) {
@@ -130,13 +113,6 @@ public class ContextParameterInjector implements ValueInjector {
                         return method.invoke(factory, objects);
                     }
                     throw new LoggableFailure(Messages.MESSAGES.unableToFindContextualData(rawType.getName()));
-                }
-                // Fix for RESTEASY-1721
-                if ("jakarta.servlet.http.HttpServletResponse".equals(rawType.getName())) {
-                    if ("getOutputStream".equals(method.getName())) {
-                        OutputStream sos = (OutputStream) method.invoke(delegate, objects);
-                        return wrapServletOutputStream(sos);
-                    }
                 }
                 return method.invoke(delegate, objects);
             } catch (IllegalAccessException e) {
@@ -213,24 +189,5 @@ public class ContextParameterInjector implements ValueInjector {
             return set.toArray(new Class<?>[] {});
         }
         return new Class<?>[] { cls };
-    }
-
-    OutputStream wrapServletOutputStream(OutputStream os) {
-        if (constructor != null) {
-            try {
-                return (OutputStream) constructor.newInstance(this, os);
-            } catch (Exception e) {
-                return os;
-            }
-        }
-        return os;
-    }
-
-    boolean isOutputStreamWasWritten() {
-        return outputStreamWasWritten;
-    }
-
-    void setOutputStreamWasWritten(boolean outputStreamWasWritten) {
-        this.outputStreamWasWritten = outputStreamWasWritten;
     }
 }

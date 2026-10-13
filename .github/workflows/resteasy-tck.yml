@@ -76,7 +76,6 @@ jobs:
           cache: 'maven'
           # Please note the order here of having 25 last as that is the version we want to compile with
           java-version: |
-            17
             21
             25
       - name: Build RESTEasy
@@ -97,11 +96,6 @@ jobs:
           echo "RESTEASY_VERSION=${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
           cd resteasy-tck-runner/resteasy-tck-adapter
           mvn ${{ env.MVN_ARGS }} verify -Dtck.log.debug=true -Dresteasy.channel.manifest.artifactId=resteasy-8.0 -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}" -Djvm="${{env.JAVA_HOME_21_X64}}/bin/java"
-      - name: Run the Jakarta REST TCK - Java 17
-        run:  |
-          echo "RESTEASY_VERSION=${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}"
-          cd resteasy-tck-runner/resteasy-tck-adapter
-          mvn ${{ env.MVN_ARGS }} verify -Dtck.log.debug=true -Dresteasy.channel.manifest.artifactId=resteasy-8.0 -Dversion.org.jboss.resteasy="${{ steps.resteasy-build.outputs.RESTEASY_VERSION }}" -Djvm="${{env.JAVA_HOME_17_X64}}/bin/java"
       - name: Upload test logs for failed run
         uses: actions/upload-artifact@v7
         if: failure()

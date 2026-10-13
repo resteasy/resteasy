@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Predicate;
 
 import org.jboss.resteasy.annotations.Body;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
@@ -45,13 +47,19 @@ public class PropertyInjectorImpl implements PropertyInjector {
         public ValueInjector extractor;
     }
 
+    private final Predicate<Member> skipFilter;
     protected List<SetterMethod> setters = new ArrayList<SetterMethod>();
     protected HashMap<Long, Method> setterhashes = new HashMap<Long, Method>();
     protected Class<?> clazz;
 
     public PropertyInjectorImpl(final Class<?> clazz, final ResteasyProviderFactory factory) {
-        this.clazz = clazz;
+        this(clazz, factory, (ignore) -> false);
+    }
 
+    public PropertyInjectorImpl(final Class<?> clazz, final ResteasyProviderFactory factory,
+            final Predicate<Member> skipFilter) {
+        this.clazz = clazz;
+        this.skipFilter = skipFilter;
         populateMap(clazz, factory);
     }
 
@@ -60,11 +68,10 @@ public class PropertyInjectorImpl implements PropertyInjector {
             Annotation[] annotations = field.getAnnotations();
             if (annotations == null || annotations.length == 0)
                 continue;
-            // Skip any setters with @Inject as those will be handled by CDI
-            // For now, check the string. However, we could just add a dependency to Jakarta Inject
-            if (FindAnnotation.findAnnotation(annotations, "jakarta.inject.Inject") != null) {
+            // Filter any fields that should be skipped
+            if (skipFilter.test(field)) {
                 if (LogMessages.LOGGER.isDebugEnabled()) {
-                    LogMessages.LOGGER.debugf("Ignoring field %s for RESTEasy property injection in favor of CDI injection.",
+                    LogMessages.LOGGER.debugf("Ignoring field %s for RESTEasy property injection.",
                             field);
                 }
                 continue;
@@ -86,11 +93,10 @@ public class PropertyInjectorImpl implements PropertyInjector {
                 continue;
             if (method.getParameterCount() != 1)
                 continue;
-            // Skip any setters with @Inject as those will be handled by CDI
-            // For now, check the string. However, we could just add a dependency to Jakarta Inject
-            if (FindAnnotation.findAnnotation(method.getAnnotations(), "jakarta.inject.Inject") != null) {
+            // Filter any methods that should be skipped
+            if (skipFilter.test(method)) {
                 if (LogMessages.LOGGER.isDebugEnabled()) {
-                    LogMessages.LOGGER.debugf("Ignoring method %s for RESTEasy property injection in favor of CDI injection.",
+                    LogMessages.LOGGER.debugf("Ignoring method %s for RESTEasy property injection.",
                             method);
                 }
                 continue;

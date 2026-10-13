@@ -39,6 +39,7 @@ module org.jboss.resteasy.core {
     exports org.jboss.resteasy.core.providerfactory;
     exports org.jboss.resteasy.core.registry;
     exports org.jboss.resteasy.core.se;
+    exports org.jboss.resteasy.core.servlet;
     exports org.jboss.resteasy.plugins.delegates;
     exports org.jboss.resteasy.plugins.interceptors;
     exports org.jboss.resteasy.plugins.providers;
@@ -61,6 +62,7 @@ module org.jboss.resteasy.core {
     uses jakarta.ws.rs.core.Feature;
     uses org.jboss.resteasy.plugins.server.embedded.EmbeddedServer;
     uses org.jboss.resteasy.spi.Registry;
+    uses org.jboss.resteasy.spi.RequestListener;
 
     // Provides
     provides jakarta.ws.rs.ext.Providers with

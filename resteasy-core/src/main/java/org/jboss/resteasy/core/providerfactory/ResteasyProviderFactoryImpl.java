@@ -102,7 +102,6 @@ import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClassProcessor;
 import org.jboss.resteasy.spi.statistics.StatisticsController;
-import org.jboss.resteasy.spi.util.PickConstructor;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.statistics.StatisticsControllerImpl;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
@@ -413,8 +412,8 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
         if (contextInjector != null) {
             ret = (T) contextInjector.resolve(rawType, genericType, annotations);
             if (async && ret != null) {
-                Type wrappedType = Types.getActualTypeArgumentsOfAnInterface(contextInjector.getClass(),
-                        ContextInjector.class)[0];
+                Type wrappedType = Types.getActualTypeArgumentsOfAnInterface(
+                        getInjectorFactory().resolveType(contextInjector.getClass()), ContextInjector.class)[0];
                 Class<?> rawWrappedType = Types.getRawType(wrappedType);
                 AsyncResponseProvider converter = getAsyncResponseProvider(rawWrappedType);
                 // OK this is plain lying
@@ -618,7 +617,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
 
     private void addContextInjector(ContextInjector provider, Class providerClass) {
         Type[] typeArgs = Types.getActualTypeArgumentsOfAnInterface(providerClass, ContextInjector.class);
-        Utils.injectProperties(this, provider.getClass(), provider);
+        Utils.injectProperties(this, providerClass, provider);
 
         contextInjectors.put(typeArgs[0], provider);
 
@@ -634,24 +633,10 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
         }
         copyResolversIfNeeded();
         Type[] typeParameters = Types.getActualTypeArgumentsOfAnInterface(providerClass, ContextResolver.class);
-        Type typeParameter;
         if (typeParameters.length == 0) {
-            // This may be an indication that this is a CDI client proxy. In some cases, the ContextResolver interface
-            // may appear as implemented by the proxy, in other words providerClass.getGenericTypes() may return the
-            // ContextResolver interface. However, this is not a ParameterizedType, therefore the generic type cannot
-            // be resolved on the client proxy. For this reason, we will check the super class as it should be the
-            // non-proxied type we'd expect and we can get the generic type for the ContextResolver from there.
-            final Class<?> superType = providerClass.getSuperclass();
-            if (superType != null) {
-                typeParameters = Types.getActualTypeArgumentsOfAnInterface(superType, ContextResolver.class);
-            } else {
-                throw Messages.MESSAGES.couldNotDetermineGenericType(providerClass.getName(), ContextResolver.class.getName());
-            }
-            if (typeParameters.length == 0) {
-                throw Messages.MESSAGES.couldNotDetermineGenericType(providerClass.getName(), ContextResolver.class.getName());
-            }
+            throw Messages.MESSAGES.couldNotDetermineGenericType(providerClass.getName(), ContextResolver.class.getName());
         }
-        typeParameter = typeParameters[0];
+        Type typeParameter = typeParameters[0];
         Utils.injectProperties(this, providerClass, provider);
         Class<?> parameterClass = Types.getRawType(typeParameter);
         MediaTypeMap<SortedKey<ContextResolver>> resolvers = contextResolvers.get(parameterClass);
@@ -659,7 +644,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
             resolvers = new MediaTypeMap<SortedKey<ContextResolver>>();
             contextResolvers.put(parameterClass, resolvers);
         }
-        Produces produces = provider.getClass().getAnnotation(Produces.class);
+        Produces produces = (Produces) providerClass.getAnnotation(Produces.class);
         SortedKey<ContextResolver> key = new SortedKey<ContextResolver>(ContextResolver.class, provider, providerClass,
                 priority, builtin);
         if (produces != null) {
@@ -939,35 +924,39 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
 
     public void registerProviderInstance(Object provider, Map<Class<?>, Integer> contracts, Integer priorityOverride,
             boolean builtIn) {
-        Class<?> providerClass = provider.getClass();
+        // The provider may be a container proxy, so the class it delegates to is the registered class
+        Class<?> providerClass = getInjectorFactory().resolveType(provider.getClass());
         Map<Class<?>, Map<Class<?>, Integer>> classContracts = getClassContracts();
         if (classContracts.containsKey(providerClass)) {
             LogMessages.LOGGER.providerInstanceAlreadyRegistered(providerClass.getName());
             return;
         }
         Map<Class<?>, Integer> newContracts = new HashMap<>();
-        processProviderInstanceContracts(provider, contracts, priorityOverride, builtIn, newContracts);
+        processProviderInstanceContracts(provider, providerClass, contracts, priorityOverride, builtIn, newContracts);
         providerInstances.add(provider);
         classContracts.put(providerClass, newContracts);
     }
 
-    private void processProviderInstanceContracts(Object provider, Map<Class<?>, Integer> contracts,
-            Integer priorityOverride, boolean builtIn, Map<Class<?>, Integer> newContracts) {
-        clientHelper.processProviderInstanceContracts(provider, contracts, priorityOverride, builtIn, newContracts);
-        serverHelper.processProviderInstanceContracts(provider, contracts, priorityOverride, builtIn, newContracts);
+    private void processProviderInstanceContracts(Object provider, Class<?> providerClass,
+            Map<Class<?>, Integer> contracts, Integer priorityOverride, boolean builtIn,
+            Map<Class<?>, Integer> newContracts) {
+        clientHelper.processProviderInstanceContracts(provider, providerClass, contracts, priorityOverride, builtIn,
+                newContracts);
+        serverHelper.processProviderInstanceContracts(provider, providerClass, contracts, priorityOverride, builtIn,
+                newContracts);
 
         if (Utils.isA(provider, ParamConverterProvider.class, contracts)) {
             injectProperties(provider);
-            int priority = Utils.getPriority(priorityOverride, contracts, ParamConverterProvider.class, provider.getClass());
+            int priority = Utils.getPriority(priorityOverride, contracts, ParamConverterProvider.class, providerClass);
             copyParamConvertsIfNeeded();
             sortedParamConverterProviders.add(
-                    new ExtSortedKey<>(null, (ParamConverterProvider) provider, provider.getClass(), priority, builtIn));
+                    new ExtSortedKey<>(null, (ParamConverterProvider) provider, providerClass, priority, builtIn));
             newContracts.put(ParamConverterProvider.class, priority);
         }
         if (Utils.isA(provider, ContextResolver.class, contracts)) {
             try {
-                int priority = Utils.getPriority(priorityOverride, contracts, ContextResolver.class, provider.getClass());
-                addContextResolver((ContextResolver) provider, priority, provider.getClass(), false);
+                int priority = Utils.getPriority(priorityOverride, contracts, ContextResolver.class, providerClass);
+                addContextResolver((ContextResolver) provider, priority, providerClass, false);
                 newContracts.put(ContextResolver.class, priority);
             } catch (Exception e) {
                 throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextResolver(), e);
@@ -975,8 +964,8 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
         }
         if (Utils.isA(provider, ContextInjector.class, contracts)) {
             try {
-                addContextInjector((ContextInjector) provider, provider.getClass());
-                int priority = Utils.getPriority(priorityOverride, contracts, ContextInjector.class, provider.getClass());
+                addContextInjector((ContextInjector) provider, providerClass);
+                int priority = Utils.getPriority(priorityOverride, contracts, ContextInjector.class, providerClass);
                 newContracts.put(ContextInjector.class, priority);
             } catch (Exception e) {
                 throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextInjector(), e);
@@ -988,26 +977,26 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
         }
         if (Utils.isA(provider, Feature.class, contracts)) {
             Feature feature = (Feature) provider;
-            Utils.injectProperties(this, provider.getClass(), provider);
-            ConstrainedTo constrainedTo = (ConstrainedTo) provider.getClass().getAnnotation(ConstrainedTo.class);
+            Utils.injectProperties(this, providerClass, provider);
+            ConstrainedTo constrainedTo = providerClass.getAnnotation(ConstrainedTo.class);
             if (constrainedTo == null || constrainedTo.value() == getRuntimeType()) {
                 if (feature.configure(new FeatureContextDelegate(this))) {
                     enabledFeatures.add(feature);
                 }
             }
-            int priority = Utils.getPriority(priorityOverride, contracts, Feature.class, provider.getClass());
+            int priority = Utils.getPriority(priorityOverride, contracts, Feature.class, providerClass);
             newContracts.put(Feature.class, priority);
 
         }
         if (Utils.isA(provider, ResourceClassProcessor.class, contracts)) {
-            int priority = Utils.getPriority(priorityOverride, contracts, ResourceClassProcessor.class, provider.getClass());
+            int priority = Utils.getPriority(priorityOverride, contracts, ResourceClassProcessor.class, providerClass);
             addResourceClassProcessor((ResourceClassProcessor) provider, priority);
             newContracts.put(ResourceClassProcessor.class, priority);
         }
         if (Utils.isA(provider, HeaderDelegate.class, contracts)) {
-            Type[] headerTypes = Types.getActualTypeArgumentsOfAnInterface(provider.getClass(), HeaderDelegate.class);
+            Type[] headerTypes = Types.getActualTypeArgumentsOfAnInterface(providerClass, HeaderDelegate.class);
             if (headerTypes.length == 0) {
-                LogMessages.LOGGER.cannotRegisterheaderDelegate(provider.getClass());
+                LogMessages.LOGGER.cannotRegisterheaderDelegate(providerClass);
             } else {
                 Class<?> headerClass = Types.getRawType(headerTypes[0]);
                 addHeaderDelegate(headerClass, (HeaderDelegate) provider);
@@ -1093,11 +1082,11 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
         List<SortedKey<MessageBodyWriter>> writers = getServerMessageBodyWriters().getPossible(mediaType, type);
         for (SortedKey<MessageBodyWriter> writer : writers) {
             if (writer.getObj().isWriteable(type, genericType, annotations, mediaType)) {
-                MessageBodyWriter mbw = writer.getObj();
-                Class writerType = Types.getTemplateParameterOfInterface(mbw.getClass(), MessageBodyWriter.class);
+                final Class<?> mbwc = getInjectorFactory().resolveType(writer.getObj().getClass());
+                Class writerType = Types.getTemplateParameterOfInterface(mbwc, MessageBodyWriter.class);
                 if (writerType == null || writerType.equals(Object.class) || !writerType.isAssignableFrom(type))
                     continue;
-                Produces produces = mbw.getClass().getAnnotation(Produces.class);
+                Produces produces = mbwc.getAnnotation(Produces.class);
                 if (produces == null)
                     continue;
                 for (String produce : produces.value()) {
@@ -1120,11 +1109,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
         List<SortedKey<MessageBodyWriter>> writers = serverMessageBodyWriters.getPossible(accept, type);
         for (SortedKey<MessageBodyWriter> writer : writers) {
             if (writer.getObj().isWriteable(type, genericType, annotations, accept)) {
-                Class<?> mbwc = writer.getObj().getClass();
-                if (!mbwc.isInterface() && mbwc.getSuperclass() != null && !mbwc.getSuperclass().equals(Object.class)
-                        && mbwc.isSynthetic()) {
-                    mbwc = mbwc.getSuperclass();
-                }
+                final Class<?> mbwc = getInjectorFactory().resolveType(writer.getObj().getClass());
                 Class writerType = Types.getTemplateParameterOfInterface(mbwc, MessageBodyWriter.class);
                 if (writerType == null || !writerType.isAssignableFrom(type))
                     continue;
@@ -1307,8 +1292,10 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
      * @return instance of type T
      */
     public <T> T injectedInstance(Class<? extends T> clazz) {
-        Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
-        ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
+        final ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(clazz, this);
+        if (constructorInjector == null) {
+            throw new IllegalArgumentException(Messages.MESSAGES.unableToFindPublicConstructorForClass(clazz.getName()));
+        }
         Object obj = constructorInjector.construct(false);
         PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
         if (obj instanceof CompletionStage) {
@@ -1339,16 +1326,13 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
      * @return instance of type T
      */
     public <T> T injectedInstance(Class<? extends T> clazz, HttpRequest request, HttpResponse response) {
-        Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
-        Object obj = null;
-        if (constructor == null) {
+        final ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(clazz, this);
+        if (constructorInjector == null) {
             throw new IllegalArgumentException(Messages.MESSAGES.unableToFindPublicConstructorForClass(clazz.getName()));
-        } else {
-            ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
-            obj = constructorInjector.construct(request, response, false);
-            if (obj instanceof CompletionStage) {
-                obj = ((CompletionStage<Object>) obj).toCompletableFuture().getNow(null);
-            }
+        }
+        Object obj = constructorInjector.construct(request, response, false);
+        if (obj instanceof CompletionStage) {
+            obj = ((CompletionStage<Object>) obj).toCompletableFuture().getNow(null);
         }
         PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
 
@@ -1503,7 +1487,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
             return false;
         for (Feature feature : enabled) {
             //logger.info("  looking at: " + feature.getClass());
-            if (featureClass.equals(feature.getClass())) {
+            if (featureClass.equals(getInjectorFactory().resolveType(feature.getClass()))) {
                 //logger.info("   found: " + featureClass.getName());
                 return true;
             }

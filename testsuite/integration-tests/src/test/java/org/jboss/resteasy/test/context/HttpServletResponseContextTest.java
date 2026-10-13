@@ -198,7 +198,7 @@ public class HttpServletResponseContextTest {
         Response response = request.get();
         Assertions.assertEquals(200, response.getStatus());
         String s = response.readEntity(String.class);
-        Assertions.assertEquals("c", s);
+        Assertions.assertEquals("c\r\n", s);
     }
 
     /**
@@ -301,5 +301,44 @@ public class HttpServletResponseContextTest {
         Response response = request.get();
         Assertions.assertEquals(200, response.getStatus());
         Assertions.assertEquals("A", response.readEntity(String.class));
+    }
+
+    /**
+     * Tests that the injected response writes to the output stream of the current request, when the same resource
+     * method is invoked more than once.
+     *
+     * @since 8.0.0
+     */
+    @Test
+    public void sameMethodInvokedTwice() {
+        try (Client client = ClientBuilder.newClient()) {
+            for (int i = 0; i < 2; i++) {
+                try (Response response = client.target(generateURL("/write/array/1")).request().get()) {
+                    Assertions.assertEquals(200, response.getStatus());
+                    Assertions.assertEquals("context", response.readEntity(String.class));
+                }
+            }
+        }
+    }
+
+    /**
+     * Tests that whether the output stream was written to is tracked for each request: a request which does not write
+     * gets a 204 even after a previous request to the same method wrote content.
+     *
+     * @since 8.0.0
+     */
+    @Test
+    public void writtenTrackedPerRequest() {
+        try (Client client = ClientBuilder.newClient()) {
+            try (Response response = client.target(generateURL("/write/optional")).queryParam("write", true).request()
+                    .get()) {
+                Assertions.assertEquals(200, response.getStatus());
+                Assertions.assertEquals("context", response.readEntity(String.class));
+            }
+            try (Response response = client.target(generateURL("/write/optional")).queryParam("write", false).request()
+                    .get()) {
+                Assertions.assertEquals(204, response.getStatus());
+            }
+        }
     }
 }

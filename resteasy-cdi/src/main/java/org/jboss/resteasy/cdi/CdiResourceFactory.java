@@ -5,10 +5,8 @@
 
 package org.jboss.resteasy.cdi;
 
-import java.util.Set;
 import java.util.concurrent.CompletionStage;
 
-import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
 
@@ -57,9 +55,10 @@ class CdiResourceFactory implements ResourceFactory {
 
     @Override
     public void registered(final ResteasyProviderFactory factory) {
-        // Resolve the CDI bean once at registration time
-        final Set<Bean<?>> beans = beanManager.getBeans(resourceClass);
-        this.bean = beanManager.resolve(beans);
+        // Resolve the CDI bean once at registration time. If another registered @Path resource class extends this one,
+        // both beans are assignable to resourceClass, so only the exact bean class, or an enabled alternative, is
+        // resolved. An enabled alternative must still replace the resource, as it does for @Inject.
+        this.bean = BeanManagerSupport.findBean(beanManager, resourceClass);
 
         if (bean == null) {
             throw Messages.MESSAGES.unableToResolveBean(resourceClass.getName());
@@ -76,8 +75,9 @@ class CdiResourceFactory implements ResourceFactory {
     public Object createResource(final HttpRequest request,
             final HttpResponse response,
             final ResteasyProviderFactory factory) {
-        final CreationalContext<?> creationalContext = beanManager.createCreationalContext(bean);
-        final Object resource = beanManager.getReference(bean, resourceClass, creationalContext);
+        // For a normal scoped resource the reference is a client proxy. The contextual instance is created after the
+        // request filters were invoked, see ResourceMethodInvoker.invokeOnTargetAfterFilter().
+        final Object resource = BeanManagerSupport.resolveBean(request, beanManager, resourceClass, bean);
         // Synchronous property injection
         final CompletionStage<Void> propertyStage = propertyInjector.inject(request, response, resource, true);
         return propertyStage == null

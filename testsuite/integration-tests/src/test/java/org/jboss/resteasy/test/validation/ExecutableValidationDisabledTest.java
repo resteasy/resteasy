@@ -166,7 +166,7 @@ public class ExecutableValidationDisabledTest {
         Assertions.assertEquals("Concatenation of s and t must have length > 5", violation.getMessage(),
                 WRONG_ERROR_MSG);
         Assertions.assertTrue(violation.getValue()
-                .startsWith("org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithAllViolationTypes@"),
+                .startsWith(ValidationCoreResourceWithAllViolationTypes.class.getName()),
                 WRONG_ERROR_MSG);
         response.close();
     }

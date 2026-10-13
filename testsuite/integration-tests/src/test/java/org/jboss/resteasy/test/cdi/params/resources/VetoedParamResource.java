@@ -7,6 +7,7 @@ package org.jboss.resteasy.test.cdi.params.resources;
 
 import java.io.InputStream;
 
+import jakarta.enterprise.inject.Vetoed;
 import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.HeaderParam;
@@ -16,13 +17,14 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 
 /**
- * A Jakarta REST resource used to verify behavior when enhanced CDI support is disabled. This resource uses standard
- * Jakarta REST parameter annotations on resource method parameters (not CDI-injected fields).
+ * A Jakarta REST resource which is not managed by CDI, as it's {@link Vetoed @Vetoed}. The implementation creates it
+ * directly and injects the standard Jakarta REST parameter annotations as it would without CDI.
  *
  * @author <a href="mailto:jperkins@ibm.com">James R. Perkins</a>
  */
-@Path("/disabled/{pathParam}")
-public class DisabledEnhancedCdiResource implements ParamResource {
+@Path("/vetoed/{pathParam}")
+@Vetoed
+public class VetoedParamResource implements ParamResource {
     private final String cookieParam;
     private final String formParam;
     private final String headerParam;
@@ -57,7 +59,7 @@ public class DisabledEnhancedCdiResource implements ParamResource {
     private String methodPathParamPa;
     private int methodQueryParamPa;
 
-    public DisabledEnhancedCdiResource(@CookieParam("cookieParam") final String cookieParam,
+    public VetoedParamResource(@CookieParam("cookieParam") final String cookieParam,
             @FormParam("formParam") final String formParam,
             @HeaderParam("headerParam") final String headerParam,
             @MatrixParam("matrixParam") final long matrixParam,

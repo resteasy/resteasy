@@ -29,9 +29,9 @@ public class ResourceLocatorWithBaseExpressionSubresource2 {
         Assertions.assertEquals(ResourceLocatorWithBaseExpressionSubresource2.class,
                 uri.getMatchedResources().get(0).getClass(),
                 ResourceLocatorWithBaseExpressionResource.ERROR_MSG);
-        Assertions.assertEquals(ResourceLocatorWithBaseExpressionSubresource.class, uri.getMatchedResources().get(1).getClass(),
+        Assertions.assertInstanceOf(ResourceLocatorWithBaseExpressionSubresource.class, uri.getMatchedResources().get(1),
                 ResourceLocatorWithBaseExpressionResource.ERROR_MSG);
-        Assertions.assertEquals(ResourceLocatorWithBaseExpressionResource.class, uri.getMatchedResources().get(2).getClass(),
+        Assertions.assertInstanceOf(ResourceLocatorWithBaseExpressionResource.class, uri.getMatchedResources().get(2),
                 ResourceLocatorWithBaseExpressionResource.ERROR_MSG);
         Assertions.assertEquals("2", param);
         return this.getClass().getName() + "-" + param;

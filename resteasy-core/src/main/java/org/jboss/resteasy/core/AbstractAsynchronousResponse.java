@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import jakarta.ws.rs.container.CompletionCallback;
@@ -38,9 +40,9 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
     protected AsyncWriterInterceptor[] asyncWriterInterceptors;
     protected Annotation[] annotations;
     protected TimeoutHandler timeoutHandler;
-    protected List<CompletionCallback> completionCallbacks = new ArrayList<CompletionCallback>();
+    protected List<CompletionCallback> completionCallbacks = new CopyOnWriteArrayList<>();
     protected Map<Class<?>, Object> contextDataMap;
-    private boolean callbacksCalled;
+    private final AtomicBoolean callbacksCalled = new AtomicBoolean(false);
 
     protected AbstractAsynchronousResponse(final SynchronousDispatcher dispatcher, final HttpRequest request,
             final HttpResponse response) {
@@ -143,11 +145,15 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
     @Override
     public void completionCallbacks(Throwable throwable) {
         // make sure we only call them once
-        if (callbacksCalled)
+        if (!callbacksCalled.compareAndSet(false, true)) {
             return;
-        callbacksCalled = true;
-        for (CompletionCallback callback : completionCallbacks) {
-            callback.onComplete(throwable);
+        }
+        try {
+            for (CompletionCallback callback : completionCallbacks) {
+                callback.onComplete(throwable);
+            }
+        } finally {
+            RequestCompletion.responseCompleted(request, response);
         }
     }
 

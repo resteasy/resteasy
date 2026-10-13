@@ -9,6 +9,7 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.core.Configuration;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.ext.Providers;
@@ -168,7 +169,9 @@ public abstract class ClientResponse extends BuiltResponse {
         }
 
         Providers current = ResteasyContext.getContextData(Providers.class);
+        Configuration currentConfiguration = ResteasyContext.getContextData(Configuration.class);
         ResteasyContext.pushContext(Providers.class, configuration);
+        ResteasyContext.pushContext(Configuration.class, configuration);
         Object obj = null;
         try {
             InputStream is = getEntityStream();
@@ -222,6 +225,9 @@ public abstract class ClientResponse extends BuiltResponse {
                 ResteasyContext.popContextData(Providers.class);
                 if (current != null)
                     ResteasyContext.pushContext(Providers.class, current);
+                ResteasyContext.popContextData(Configuration.class);
+                if (currentConfiguration != null)
+                    ResteasyContext.pushContext(Configuration.class, currentConfiguration);
                 if (obj instanceof ProvidersContextRetainer)
                     ((ProvidersContextRetainer) obj).setProviders(configuration);
             }

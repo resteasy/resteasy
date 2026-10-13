@@ -234,24 +234,6 @@ Parameter values are converted from their string representation to the target Ja
 as standard {spec-name} parameter handling (see the {spec-name} specification for details on `ParamConverterProvider`,
 `valueOf`, and `fromString` resolution).
 
-==== Disabling Enhanced CDI Support
-
-The enhanced CDI support, which includes `@Context` injection and parameter qualifier injection, can be disabled by
-setting the `dev.resteasy.cdi.enhanced.enabled` configuration property to `false`. This is useful when upgrading from
-an older version of RESTEasy and you want to opt out of the new behavior.
-
-The property can be set via a system property:
-
-[source]
-----
--Ddev.resteasy.cdi.enhanced.enabled=false
-----
-
-Or via MicroProfile Config if available.
-
-When disabled, `@Context` and `@*Param` annotations are not treated as CDI qualifiers, and resource classes must use
-traditional {spec-name} injection or provide a public no-arg constructor.
-
 === Configuration within WildFly
 
 CDI integration is provided with no additional configuration with WildFly. 

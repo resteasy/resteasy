@@ -54,6 +54,10 @@ public class SimpleResource {
 `AsyncResponse` also has other methods to cancel the execution.
 See {jakarta-rest-javadoc}/jakarta/ws/rs/container/asyncresponse[javadoc] for more details.
 
+NOTE: A `CompletionCallback` registered with `AsyncResponse.register()` is invoked once the processing of the request
+has ended. This includes the case where the client closes the connection before the response is resumed, in which case
+the callback receives the error. Closed connections are currently only detected when running in a Servlet container.
+
 IMPORTANT: In RESTEasy version 4.0.0.Final proprietary annotation `org.jboss.resteasy.annotations.Suspend` was removed and
 replaced by `jakarta.ws.rs.container.Suspended` and class `org.jboss.resteasy.spi.AsynchronousResponse` was removed and
 replaced by `jakarta.ws.rs.container.AsyncResponse`.

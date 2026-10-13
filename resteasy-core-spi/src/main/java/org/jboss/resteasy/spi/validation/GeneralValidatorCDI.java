@@ -16,11 +16,11 @@ import org.jboss.resteasy.spi.InjectorFactory;
 public interface GeneralValidatorCDI extends GeneralValidator {
     /**
      * Indicates if validation is turned on for a class.
-     *
-     * This method should be called from the resteasy-jaxrs module. It should
-     * test if injectorFactor is an instance of CdiInjectorFactory, which indicates
-     * that CDI is active. If so, it should return false. Otherwise, it should
-     * return the same value returned by GeneralValidator.isValidatable().
+     * <p>
+     * This method is called from the resteasy-core module. The injector factory used for the class is passed so an
+     * implementation can take it into account. RESTEasy's implementation does not use it and returns the same value
+     * as {@link GeneralValidator#isValidatable(Class)}.
+     * </p>
      *
      * @param clazz           Class to be examined
      * @param injectorFactory the InjectorFactory used for clazz

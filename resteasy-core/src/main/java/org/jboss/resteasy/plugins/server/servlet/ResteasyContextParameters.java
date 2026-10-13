@@ -109,7 +109,14 @@ public interface ResteasyContextParameters {
     String RESTEASY_MATCH_CACHE_ENABLED = "resteasy.match.cache.enabled";
     String RESTEASY_MATCH_CACHE_SIZE = "resteasy.match.cache.size";
 
-    // Added for non-quarkus servers - to enable generated proxies to implement all interfaces of delegate object.
-    String RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES = "resteasy.proxy.implement.all.interfaces"; // default is false
+    /**
+     * Makes the proxies RESTEasy injects for interface context types implement all interfaces of the context object, not
+     * only the context type. The default is {@code false}.
+     *
+     * @deprecated This only applies to context types RESTEasy injects itself, not to context types injected by CDI, and
+     *             will be removed along with RESTEasy's legacy context injection.
+     */
+    @Deprecated(forRemoval = true)
+    String RESTEASY_PROXY_IMPLEMENT_ALL_INTERFACES = "resteasy.proxy.implement.all.interfaces";
 
 }

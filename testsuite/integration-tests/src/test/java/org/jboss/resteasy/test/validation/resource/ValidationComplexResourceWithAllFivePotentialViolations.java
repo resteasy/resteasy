@@ -10,9 +10,9 @@ import jakarta.ws.rs.PathParam;
 public class ValidationComplexResourceWithAllFivePotentialViolations {
     @Size(min = 2, max = 4)
     @PathParam("s")
-    public String s;
+    private String s;
 
-    public String t;
+    private String t;
 
     @Size(min = 3, max = 5)
     public String getT() {
@@ -29,5 +29,9 @@ public class ValidationComplexResourceWithAllFivePotentialViolations {
     @ValidationComplexFooConstraint(min = 4, max = 5)
     public ValidationComplexFoo post(@ValidationComplexFooConstraint(min = 3, max = 5) ValidationComplexFoo foo) {
         return foo;
+    }
+
+    String getS() {
+        return s;
     }
 }

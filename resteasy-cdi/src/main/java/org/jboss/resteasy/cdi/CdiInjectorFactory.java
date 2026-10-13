@@ -11,13 +11,20 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.CDI;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.Context;
 
 import org.jboss.resteasy.cdi.i18n.LogMessages;
 import org.jboss.resteasy.cdi.i18n.Messages;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
+import org.jboss.resteasy.core.PropertyInjectorImpl;
+import org.jboss.resteasy.core.servlet.HttpServletResponseValueInjector;
 import org.jboss.resteasy.spi.ConstructorInjector;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.PropertyInjector;
@@ -54,6 +61,28 @@ public class CdiInjectorFactory implements InjectorFactory {
 
     @Override
     public ValueInjector createParameterExtractor(Parameter parameter, ResteasyProviderFactory providerFactory) {
+        if (parameter.getParamType() == Parameter.ParamType.CONTEXT && parameter.isContextType()
+                && extension.beanContainer().contains(parameter.getResourceClass().getClazz())) {
+            final Bean<?> bean = manager.resolve(manager.getBeans(parameter.getType(), ContextLiteral.INSTANCE));
+            if (bean == null) {
+                throw Messages.MESSAGES.unableToResolveBeanType(parameter.getType().getName(), Context.class.getName());
+            }
+            if (HttpServletResponse.class.isAssignableFrom(parameter.getType())) {
+                return new HttpServletResponseValueInjector(providerFactory, request -> (HttpServletResponse) BeanManagerSupport
+                        .resolveBean(request, manager, parameter.getType(), bean));
+            }
+            return new ValueInjector() {
+                @Override
+                public Object inject(final boolean unwrapAsync) {
+                    return BeanManagerSupport.resolveBean(null, manager, parameter.getType(), bean);
+                }
+
+                @Override
+                public Object inject(final HttpRequest request, final HttpResponse response, final boolean unwrapAsync) {
+                    return BeanManagerSupport.resolveBean(request, manager, parameter.getType(), bean);
+                }
+            };
+        }
         return delegate.createParameterExtractor(parameter, providerFactory);
     }
 
@@ -103,6 +132,27 @@ public class CdiInjectorFactory implements InjectorFactory {
         return delegate.createConstructor(clazz, providerFactory);
     }
 
+    /**
+     * Returns the contextual instance of a CDI client proxy, creating it if it does not exist yet. Other instances are
+     * returned as is.
+     * <p>
+     * The client proxy of a session bean is returned as is. The EJB container creates the instance when the method is
+     * invoked, after the parameters were validated, and the {@link JaxrsInjectionTarget} reports the violations of the
+     * instance together with those of the parameters.
+     * </p>
+     *
+     * @param instance the instance, which may be a CDI client proxy
+     *
+     * @return the contextual instance of the client proxy, or the instance if it is not a client proxy
+     */
+    @Override
+    public Object unwrapProxy(final Object instance) {
+        if (instance == null || isSessionBean(instance.getClass())) {
+            return instance;
+        }
+        return CdiProxyUnwrapper.unwrapIfRequired(instance);
+    }
+
     protected ConstructorInjector cdiConstructor(Class<?> clazz) {
         if (!manager.getBeans(clazz).isEmpty()) {
             LogMessages.LOGGER.debug(Messages.MESSAGES.usingCdiConstructorInjector(clazz));
@@ -119,8 +169,12 @@ public class CdiInjectorFactory implements InjectorFactory {
     }
 
     public PropertyInjector createPropertyInjector(Class resourceClass, ResteasyProviderFactory factory) {
-        return new CdiPropertyInjector(delegate.createPropertyInjector(resourceClass, factory), resourceClass,
-                sessionBeanInterface, manager);
+        // Create the property injector directly as it needs to skip the members annotated with @Inject. The members
+        // converted by the ResteasyCdiExtension are not skipped as the instance may not have been created by CDI, e.g.
+        // an Application.getSingletons() instance.
+        final PropertyInjector propertyInjector = new PropertyInjectorImpl(resourceClass, factory,
+                Utils::isInjectAnnotated);
+        return new CdiPropertyInjector(propertyInjector, resourceClass, sessionBeanInterface, manager);
     }
 
     public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, String defaultName,
@@ -164,5 +218,17 @@ public class CdiInjectorFactory implements InjectorFactory {
      */
     private ResteasyCdiExtension lookupResteasyCdiExtension() {
         return manager.getExtension(ResteasyCdiExtension.class);
+    }
+
+    private boolean isSessionBean(final Class<?> type) {
+        // The client proxy class extends the bean class
+        Class<?> current = type;
+        while (current != null && current != Object.class) {
+            if (extension.isSessionBean(current)) {
+                return true;
+            }
+            current = current.getSuperclass();
+        }
+        return false;
     }
 }

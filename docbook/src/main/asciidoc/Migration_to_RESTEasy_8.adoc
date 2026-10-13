@@ -1,0 +1,252 @@
+[[_migration_to_resteasy_8]]
+== Migrating to RESTEasy 8
+
+This chapter covers upgrading from RESTEasy 6.2 or 7.0 to RESTEasy 8.0. When upgrading from 6.2, the changes of
+Jakarta RESTful Web Services 4.0 and Jakarta EE 11 apply as well. They require no RESTEasy specific changes.
+
+RESTEasy 8 implements {spec-name} 5.0, which requires CDI. The `@Path`, `@Provider` and `@ApplicationPath` annotations
+are bean defining annotations, so resources, providers and `Application` subclasses are CDI beans, even in an archive
+without a `beans.xml`. Resources are `@RequestScoped` by default, and providers and `Application` subclasses are
+`@ApplicationScoped`. Most of the changes below follow from this. See <<_cdi>> for details.
+
+[[_migration_8_deployment_failures]]
+=== Changes that fail the deployment
+
+==== Providers declared `@Dependent`
+
+A provider class annotated with `@Provider` and explicitly declared `@Dependent` fails the deployment (RESTEASY010670).
+Providers are application singletons.
+
+[source,java]
+----
+@Provider
+@Dependent // fails the deployment
+public class MyFilter implements ContainerRequestFilter {
+    // ...
+}
+----
+
+Declare the provider `@ApplicationScoped` or `@Singleton`, or remove the scope annotation, as `@Provider` defaults to
+`@ApplicationScoped`. A provider class which declares type variables is excluded, as CDI requires it to be
+`@Dependent`.
+
+==== Public fields of normal scoped resources and providers
+
+A normal scoped bean must not declare a non-static public field. A resource or provider with such a field fails the
+deployment (e.g. `WELD-000075`), unless it declares `@Dependent` or `@Singleton`.
+
+Make the field private, and add an accessor if other classes read it, e.g. a `ConstraintValidator` of a class level
+constraint.
+
+==== Unsatisfied injection points of resources and providers
+
+A resource or provider in an archive with `bean-discovery-mode="annotated"`, or without a `beans.xml`, was not a CDI
+bean before, so CDI did not validate its injection points. An `@Inject` field without a matching bean was silently left
+`null`. Now the resource or provider is a bean, and an unsatisfied or ambiguous injection point fails the deployment
+(e.g. `WELD-001408`).
+
+[source,java]
+----
+@Path("/echo")
+public class EchoResource {
+    @Inject
+    EchoService service; // fails the deployment if EchoService is not a bean
+}
+----
+
+Make the injected type a bean, e.g. by adding a bean defining annotation such as `@Dependent` or
+`@ApplicationScoped`, or a `beans.xml` to its archive. An EJB in an `ejb-jar.xml` with `metadata-complete="true"` is
+not a session bean, as its EJB annotations are ignored, and needs a bean defining annotation as well.
+
+The same applies to a `@BeanParam` class which was not a bean before, as it's now made a bean. See
+<<_migration_8_bean_param>>.
+
+==== Beans for {spec-name} context types
+
+RESTEasy provides the CDI beans for the {spec-name} context types, e.g. `UriInfo`, `HttpHeaders` and `Sse`. A bean of
+the application for one of these types with the `@Default` or `@Context` qualifier, e.g. a producer method, fails the
+deployment (RESTEASY010660). Remove the bean, or give it a qualifier of its own.
+
+==== Invalid constraint definitions and declarations
+
+The Jakarta Validation CDI integration inspects the constraints of resources during bean discovery. An invalid
+constraint definition, e.g. a constraint annotation without a `message` member, or an invalid constraint declaration,
+e.g. an overriding method redefining the parameter constraints, fails the deployment with a
+`ConstraintDefinitionException` (e.g. `HV000074`) or a `ConstraintDeclarationException` (e.g. `HV000151`).
+
+Before, RESTEasy reported these errors on the request as a `500 Internal Server Error`, which an `ExceptionMapper` of
+the application could handle. Such a mapper is no longer invoked for these errors.
+
+[[_migration_8_scopes]]
+=== Default scopes and warnings
+
+==== Unproxyable and generic resources and providers
+
+Some classes cannot have the default normal scopes:
+
+* A class which cannot be proxied, e.g. a final class, a class with a final method or a class without a non-private
+no-argument constructor. A class with only an `@Inject` constructor cannot be proxied.
+* A class which declares type variables, e.g. a generic base resource `CrudResource<T>` annotated with `@Path`. CDI
+only allows such a bean to be `@Dependent`.
+
+If such a class does not declare a scope itself, RESTEasy is lenient and logs a warning:
+
+[cols="1,1,1"]
+|===
+|Class |Scope used |Warning
+
+|Unproxyable resource
+|`@Dependent`
+|RESTEASY011010
+
+|Unproxyable provider
+|`@Singleton`
+|RESTEASY011005
+
+|Resource or provider declaring type variables
+|`@Dependent`
+|RESTEASY011020
+|===
+
+Declare `@Dependent` or `@Singleton` on the class to avoid the warning and to be portable. A class which explicitly
+declares a normal scope it cannot have fails the deployment, following the CDI rules.
+
+==== Other `@Dependent` providers
+
+A provider whose CDI bean is `@Dependent` and which is not covered above logs a warning (RESTEASY011015) when it is
+registered, e.g. a provider class without `@Provider` declared `@Dependent`, or a provider created by a producer method
+without a scope. RESTEasy still creates a single instance of it. Declare a scope to avoid the warning.
+
+==== Providers without `@Provider` in `bean-discovery-mode="all"` archives
+
+In an archive with `bean-discovery-mode="all"`, a discovered class which implements a provider contract, is not
+annotated with `@Provider` and declares no scope is made `@ApplicationScoped`. It's made `@Singleton` if it cannot be
+proxied, or `@Dependent` if it declares type variables. Before, it was a `@Dependent` bean.
+
+[[_migration_8_bean_param]]
+==== `@BeanParam` classes
+
+A class used for a `@BeanParam` field, setter method or parameter of a resource, which is not a bean and has a
+no-argument or `@Inject` constructor, is made a `@Dependent` bean. CDI creates it and injects all its members, including
+`@Inject` members, which were not injected before.
+
+A `@BeanParam` class with a normal scope, e.g. `@RequestScoped`, logs a warning (RESTEASY011025). The injected instance
+is a client proxy, whose fields do not hold the parameter values, e.g. when a `@Valid` class is validated. Declare
+`@Dependent` on the class instead.
+
+[[_migration_8_behavior]]
+=== Behavior changes
+
+==== `@Dependent` resources are destroyed when the request completes
+
+A resource declared `@Dependent` is created through CDI for each request and destroyed, including its `@PreDestroy`
+method, when the request completes. For a suspended request, this is when the asynchronous response completes, e.g.
+after it was resumed, cancelled or timed out. The same applies to `@Dependent` beans returned from
+`ResourceContext.getResource()`. The application must not keep references to these instances beyond the request.
+
+==== Resource instances are CDI client proxies
+
+The instance of a normal scoped resource that RESTEasy hands to the application, e.g. an element of
+`UriInfo.getMatchedResources()`, is the CDI client proxy. The proxy is an instance of the resource class, its
+superclasses and its interfaces, but its class is a generated subclass:
+
+[source,java]
+----
+Object resource = uriInfo.getMatchedResources().get(0);
+resource instanceof MyResource;              // true
+resource.getClass() == MyResource.class;     // false
+resource.getClass().getAnnotation(Path.class); // null, @Path is not @Inherited
+----
+
+Use `instanceof` rather than comparing classes, and don't reflect on `getClass()`.
+
+==== The injected `Application`
+
+An injected `Application`, e.g. a `@Context Application` field, delegates to the `Application` of the current request.
+It's not an instance of the application's `Application` subclass, so it cannot be cast to it. Inject the subclass
+instead:
+
+[source,java]
+----
+@Context
+Application application;
+((MyApplication) application).getConfig(); // ClassCastException
+
+@Context
+MyApplication application;
+application.getConfig();                  // works
+----
+
+==== When resource instances are created
+
+The instance of a normal scoped resource is created after the request filters were invoked and before the parameters
+of the resource method are injected. Its `@PostConstruct` method is invoked before the entity is read, i.e. before
+reader interceptors and message body readers are invoked.
+
+==== Validation
+
+Resources created by CDI are validated as before: RESTEasy validates the resource instance (fields, property getters
+and class level constraints), then the parameters of the resource method, and reports the violations together. The
+return value is validated after the method is invoked. Session bean resources are validated as before. Differences:
+
+* If a resource class declares method constraints, the Jakarta Validation CDI interceptor is bound to it, and the
+instance is a CDI subclass. The value of a class level violation, the instance's `toString()`, may be e.g.
+`MyResource$Proxy$_$$_WeldSubclass@1234` rather than `MyResource@1234`.
+* The Jakarta Validation CDI interceptor validates the return value before RESTEasy does. The violations are still
+reported with a `ViolationReport`. If the request has an `Accept-Language` header, the messages are in the request's
+language, as before.
+* A sub-resource returned from a sub-resource locator which is a CDI client proxy, e.g. an injected `@RequestScoped`
+bean, is not validated. Other sub-resources are validated.
+
+See <<_validation>> for details.
+
+==== `CompletionCallback` on client disconnect
+
+In a servlet container, the registered `CompletionCallback` instances are invoked, with the failure, when the
+asynchronous processing ends because of an error, e.g. the client closed the connection.
+
+==== Known limitation
+
+Per-request objects created outside resources, e.g. `AsyncResponse.register(Class)` callbacks, classes returned from
+sub-resource locators and `@Form` or `@Query` classes, which are `@Dependent` CDI beans are not destroyed, so their
+`@PreDestroy` methods are not invoked. This is the same as in RESTEasy 7.
+
+[[_migration_8_configuration]]
+=== Configuration
+
+* `dev.resteasy.cdi.enhanced.enabled` has been removed. The CDI integration, including the injection of `@Context` and
+`@*Param` annotated members through CDI, can no longer be disabled.
+* `resteasy.proxy.implement.all.interfaces` is deprecated.
+
+[[_migration_8_requirements]]
+=== Requirements
+
+A Jakarta Validation provider's CDI integration, e.g. `hibernate-validator-cdi`, must be available for validation. It's
+included in WildFly. When using the Java SE bootstrap, add it to the application.
+
+[[_migration_8_spi]]
+=== Changes for integrations
+
+Applications are not affected by these changes. They concern integrations of RESTEasy, e.g. a runtime such as Quarkus,
+or a custom `InjectorFactory` or `GeneralValidatorCDI` implementation.
+
+* New `org.jboss.resteasy.spi.RequestListener`, discovered with `ServiceLoader`, which is notified once a request has
+completed.
+* `ResteasyAsynchronousResponse.completionCallbacks(Throwable)`: implementations which do not extend
+`AbstractAsynchronousResponse` do not notify the `RequestListener` instances.
+* New default method `InjectorFactory.unwrapProxy(Object)`. RESTEasy invokes it on the resource before the parameters
+are injected, which creates the contextual instance of a CDI client proxy, and validates the returned instance.
+* New default method `InjectorFactory.resolveType(Class)`, which returns the type a container proxy class delegates to,
+e.g. the bean class of a CDI client proxy class. RESTEasy uses it where the class of a provider or resource instance
+matters, e.g. for provider contracts, annotations and the resource metadata. The default implementation resolves
+synthetic proxy classes to their superclass, which covers Weld and OpenWebBeans. An integration with a CDI container
+which does not mark its proxy classes as synthetic must override it.
+* New `org.jboss.resteasy.spi.StreamValueInjector`, a `ValueInjector` which indicates if content was written to the
+injected stream. If a parameter of a `void` resource method is injected by a `StreamValueInjector` which reports
+content, e.g. a `@Context HttpServletResponse` written to, the response is not replaced with a `204 No Content`.
+* `GeneralValidatorCDI.isValidatableFromCDI(Class)`: the `JaxrsInjectionTarget` validates the instances of the classes
+for which it returns `true` when CDI creates them. The validator of `resteasy-validator-provider` returns `true` only for
+the classes RESTEasy cannot validate itself, i.e. session beans with class, field or property constraints. A custom
+implementation returning `true` for all classes validates resources created by CDI twice.
+* `GeneralValidatorImpl.isValidatable(Class)` no longer depends on whether CDI is active.
+* `resteasy-validator-provider` no longer depends on `resteasy-cdi` or the CDI API.

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Assertions;
 public class MediaTypeCaseSensitivityStuffResource {
     @POST
     public void post(MediaTypeCaseSensitivityStuff stuff) {
-        Assertions.assertEquals(stuff.getName(), "bill");
+        Assertions.assertEquals("bill", stuff.getName());
     }
 
     @GET
@@ -23,8 +23,8 @@ public class MediaTypeCaseSensitivityStuffResource {
                 MediaTypeCaseSensitivityStuff.class,
                 MediaTypeCaseSensitivityStuff.class, null, new MediaType("ApplIcAtion", "STufF"));
         Assertions.assertNotNull(messageBodyReader, "RESTEasy generate wrong messageBodyReader");
-        Assertions.assertEquals(MediaTypeCaseSensitivityStuffProvider.class,
-                messageBodyReader.getClass(),
+        Assertions.assertInstanceOf(MediaTypeCaseSensitivityStuffProvider.class,
+                messageBodyReader,
                 "RESTEasy generate wrong messageBodyReader");
     }
 }

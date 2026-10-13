@@ -32,8 +32,9 @@ public class ApplicationInjectionTest {
      */
     @Test
     public void testAppInjection() throws Exception {
-        Assertions.assertEquals(1, ApplicationInjection.instances.size(), "Wrong count of initialized applications");
+        Assertions.assertEquals(2, ApplicationInjection.instances.size(),
+                "The application should have been initialized twice. Once for the CDI proxy and once for the underlying instance for the CDI proxy.");
         ApplicationInjection app = ApplicationInjection.instances.iterator().next();
-        Assertions.assertNotNull(app.app, "Injected application instance should not be null");
+        Assertions.assertNotNull(app.getApplication(), "Injected application instance should not be null");
     }
 }
