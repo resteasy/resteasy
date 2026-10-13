@@ -9,7 +9,6 @@ import jakarta.annotation.Priority;
 import jakarta.enterprise.inject.spi.BeanManager;
 
 import org.jboss.resteasy.cdi.i18n.LogMessages;
-import org.jboss.resteasy.cdi.i18n.Messages;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -134,12 +133,7 @@ public class CdiAwareRegistry extends ResourceMethodRegistry implements Registry
             synchronized (this) {
                 if (beanContainer == null) {
                     final BeanManager manager = getBeanManager();
-                    final ResteasyCdiExtension extension = manager.getExtension(ResteasyCdiExtension.class);
-                    final ResteasyBeanContainer container = extension.beanContainer();
-                    if (container == null) {
-                        throw Messages.MESSAGES.unableToResolveBean(ResteasyBeanContainer.class.getName());
-                    }
-                    beanContainer = container;
+                    beanContainer = manager.getExtension(ResteasyCdiExtension.class).beanContainer();
                 }
             }
         }

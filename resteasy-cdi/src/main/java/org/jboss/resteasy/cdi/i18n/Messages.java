@@ -11,6 +11,7 @@ import java.lang.reflect.Type;
 import java.util.Set;
 
 import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.DefinitionException;
 
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.Message.Format;
@@ -109,4 +110,19 @@ public interface Messages {
 
     @Message(id = 10645, value = "Cannot resolve annotation @%s on %s")
     IllegalStateException failedToFindAnnotation(String annotationName, String typeDescription);
+
+    @Message(id = 10650, value = "Cannot inject %s with @Context. The deployed Application is %s.")
+    IllegalStateException applicationTypeNotDeployed(String requestedType, String deployedType);
+
+    @Message(id = 10655, value = "Unable to find contextual data of type %s. The type is only available while a request is being processed.")
+    IllegalStateException unableToFindContextualData(String type);
+
+    @Message(id = 10660, value = "%s is a bean of type %s. Beans for the Jakarta REST context types are provided by the implementation and must not be defined by applications.")
+    DefinitionException contextTypeBeanDefined(Bean<?> bean, String type);
+
+    @Message(id = 10665, value = "Unable to resolve a CDI bean of type %s with the qualifiers %s.")
+    IllegalStateException unableToResolveBeanType(String type, String qualifiers);
+
+    @Message(id = 10670, value = "%s is a provider declared @Dependent. Providers must be @ApplicationScoped or @Singleton.")
+    DefinitionException dependentProvider(String type);
 }

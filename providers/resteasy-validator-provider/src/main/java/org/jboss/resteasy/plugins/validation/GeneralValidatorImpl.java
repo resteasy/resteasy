@@ -9,14 +9,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ConstraintDefinitionException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ElementKind;
 import jakarta.validation.GroupDefinitionException;
 import jakarta.validation.MessageInterpolator;
+import jakarta.validation.Path;
 import jakarta.validation.ValidationException;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
@@ -27,10 +28,7 @@ import org.jboss.resteasy.api.validation.ConstraintType;
 import org.jboss.resteasy.api.validation.ConstraintType.Type;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
-import org.jboss.resteasy.cdi.CdiInjectorFactory;
-import org.jboss.resteasy.cdi.ResteasyCdiExtension;
 import org.jboss.resteasy.core.ResteasyContext;
-import org.jboss.resteasy.plugins.validation.i18n.LogMessages;
 import org.jboss.resteasy.plugins.validation.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.InjectorFactory;
@@ -64,7 +62,6 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI {
     private boolean isExecutableValidationEnabled;
     private ExecutableType[] defaultValidatedExecutableTypes;
     private boolean suppressPath;
-    private boolean cdiActive;
     private static ConstraintTypeUtilImpl util = new ConstraintTypeUtilImpl();
 
     public GeneralValidatorImpl(final ValidatorFactory validatorFactory, final boolean isExecutableValidationEnabled,
@@ -72,14 +69,6 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI {
         this.validatorFactory = validatorFactory;
         this.isExecutableValidationEnabled = isExecutableValidationEnabled;
         this.defaultValidatedExecutableTypes = defaultValidatedExecutableTypes.toArray(new ExecutableType[] {});
-
-        try {
-            cdiActive = ResteasyCdiExtension.isCDIActive();
-            LogMessages.LOGGER.debug(Messages.MESSAGES.resteasyCdiExtensionOnClasspath());
-        } catch (Throwable t) {
-            // In case ResteasyCdiExtension is not on the classpath.
-            LogMessages.LOGGER.debug(Messages.MESSAGES.resteasyCdiExtensionNotOnClasspath());
-        }
 
         ResteasyConfiguration context = ResteasyContext.getContextData(ResteasyConfiguration.class);
         if (context != null) {
@@ -195,30 +184,21 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI {
 
     @Override
     public boolean isValidatable(Class<?> clazz) {
-        // Called from resteasy-jaxrs.
-        if (cdiActive && !(hasEJBScope(clazz) && hasNoClassOrFieldOrPropertyConstraints(clazz))) {
-            return false;
-        }
-        return true;
+        // Called from resteasy-jaxrs. The instance of a CDI bean is validated by RESTEasy, after the client proxy was
+        // unwrapped. A session bean instance cannot be reached through its proxy. If it has class, field or property
+        // constraints, it's validated by the JaxrsInjectionTarget when it's created.
+        return !hasEJBScope(clazz) || hasNoClassOrFieldOrPropertyConstraints(clazz);
     }
 
     @Override
     public boolean isValidatable(Class<?> clazz, InjectorFactory injectorFactory) {
-        try {
-            // Called from resteasy-jaxrs.
-            if (cdiActive && injectorFactory instanceof CdiInjectorFactory
-                    && !(hasEJBScope(clazz) && hasNoClassOrFieldOrPropertyConstraints(clazz))) {
-                return false;
-            }
-        } catch (NoClassDefFoundError e) {
-            // Shouldn't get here. Deliberately empty.
-        }
-        return true;
+        return isValidatable(clazz);
     }
 
     @Override
     public boolean isValidatableFromCDI(Class<?> clazz) {
-        return true;
+        // Called from the JaxrsInjectionTarget for the instances RESTEasy cannot validate
+        return !isValidatable(clazz);
     }
 
     @Override
@@ -457,7 +437,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI {
         if (t instanceof ConstraintViolationException) {
             SimpleViolationsContainer violationsContainer = getViolationsContainer(request, null);
             ConstraintViolationException cve = ConstraintViolationException.class.cast(t);
-            Set cvs = cve.getConstraintViolations();
+            Set cvs = localizeReturnValueViolations(request, cve.getConstraintViolations());
             violationsContainer.addViolations(cvs);
             if (violationsContainer.size() > 0) {
                 throw new ResteasyViolationExceptionImpl(violationsContainer,
@@ -466,6 +446,42 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI {
         }
 
         return;
+    }
+
+    /**
+     * Validates the return value again, with the validator of the request, if the violations are return value
+     * violations found by a container, e.g. the Jakarta Validation CDI interceptor. The container's validator does not
+     * use the language of the request for the messages.
+     *
+     * @param request the current request
+     * @param cvs     the violations found by the container
+     *
+     * @return the violations with the messages in the language of the request, or the violations as is
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private Set localizeReturnValueViolations(HttpRequest request, Set<ConstraintViolation<?>> cvs) {
+        if (cvs.isEmpty() || getLocale(request) == null) {
+            return cvs;
+        }
+        // The interceptor validates the return value only if the parameters are valid, so all violations are of the same
+        // type
+        final ConstraintViolation<?> cv = cvs.iterator().next();
+        if (!Type.RETURN_VALUE.equals(util.getConstraintType(cv)) || cv.getRootBean() == null) {
+            return cvs;
+        }
+        final Path.Node node = cv.getPropertyPath().iterator().next();
+        if (node.getKind() != ElementKind.METHOD) {
+            return cvs;
+        }
+        try {
+            final Method method = cv.getRootBeanClass().getMethod(node.getName(),
+                    node.as(Path.MethodNode.class).getParameterTypes().toArray(new Class<?>[0]));
+            final Set<ConstraintViolation<Object>> localized = getValidator(request).forExecutables()
+                    .validateReturnValue(cv.getRootBean(), method, cv.getExecutableReturnValue());
+            return localized.isEmpty() ? cvs : localized;
+        } catch (NoSuchMethodException | ValidationException e) {
+            return cvs;
+        }
     }
 
     protected Validator getValidator(HttpRequest request) {
@@ -557,8 +573,8 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI {
     }
 
     private boolean hasApplicationScope(Object o) {
-        Class<?> clazz = o.getClass();
-        return clazz.getAnnotation(ApplicationScoped.class) != null;
+        // The name is used, as the CDI API is not required. The annotation is @Inherited, so it's found on a proxy too.
+        return isAnnotationPresent(o.getClass(), "jakarta.enterprise.context.ApplicationScoped");
     }
 
     private static boolean hasNoClassOrFieldOrPropertyConstraints(Class<?> clazz) {

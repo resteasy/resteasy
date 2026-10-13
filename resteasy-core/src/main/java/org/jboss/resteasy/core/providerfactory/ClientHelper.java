@@ -165,27 +165,43 @@ public class ClientHelper extends CommonProviders {
         requestFilters = registry;
     }
 
+    /**
+     * Processes the contracts of a provider instance.
+     *
+     * @deprecated core no longer invokes this method, so overriding it has no effect. Use
+     *             {@link #processProviderInstanceContracts(Object, Class, Map, Integer, boolean, Map)}, which receives
+     *             the class a container proxy delegates to.
+     */
+    @Deprecated(forRemoval = true, since = "8.0")
     protected void processProviderInstanceContracts(Object provider, Map<Class<?>, Integer> contracts,
             Integer priorityOverride, boolean builtIn, Map<Class<?>, Integer> newContracts) {
-        ConstrainedTo constrainedTo = (ConstrainedTo) provider.getClass().getAnnotation(ConstrainedTo.class);
+        processProviderInstanceContracts(provider, rpf.getInjectorFactory().resolveType(provider.getClass()), contracts,
+                priorityOverride, builtIn, newContracts);
+    }
+
+    protected void processProviderInstanceContracts(Object provider, Class<?> providerClass,
+            Map<Class<?>, Integer> contracts, Integer priorityOverride, boolean builtIn,
+            Map<Class<?>, Integer> newContracts) {
+        ConstrainedTo constrainedTo = providerClass.getAnnotation(ConstrainedTo.class);
         if (constrainedTo != null && constrainedTo.value() != RuntimeType.CLIENT)
             return;
 
-        super.processProviderInstanceContracts(provider, contracts, priorityOverride, builtIn, newContracts);
+        super.processProviderInstanceContracts(provider, providerClass, contracts, priorityOverride, builtIn,
+                newContracts);
 
         if (Utils.isA(provider, ClientRequestFilter.class, contracts)) {
-            int priority = Utils.getPriority(priorityOverride, contracts, ClientRequestFilter.class, provider.getClass());
+            int priority = Utils.getPriority(priorityOverride, contracts, ClientRequestFilter.class, providerClass);
             JaxrsInterceptorRegistry<ClientRequestFilter> registry = getRequestFiltersForWrite();
-            Utils.injectProperties(rpf, provider);
+            Utils.injectProperties(rpf, providerClass, provider);
             registry.registerSingleton((ClientRequestFilter) provider, priority);
             attachedRequestFilters = false;
             requestFilters = registry;
             newContracts.put(ClientRequestFilter.class, priority);
         }
         if (Utils.isA(provider, ClientResponseFilter.class, contracts)) {
-            int priority = Utils.getPriority(priorityOverride, contracts, ClientResponseFilter.class, provider.getClass());
+            int priority = Utils.getPriority(priorityOverride, contracts, ClientResponseFilter.class, providerClass);
             JaxrsInterceptorRegistry<ClientResponseFilter> registry = getResponseFiltersForWrite();
-            Utils.injectProperties(rpf, provider);
+            Utils.injectProperties(rpf, providerClass, provider);
             registry.registerSingleton((ClientResponseFilter) provider, priority);
             attachedResponseFilters = false;
             responseFilters = registry;
@@ -193,9 +209,9 @@ public class ClientHelper extends CommonProviders {
         }
         if (Utils.isA(provider, AsyncClientResponseProvider.class, contracts)) {
             try {
-                addAsyncClientResponseProvider((AsyncClientResponseProvider) provider, provider.getClass());
+                addAsyncClientResponseProvider((AsyncClientResponseProvider) provider, providerClass);
                 int priority = Utils.getPriority(priorityOverride, contracts, AsyncClientResponseProvider.class,
-                        provider.getClass());
+                        providerClass);
                 newContracts.put(AsyncClientResponseProvider.class, priority);
             } catch (Exception e) {
                 throw new RuntimeException(Messages.MESSAGES.unableToInstantiateAsyncClientResponseProvider(), e);
@@ -205,7 +221,7 @@ public class ClientHelper extends CommonProviders {
 
     private void addAsyncClientResponseProvider(final AsyncClientResponseProvider provider, final Class providerClass) {
         Type asyncType = Types.getActualTypeArgumentsOfAnInterface(providerClass, AsyncClientResponseProvider.class)[0];
-        Utils.injectProperties(rpf, provider.getClass(), provider);
+        Utils.injectProperties(rpf, providerClass, provider);
 
         Class<?> asyncClass = Types.getRawType(asyncType);
         Map<Class<?>, AsyncClientResponseProvider> registry = getAsyncClientResponseProvidersForWrite();

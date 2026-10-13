@@ -98,7 +98,7 @@ public class XmlJAXBContextFinderTest {
 
     @Path("/firstTestResource")
     @Produces(MediaType.APPLICATION_XML)
-    public static final class FirstTestResource {
+    public static class FirstTestResource {
 
         @GET
         public Response get() {
@@ -113,7 +113,7 @@ public class XmlJAXBContextFinderTest {
 
     @Path("/secondTestResource")
     @Produces(MediaType.APPLICATION_XML)
-    public static final class SecondTestResource {
+    public static class SecondTestResource {
 
         @GET
         public Response get() {

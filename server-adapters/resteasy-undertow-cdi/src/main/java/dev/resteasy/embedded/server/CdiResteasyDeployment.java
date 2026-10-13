@@ -152,6 +152,7 @@ class CdiResteasyDeployment extends DelegateResteasyDeployment implements Restea
             weld = new Weld(containerName)
                     // Register these as bean defining annotations
                     .addBeanDefiningAnnotations(Path.class, Provider.class, ApplicationPath.class)
+                    .scanClasspathEntries()
                     // Do not register the shutdown hook as stopping the server may execute in a separate shutdown hook.
                     .skipShutdownHook();
         }

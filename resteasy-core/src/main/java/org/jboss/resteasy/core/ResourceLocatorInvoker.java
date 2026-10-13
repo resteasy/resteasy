@@ -149,7 +149,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker {
                     Messages.MESSAGES.nullSubresource(request.getUri().getAbsolutePath()));
             throw notFound;
         }
-        Class<? extends Object> clazz = target.getClass();
+        final Class<?> clazz = providerFactory.getInjectorFactory().resolveType(target.getClass());
         LocatorRegistry registry = cachedSubresources.get(clazz);
         if (registry == null) {
             if (!GetRestful.isSubResourceClass(clazz)) {

@@ -8,10 +8,12 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.Response;
 
+import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
@@ -58,6 +60,9 @@ public class ValidationExceptionsTest {
     protected static final Logger logger = Logger.getLogger(ValidationExceptionsTest.class.getName());
     static ResteasyClient client;
 
+    @ArquillianResource
+    private Deployer deployer;
+
     private static final String DEF_EXCEPTION = "constraintDefinitionException";
     private static final String CUSTOM_DEF_EXCEPTION = "customConstraintDefinitionException";
     private static final String DECL_EXCEPTION = "constraintDeclarationException";
@@ -71,7 +76,14 @@ public class ValidationExceptionsTest {
     private static final String ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE = "validation-expcetion header was expected to be true";
 
     public static Archive<?> deploy(String name, Class<?>... resourceClasses) throws Exception {
+        return deploy(name, true, resourceClasses);
+    }
+
+    private static Archive<?> deploy(String name, boolean enableCdi, Class<?>... resourceClasses) throws Exception {
         WebArchive war = TestUtil.prepareArchive(name);
+        if (!enableCdi) {
+            war.addAsWebInfResource(TestUtil.createBeansXml("none"), "beans.xml");
+        }
         war.addClass(ValidationExceptionClassValidator.class);
         war.addClass(ValidationExceptionCrazyConstraint.class);
         war.addClass(ValidationExceptionCrazyValidator.class);
@@ -97,26 +109,33 @@ public class ValidationExceptionsTest {
         client.close();
     }
 
-    @Deployment(name = DEF_EXCEPTION)
+    // The Jakarta Validation CDI integration fails the deployment
+    @Deployment(name = DEF_EXCEPTION, managed = false)
     public static Archive<?> constraintDefinitionExceptionDeploy() throws Exception {
         return deploy(DEF_EXCEPTION, ValidationExceptionResourceWithIncorrectConstraint.class);
     }
 
+    // CDI is disabled, as the Jakarta Validation CDI integration would fail the deployment, see
+    // testConstraintDefinitionException(). The exception is only reported on a request for a resource not created by CDI.
     @Deployment(name = CUSTOM_DEF_EXCEPTION)
     public static Archive<?> customConstraintDefinitionExceptionDeploy() throws Exception {
-        return deploy(CUSTOM_DEF_EXCEPTION, ValidationExceptionResourceWithIncorrectConstraint.class,
+        return deploy(CUSTOM_DEF_EXCEPTION, false, ValidationExceptionResourceWithIncorrectConstraint.class,
                 ValidationExceptionResourceWithIncorrectConstraint.ConstraintDefinitionExceptionMapper.class);
     }
 
-    @Deployment(name = DECL_EXCEPTION)
+    // The Jakarta Validation CDI integration fails the deployment
+    @Deployment(name = DECL_EXCEPTION, managed = false)
     public static Archive<?> constraintDeclarationExceptionDeploy() throws Exception {
         return deploy(DECL_EXCEPTION, ValidationExceptionSubResourceWithInvalidOverride.class,
                 ValidationExceptionSuperResource.class);
     }
 
+    // CDI is disabled, as the Jakarta Validation CDI integration would fail the deployment, see
+    // testConstraintDeclarationException(). The exception is only reported on a request for a resource not created by
+    // CDI.
     @Deployment(name = CUSTOM_DECL_EXCEPTION)
     public static Archive<?> customConstraintDeclarationExceptionDeploy() throws Exception {
-        return deploy(CUSTOM_DECL_EXCEPTION, ValidationExceptionSubResourceWithInvalidOverride.class,
+        return deploy(CUSTOM_DECL_EXCEPTION, false, ValidationExceptionSubResourceWithInvalidOverride.class,
                 ValidationExceptionSuperResource.class,
                 ValidationExceptionSubResourceWithInvalidOverride.ConstraintDeclarationExceptionMapper.class);
     }
@@ -143,20 +162,15 @@ public class ValidationExceptionsTest {
     }
 
     /**
-     * @tpTestDetails Resource with incorrect constraint, constrain definitiont exception is expected
+     * @tpTestDetails Resource with incorrect constraint. The resource is a CDI bean, so the Jakarta Validation CDI
+     *                integration validates the constraint definitions during discovery and the deployment fails.
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    @OperateOnDeployment(DEF_EXCEPTION)
-    public void testConstraintDefinitionException() throws Exception {
-        Response response = client.target(generateURL("/", DEF_EXCEPTION)).request().post(null);
-        Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
-        String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-        Assertions.assertNotNull(header, ERROR_HEADER_MESSAGE);
-        Assertions.assertTrue(Boolean.valueOf(header), ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE);
-        String entity = response.readEntity(String.class);
-        logger.info("entity: " + entity);
-        Assertions.assertTrue(entity.contains("ConstraintDefinitionException"), ERROR_MESSAGE);
+    public void testConstraintDefinitionException() {
+        final Exception e = Assertions.assertThrows(Exception.class, () -> deployer.deploy(DEF_EXCEPTION));
+        Assertions.assertTrue(e.getMessage().contains("jakarta.validation.ConstraintDefinitionException"),
+                () -> "Expected a ConstraintDefinitionException, got: " + e);
     }
 
     @Test
@@ -177,22 +191,16 @@ public class ValidationExceptionsTest {
     }
 
     /**
-     * @tpTestDetails Resource with incorrect constraint declaration, constraint definition exception is expected
+     * @tpTestDetails Resource with incorrect constraint declaration. The resource is a CDI bean, so the Jakarta
+     *                Validation CDI integration validates the constraint declarations during discovery and the
+     *                deployment fails.
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    @OperateOnDeployment(DECL_EXCEPTION)
-    public void testConstraintDeclarationException() throws Exception {
-        Response response = client.target(generateURL("/", DECL_EXCEPTION)).request().post(null);
-        Assertions.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR,
-                response.getStatus(),
-                TestUtil.getErrorMessageForKnownIssue("JBEAP-3459"));
-        String header = response.getStringHeaders().getFirst(Validation.VALIDATION_HEADER);
-        Assertions.assertNotNull(header, ERROR_HEADER_MESSAGE);
-        Assertions.assertTrue(Boolean.valueOf(header), ERROR_HEADER_VALIDATION_EXCEPTION_MESSAGE);
-        String entity = response.readEntity(String.class);
-        logger.info("entity: " + entity);
-        Assertions.assertTrue(entity.contains("ConstraintDeclarationException"), ERROR_MESSAGE);
+    public void testConstraintDeclarationException() {
+        final Exception e = Assertions.assertThrows(Exception.class, () -> deployer.deploy(DECL_EXCEPTION));
+        Assertions.assertTrue(e.getMessage().contains("jakarta.validation.ConstraintDeclarationException"),
+                () -> "Expected a ConstraintDeclarationException, got: " + e);
     }
 
     @Test

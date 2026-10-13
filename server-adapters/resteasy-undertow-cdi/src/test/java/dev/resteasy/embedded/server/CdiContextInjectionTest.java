@@ -232,5 +232,37 @@ public class CdiContextInjectionTest extends AbstractContextInjectionTest {
         public Response servletConfig() {
             return Response.ok(servletConfig.getServletName()).build();
         }
+
+        // Unannotated parameters of the context types
+
+        @GET
+        @Path("/parameter/httpRequest")
+        public Response httpRequestParameter(final HttpRequest httpRequest) {
+            return Response.ok(httpRequest.getHttpMethod()).build();
+        }
+
+        @GET
+        @Path("/parameter/servletRequest")
+        public Response servletRequestParameter(final HttpServletRequest httpServletRequest) {
+            return Response.ok(httpServletRequest.getMethod()).build();
+        }
+
+        @GET
+        @Path("/parameter/servletResponse")
+        public Response servletResponseParameter(final HttpServletResponse httpServletResponse) {
+            return Response.ok(httpServletResponse.getStatus()).build();
+        }
+
+        @GET
+        @Path("/parameter/servletContext")
+        public Response servletContextParameter(final ServletContext servletContext) {
+            return Response.ok(servletContext.getContextPath()).build();
+        }
+
+        @GET
+        @Path("/parameter/servletConfig")
+        public Response servletConfigParameter(final ServletConfig servletConfig) {
+            return Response.ok(servletConfig.getServletName()).build();
+        }
     }
 }

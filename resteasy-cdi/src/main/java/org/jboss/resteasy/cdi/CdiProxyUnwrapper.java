@@ -83,6 +83,10 @@ class CdiProxyUnwrapper {
 
     /**
      * Unwraps a CDI proxy to its underlying contextual instance. If the object is not a proxy, it is returned as-is.
+     * <p>
+     * Getting the contextual instance may create it. An exception thrown while creating it, e.g. a validation failure
+     * of the instance, is rethrown. Otherwise, the proxy would create the instance again on the next invocation.
+     * </p>
      *
      * @param target the instance
      */
@@ -102,11 +106,14 @@ class CdiProxyUnwrapper {
             if (OWB_PROXY_CLASS != null && OWB_PROXY_CLASS.isInstance(target)) {
                 return OWB_INSTANCE_GETTER.invoke(target);
             }
+        } catch (RuntimeException | Error e) {
+            throw e;
         } catch (Throwable e) {
-            LogMessages.LOGGER.debugf(e, "Failed to unwrap potential CDI proxy: %s", target);
+            // The proxy methods do not declare checked exceptions, so this is not expected
+            throw new IllegalStateException(e);
         }
 
-        // Return original object if it's not a known proxy or unwrapping failed
+        // Return original object if it's not a known proxy
         return target;
     }
 }

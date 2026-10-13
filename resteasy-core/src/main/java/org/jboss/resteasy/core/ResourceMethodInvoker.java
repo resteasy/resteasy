@@ -49,6 +49,7 @@ import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResourceInvoker;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.StreamValueInjector;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
@@ -428,9 +429,16 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
     }
 
     protected BuiltResponse invokeOnTargetAfterFilter(HttpRequest request, HttpResponse response, Object target) {
+        // A CDI client proxy creates the contextual instance when a method is first invoked. Create it now, before the
+        // parameters are injected, so its fields are injected first, as for an instance RESTEasy creates, e.g. a
+        // @BeanParam field reading the form parameters before an entity parameter consumes the request body. The
+        // instance, rather than the proxy, is validated.
+        final Object instance = injector.unwrapProxy(target);
         if (validator != null) {
-            if (isValidatable) {
-                validator.validate(request, target);
+            // A container proxy returned from a sub-resource locator, e.g. an injected @RequestScoped bean, is not
+            // validated, as the container created the instance outside of RESTEasy
+            if (isValidatable && (resource != null || instance == target)) {
+                validator.validate(request, instance);
             }
             if (methodIsValidatable) {
                 request.setAttribute(GeneralValidator.class.getName(), validator);
@@ -456,7 +464,14 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
                 CompletionStage<BuiltResponse> stage = retStage
                         .thenApply(rtn -> afterInvoke(request, asyncResponseConsumer, rtn));
                 // if async isn't finished, return null.  Container will assume that its a suspended request
-                return stage.toCompletableFuture().getNow(null);
+                final BuiltResponse result = stage.toCompletableFuture().getNow(null);
+                // A failure after this point happens on another thread and cannot be thrown to the container
+                stage.whenComplete((rtn, error) -> {
+                    if (error != null) {
+                        handleAsyncInvocationException(request, asyncResponseConsumer, error);
+                    }
+                });
+                return result;
             } else {
                 return afterInvoke(request, asyncResponseConsumer, CompletionStageHolder.resolve(ret));
             }
@@ -487,7 +502,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
         if (request.wasForwarded()) {
             return null;
         }
-        if (!contextOutputStreamWrittenTo() && (rtn == null || method.getReturnType().equals(void.class))) {
+        if (!contextOutputStreamWrittenTo(request) && (rtn == null || method.getReturnType().equals(void.class))) {
             BuiltResponse build = (BuiltResponse) Response.noContent().build();
             build.addMethodAnnotations(getMethodAnnotations());
             return build;
@@ -549,6 +564,14 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
         } else {
             throw ex;
         }
+    }
+
+    private void handleAsyncInvocationException(HttpRequest request, AsyncResponseConsumer asyncResponseConsumer,
+            Throwable error) {
+        final Throwable cause = error instanceof CompletionException && error.getCause() != null ? error.getCause()
+                : error;
+        handleInvocationException(asyncResponseConsumer, request,
+                cause instanceof RuntimeException ? (RuntimeException) cause : new ProcessingException(cause));
     }
 
     @SuppressWarnings("unchecked")
@@ -697,10 +720,11 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
      * @see ContextParameterInjector for details
      *      Fix for RESTEASY-1721
      */
-    private boolean contextOutputStreamWrittenTo() {
+    private boolean contextOutputStreamWrittenTo(final HttpRequest request) {
         for (ValueInjector vi : methodInjector.getParams()) {
-            if (vi instanceof ContextParameterInjector) {
-                return ((ContextParameterInjector) vi).isOutputStreamWasWritten();
+            if (vi instanceof StreamValueInjector streamValueInjector
+                    && streamValueInjector.isContentAvailable(request)) {
+                return true;
             }
         }
         return false;

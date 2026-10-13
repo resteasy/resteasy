@@ -23,9 +23,9 @@ public class ResourceLocatorWithBaseExpressionSubresource {
 
         Assertions.assertEquals(2, uri.getMatchedResources().size(),
                 ResourceLocatorWithBaseExpressionResource.ERROR_MSG);
-        Assertions.assertEquals(ResourceLocatorWithBaseExpressionSubresource.class, uri.getMatchedResources().get(0).getClass(),
+        Assertions.assertInstanceOf(ResourceLocatorWithBaseExpressionSubresource.class, uri.getMatchedResources().get(0),
                 ResourceLocatorWithBaseExpressionResource.ERROR_MSG);
-        Assertions.assertEquals(ResourceLocatorWithBaseExpressionResource.class, uri.getMatchedResources().get(1).getClass(),
+        Assertions.assertInstanceOf(ResourceLocatorWithBaseExpressionResource.class, uri.getMatchedResources().get(1),
                 ResourceLocatorWithBaseExpressionResource.ERROR_MSG);
         return this.getClass().getName();
     }
@@ -44,9 +44,9 @@ public class ResourceLocatorWithBaseExpressionSubresource {
                 ResourceLocatorWithBaseExpressionResource.ERROR_MSG);
         Assertions.assertEquals(2, uri.getMatchedResources().size(),
                 ResourceLocatorWithBaseExpressionResource.ERROR_MSG);
-        Assertions.assertEquals(ResourceLocatorWithBaseExpressionSubresource.class, uri.getMatchedResources().get(0).getClass(),
+        Assertions.assertInstanceOf(ResourceLocatorWithBaseExpressionSubresource.class, uri.getMatchedResources().get(0),
                 ResourceLocatorWithBaseExpressionResource.ERROR_MSG);
-        Assertions.assertEquals(ResourceLocatorWithBaseExpressionResource.class, uri.getMatchedResources().get(1).getClass(),
+        Assertions.assertInstanceOf(ResourceLocatorWithBaseExpressionResource.class, uri.getMatchedResources().get(1),
                 ResourceLocatorWithBaseExpressionResource.ERROR_MSG);
         return new ResourceLocatorWithBaseExpressionSubresource2();
     }

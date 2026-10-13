@@ -28,7 +28,7 @@ import dev.resteasy.junit.extension.annotations.RestResource;
 
 /**
  * Tests that standard Jakarta REST context types can be injected via {@code @Inject} when CDI is active.
- * These are produced by RESTEasy CDI's {@code ContextProducers}.
+ * These are registered as synthetic beans by RESTEasy CDI's {@code ResteasyCdiExtension}.
  */
 @RestBootstrap(value = CdiContextInjectionTest.ContextResource.class)
 @Tag("cdi")

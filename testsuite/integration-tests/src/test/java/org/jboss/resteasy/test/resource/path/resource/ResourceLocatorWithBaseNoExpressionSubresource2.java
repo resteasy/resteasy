@@ -33,7 +33,7 @@ public class ResourceLocatorWithBaseNoExpressionSubresource2 {
         Assertions.assertEquals(ResourceLocatorWithBaseNoExpressionSubresource.class,
                 uri.getMatchedResources().get(1).getClass(),
                 ResourceLocatorWithBaseNoExpressionResource.ERROR_MSG);
-        Assertions.assertEquals(ResourceLocatorWithBaseNoExpressionResource.class, uri.getMatchedResources().get(2).getClass(),
+        Assertions.assertInstanceOf(ResourceLocatorWithBaseNoExpressionResource.class, uri.getMatchedResources().get(2),
                 ResourceLocatorWithBaseNoExpressionResource.ERROR_MSG);
         Assertions.assertEquals("2", param);
         return this.getClass().getName() + "-" + param;

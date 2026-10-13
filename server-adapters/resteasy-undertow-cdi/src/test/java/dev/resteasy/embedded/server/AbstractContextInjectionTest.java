@@ -167,6 +167,51 @@ abstract class AbstractContextInjectionTest {
         }
     }
 
+    @Test
+    public void httpRequestParameter(
+            @RestResource @RequestPath("inject/parameter/httpRequest") final WebTarget target) {
+        try (Response response = target.request().get()) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals("GET", response.readEntity(String.class));
+        }
+    }
+
+    @Test
+    public void servletRequestParameter(
+            @RestResource @RequestPath("inject/parameter/servletRequest") final WebTarget target) {
+        try (Response response = target.request().get()) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals("GET", response.readEntity(String.class));
+        }
+    }
+
+    @Test
+    public void servletResponseParameter(
+            @RestResource @RequestPath("inject/parameter/servletResponse") final WebTarget target) {
+        try (Response response = target.request().get()) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals("200", response.readEntity(String.class));
+        }
+    }
+
+    @Test
+    public void servletContextParameter(
+            @RestResource @RequestPath("inject/parameter/servletContext") final WebTarget target) {
+        try (Response response = target.request().get()) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals("", response.readEntity(String.class));
+        }
+    }
+
+    @Test
+    public void servletConfigParameter(
+            @RestResource @RequestPath("inject/parameter/servletConfig") final WebTarget target) {
+        try (Response response = target.request().get()) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            Assertions.assertEquals("ResteasyServlet", response.readEntity(String.class));
+        }
+    }
+
     private Response get(final WebTarget target) {
         return target
                 .request()

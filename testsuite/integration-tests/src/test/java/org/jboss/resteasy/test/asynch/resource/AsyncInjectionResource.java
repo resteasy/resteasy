@@ -150,11 +150,11 @@ public class AsyncInjectionResource {
         AsyncInjectionResource2 resource = resourceContext.getResource(AsyncInjectionResource2.class);
         if (resource == null)
             return Response.serverError().entity("Resource should not have been null").build();
-        if (resource.asyncContextField == null || resource.asyncContextField.toCompletableFuture().get().foo() != 42)
+        if (resource.asyncContextField() == null || resource.asyncContextField().toCompletableFuture().get().foo() != 42)
             return Response.serverError().entity("Context field problem").build();
-        if (resource.resolvedContextField != null)
+        if (resource.resolvedContextField() != null)
             return Response.serverError().entity("Resolved context field problem").build();
-        if (resource.resolvedContextFieldAsync != null)
+        if (resource.resolvedContextFieldAsync() != null)
             return Response.serverError().entity("Resolved async context field problem").build();
         return Response.ok("resource").build();
     }

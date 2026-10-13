@@ -40,4 +40,6 @@ module org.jboss.resteasy.cdi {
                     org.jboss.resteasy.cdi.ResteasyParamCdiExtension;
     provides jakarta.ws.rs.core.Feature
             with org.jboss.resteasy.cdi.CdiFeature;
+    provides org.jboss.resteasy.spi.RequestListener with
+            org.jboss.resteasy.cdi.CdiRequestListener;
 }

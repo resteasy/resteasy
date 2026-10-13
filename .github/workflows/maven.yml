@@ -86,39 +86,6 @@ jobs:
             **/failsafe-reports/**
             **/*.log
 
-  additional-profiles:
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'requires-spec-snapshot') }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 240
-    strategy:
-      fail-fast: false
-      matrix:
-        profile:
-          - '-Denhanced.cdi.disabled'
-
-    steps:
-      - uses: actions/checkout@v7
-      - name: Set up JDK 25
-        uses: actions/setup-java@v6
-        with:
-          java-version: 25
-          distribution: 'temurin'
-          cache: 'maven'
-      - name: Test with ${{ matrix.profile }} - JDK 25
-        run:  |
-          ./mvnw ${{ env.MVN_ARGS }} clean install -DskipTests
-          cd testsuite
-          mvn ${{ env.MVN_ARGS }} verify ${{ matrix.profile }}
-      - name: Upload test logs for failed run
-        uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: failure-reports${{ matrix.profile }}
-          path: |
-            **/surefire-reports/**
-            **/failsafe-reports/**
-            **/*.log
-
   build-java-docs:
     if: ${{ !contains(github.event.pull_request.labels.*.name, 'requires-spec-snapshot') }}
     runs-on: ubuntu-latest

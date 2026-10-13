@@ -217,7 +217,7 @@ public class ValidationXMLTest {
                     WRONG_ERROR_MSG);
             logger.info("value: " + cv.getValue());
             Assertions.assertTrue(cv.getValue().startsWith(
-                    "org.jboss.resteasy.test.validation.resource.ValidationXMLResourceWithAllFivePotentialViolations@"));
+                    ValidationXMLResourceWithAllFivePotentialViolations.class.getName()));
             cv = report.getParameterViolations().iterator().next();
             Assertions.assertEquals("s must have length: 3 <= length <= 5", cv.getMessage(),
                     WRONG_ERROR_MSG);
@@ -317,7 +317,7 @@ public class ValidationXMLTest {
                     WRONG_ERROR_MSG);
             logger.info("value: " + cv.getValue());
             Assertions.assertTrue(cv.getValue().startsWith(
-                    "org.jboss.resteasy.test.validation.resource.ValidationXMLResourceWithAllFivePotentialViolations@"),
+                    ValidationXMLResourceWithAllFivePotentialViolations.class.getName()),
                     WRONG_ERROR_MSG);
             cv = report.getParameterViolations().iterator().next();
             Assertions.assertEquals("s must have length: 3 <= length <= 5", cv.getMessage(), WRONG_ERROR_MSG);

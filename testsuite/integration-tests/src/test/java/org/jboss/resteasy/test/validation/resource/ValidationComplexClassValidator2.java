@@ -12,7 +12,7 @@ public class ValidationComplexClassValidator2 implements
     }
 
     public boolean isValid(ValidationComplexResourceWithAllFivePotentialViolations value, ConstraintValidatorContext context) {
-        return value.s.length() + value.t.length() >= length;
+        return value.getS().length() + value.getT().length() >= length;
     }
 
 }

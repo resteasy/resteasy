@@ -55,4 +55,43 @@ public interface InjectorFactory {
     PropertyInjector createPropertyInjector(ResourceClass resourceClass, ResteasyProviderFactory providerFactory);
 
     ConstructorInjector createConstructor(ResourceConstructor constructor, ResteasyProviderFactory providerFactory);
+
+    /**
+     * Returns the instance a container proxy delegates to. If the instance is not a proxy, it is returned as is.
+     * <p>
+     * The container may create the instance when this is invoked, e.g. for a CDI client proxy of a normal scoped bean.
+     * </p>
+     * <p>
+     * The default implementation returns the instance.
+     * </p>
+     *
+     * @param instance the instance, which may be a container proxy
+     *
+     * @return the instance behind the proxy, or the instance if it is not a container proxy
+     *
+     * @since 8.0
+     */
+    default Object unwrapProxy(final Object instance) {
+        return instance;
+    }
+
+    /**
+     * Returns the type a container proxy class delegates to, e.g. the bean class of a CDI client proxy class. This
+     * does not create the instance behind the proxy. If the type is not a proxy class, it is returned as is.
+     * <p>
+     * The default implementation resolves {@linkplain Class#isSynthetic() synthetic} proxy classes, e.g. CDI client
+     * proxies and intercepted subclasses, to their superclass. Other types are returned as is. Implementations for
+     * containers which do not mark proxy classes as synthetic should override this.
+     * </p>
+     *
+     * @param type the type, which may be a container proxy class
+     * @param <T>  the type
+     *
+     * @return the type the proxy class delegates to, or the type if it is not a proxy class
+     *
+     * @since 8.0
+     */
+    default <T> Class<? super T> resolveType(final Class<T> type) {
+        return ProxyTypes.resolve(type);
+    }
 }

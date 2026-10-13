@@ -15,7 +15,6 @@ import jakarta.ws.rs.core.UriBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit5.container.annotation.ArquillianTest;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.test.cdi.params.resources.CdiBeanParamResource;
 import org.jboss.resteasy.test.cdi.params.resources.ParamApplication;
 import org.jboss.resteasy.test.cdi.params.resources.SearchParams;
@@ -24,7 +23,6 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * Tests that a {@link jakarta.ws.rs.BeanParam @BeanParam} works with CDI.
@@ -32,8 +30,6 @@ import org.wildfly.arquillian.junit.annotations.RequiresModule;
  * @author <a href="mailto:jperkins@ibm.com">James R. Perkins</a>
  */
 @ArquillianTest
-@RequiresModule(value = "org.jboss.resteasy.resteasy-cdi", minVersion = "7.0.3")
-@ServerSetup(EnableEnhancedCdiSupportSetupTask.class)
 class CdiBeanParamTest {
 
     @ArquillianResource

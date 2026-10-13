@@ -6,14 +6,20 @@
 package org.jboss.resteasy.cdi;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
 import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.client.ClientResponseFilter;
+import jakarta.ws.rs.client.RxInvokerProvider;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.container.DynamicFeature;
@@ -26,7 +32,15 @@ import jakarta.ws.rs.ext.MessageBodyWriter;
 import jakarta.ws.rs.ext.ParamConverterProvider;
 import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.ext.ReaderInterceptor;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 import jakarta.ws.rs.ext.WriterInterceptor;
+
+import org.jboss.resteasy.spi.AsyncClientResponseProvider;
+import org.jboss.resteasy.spi.AsyncResponseProvider;
+import org.jboss.resteasy.spi.AsyncStreamProvider;
+import org.jboss.resteasy.spi.ContextInjector;
+import org.jboss.resteasy.spi.concurrent.ThreadContext;
+import org.jboss.resteasy.spi.metadata.ResourceClassProcessor;
 
 /**
  * Utility methods for detecting CDI scopes and JAX-RS components.
@@ -48,6 +62,34 @@ public class Utils {
             ParamConverterProvider.class,
             ReaderInterceptor.class,
             WriterInterceptor.class);
+
+    // The contracts a provider is registered for, see ResteasyProviderFactoryImpl.registerProvider(). This must be kept
+    // in sync when a contract is added there. StringParameterUnmarshaller is excluded as an instance is created for each
+    // parameter, and InjectorFactory is excluded as it's infrastructure rather than an application provider.
+    private static final List<Class<?>> PROVIDER_CONTRACTS = List.of(
+            // Jakarta REST
+            ClientRequestFilter.class,
+            ClientResponseFilter.class,
+            ContainerRequestFilter.class,
+            ContainerResponseFilter.class,
+            ContextResolver.class,
+            DynamicFeature.class,
+            ExceptionMapper.class,
+            Feature.class,
+            MessageBodyReader.class,
+            MessageBodyWriter.class,
+            ParamConverterProvider.class,
+            ReaderInterceptor.class,
+            WriterInterceptor.class,
+            // RESTEasy
+            AsyncClientResponseProvider.class,
+            AsyncResponseProvider.class,
+            AsyncStreamProvider.class,
+            ContextInjector.class,
+            RuntimeDelegate.HeaderDelegate.class,
+            ResourceClassProcessor.class,
+            RxInvokerProvider.class,
+            ThreadContext.class);
 
     /**
      * Finds out if a given class is decorated with JAX-RS annotations.
@@ -129,6 +171,22 @@ public class Utils {
     }
 
     /**
+     * Checks if the type implements a contract a provider can be registered for.
+     *
+     * @param clazz the type to check
+     *
+     * @return {@code true} if the type implements a provider contract
+     */
+    static boolean isProviderContract(final Class<?> clazz) {
+        for (Class<?> contract : PROVIDER_CONTRACTS) {
+            if (contract.isAssignableFrom(clazz)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Find out if a given annotated type is explicitly bound to a scope.
      *
      * @param annotatedType annotated type
@@ -151,15 +209,27 @@ public class Utils {
         return false;
     }
 
-    static boolean isNormalScope(final AnnotatedType<?> annotatedType, final BeanManager manager) {
+    /**
+     * Checks if the annotated type declares a scope, either directly or through a stereotype other than the ones given.
+     * This is used to determine if the default scope of the given stereotypes applies to the type.
+     *
+     * @param annotatedType the annotated type
+     * @param manager       the bean manager
+     * @param stereotypes   the stereotypes whose default scope is ignored
+     *
+     * @return {@code true} if the type declares a scope
+     */
+    @SafeVarargs
+    static boolean isScopeDeclared(final AnnotatedType<?> annotatedType, final BeanManager manager,
+            final Class<? extends Annotation>... stereotypes) {
+        final List<Class<? extends Annotation>> ignored = List.of(stereotypes);
         for (Annotation annotation : annotatedType.getAnnotations()) {
-            if (manager.isScope(annotation.annotationType())) {
-                return manager.isNormalScope(annotation.annotationType());
+            final Class<? extends Annotation> type = annotation.annotationType();
+            if (manager.isScope(type)) {
+                return true;
             }
-            if (manager.isStereotype(annotation.annotationType())) {
-                if (isNormalScope(annotation.annotationType(), manager)) {
-                    return true;
-                }
+            if (!ignored.contains(type) && manager.isStereotype(type) && isScopeDefined(type, manager)) {
+                return true;
             }
         }
         return false;
@@ -180,6 +250,17 @@ public class Utils {
         return Modifier.isFinal(clazz.getModifiers()) ||
                 hasNonPrivateNonStaticFinalMethod(clazz) ||
                 !hasValidConstructor(clazz);
+    }
+
+    /**
+     * Checks if the member is annotated with {@link Inject @Inject}, in which case CDI injects it.
+     *
+     * @param member the member to check
+     *
+     * @return {@code true} if the member is annotated with {@code @Inject}
+     */
+    static boolean isInjectAnnotated(final Member member) {
+        return ((AnnotatedElement) member).isAnnotationPresent(Inject.class);
     }
 
     // Adapted from weld-core-impl:3.0.5.Final's Reflections.getNonPrivateNonStaticFinalMethod()
@@ -219,20 +300,6 @@ public class Utils {
             }
             if (manager.isStereotype(annotation.annotationType())) {
                 if (isScopeDefined(annotation.annotationType(), manager)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private static boolean isNormalScope(final Class<?> clazz, final BeanManager manager) {
-        for (Annotation annotation : clazz.getAnnotations()) {
-            if (manager.isScope(annotation.annotationType())) {
-                return manager.isNormalScope(annotation.annotationType());
-            }
-            if (manager.isStereotype(annotation.annotationType())) {
-                if (isNormalScope(annotation.annotationType(), manager)) {
                     return true;
                 }
             }

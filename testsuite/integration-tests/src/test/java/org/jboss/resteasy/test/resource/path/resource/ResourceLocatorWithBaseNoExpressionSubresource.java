@@ -23,7 +23,7 @@ public class ResourceLocatorWithBaseNoExpressionSubresource {
         Assertions.assertEquals(ResourceLocatorWithBaseNoExpressionSubresource.class,
                 uri.getMatchedResources().get(0).getClass(),
                 ResourceLocatorWithBaseNoExpressionResource.ERROR_MSG);
-        Assertions.assertEquals(ResourceLocatorWithBaseNoExpressionResource.class, uri.getMatchedResources().get(1).getClass(),
+        Assertions.assertInstanceOf(ResourceLocatorWithBaseNoExpressionResource.class, uri.getMatchedResources().get(1),
                 ResourceLocatorWithBaseNoExpressionResource.ERROR_MSG);
         return this.getClass().getName();
     }
@@ -40,7 +40,7 @@ public class ResourceLocatorWithBaseNoExpressionSubresource {
         Assertions.assertEquals(ResourceLocatorWithBaseNoExpressionSubresource.class,
                 uri.getMatchedResources().get(0).getClass(),
                 ResourceLocatorWithBaseNoExpressionResource.ERROR_MSG);
-        Assertions.assertEquals(ResourceLocatorWithBaseNoExpressionResource.class, uri.getMatchedResources().get(1).getClass(),
+        Assertions.assertInstanceOf(ResourceLocatorWithBaseNoExpressionResource.class, uri.getMatchedResources().get(1),
                 ResourceLocatorWithBaseNoExpressionResource.ERROR_MSG);
         return new ResourceLocatorWithBaseNoExpressionSubresource2();
     }

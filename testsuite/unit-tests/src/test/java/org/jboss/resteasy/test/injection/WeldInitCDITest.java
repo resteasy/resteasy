@@ -21,7 +21,8 @@ public class WeldInitCDITest {
      */
     @Test
     public void testInitWeld() {
-        Weld weld = new Weld();
+        Weld weld = new Weld()
+                .scanClasspathEntries();
         WeldContainer weldContainer = weld.initialize(); // next assert fails without initialized weld
         BeanManager bm = CdiInjectorFactory.lookupBeanManagerCDIUtil();
         Assertions.assertNotNull(bm, "Bean manager was not initialized successfully");

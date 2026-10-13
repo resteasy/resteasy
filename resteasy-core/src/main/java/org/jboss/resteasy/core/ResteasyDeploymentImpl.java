@@ -3,7 +3,7 @@ package org.jboss.resteasy.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -75,6 +75,8 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
     protected List<Class> actualProviderClasses;
     protected List<Object> providers;
     private final Set<String> disabledProviders;
+    // Feature and DynamicFeature instances loaded with the ServiceLoader, keyed by their type
+    private final Map<Class<?>, Object> serviceLoadedProviders = new LinkedHashMap<>();
     protected boolean securityEnabled = false;
     protected List<String> jndiResources;
     protected List<String> resourceClasses;
@@ -129,6 +131,12 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
     public void start() {
         try {
             startInternal();
+        } catch (RuntimeException | Error e) {
+            // A failed start never reaches stop(), so remove any global factory this deployment installed. Otherwise
+            // it is left as the global factory and used by other deployments.
+            ResteasyProviderFactory.clearInstanceIfEqual(threadLocalProviderFactory);
+            ResteasyProviderFactory.clearInstanceIfEqual(providerFactory);
+            throw e;
         } finally {
             ThreadLocalResteasyProviderFactory.pop();
         }
@@ -247,6 +255,15 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
 
         if (applicationClass != null) {
             application = createApplication(applicationClass, dispatcher, providerFactory);
+        } else if (application == null) {
+            application = new Application();
+            dispatcher.getDefaultContextObjects().put(Application.class, application);
+            ResteasyContext.pushContext(Application.class, application);
+            final ApplicationDescription applicationDescription = ApplicationDescription.Builder.of(application)
+                    .type(Application.class)
+                    .build();
+            dispatcher.getDefaultContextObjects().put(ApplicationDescription.class, applicationDescription);
+            ResteasyContext.pushContext(ApplicationDescription.class, applicationDescription);
         }
     }
 
@@ -429,11 +446,13 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
     public void registration() {
         boolean useScanning = registerApplication();
 
+        // A provider loaded with the ServiceLoader is only registered as the loaded instance, even if its type is also
+        // discovered or registered as a class
         if (useScanning && scannedProviderClasses != null) {
             for (String provider : scannedProviderClasses) {
                 if (disabledProviders.contains(provider)) {
                     LogMessages.LOGGER.debugf("Skipping provider \"%s\" as it is marked as disabled.", provider);
-                } else {
+                } else if (!isServiceLoaded(provider)) {
                     registerProvider(provider);
                 }
             }
@@ -443,7 +462,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
             for (String provider : providerClasses) {
                 if (disabledProviders.contains(provider)) {
                     LogMessages.LOGGER.debugf("Skipping provider \"%s\" as it is marked as disabled.", provider);
-                } else {
+                } else if (!isServiceLoaded(provider)) {
                     registerProvider(provider);
                 }
             }
@@ -459,12 +478,21 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
             }
         }
 
+        for (Object provider : serviceLoadedProviders.values()) {
+            if (disabledProviders.contains(provider.getClass().getName())) {
+                LogMessages.LOGGER.debugf("Skipping provider \"%s\" as it is marked as disabled.",
+                        provider.getClass().getName());
+            } else {
+                providerFactory.registerProviderInstance(provider);
+            }
+        }
+
         if (actualProviderClasses != null) {
             for (Class<?> actualProviderClass : actualProviderClasses) {
                 if (disabledProviders.contains(actualProviderClass.getName())) {
                     LogMessages.LOGGER.debugf("Skipping provider \"%s\" as it is marked as disabled.",
                             actualProviderClass.getName());
-                } else {
+                } else if (!isServiceLoaded(actualProviderClass.getName())) {
                     providerFactory.registerProvider(actualProviderClass);
                 }
             }
@@ -588,8 +616,8 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
             // Jakarta REST 3.1 section 4.1.2 requires Feature's and DynamicFeature's to use a service loader if the
             // following property was not set on the Application.
             if (isEnabled(application.getProperties(), "jakarta.ws.rs.loadServices")) {
-                actualProviderClasses.addAll(loadServices(Feature.class));
-                actualProviderClasses.addAll(loadServices(DynamicFeature.class));
+                loadServices(Feature.class);
+                loadServices(DynamicFeature.class);
             }
         }
         return useScanning;
@@ -1071,11 +1099,29 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
         return scheduledExecutorService;
     }
 
-    private static Set<Class<?>> loadServices(final Class<?> service) {
-        final Set<Class<?>> results = new LinkedHashSet<>();
-        results.addAll(PriorityServiceLoader.load(service).getTypes());
-        results.addAll(PriorityServiceLoader.load(service, service.getClassLoader()).getTypes());
-        return results;
+    /**
+     * Loads the services and records the loaded instances. The instances are registered rather than their types, so
+     * they are not created again, e.g. by CDI. If a type is found by both class loaders, the first instance is used.
+     *
+     * @param service the service type
+     */
+    private void loadServices(final Class<?> service) {
+        for (Object instance : PriorityServiceLoader.load(service)) {
+            serviceLoadedProviders.putIfAbsent(instance.getClass(), instance);
+        }
+        for (Object instance : PriorityServiceLoader.load(service, service.getClassLoader())) {
+            serviceLoadedProviders.putIfAbsent(instance.getClass(), instance);
+        }
+    }
+
+    private boolean isServiceLoaded(final String className) {
+        for (Class<?> type : serviceLoadedProviders.keySet()) {
+            if (type.getName().equals(className)) {
+                LogMessages.LOGGER.debugf("Skipping provider \"%s\" as it was loaded with the ServiceLoader.", className);
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean isEnabled(final Map<String, Object> properties, final String name) {

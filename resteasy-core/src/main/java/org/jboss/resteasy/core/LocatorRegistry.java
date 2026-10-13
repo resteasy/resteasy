@@ -27,13 +27,15 @@ public class LocatorRegistry {
         this.providerFactory = providerFactory;
         this.statisticsController = providerFactory.getStatisticsController();
         ResourceBuilder resourceBuilder = providerFactory.getResourceBuilder();
-        if (Proxy.isProxyClass(clazz)) {
-            for (Class<?> intf : clazz.getInterfaces()) {
+        // The class may be a container proxy, e.g. a CDI client proxy
+        final Class<?> type = providerFactory.getInjectorFactory().resolveType(clazz);
+        if (Proxy.isProxyClass(type)) {
+            for (Class<?> intf : type.getInterfaces()) {
                 ResourceClass resourceClass = resourceBuilder.getLocatorFromAnnotations(intf);
                 register(resourceClass);
             }
         } else {
-            ResourceClass resourceClass = resourceBuilder.getLocatorFromAnnotations(clazz);
+            ResourceClass resourceClass = resourceBuilder.getLocatorFromAnnotations(type);
             register(resourceClass);
         }
     }

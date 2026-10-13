@@ -6,18 +6,28 @@
 package org.jboss.resteasy.cdi;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import jakarta.decorator.Decorator;
 import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.context.NormalScope;
 import jakarta.enterprise.event.Observes;
-import jakarta.enterprise.inject.UnsatisfiedResolutionException;
+import jakarta.enterprise.inject.AmbiguousResolutionException;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.Stereotype;
 import jakarta.enterprise.inject.literal.InjectLiteral;
 import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
+import jakarta.enterprise.inject.spi.AfterDeploymentValidation;
+import jakarta.enterprise.inject.spi.AfterTypeDiscovery;
 import jakarta.enterprise.inject.spi.Annotated;
 import jakarta.enterprise.inject.spi.AnnotatedConstructor;
 import jakarta.enterprise.inject.spi.AnnotatedField;
@@ -25,6 +35,7 @@ import jakarta.enterprise.inject.spi.AnnotatedMethod;
 import jakarta.enterprise.inject.spi.AnnotatedParameter;
 import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.BeforeBeanDiscovery;
 import jakarta.enterprise.inject.spi.Extension;
 import jakarta.enterprise.inject.spi.InjectionPoint;
@@ -39,6 +50,7 @@ import jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 import jakarta.enterprise.util.AnnotationLiteral;
 import jakarta.enterprise.util.Nonbinding;
 import jakarta.inject.Inject;
+import jakarta.inject.Scope;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.DefaultValue;
@@ -49,7 +61,9 @@ import jakarta.ws.rs.MatrixParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 
+import org.jboss.resteasy.cdi.i18n.LogMessages;
 import org.jboss.resteasy.cdi.i18n.Messages;
 import org.jboss.resteasy.core.FormInjector;
 import org.jboss.resteasy.core.extractors.ParameterExtractors;
@@ -64,28 +78,28 @@ import org.jboss.resteasy.spi.util.Types;
  * function as CDI qualifiers. This allows Jakarta REST resource classes to receive parameter values via CDI
  * constructor injection rather than requiring a public no-arg constructor.
  * <p>
- * The extension operates in four CDI lifecycle phases:
+ * The extension operates in six CDI lifecycle phases:
  * </p>
  * <ol>
  * <li>{@link BeforeBeanDiscovery} &mdash; registers each {@code @*Param} annotation as a CDI qualifier</li>
  * <li>{@link ProcessAnnotatedType} &mdash; adds {@link Inject @Inject} to {@code @*Param}-annotated fields,
  * setter methods, and constructors so that CDI resolves parameter values automatically. RESTEasy-specific
  * annotations ({@code org.jboss.resteasy.annotations.jaxrs.*Param}) are also handled by adding the corresponding
- * Jakarta REST annotation alongside {@code @Inject}.</li>
+ * Jakarta REST annotation alongside {@code @Inject}. The {@code @BeanParam} aggregators of resources are
+ * recorded.</li>
+ * <li>{@link AfterTypeDiscovery} &mdash; makes each recorded {@code @BeanParam} aggregator which is not a bean a
+ * {@code @Dependent} bean</li>
  * <li>{@link ProcessInjectionPoint} &mdash; collects the types of all {@code @*Param}-annotated injection points</li>
  * <li>{@link AfterBeanDiscovery} &mdash; registers synthetic beans that produce parameter values at request time
  * by delegating to {@link ParameterExtractors}</li>
+ * <li>{@link AfterDeploymentValidation} &mdash; warns about {@code @BeanParam} aggregators with a normal scope</li>
  * </ol>
  *
  * @author <a href="mailto:jperkins@ibm.com">James R. Perkins</a>
  */
 public class ResteasyParamCdiExtension implements Extension {
-
-    private final Set<Type> paramTypes = ConcurrentHashMap.newKeySet();
-    private final Map<CacheKey, RequestParameterExtractor> extractorCache = new ConcurrentHashMap<>();
-    private final Map<Class<?>, FormInjector> formInjectorCache = new ConcurrentHashMap<>();
-
-    private final Set<Class<? extends Annotation>> paramAnnotations = Set.of(
+    private static final String BEAN_PARAM_ID = ResteasyParamCdiExtension.class.getName() + ".beanParam";
+    private static final Set<Class<? extends Annotation>> PARAM_ANNOTATIONS = Set.of(
             BeanParam.class,
             CookieParam.class,
             FormParam.class,
@@ -93,11 +107,12 @@ public class ResteasyParamCdiExtension implements Extension {
             MatrixParam.class,
             PathParam.class,
             QueryParam.class);
-    private final boolean enhancedCdiSupportEnabled;
 
-    public ResteasyParamCdiExtension() {
-        enhancedCdiSupportEnabled = CdiOptions.ENHANCED_CDI_SUPPORT.getValue();
-    }
+    private final Set<Type> paramTypes = ConcurrentHashMap.newKeySet();
+    private final Set<Class<?>> beanParamTypes = ConcurrentHashMap.newKeySet();
+    private final Set<Class<?>> discoveredTypes = ConcurrentHashMap.newKeySet();
+    private final Map<CacheKey, RequestParameterExtractor> extractorCache = new ConcurrentHashMap<>();
+    private final Map<Class<?>, FormInjector> formInjectorCache = new ConcurrentHashMap<>();
 
     /**
      * Registers each {@code @*Param} annotation as a CDI qualifier, marking all annotation members as
@@ -106,13 +121,11 @@ public class ResteasyParamCdiExtension implements Extension {
      * @param event the before bean discovery event
      */
     public void registerQualifiers(@Observes final BeforeBeanDiscovery event) {
-        if (enhancedCdiSupportEnabled) {
-            // Register the @*Param annotations as qualifiers
-            for (Class<? extends Annotation> param : paramAnnotations) {
-                event.configureQualifier(param)
-                        .methods()
-                        .forEach(method -> method.add(Nonbinding.Literal.INSTANCE));
-            }
+        // Register the @*Param annotations as qualifiers
+        for (Class<? extends Annotation> param : PARAM_ANNOTATIONS) {
+            event.configureQualifier(param)
+                    .methods()
+                    .forEach(method -> method.add(Nonbinding.Literal.INSTANCE));
         }
     }
 
@@ -126,14 +139,77 @@ public class ResteasyParamCdiExtension implements Extension {
      * @param <T>   the type being processed
      */
     public <T> void observeParamResources(@WithAnnotations({ Path.class }) @Observes ProcessAnnotatedType<T> event) {
-        if (enhancedCdiSupportEnabled) {
-            final AnnotatedType<T> annotatedType = event.getAnnotatedType();
-            if (!annotatedType.getJavaClass().isInterface()
-                    && !annotatedType.isAnnotationPresent(Decorator.class)
-                    && !Utils.isUnproxyableClass(annotatedType.getJavaClass())) {
-                addInject(event);
+        final AnnotatedType<T> annotatedType = event.getAnnotatedType();
+        collectBeanParamTypes(annotatedType.getJavaClass());
+        if (!annotatedType.getJavaClass().isInterface()
+                && !annotatedType.isAnnotationPresent(Decorator.class)
+                && !Utils.isUnproxyableClass(annotatedType.getJavaClass())) {
+            addInject(event.configureAnnotatedType());
+        }
+    }
+
+    /**
+     * Records the discovered types which may be {@link BeanParam @BeanParam} aggregators, so that
+     * {@link #addBeanParamTypes(AfterTypeDiscovery)} does not add a type which is already a bean. The scope and
+     * stereotype meta-annotations match a type with a bean defining annotation, which may have only
+     * {@link Context @Context} members or none. Any other type without these annotations has nothing for CDI to inject.
+     *
+     * @param event the annotated type being processed
+     * @param <T>   the type being processed
+     */
+    public <T> void observeBeanParamCandidates(@WithAnnotations({ BeanParam.class, CookieParam.class, FormParam.class,
+            HeaderParam.class, MatrixParam.class, PathParam.class, QueryParam.class, Inject.class, Context.class,
+            NormalScope.class, Scope.class, Stereotype.class,
+            org.jboss.resteasy.annotations.jaxrs.CookieParam.class, org.jboss.resteasy.annotations.jaxrs.FormParam.class,
+            org.jboss.resteasy.annotations.jaxrs.HeaderParam.class, org.jboss.resteasy.annotations.jaxrs.MatrixParam.class,
+            org.jboss.resteasy.annotations.jaxrs.PathParam.class,
+            org.jboss.resteasy.annotations.jaxrs.QueryParam.class }) @Observes final ProcessAnnotatedType<T> event) {
+        // Types added by an extension are recorded too, as they are beans as well
+        discoveredTypes.add(event.getAnnotatedType().getJavaClass());
+    }
+
+    /**
+     * Makes each {@link BeanParam @BeanParam} aggregator of a resource which is not a bean a {@link Dependent @Dependent}
+     * bean, and adds {@link Inject @Inject} to its {@code @*Param}-annotated members. CDI then creates the aggregator,
+     * and injects all its members, as for an aggregator which is a bean. An aggregator which CDI cannot create, e.g.
+     * one without a no-argument or {@code @Inject} constructor, is left to RESTEasy.
+     *
+     * @param event the after type discovery event
+     */
+    public void addBeanParamTypes(@Observes final AfterTypeDiscovery event) {
+        for (Class<?> type : beanParamTypes) {
+            if (!discoveredTypes.contains(type) && hasBeanConstructor(type)) {
+                final AnnotatedTypeConfigurator<?> configurator = event.addAnnotatedType(type,
+                        "%s.%s".formatted(BEAN_PARAM_ID, type.getName()));
+                configurator.add(Dependent.Literal.INSTANCE);
+                addInject(configurator);
             }
         }
+    }
+
+    /**
+     * Logs a warning for each {@link BeanParam @BeanParam} aggregator whose bean has a normal scope. The aggregator is
+     * then a client proxy, whose fields do not hold the parameter values, e.g. when validating a {@code @Valid}
+     * aggregator.
+     *
+     * @param event       the after deployment validation event
+     * @param beanManager the bean manager
+     */
+    public void validateBeanParamScopes(@Observes final AfterDeploymentValidation event, final BeanManager beanManager) {
+        for (Class<?> type : beanParamTypes) {
+            try {
+                final Bean<?> bean = beanManager.resolve(beanManager.getBeans(type));
+                if (bean != null && beanManager.isNormalScope(bean.getScope())) {
+                    LogMessages.LOGGER.normalScopedBeanParam(type.getName(), "@" + bean.getScope().getSimpleName());
+                }
+            } catch (AmbiguousResolutionException ignore) {
+                // The aggregator is obtained through its @BeanParam qualified bean, so another bean of its type is
+                // not an error here
+            }
+        }
+        beanParamTypes.clear();
+        // Cleared here rather than after type discovery, as the types added then are processed afterward
+        discoveredTypes.clear();
     }
 
     /**
@@ -146,16 +222,14 @@ public class ResteasyParamCdiExtension implements Extension {
      * added so that the existing CDI qualifier and producer infrastructure handles them.
      * </p>
      */
-    private void addInject(final ProcessAnnotatedType<?> pat) {
-        final AnnotatedTypeConfigurator<?> configurator = pat.configureAnnotatedType();
-
+    private void addInject(final AnnotatedTypeConfigurator<?> configurator) {
         // Fields
         for (AnnotatedFieldConfigurator<?> fieldConfig : configurator.fields()) {
             final AnnotatedField<?> field = fieldConfig.getAnnotated();
             if (field.isAnnotationPresent(Inject.class)) {
                 continue;
             }
-            if (paramAnnotations.stream().anyMatch(field::isAnnotationPresent)) {
+            if (PARAM_ANNOTATIONS.stream().anyMatch(field::isAnnotationPresent)) {
                 fieldConfig.add(InjectLiteral.INSTANCE);
             } else {
                 final Annotation jakartaEquiv = toJakartaParam(field);
@@ -172,7 +246,7 @@ public class ResteasyParamCdiExtension implements Extension {
             if (method.isAnnotationPresent(Inject.class)) {
                 continue;
             }
-            if (paramAnnotations.stream().anyMatch(method::isAnnotationPresent)) {
+            if (PARAM_ANNOTATIONS.stream().anyMatch(method::isAnnotationPresent)) {
                 methodConfig.add(InjectLiteral.INSTANCE);
             } else {
                 final Annotation jakartaEquiv = toJakartaParam(method);
@@ -190,7 +264,7 @@ public class ResteasyParamCdiExtension implements Extension {
                 continue;
             }
             final boolean hasParamAnnotation = ctor.getParameters().stream()
-                    .anyMatch(p -> paramAnnotations.stream().anyMatch(p::isAnnotationPresent)
+                    .anyMatch(p -> PARAM_ANNOTATIONS.stream().anyMatch(p::isAnnotationPresent)
                             || toJakartaParam(p) != null);
             if (hasParamAnnotation) {
                 ctorConfig.add(InjectLiteral.INSTANCE);
@@ -201,6 +275,88 @@ public class ResteasyParamCdiExtension implements Extension {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Records the types of the {@link BeanParam @BeanParam} fields, setter methods and method and constructor
+     * parameters of the type and its super types, including those of nested aggregators.
+     *
+     * @param type the resource or aggregator type
+     */
+    private void collectBeanParamTypes(final Class<?> type) {
+        for (Class<?> current = type; current != null && current != Object.class; current = current.getSuperclass()) {
+            for (Field field : current.getDeclaredFields()) {
+                if (field.isAnnotationPresent(BeanParam.class)) {
+                    addBeanParamType(field.getType());
+                }
+            }
+            for (Method method : current.getDeclaredMethods()) {
+                if (method.isAnnotationPresent(BeanParam.class) && method.getParameterCount() == 1) {
+                    addBeanParamType(method.getParameterTypes()[0]);
+                }
+                collectBeanParamTypes(method.getParameters());
+            }
+            for (Constructor<?> constructor : current.getDeclaredConstructors()) {
+                collectBeanParamTypes(constructor.getParameters());
+            }
+        }
+    }
+
+    private void collectBeanParamTypes(final Parameter[] parameters) {
+        for (Parameter parameter : parameters) {
+            if (parameter.isAnnotationPresent(BeanParam.class)) {
+                addBeanParamType(parameter.getType());
+            }
+        }
+    }
+
+    private void addBeanParamType(final Class<?> type) {
+        if (type.isInterface() || type.isPrimitive() || type.isArray() || Modifier.isAbstract(type.getModifiers())
+                || (type.getEnclosingClass() != null && !Modifier.isStatic(type.getModifiers()))) {
+            return;
+        }
+        if (beanParamTypes.add(type)) {
+            collectBeanParamTypes(type);
+        }
+    }
+
+    /**
+     * Checks if CDI can create the type, i.e. if it has a constructor without parameters or one annotated with
+     * {@link Inject @Inject}.
+     */
+    private static boolean hasBeanConstructor(final Class<?> type) {
+        for (Constructor<?> constructor : type.getDeclaredConstructors()) {
+            if (constructor.getParameterCount() == 0 || constructor.isAnnotationPresent(Inject.class)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Resolves the bean of a {@link BeanParam @BeanParam} aggregator from the beans of the instance. If subclasses of
+     * the aggregator are beans as well, the bean of the aggregator itself is used, see
+     * {@link BeanManagerSupport#findBean(BeanManager, Type, Set)}.
+     *
+     * @param beanManager    the bean manager
+     * @param beanParamClass the aggregator type
+     * @param candidates     the instance of the aggregator type
+     *
+     * @return the bean or {@code null} if RESTEasy creates the aggregator
+     */
+    private static Bean<?> findBeanParamBean(final BeanManager beanManager, final Class<?> beanParamClass,
+            final Instance<?> candidates) {
+        if (candidates.isUnsatisfied()) {
+            return null;
+        }
+        final Set<Bean<?>> beans = new HashSet<>();
+        candidates.handlesStream().forEach(handle -> beans.add(handle.getBean()));
+        try {
+            return BeanManagerSupport.findBean(beanManager, beanParamClass, beans);
+        } catch (AmbiguousResolutionException e) {
+            // None of the beans is the aggregator itself, e.g. it is @Vetoed while subclasses of it are beans
+            return null;
         }
     }
 
@@ -239,9 +395,10 @@ public class ResteasyParamCdiExtension implements Extension {
     /**
      * Registers the {@code @*Param} annotations as CDI qualifiers with producers.
      *
-     * @param afd the after bean discovery event
+     * @param afd         the after bean discovery event
+     * @param beanManager the bean manager
      */
-    public void registerParamQualifiers(@Observes final AfterBeanDiscovery afd) {
+    public void registerParamQualifiers(@Observes final AfterBeanDiscovery afd, final BeanManager beanManager) {
         // Register synthetic beans for the @*Param annotated injection points
         for (Type type : paramTypes) {
             // Register the bean with the BeanParam qualifier
@@ -255,20 +412,26 @@ public class ResteasyParamCdiExtension implements Extension {
                         if (!(beanParamType instanceof Class<?> beanParamClass)) {
                             return null;
                         }
-                        // If the type is a CDI-managed bean, let CDI create and inject it
-                        try {
-                            return instance.select(beanParamClass).get();
-                        } catch (UnsatisfiedResolutionException e) {
-                            // Fall back to FormInjector for non-CDI-managed types
-                            final ResteasyProviderFactory rpf = ResteasyProviderFactory.getInstance();
-                            final HttpRequest request = rpf.getContextData(HttpRequest.class);
-                            if (request == null) {
-                                return null;
-                            }
-                            final FormInjector formInjector = formInjectorCache.computeIfAbsent(beanParamClass,
-                                    (ignored) -> new FormInjector(beanParamClass, rpf));
-                            return formInjector.inject(request, null, false);
+                        // If the type is a CDI-managed bean, let CDI create and inject it. The instance is created
+                        // through its handle, so a @Dependent instance is destroyed with the injection target.
+                        final Instance<?> candidates = instance.select(beanParamClass);
+                        final Bean<?> bean = findBeanParamBean(beanManager, beanParamClass, candidates);
+                        if (bean != null) {
+                            return candidates.handlesStream()
+                                    .filter(handle -> handle.getBean().equals(bean))
+                                    .findFirst()
+                                    .orElseThrow()
+                                    .get();
                         }
+                        // Fall back to FormInjector for non-CDI-managed types
+                        final ResteasyProviderFactory rpf = ResteasyProviderFactory.getInstance();
+                        final HttpRequest request = rpf.getContextData(HttpRequest.class);
+                        if (request == null) {
+                            return null;
+                        }
+                        final FormInjector formInjector = formInjectorCache.computeIfAbsent(beanParamClass,
+                                (ignored) -> new FormInjector(beanParamClass, rpf));
+                        return formInjector.inject(request, null, false);
                     });
             // Register the bean with the CookieParam qualifier
             afd.addBean()
@@ -356,25 +519,23 @@ public class ResteasyParamCdiExtension implements Extension {
      * @param <X> the declared type of the injection point
      */
     public <T, X> void processInjectionPoint(@Observes final ProcessInjectionPoint<T, X> pip) {
-        if (enhancedCdiSupportEnabled) {
-            final InjectionPoint ip = pip.getInjectionPoint();
-            final Annotated annotated = ip.getAnnotated();
-            for (Class<? extends Annotation> type : paramAnnotations) {
-                if (annotated.isAnnotationPresent(type)) {
+        final InjectionPoint ip = pip.getInjectionPoint();
+        final Annotated annotated = ip.getAnnotated();
+        for (Class<? extends Annotation> type : PARAM_ANNOTATIONS) {
+            if (annotated.isAnnotationPresent(type)) {
+                paramTypes.add(Types.boxPrimitives(ip.getType()));
+                return;
+            }
+        }
+        // Check if this is a setter parameter whose method has the annotation
+        if (annotated instanceof AnnotatedParameter<?> param) {
+            final Annotated method = param.getDeclaringCallable();
+            for (Class<? extends Annotation> type : PARAM_ANNOTATIONS) {
+                final Annotation ann = method.getAnnotation(type);
+                if (ann != null) {
+                    pip.configureInjectionPoint().addQualifier(ann);
                     paramTypes.add(Types.boxPrimitives(ip.getType()));
                     return;
-                }
-            }
-            // Check if this is a setter parameter whose method has the annotation
-            if (annotated instanceof AnnotatedParameter<?> param) {
-                final Annotated method = param.getDeclaringCallable();
-                for (Class<? extends Annotation> type : paramAnnotations) {
-                    final Annotation ann = method.getAnnotation(type);
-                    if (ann != null) {
-                        pip.configureInjectionPoint().addQualifier(ann);
-                        paramTypes.add(Types.boxPrimitives(ip.getType()));
-                        return;
-                    }
                 }
             }
         }
@@ -406,7 +567,14 @@ public class ResteasyParamCdiExtension implements Extension {
         final boolean encode = injectionPoint.getAnnotated().isAnnotationPresent(Encoded.class) ||
                 (bean != null && bean.getBeanClass().isAnnotationPresent(Encoded.class));
         final String defaultValue = findDefaultValue(injectionPoint.getAnnotated());
-        final Set<Annotation> annotations = injectionPoint.getQualifiers();
+        // The qualifiers do not include annotations such as @Separator, which the extractor requires
+        final Set<Annotation> annotations = new HashSet<>(injectionPoint.getQualifiers());
+        annotations.addAll(injectionPoint.getAnnotated().getAnnotations());
+        // For a setter method, the annotations are on the method rather than the parameter
+        if (injectionPoint.getAnnotated() instanceof AnnotatedParameter<?> parameter
+                && parameter.getDeclaringCallable() instanceof AnnotatedMethod<?> method) {
+            annotations.addAll(method.getAnnotations());
+        }
         final CacheKey key = new CacheKey(annotationType, paramName, genericType, encode, defaultValue, annotations);
         final RequestParameterExtractor extractor = extractorCache.computeIfAbsent(key,
                 (current) -> ParameterExtractors.of(rawType, genericType, annotations, encode,
