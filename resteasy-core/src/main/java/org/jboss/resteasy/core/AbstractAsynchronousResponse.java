@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import jakarta.ws.rs.container.CompletionCallback;
@@ -40,7 +41,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
     protected TimeoutHandler timeoutHandler;
     protected List<CompletionCallback> completionCallbacks = new ArrayList<CompletionCallback>();
     protected Map<Class<?>, Object> contextDataMap;
-    private boolean callbacksCalled;
+    private final AtomicBoolean callbacksCalled = new AtomicBoolean();
 
     protected AbstractAsynchronousResponse(final SynchronousDispatcher dispatcher, final HttpRequest request,
             final HttpResponse response) {
@@ -143,9 +144,8 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
     @Override
     public void completionCallbacks(Throwable throwable) {
         // make sure we only call them once
-        if (callbacksCalled)
+        if (!callbacksCalled.compareAndSet(false, true))
             return;
-        callbacksCalled = true;
         for (CompletionCallback callback : completionCallbacks) {
             callback.onComplete(throwable);
         }
@@ -175,8 +175,9 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
                 jaxrsResponse.addMethodAnnotations(method.getMethodAnnotations());
                 response = jaxrsResponse;
             }
+            AsyncCompletion completion = AsyncCompletion.whenWritten();
             try {
-                dispatcher.asynchronousDelivery(this.request, this.response, response, t -> {
+                dispatcher.asynchronousDelivery(this.request, this.response, response, completion.onWritten(t -> {
                     if (t != null) {
                         internalResume(t, t2 -> {
                             onComplete.accept(t);
@@ -186,8 +187,12 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
                         onComplete.accept(null);
                         completionCallbacks(null);
                     }
-                });
+                }));
             } catch (Throwable e) {
+                if (completion.afterCompletion(e)) {
+                    completionCallbacks(e);
+                    return true;
+                }
                 return internalResume(e, t -> {
                     onComplete.accept(e);
                     // callbacks done by internalResume
