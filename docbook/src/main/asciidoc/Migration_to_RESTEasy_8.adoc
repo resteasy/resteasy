@@ -222,7 +222,9 @@ sub-resource locators and `@Form` or `@Query` classes, which are `@Dependent` CD
 === Requirements
 
 A Jakarta Validation provider's CDI integration, e.g. `hibernate-validator-cdi`, must be available for validation. It's
-included in WildFly. When using the Java SE bootstrap, add it to the application.
+included in WildFly. `resteasy-validator-provider` now depends on Hibernate Validator, its CDI integration and the
+Jakarta Expression Language implementation Expressly, so nothing needs to be added when using the Java SE bootstrap.
+To use another Jakarta Validation provider, exclude these dependencies and add the provider and its CDI integration.
 
 [[_migration_8_spi]]
 === Changes for integrations
