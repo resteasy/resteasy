@@ -258,6 +258,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage {
                 LogMessages.LOGGER.debug(Messages.MESSAGES.onComplete());
                 synchronized (responseLock) {
                     done = true;
+                    cancelTimeout();
                     close();
                 }
             }
@@ -293,6 +294,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage {
                 synchronized (responseLock) {
                     cancelled = true;
                     done = true;
+                    cancelTimeout();
                     close();
                 }
             }
@@ -304,6 +306,20 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage {
             @Override
             public void close() {
                 asyncScheduler.shutdown();
+            }
+
+            /**
+             * Cancels the pending timeout watchdog when the async cycle ends. This must not run
+             * on the timeout dispatch path itself: a {@link jakarta.ws.rs.container.TimeoutHandler}
+             * may extend the timeout instead of resuming, and the watchdog it re-arms has to
+             * survive. Without the cancel, the watchdog of every completed request stays queued
+             * on the scheduler until its delay elapses.
+             */
+            private void cancelTimeout() {
+                final ScheduledFuture<?> timeout = timeoutFuture;
+                if (timeout != null) {
+                    timeout.cancel(false);
+                }
             }
         }
 
