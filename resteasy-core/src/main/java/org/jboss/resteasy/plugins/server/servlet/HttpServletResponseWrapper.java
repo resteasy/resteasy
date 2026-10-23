@@ -20,6 +20,7 @@ import jakarta.ws.rs.core.NewCookie;
 
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.AsyncOutputStream;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -464,7 +465,18 @@ public class HttpServletResponseWrapper implements HttpResponse {
     }
 
     public boolean isCommitted() {
-        return response.isCommitted();
+        try {
+            return response.isCommitted();
+        } catch (IllegalStateException e) {
+            // A servlet container may recycle the exchange once the async cycle completes or the
+            // connection is torn down (Jetty ee11 does this), after which isCommitted() throws
+            // instead of reporting the state. A recycled exchange can no longer take a response, so
+            // report it as committed. This keeps SynchronousDispatcher.writeException from
+            // attempting a doomed write and logging a spurious unhandled 500. Recycled exchanges are
+            // routine under client disconnects, so trace rather than debug to keep the log quiet.
+            LogMessages.LOGGER.trace(e.getMessage(), e);
+            return true;
+        }
     }
 
     public void reset() {
