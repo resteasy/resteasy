@@ -756,6 +756,14 @@ RESTEasy can receive the following configuration options from any ConfigSource's
 | false
 | Turns off the {spec-name} spec defined class-level expression filtering and instead tries to match every method's full path.
 
+| resteasy.proxy.implement.all.interfaces
+| false
+| When RESTEasy injects a context type which is an interface, it injects a proxy which delegates to the context object
+  of the current request. By default the proxy only implements the context type. When enabled, the proxy also
+  implements all interfaces of the context object, so it can be cast to them. This does not apply to context types
+  injected by CDI, which only implement the context type. Deprecated: this switch will be removed along with RESTEasy's
+  legacy context injection.
+
 | resteasy.use.container.form.params
 | false
 | Obtain form parameters by using `HttpServletRequest.getParameterMap()`. Use this switch if you are calling this method

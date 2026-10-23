@@ -220,7 +220,7 @@ public class ResteasyViolationExceptionRepresentationTest {
         logger.info("value: " + cv.getValue());
         Assertions.assertTrue(
                 cv.getValue().startsWith(
-                        "org.jboss.resteasy.test.validation.resource.ViolationExceptionResourceWithFiveViolations@"),
+                        ViolationExceptionResourceWithFiveViolations.class.getName()),
                 "Exception has wrong value");
         cv = e.getParameterViolations().iterator().next();
         Assertions.assertEquals("s must have length: 3 <= length <= 5", cv.getMessage(),

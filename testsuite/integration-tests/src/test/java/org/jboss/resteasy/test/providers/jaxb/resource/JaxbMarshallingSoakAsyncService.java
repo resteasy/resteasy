@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.providers.jaxb.resource;
 
 import java.io.ByteArrayInputStream;
 
+import jakarta.inject.Singleton;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -12,6 +13,8 @@ import org.jboss.resteasy.test.providers.jaxb.JaxbMarshallingSoakTest;
 import org.junit.jupiter.api.Assertions;
 
 @Path("/mpac")
+// We use a singleton here because this uses the resteasy.async.job.service.enabled for testing.
+@Singleton
 public class JaxbMarshallingSoakAsyncService {
     @GET()
     @Produces("text/plain")

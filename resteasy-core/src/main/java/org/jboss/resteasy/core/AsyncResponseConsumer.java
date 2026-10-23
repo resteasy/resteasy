@@ -23,6 +23,7 @@ import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
 import org.jboss.resteasy.plugins.providers.sse.OutboundSseEventImpl;
 import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 import org.jboss.resteasy.plugins.providers.sse.SseImpl;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.specimpl.BuiltResponseEntityNotBacked;
@@ -98,6 +99,16 @@ public abstract class AsyncResponseConsumer {
     }
 
     protected void internalResume(Object entity, Consumer<Throwable> onComplete) {
+        // The response is written directly rather than through AsyncResponse.resume(), so check whether it already
+        // completed, e.g. because of a timeout or because the client closed the connection. It is not done while the
+        // elements of a stream are written, as it is only completed once this consumer completes.
+        if (asyncResponse.isDone()) {
+            LogMessages.LOGGER.debug("The response has already completed, the entity was not sent.");
+            // Do not invoke onComplete(), a null failure indicates the write succeeded and a streaming consumer would
+            // request the next element. Complete this consumer, which cancels the subscription.
+            complete(null);
+            return;
+        }
         try (CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)) {
             HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
             HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
@@ -139,6 +150,12 @@ public abstract class AsyncResponseConsumer {
     protected abstract boolean sendHeaders();
 
     protected void internalResume(Throwable t, Consumer<Throwable> onComplete) {
+        // See internalResume(Object, Consumer)
+        if (asyncResponse.isDone()) {
+            LogMessages.LOGGER.debugf(t, "The response has already completed, the failure was not sent.");
+            complete(t);
+            return;
+        }
         try (CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)) {
             HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
             HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);

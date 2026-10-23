@@ -614,5 +614,20 @@
                 <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
             </properties>
         </profile>
+        <profile>
+            <id>jakarta-staging</id>
+            <repositories>
+                <repository>
+                    <id>jakarta-rest-staging</id>
+                    <url>https://repo.eclipse.org/repository/rest-maven2-staging/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
     </profiles>
 </project>

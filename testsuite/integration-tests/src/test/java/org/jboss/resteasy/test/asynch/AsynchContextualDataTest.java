@@ -96,4 +96,32 @@ public class AsynchContextualDataTest {
         response.get().close();
         resResponse.close();
     }
+
+    /**
+     * Test the context data of a request which resumes another request with an exception is still available after the
+     * resume
+     *
+     * @since 8.0
+     */
+    @Test
+    public void testContextualDataAfterExceptionResume() throws Exception {
+        String id = "335";
+
+        //Start the request to the waiting endpoint, but don't block
+        WebTarget target = client.target(generateURL("/products/wait/" + id));
+        Future<Response> response = target.request().async().get();
+
+        //Let the server set the resumable field, timing thing!
+        Thread.sleep(3000);
+
+        //Resume the waiting request with an exception, then read the UriInfo of this request
+        WebTarget resTarget = client.target(generateURL("/products/res-exception/" + id));
+        try (Response resResponse = resTarget.request().get()) {
+            Assertions.assertEquals(200, resResponse.getStatus());
+            Assertions.assertEquals("/products/res-exception/" + id, resResponse.readEntity(String.class));
+        }
+        try (Response waitResponse = response.get()) {
+            Assertions.assertEquals(404, waitResponse.getStatus());
+        }
+    }
 }

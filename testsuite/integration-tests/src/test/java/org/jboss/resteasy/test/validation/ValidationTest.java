@@ -217,7 +217,7 @@ public class ValidationTest {
                 violation.getMessage(), ERR_CONSTRAINT_MESSAGE);
         logger.info("violation value: " + violation.getValue());
         Assertions.assertTrue(violation.getValue()
-                .startsWith("org.jboss.resteasy.test.validation.resource.ValidationResourceWithAllViolationTypes@"));
+                .startsWith(ValidationResourceWithAllViolationTypes.class.getName()));
         violation = r.getParameterViolations().iterator().next();
         logger.info("violation: " + violation);
         Assertions.assertEquals("s must have length: 3 <= length <= 5", violation.getMessage(),

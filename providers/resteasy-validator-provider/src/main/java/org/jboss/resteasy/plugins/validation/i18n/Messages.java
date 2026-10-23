@@ -24,11 +24,11 @@ public interface Messages {
     @Message(id = 8505, value = "Expect two non-null methods")
     String expectTwoNonNullMethods();
 
-    @Message(id = 8510, value = "ResteasyCdiExtension is on the classpath.")
-    String resteasyCdiExtensionOnClasspath();
+    // @Message(id = 8510, value = "ResteasyCdiExtension is on the classpath.")
+    // String resteasyCdiExtensionOnClasspath();
 
-    @Message(id = 8515, value = "ResteasyCdiExtension is not on the classpath. Assuming CDI is not active")
-    String resteasyCdiExtensionNotOnClasspath();
+    // @Message(id = 8515, value = "ResteasyCdiExtension is not on the classpath. Assuming CDI is not active")
+    // String resteasyCdiExtensionNotOnClasspath();
 
     @Message(id = 8520, value = "Unable to load Validation support")
     String unableToLoadValidationSupport();

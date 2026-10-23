@@ -342,6 +342,10 @@ public interface LogMessages extends BasicLogger {
             + "explicit list of allowed origins if credentials are required.")
     void corsCredentialsIgnoredForWildcardOrigin();
 
+    @LogMessage(level = Level.WARN)
+    @Message(id = 2420, value = "Failed to notify the request listener %s")
+    void failedToNotifyRequestListener(@Cause Throwable cause, String listener);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                                                  TRACE                                                //
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////

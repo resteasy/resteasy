@@ -14,9 +14,13 @@ public class ApplicationInjection extends Application {
     public static volatile List<ApplicationInjection> instances = new ArrayList<>();
 
     @Context
-    public Application app;
+    private Application app;
 
     public ApplicationInjection() {
         instances.add(this);
+    }
+
+    public Application getApplication() {
+        return app;
     }
 }

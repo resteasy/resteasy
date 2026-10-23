@@ -165,6 +165,9 @@ public class ValidationComplexTest {
         war = addCustomObjectClasses(war);
         Map<String, String> contextParams = new HashMap<>();
         contextParams.put("resteasy.async.job.service.enabled", "true");
+        // The async job service invokes the resource without an active CDI request context, so the resources must not
+        // be @RequestScoped CDI beans
+        war.addAsWebInfResource(TestUtil.createBeansXml("none"), "beans.xml");
         return TestUtil.finishContainerPrepare(war, contextParams, clazz, ValidationComplexFooReaderWriter.class);
     }
 
@@ -823,7 +826,7 @@ public class ValidationComplexTest {
         Assertions.assertEquals("Concatenation of s and t must have length > 5", cv.getMessage(),
                 WRONG_ERROR_MSG);
         Assertions.assertTrue(cv.getValue().startsWith(
-                "org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithAllFivePotentialViolations@"),
+                ValidationComplexResourceWithAllFivePotentialViolations.class.getName()),
                 WRONG_ERROR_MSG);
         cv = r.getParameterViolations().iterator().next();
         Assertions.assertEquals("s must have length: 3 <= length <= 5", cv.getMessage(),
@@ -1015,7 +1018,7 @@ public class ValidationComplexTest {
         Assertions.assertEquals("Concatenation of s and t must have length > 5", cv.getMessage(),
                 WRONG_ERROR_MSG);
         Assertions.assertTrue(cv.getValue().startsWith(
-                "org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithAllFivePotentialViolations@"),
+                ValidationComplexResourceWithAllFivePotentialViolations.class.getName()),
                 RESPONSE_ERROR_MSG);
         response.close();
 

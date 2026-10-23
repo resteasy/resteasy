@@ -27,7 +27,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.ValueInjector;
+import org.jboss.resteasy.spi.StreamValueInjector;
 import org.jboss.resteasy.spi.util.Types;
 
 /**
@@ -35,7 +35,7 @@ import org.jboss.resteasy.spi.util.Types;
  * @version $Revision: 1 $
  */
 @SuppressWarnings("unchecked")
-public class ContextParameterInjector implements ValueInjector {
+public class ContextParameterInjector implements StreamValueInjector {
     private static final Constructor<?> constructor;
 
     private Class<?> rawType;
@@ -168,6 +168,11 @@ public class ContextParameterInjector implements ValueInjector {
         }
 
         return createProxy();
+    }
+
+    @Override
+    public boolean isContentAvailable(final HttpRequest request) {
+        return outputStreamWasWritten;
     }
 
     protected Object createProxy() {

@@ -3,6 +3,7 @@ package org.jboss.resteasy.rxjava2;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import jakarta.enterprise.inject.Vetoed;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -18,6 +19,7 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 
 @Path("/")
+@Vetoed
 public class RxResource {
     @Path("single")
     @GET

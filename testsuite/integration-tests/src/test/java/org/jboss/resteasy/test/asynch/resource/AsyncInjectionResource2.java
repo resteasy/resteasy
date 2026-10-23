@@ -9,14 +9,26 @@ import jakarta.ws.rs.core.Context;
 public class AsyncInjectionResource2 {
 
     @Context
-    AsyncInjectionContext resolvedContextField;
+    private AsyncInjectionContext resolvedContextField;
     @Context
-    CompletionStage<AsyncInjectionContext> asyncContextField;
+    private CompletionStage<AsyncInjectionContext> asyncContextField;
 
     @Context
     @AsyncInjectionContextAsyncSpecifier
-    AsyncInjectionContext resolvedContextFieldAsync;
+    private AsyncInjectionContext resolvedContextFieldAsync;
 
     public AsyncInjectionResource2() {
+    }
+
+    public AsyncInjectionContext resolvedContextField() {
+        return resolvedContextField;
+    }
+
+    public CompletionStage<AsyncInjectionContext> asyncContextField() {
+        return asyncContextField;
+    }
+
+    public AsyncInjectionContext resolvedContextFieldAsync() {
+        return resolvedContextFieldAsync;
     }
 }

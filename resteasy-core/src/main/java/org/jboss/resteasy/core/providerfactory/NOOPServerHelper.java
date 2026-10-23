@@ -34,8 +34,15 @@ public final class NOOPServerHelper extends ServerHelper {
     }
 
     @Override
-    protected synchronized void processProviderInstanceContracts(Object provider, Map<Class<?>, Integer> contracts,
-            Integer priorityOverride, boolean builtIn, Map<Class<?>, Integer> newContracts) {
+    protected void processProviderInstanceContracts(Object provider, Class<?> providerClass,
+            Map<Class<?>, Integer> contracts, Integer priorityOverride, boolean builtIn,
+            Map<Class<?>, Integer> newContracts) {
+    }
+
+    @Override
+    @Deprecated(forRemoval = true, since = "8.0")
+    protected void processProviderInstanceContracts(final Object provider, final Map<Class<?>, Integer> contracts,
+            final Integer priorityOverride, final boolean builtIn, final Map<Class<?>, Integer> newContracts) {
     }
 
     @Override

@@ -51,7 +51,7 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
         protected boolean ignorePrematch;
 
         public AbstractInterceptorFactory(final Class declaring) {
-            this.declaring = getNonSyntheticClass(declaring);
+            this.declaring = resolveType(declaring);
         }
 
         protected void setPrecedence(Class<?> declaring) {
@@ -103,7 +103,7 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
                         if (!targetClass.isAnnotationPresent(annotation) &&
                                 !target.isAnnotationPresent(annotation)
                                 && (application == null
-                                        || !getNonSyntheticClass(application.getClass()).isAnnotationPresent(annotation))) {
+                                        || !resolveType(application.getClass()).isAnnotationPresent(annotation))) {
                             return null;
                         }
                     }
@@ -138,7 +138,7 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
 
         public OnDemandInterceptorFactory(final Class declaring) {
             super(declaring);
-            setPrecedence(declaring);
+            setPrecedence(this.declaring);
         }
 
         @Override
@@ -174,7 +174,7 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
         public SingletonInterceptorFactory(final Class declaring, final Object interceptor) {
             super(declaring);
             this.interceptor = interceptor;
-            setPrecedence(declaring);
+            setPrecedence(this.declaring);
         }
 
         @Override
@@ -300,10 +300,16 @@ public class JaxrsInterceptorRegistryImpl<T> implements JaxrsInterceptorRegistry
         register(factory);
     }
 
-    private Class<?> getNonSyntheticClass(Class<?> clazz) {
-        while (clazz.isSynthetic()) {
-            clazz = clazz.getSuperclass();
-        }
-        return clazz;
+    /**
+     * Returns the type a container proxy class delegates to, e.g. the bean class of a CDI client proxy class. The
+     * provider factory is {@code protected}, so a subclass may leave it unset, in which case the type is returned as
+     * is.
+     *
+     * @param clazz the type to resolve
+     *
+     * @return the resolved type
+     */
+    private Class<?> resolveType(final Class<?> clazz) {
+        return providerFactory == null ? clazz : providerFactory.getInjectorFactory().resolveType(clazz);
     }
 }

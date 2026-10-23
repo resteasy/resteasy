@@ -7,13 +7,11 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.ext.Provider;
 import jakarta.xml.bind.JAXBElement;
 
 import org.jboss.resteasy.test.providers.jaxb.resource.homecontrol.ObjectFactory;
 import org.jboss.resteasy.test.providers.jaxb.resource.homecontrol.UserType;
 
-@Provider
 @Path("users")
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })

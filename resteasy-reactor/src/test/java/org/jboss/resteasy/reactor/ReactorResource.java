@@ -2,6 +2,7 @@ package org.jboss.resteasy.reactor;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -14,6 +15,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Path("/")
+@ApplicationScoped
 public class ReactorResource {
     static final AtomicInteger monoEndpointCounter = new AtomicInteger(0);
 

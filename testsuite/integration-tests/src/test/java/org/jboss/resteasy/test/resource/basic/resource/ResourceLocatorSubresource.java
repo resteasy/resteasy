@@ -26,8 +26,8 @@ public class ResourceLocatorSubresource {
 
         LOG.info("Uri Ancesstors Object for Subresource.doGet():");
         Assertions.assertEquals(2, uri.getMatchedResources().size());
-        Assertions.assertEquals(ResourceLocatorSubresource.class, uri.getMatchedResources().get(0).getClass());
-        Assertions.assertEquals(ResourceLocatorBaseResource.class, uri.getMatchedResources().get(1).getClass());
+        Assertions.assertInstanceOf(ResourceLocatorSubresource.class, uri.getMatchedResources().get(0));
+        Assertions.assertInstanceOf(ResourceLocatorBaseResource.class, uri.getMatchedResources().get(1));
         for (Object ancestor : uri.getMatchedResources())
             LOG.infov("   {0}", ancestor.getClass().getName());
         return this.getClass().getName();
@@ -46,8 +46,8 @@ public class ResourceLocatorSubresource {
 
         LOG.info("Uri Ancesstors Object for Subresource.getSubresource2():");
         Assertions.assertEquals(2, uri.getMatchedResources().size());
-        Assertions.assertEquals(ResourceLocatorSubresource.class, uri.getMatchedResources().get(0).getClass());
-        Assertions.assertEquals(ResourceLocatorBaseResource.class, uri.getMatchedResources().get(1).getClass());
+        Assertions.assertInstanceOf(ResourceLocatorSubresource.class, uri.getMatchedResources().get(0));
+        Assertions.assertInstanceOf(ResourceLocatorBaseResource.class, uri.getMatchedResources().get(1));
         for (Object ancestor : uri.getMatchedResources())
             LOG.infov("   {0}", ancestor.getClass().getName());
         return new ResourceLocatorSubresource2();

@@ -14,10 +14,12 @@ import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
+import org.jboss.resteasy.setup.LoggingSetupTask;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.test.validation.resource.TestValidateOnExecutionErrorOneLevel_Class;
 import org.jboss.resteasy.test.validation.resource.TestValidateOnExecutionErrorOneLevel_Interface;
@@ -48,6 +50,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@ServerSetup(LoggingSetupTask.class)
 public class ValidateOnExecutionTest {
 
     static ResteasyClient client;
@@ -74,6 +77,7 @@ public class ValidateOnExecutionTest {
         war.addClass(TestValidateOnExecutionResource.class);
         war.addClass(TestValidateOnExecutionSubInterface.class);
         war.addClass(TestValidationOnExecuteSubInterface.class);
+        war.addAsWebInfResource(TestUtil.createBeansXml("none"), "beans.xml");
         return TestUtil.finishContainerPrepare(war, null, resourceClasses);
     }
 
@@ -287,9 +291,11 @@ public class ValidateOnExecutionTest {
         } catch (ValidationException ve) {
             // OK
         } catch (Exception e) {
-            if (e.getMessage().contains("Caused by: jakarta.validation.ValidationException") ||
+            // The ValidationException may be reported by RESTEasy or, for a resource managed by CDI, wrapped in a
+            // DefinitionException by the Jakarta Validation CDI integration
+            if (e.getMessage().contains("jakarta.validation.ValidationException") ||
                     (e.getCause() != null
-                            && e.getCause().getMessage().contains("Caused by: jakarta.validation.ValidationException"))) {
+                            && e.getCause().getMessage().contains("jakarta.validation.ValidationException"))) {
                 // OK
                 return;
             }

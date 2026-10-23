@@ -5,6 +5,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import jakarta.enterprise.context.Dependent;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
@@ -17,6 +18,8 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpRequest;
 
 @Path("/")
+// This resource makes async requests and the CDI request scope will not be active for the full async request
+@Dependent
 public class AsyncRequestFilterResource {
 
     private static final Logger LOG = Logger.getLogger(AsyncRequestFilterResource.class);

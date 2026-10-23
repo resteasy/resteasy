@@ -48,6 +48,9 @@ public class AsynchBasicTest {
         WebArchive war = TestUtil.prepareArchive(deploymentName);
         war.addClass(PortProviderUtil.class);
         war.addClass(TestUtil.class);
+        // The async job service invokes the resource on its own thread, where no CDI request context is active, so
+        // CDI is disabled. The job service is going to be removed.
+        war.addAsWebInfResource(TestUtil.createBeansXml("none"), "beans.xml");
 
         Map<String, String> contextParam = new HashMap<>();
         contextParam.put("resteasy.async.job.service.enabled", "true");

@@ -10,13 +10,13 @@ import jakarta.ws.rs.PathParam;
 public class ValidationXMLResourceWithAllFivePotentialViolations {
     @Size(min = 2, max = 4)
     @PathParam("s")
-    public String s;
+    private String s;
 
     @Size(min = 2, max = 4)
     @PathParam("t")
-    public String t;
+    private String t;
 
-    public String u;
+    private String u;
 
     @Size(min = 3, max = 5)
     public String getU() {
@@ -32,5 +32,9 @@ public class ValidationXMLResourceWithAllFivePotentialViolations {
     @ValidationXMLFooConstraint(min = 4, max = 5)
     public ValidationXMLFoo post(@ValidationXMLFooConstraint(min = 3, max = 5) ValidationXMLFoo foo) {
         return foo;
+    }
+
+    String getS() {
+        return s;
     }
 }

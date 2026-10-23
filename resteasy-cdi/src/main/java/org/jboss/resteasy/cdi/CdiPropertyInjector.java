@@ -35,7 +35,12 @@ public class CdiPropertyInjector implements PropertyInjector {
         if (sessionBeanInterface.containsKey(clazz)) {
             injectorEnabled = false;
         }
-        if (!manager.getBeans(clazz).isEmpty() && Utils.isJaxrsComponent(clazz)) {
+        // Instances created by the container are injected by the JaxrsInjectionTarget. The bean container excludes the
+        // classes of Application.getSingletons() instances, which are created by the application and injected here.
+        // Session beans are not in the bean container.
+        final ResteasyCdiExtension extension = manager.getExtension(ResteasyCdiExtension.class);
+        if (Utils.isJaxrsComponent(clazz)
+                && (extension.beanContainer().contains(clazz) || extension.isSessionBean(clazz))) {
             injectorEnabled = false;
         }
     }

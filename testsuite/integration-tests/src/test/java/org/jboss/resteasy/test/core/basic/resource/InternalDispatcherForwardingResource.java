@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.core.basic.resource;
 
 import java.util.Stack;
 
+import jakarta.enterprise.context.Dependent;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -24,6 +25,7 @@ import org.jboss.resteasy.test.core.basic.InternalDispatcherTest;
 import org.junit.jupiter.api.Assertions;
 
 @Path("/")
+@Dependent
 public class InternalDispatcherForwardingResource {
     public Stack<String> uriStack = new Stack<String>();
     String basic = "basic";

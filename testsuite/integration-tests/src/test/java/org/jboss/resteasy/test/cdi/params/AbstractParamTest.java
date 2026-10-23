@@ -19,7 +19,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.UriBuilder;
 
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.test.cdi.params.resources.CdiQualifierResource;
 import org.jboss.resteasy.test.cdi.params.resources.ParamApplication;
 import org.jboss.resteasy.test.cdi.params.resources.ParamDescriptor;
@@ -29,14 +28,11 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  *
  * @author <a href="mailto:jperkins@ibm.com">James R. Perkins</a>
  */
-@RequiresModule(value = "org.jboss.resteasy.resteasy-cdi", minVersion = "7.0.3")
-@ServerSetup(EnableEnhancedCdiSupportSetupTask.class)
 abstract class AbstractParamTest {
 
     private final String contextPath;

@@ -375,7 +375,15 @@ public interface GeneralValidatorCDI extends GeneralValidator {
 }
 ----
 
-The validator in resteasy-validator-provider implements GeneralValidatorCDI. 
+The validator in resteasy-validator-provider implements GeneralValidatorCDI.
+
+NOTE: Since RESTEasy 8.0, CDI is always active and resources are CDI beans. RESTEasy validates the resource instance,
+the parameters and the return value of resources created by CDI, as it does for resources it creates itself, so
+`isValidatable(Class, InjectorFactory)` no longer depends on whether CDI is active. The `JaxrsInjectionTarget` of the
+resteasy-cdi module validates the instances of the classes for which `isValidatableFromCDI()` returns `true`, when CDI
+creates them. The validator in resteasy-validator-provider returns `true` only for the classes RESTEasy cannot validate
+itself, i.e. session beans with class, field or property constraints, which the EJB container creates. A custom
+implementation returning `true` for all classes validates resources created by CDI twice.
 
 === Validation Implementations
 
