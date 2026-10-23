@@ -19,6 +19,8 @@
 
 package org.jboss.resteasy.spi.config;
 
+import java.util.ServiceLoader;
+
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 
 /**
@@ -29,15 +31,36 @@ import org.jboss.resteasy.spi.ResteasyConfiguration;
 public interface ConfigurationFactory {
 
     /**
-     * Returns the factory for the environment. The factory with the lowest {@linkplain #priority() priority} will be
-     * selected.
+     * Returns the factory for the environment. If the system property
+     * {@link ConfigurationFactoryResolver#ENABLE_RESOLVER_PROPERTY} is set to {@code true} and a
+     * {@link ConfigurationFactoryResolver} is available via {@link ServiceLoader}, it is used to resolve the factory.
+     * Otherwise, the factory with the lowest {@linkplain #priority() priority} discovered via {@link ServiceLoader}
+     * will be selected and stored statically.
      *
      * @return the factory for the current environment
-     *
-     * @throws RuntimeException if the service loader could not find a factory
      */
     static ConfigurationFactory getInstance() {
-        return SingletonConfigurationFactory.getInstance();
+        if (Boolean.getBoolean(ConfigurationFactoryResolver.ENABLE_RESOLVER_PROPERTY)) {
+            // pick up a resolver
+            final ServiceLoader<ConfigurationFactoryResolver> loader = ServiceLoader.load(
+                    ConfigurationFactoryResolver.class);
+            ConfigurationFactoryResolver resolver = null;
+            for (ConfigurationFactoryResolver loaded : loader) {
+                if (resolver == null || loaded.priority() < resolver.priority()) {
+                    resolver = loaded;
+                }
+            }
+            // if at least one resolver is picked up, use it
+            if (resolver != null) {
+                final ConfigurationFactory factory = resolver.resolve();
+                if (factory != null) {
+                    return factory;
+                }
+            }
+        }
+        // fall back to singleton behavior: select one of the registered ConfigurationFactory instances,
+        // and cache it statically
+        return SingletonConfigurationFactoryHolder.INSTANCE;
     }
 
     /**
@@ -62,7 +85,7 @@ public interface ConfigurationFactory {
     }
 
     /**
-     * The ranking priority for the this factory. The lowest priority will be the one selected.
+     * The ranking priority for the factory. The lowest priority will be the one selected.
      *
      * @return the priority
      */
