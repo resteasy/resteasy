@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import jakarta.ws.rs.NotFoundException;
@@ -213,15 +214,26 @@ public class SynchronousDispatcher implements Dispatcher {
         if (!bufferExceptionEntity) {
             response.getOutputHeaders().add("resteasy.buffer.exception.entity", "false");
         }
+        AtomicBoolean traced = new AtomicBoolean();
+        Runnable traceFinished = () -> {
+            if (traced.compareAndSet(false, true)) {
+                RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
+                tracingLogger.log("FINISHED", response.getStatus());
+                tracingLogger.flush(response.getOutputHeaders());
+            }
+        };
         try {
+            // Trace while the request is still ours. See AsyncCompletion.
             ServerResponseWriter.writeNomapResponse(((BuiltResponse) handledResponse), request, response, providerFactory,
-                    onComplete);
-        } catch (Exception e1) {
+                    t -> {
+                        traceFinished.run();
+                        onComplete.accept(t);
+                    });
+        } catch (Throwable e1) {
+            traceFinished.run();
+            if (e1 instanceof Error)
+                throw (Error) e1;
             throw new UnhandledException(e1);
-        } finally {
-            RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
-            tracingLogger.log("FINISHED", response.getStatus());
-            tracingLogger.flush(response.getOutputHeaders());
         }
     }
 
@@ -504,17 +516,26 @@ public class SynchronousDispatcher implements Dispatcher {
 
     public void asynchronousExceptionDelivery(HttpRequest request, HttpResponse response, Throwable exception,
             Consumer<Throwable> onComplete) {
+        AsyncCompletion completion = AsyncCompletion.whenWritten();
         try {
             pushContextObjects(request, response);
-            writeException(request, response, exception, t -> {
-                if (t != null)
-                    unhandledAsynchronousException(response, t);
-                onComplete.accept(null);
-                ResteasyContext.removeContextDataLevel();
-            });
+            writeException(request, response, exception, completion.onWritten(t -> {
+                try {
+                    if (t != null)
+                        unhandledAsynchronousException(response, t);
+                } finally {
+                    onComplete.accept(null);
+                    ResteasyContext.removeContextDataLevel();
+                }
+            }));
         } catch (Throwable ex) {
-            unhandledAsynchronousException(response, ex);
-            onComplete.accept(ex);
+            if (completion.afterCompletion(ex))
+                return;
+            try {
+                unhandledAsynchronousException(response, ex);
+            } finally {
+                onComplete.accept(ex);
+            }
         }
     }
 

@@ -50,7 +50,7 @@ public abstract class AsyncResponseConsumer {
     protected ResourceMethodInvoker method;
     protected SynchronousDispatcher dispatcher;
     protected ResteasyAsynchronousResponse asyncResponse;
-    protected boolean isComplete;
+    protected volatile boolean isComplete;
 
     public AsyncResponseConsumer(final ResourceMethodInvoker method) {
         this.method = method;
@@ -103,14 +103,17 @@ public abstract class AsyncResponseConsumer {
             HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
 
             BuiltResponse builtResponse = createResponse(entity, httpRequest);
+            AsyncCompletion completion = AsyncCompletion.whenCompleteReportedByCallback(() -> isComplete);
             try {
-                sendBuiltResponse(builtResponse, httpRequest, httpResponse, e -> {
-                    if (e != null) {
+                sendBuiltResponse(builtResponse, httpRequest, httpResponse, completion.onWritten(e -> {
+                    if (e != null && !completion.afterCompletion(e)) {
                         exceptionWhileResuming(e);
                     }
                     onComplete.accept(e);
-                });
+                }));
             } catch (Throwable e) {
+                if (completion.afterCompletion(e))
+                    return;
                 exceptionWhileResuming(e);
                 onComplete.accept(e);
             }
@@ -142,9 +145,12 @@ public abstract class AsyncResponseConsumer {
         try (CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)) {
             HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
             HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
+            AsyncCompletion completion = AsyncCompletion.whenComplete(() -> isComplete);
             try {
-                dispatcher.writeException(httpRequest, httpResponse, t, onComplete);
+                dispatcher.writeException(httpRequest, httpResponse, t, completion.onWritten(onComplete));
             } catch (Throwable t2) {
+                if (completion.afterCompletion(t2))
+                    return;
                 // ignore t2 and report the original exception without going through filters
                 dispatcher.unhandledAsynchronousException(httpResponse, t);
                 onComplete.accept(t);
