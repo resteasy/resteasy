@@ -21,9 +21,11 @@ package org.jboss.resteasy.test.form.resource;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 
 @Path("/")
 public class FormContainerRequestFilterResource {
@@ -39,5 +41,18 @@ public class FormContainerRequestFilterResource {
     @Consumes("application/x-www-form-urlencoded")
     public String b(@FormParam("fp") String fp) {
         return fp;
+    }
+
+    @GET
+    @Path("closed")
+    @Produces("text/plain")
+    public boolean closed() {
+        return FormContainerRequestFilterFilter.isClosed();
+    }
+
+    @POST
+    @Path("reset")
+    public void reset() {
+        FormContainerRequestFilterFilter.reset();
     }
 }

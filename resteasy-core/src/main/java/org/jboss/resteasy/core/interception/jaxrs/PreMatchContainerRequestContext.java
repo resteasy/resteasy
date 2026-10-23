@@ -176,7 +176,9 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
 
     @Override
     public void setEntityStream(InputStream entityStream) {
+        RequestEntityStreamTracker tracker = RequestEntityStreamTracker.getOrCreate(httpRequest);
         httpRequest.setInputStream(entityStream);
+        tracker.setReplacement(entityStream);
     }
 
     @Override
