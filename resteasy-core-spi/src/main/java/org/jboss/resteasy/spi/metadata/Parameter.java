@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
 
+import org.jboss.resteasy.spi.RequiredContextTypes;
 import org.jboss.resteasy.spi.util.Types;
 
 /**
@@ -93,4 +94,20 @@ public abstract class Parameter {
     public abstract AccessibleObject getAccessibleObject();
 
     public abstract Annotation[] getAnnotations();
+
+    /**
+     * Indicates the type of this parameter is a context type which may be injected, regardless of the
+     * {@link #getParamType()}.
+     *
+     * @return {@code true} if the type is a context type, otherwise {@code false}
+     *
+     * @see org.jboss.resteasy.spi.RequiredContextTypes#isContextType(Class)
+     */
+    public boolean isContextType() {
+        final Class<?> type = getType();
+        if (type == null) {
+            return false;
+        }
+        return RequiredContextTypes.isContextType(type);
+    }
 }

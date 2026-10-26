@@ -43,8 +43,15 @@ public final class NOOPClientHelper extends ClientHelper {
     }
 
     @Override
-    protected void processProviderInstanceContracts(Object provider, Map<Class<?>, Integer> contracts, Integer priorityOverride,
-            boolean builtIn, Map<Class<?>, Integer> newContracts) {
+    protected void processProviderInstanceContracts(Object provider, Class<?> providerClass,
+            Map<Class<?>, Integer> contracts, Integer priorityOverride, boolean builtIn,
+            Map<Class<?>, Integer> newContracts) {
+    }
+
+    @Override
+    @Deprecated(forRemoval = true, since = "8.0")
+    protected void processProviderInstanceContracts(Object provider, Map<Class<?>, Integer> contracts,
+            Integer priorityOverride, boolean builtIn, Map<Class<?>, Integer> newContracts) {
     }
 
     @Override

@@ -10,6 +10,7 @@ import java.io.UncheckedIOException;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiConsumer;
 
+import jakarta.enterprise.inject.Vetoed;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,6 +42,7 @@ import org.jboss.resteasy.spi.HttpRequest;
  */
 @Path("/context")
 @Produces(MediaType.TEXT_PLAIN)
+@Vetoed
 public class RequiredInjectableContextResource {
 
     @Context

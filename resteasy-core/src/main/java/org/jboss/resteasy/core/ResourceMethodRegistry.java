@@ -105,12 +105,14 @@ public class ResourceMethodRegistry implements Registry {
     }
 
     public void addSingletonResource(Object singleton) {
-        ResourceClass resourceClass = resourceBuilder.getRootResourceFromAnnotations(singleton.getClass());
+        ResourceClass resourceClass = resourceBuilder
+                .getRootResourceFromAnnotations(providerFactory.getInjectorFactory().resolveType(singleton.getClass()));
         addResourceFactory(new SingletonResource(singleton, resourceClass));
     }
 
     public void addSingletonResource(Object singleton, String basePath) {
-        ResourceClass resourceClass = resourceBuilder.getRootResourceFromAnnotations(singleton.getClass());
+        ResourceClass resourceClass = resourceBuilder
+                .getRootResourceFromAnnotations(providerFactory.getInjectorFactory().resolveType(singleton.getClass()));
         addResourceFactory(new SingletonResource(singleton, resourceClass), basePath);
     }
 

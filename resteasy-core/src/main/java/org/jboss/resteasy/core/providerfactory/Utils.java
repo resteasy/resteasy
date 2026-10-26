@@ -43,6 +43,20 @@ public final class Utils {
         return isA(target.getClass(), type, contracts);
     }
 
+    /**
+     * Returns the priority of a component. The priority override is used first, then the priority of the contract,
+     * then the {@link Priority @Priority} annotation of the component.
+     *
+     * @param override  the priority override, or {@code null} or {@code -1} if there is none
+     * @param contracts the contracts and their priorities, may be {@code null}
+     * @param type      the contract to get the priority for
+     * @param component the class of the component. If the component is a container proxy, this must be the
+     *                  {@linkplain org.jboss.resteasy.spi.InjectorFactory#resolveType(Class) resolved type}.
+     *
+     * @return the priority of the component
+     *
+     * @see #getPriority(Class)
+     */
     static int getPriority(Integer override, Map<Class<?>, Integer> contracts, Class type, Class<?> component) {
         if (override != null && override != -1)
             return override;
@@ -51,12 +65,23 @@ public final class Utils {
             if (p != null)
                 return p;
         }
-        // Check for weld proxy.
         return getPriority(component);
     }
 
+    /**
+     * Returns the value of the {@link Priority @Priority} annotation of the component, or {@link Priorities#USER} if
+     * the component is not annotated. Superclasses are not searched.
+     * <p>
+     * If the component is a container proxy, e.g. a CDI client proxy, the annotation is not present on the proxy
+     * class. The {@linkplain org.jboss.resteasy.spi.InjectorFactory#resolveType(Class) resolved type} must be passed
+     * instead.
+     * </p>
+     *
+     * @param component the class of the component
+     *
+     * @return the priority of the component
+     */
     public static int getPriority(Class<?> component) {
-        component = component.isSynthetic() ? component.getSuperclass() : component;
         Priority priority = component.getAnnotation(Priority.class);
         if (priority == null)
             return Priorities.USER;
@@ -73,8 +98,8 @@ public final class Utils {
     }
 
     static void injectProperties(ResteasyProviderFactory rpf, Object obj) {
-        CompletionStage<Void> propertyStage = rpf.getInjectorFactory().createPropertyInjector(obj.getClass(), rpf).inject(obj,
-                false);
+        CompletionStage<Void> propertyStage = rpf.getInjectorFactory()
+                .createPropertyInjector(rpf.getInjectorFactory().resolveType(obj.getClass()), rpf).inject(obj, false);
         if (propertyStage != null) {
             propertyStage.toCompletableFuture()
                     .getNow(null);
@@ -82,7 +107,8 @@ public final class Utils {
     }
 
     static void injectProperties(ResteasyProviderFactory rpf, Object obj, HttpRequest request, HttpResponse response) {
-        CompletionStage<Void> propertyStage = rpf.getInjectorFactory().createPropertyInjector(obj.getClass(), rpf)
+        CompletionStage<Void> propertyStage = rpf.getInjectorFactory()
+                .createPropertyInjector(rpf.getInjectorFactory().resolveType(obj.getClass()), rpf)
                 .inject(request, response, obj, false);
         if (propertyStage != null)
             propertyStage

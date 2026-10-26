@@ -22,7 +22,7 @@ public class BaseELResolver extends ELResolver {
         return null;
     }
 
-    @Override
+    // ELResolver.getFeatureDescriptors() was removed in Jakarta Expression Language 6.0
     public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context,
             Object base) {
         return null;

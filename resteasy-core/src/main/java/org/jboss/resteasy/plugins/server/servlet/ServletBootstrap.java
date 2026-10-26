@@ -40,9 +40,11 @@ public class ServletBootstrap extends ListenerBootstrap {
             if (servletMappingPrefix == null) {
                 servletMappingPrefix = "";
             }
-            final ApplicationDescription description = ApplicationDescription.Builder.of(new Application())
+            final Application app = new Application();
+            final ApplicationDescription description = ApplicationDescription.Builder.of(app)
                     .path(servletMappingPrefix.trim())
                     .build();
+            deployment.getDefaultContextObjects().put(Application.class, app);
             deployment.getDefaultContextObjects().put(ApplicationDescription.class, description);
         }
         return deployment;

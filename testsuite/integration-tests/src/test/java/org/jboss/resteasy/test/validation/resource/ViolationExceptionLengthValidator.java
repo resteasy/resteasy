@@ -12,7 +12,7 @@ public class ViolationExceptionLengthValidator
     }
 
     public boolean isValid(ViolationExceptionResourceWithFiveViolations value, ConstraintValidatorContext context) {
-        return value.s.length() + value.t.length() >= length;
+        return value.getS().length() + value.getT().length() >= length;
     }
 
 }

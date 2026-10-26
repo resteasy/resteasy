@@ -295,6 +295,8 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage {
                     done = true;
                     close();
                 }
+                // The connection may have been dropped, in which case RESTEasy never completes the response
+                completionCallbacks(asyncEvent.getThrowable());
             }
 
             @Override

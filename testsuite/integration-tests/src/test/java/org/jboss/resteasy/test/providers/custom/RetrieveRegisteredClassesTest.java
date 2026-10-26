@@ -31,7 +31,7 @@ public class RetrieveRegisteredClassesTest {
 
     @Path("/testResource")
     @Produces(MediaType.APPLICATION_XML)
-    public static final class TestResource {
+    public static class TestResource {
 
         @GET
         public String get() {

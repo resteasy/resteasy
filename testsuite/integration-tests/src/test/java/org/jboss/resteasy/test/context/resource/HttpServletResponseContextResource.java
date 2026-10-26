@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
@@ -191,5 +192,15 @@ public class HttpServletResponseContextResource {
         ServletOutputStream os = response.getOutputStream();
         os.write(65); // 'A'
         return;
+    }
+
+    @Path("write/optional")
+    @GET
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public void writeOptional(@QueryParam("write") final boolean write, @Context HttpServletResponse response)
+            throws IOException {
+        if (write) {
+            response.getOutputStream().write("context".getBytes());
+        }
     }
 }

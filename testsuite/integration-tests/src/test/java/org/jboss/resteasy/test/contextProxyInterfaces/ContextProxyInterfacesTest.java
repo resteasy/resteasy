@@ -62,7 +62,10 @@ public class ContextProxyInterfacesTest {
         try (Response response = builder.get()) {
             Assertions.assertEquals(200, response.getStatus());
             Assertions.assertTrue(response.readEntity(String.class).contains("ResteasyProviderFactoryImpl"));
-            Assertions.assertEquals("true", response.getHeaderString("Instanceof-HeaderValueProcessor"));
+            // Before required CDI integration, the injected Configuration implemented all interfaces. With CDI it's
+            // not possible to do this as we don't have the instance object when we create the proxy. This value should
+            // now be false. We could skip the check, but it seems okay to keep in case something in the future changes.
+            Assertions.assertEquals("false", response.getHeaderString("Instanceof-HeaderValueProcessor"));
         }
     }
 }

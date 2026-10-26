@@ -365,30 +365,6 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <id>enhanced-cdi-disabled</id>
-            <activation>
-                <property>
-                    <name>enhanced.cdi.disabled</name>
-                </property>
-            </activation>
-            <properties>
-                <wildfly.system.properties>-Ddev.resteasy.cdi.enhanced.enabled=false</wildfly.system.properties>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <systemPropertyVariables>
-                                <wildfly.system.properties>${wildfly.system.properties}</wildfly.system.properties>
-                                <dev.resteasy.cdi.enhanced.enabled>false</dev.resteasy.cdi.enhanced.enabled>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
     </profiles>
 
     <dependencies>
@@ -775,7 +751,6 @@
                         <!-- execution with excluded JSON-B -->
                         <execution>
                             <id>disable-jsonb-client</id>
-                            <phase>test</phase>
                             <goals>
                                 <goal>test</goal>
                             </goals>

@@ -33,6 +33,7 @@ import jakarta.ws.rs.core.Context;
 
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.annotations.Query;
+import org.jboss.resteasy.core.servlet.HttpServletResponseValueInjector;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -132,6 +133,9 @@ public class InjectorFactoryImpl implements InjectorFactory {
                         parameter.getParamName(), parameter.getDefaultValue(), parameter.isEncoded(),
                         parameter.getAnnotations(), providerFactory);
             case CONTEXT:
+                if (rawType.getName().equals("jakarta.servlet.http.HttpServletResponse")) {
+                    return new HttpServletResponseValueInjector(providerFactory);
+                }
                 return new ContextParameterInjector(null, rawType, parameterType, parameter.getAnnotations(), providerFactory);
             case SUSPENDED:
                 return new AsynchronousResponseInjector();
@@ -236,6 +240,9 @@ public class InjectorFactoryImpl implements InjectorFactory {
             return new MatrixParamInjector(type, genericType, injectTarget, defaultName, defaultVal, encode, annotations,
                     providerFactory);
         } else if (findAnnotation(annotations, Context.class) != null) {
+            if (type.getName().equals("jakarta.servlet.http.HttpServletResponse")) {
+                return new HttpServletResponseValueInjector(providerFactory);
+            }
             return new ContextParameterInjector(null, type, genericType, annotations, providerFactory);
         } else if (findAnnotation(annotations, Suspended.class) != null) {
             return new AsynchronousResponseInjector();

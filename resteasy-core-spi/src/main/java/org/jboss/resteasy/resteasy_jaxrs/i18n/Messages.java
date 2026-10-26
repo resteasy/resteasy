@@ -909,6 +909,9 @@ public interface Messages {
     @Message(id = 5122, value = "Image size %dx%d (%s) exceeds maximum threshold %s")
     BadRequestException imageThresholdExceeded(int width, int height, String calculated, Threshold threshold);
 
+    @Message(id = 5123, value = "The response has already completed, the resource method %s was not invoked.")
+    IllegalStateException responseAlreadyCompleted(String method);
+
     @Message(id = 5230, value = "Malformed URI template parameter: missing closing brace for {%s")
     IllegalArgumentException malformedUriTemplate(String uriTemplate);
 

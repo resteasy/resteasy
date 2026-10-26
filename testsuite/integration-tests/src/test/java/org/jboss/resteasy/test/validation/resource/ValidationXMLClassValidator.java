@@ -12,7 +12,7 @@ public class ValidationXMLClassValidator
     }
 
     public boolean isValid(ValidationXMLResourceWithAllFivePotentialViolations value, ConstraintValidatorContext context) {
-        return value.s.length() + value.u.length() >= length;
+        return value.getS().length() + value.getU().length() >= length;
     }
 
 }

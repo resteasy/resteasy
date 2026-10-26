@@ -38,7 +38,9 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpRequestPreprocessor;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InternalServerErrorException;
+import org.jboss.resteasy.spi.PriorityServiceLoader;
 import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.RequestListener;
 import org.jboss.resteasy.spi.ResourceInvoker;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
@@ -59,6 +61,7 @@ public class SynchronousDispatcher implements Dispatcher {
     protected Set<String> unwrappedExceptions = new HashSet<String>();
     protected boolean bufferExceptionEntityRead = false;
     protected boolean bufferExceptionEntity = true;
+    private final List<RequestListener> requestListeners = loadRequestListeners();
 
     {
         // This is to make sure LogMessages are preloaded as profiler shows a runtime hit
@@ -229,6 +232,7 @@ public class SynchronousDispatcher implements Dispatcher {
         RESTEasyTracingLogger.initTracingSupport(providerFactory, request);
         RESTEasyTracingLogger.logStart(request);
 
+        RequestCompletion.dispatchStarted(request, requestListeners);
         try {
             pushContextObjects(request, response);
             preprocess(request, response, () -> {
@@ -249,7 +253,11 @@ public class SynchronousDispatcher implements Dispatcher {
                 }
             });
         } finally {
-            clearContextData();
+            try {
+                clearContextData();
+            } finally {
+                RequestCompletion.dispatchEnded(request, response);
+            }
         }
     }
 
@@ -260,6 +268,7 @@ public class SynchronousDispatcher implements Dispatcher {
      * @param response http response
      */
     public void invokePropagateNotFound(HttpRequest request, HttpResponse response) throws NotFoundException {
+        RequestCompletion.dispatchStarted(request, requestListeners);
         try {
             pushContextObjects(request, response);
             preprocess(request, response, () -> {
@@ -284,7 +293,11 @@ public class SynchronousDispatcher implements Dispatcher {
                 }
             });
         } finally {
-            clearContextData();
+            try {
+                clearContextData();
+            } finally {
+                RequestCompletion.dispatchEnded(request, response);
+            }
         }
 
     }
@@ -339,6 +352,7 @@ public class SynchronousDispatcher implements Dispatcher {
         // equivalent push.
         ResteasyContext.addContextDataLevel();
         boolean pushedBody = false;
+        RequestCompletion.dispatchStarted(request, requestListeners);
         try {
             MessageBodyParameterInjector.pushBody(entity);
             pushedBody = true;
@@ -352,9 +366,13 @@ public class SynchronousDispatcher implements Dispatcher {
             // if invoker is null
             return null;
         } finally {
-            ResteasyContext.removeContextDataLevel();
-            if (pushedBody) {
-                MessageBodyParameterInjector.popBody();
+            try {
+                ResteasyContext.removeContextDataLevel();
+                if (pushedBody) {
+                    MessageBodyParameterInjector.popBody();
+                }
+            } finally {
+                RequestCompletion.dispatchEnded(request, response);
             }
         }
     }
@@ -378,6 +396,11 @@ public class SynchronousDispatcher implements Dispatcher {
 
     /**
      * Return a response wither from an invoke or exception handling.
+     * <p>
+     * This method does not notify the {@link org.jboss.resteasy.spi.RequestListener RequestListeners}, as the caller
+     * writes the response after it returns. They are not notified for a request dispatched directly through this
+     * method. {@link #internalInvocation(HttpRequest, HttpResponse, Object)} notifies them itself.
+     * </p>
      *
      * @param request  http request
      * @param response http response
@@ -426,7 +449,17 @@ public class SynchronousDispatcher implements Dispatcher {
      * @param invoker  resource invoker
      */
     public void invoke(HttpRequest request, HttpResponse response, ResourceInvoker invoker) {
+        // This may be invoked directly, e.g. by server adapters, or from invoke(HttpRequest, HttpResponse), in which case
+        // it is a nested dispatch of the same request
+        RequestCompletion.dispatchStarted(request, requestListeners);
+        try {
+            invokeAndWrite(request, response, invoker);
+        } finally {
+            RequestCompletion.dispatchEnded(request, response);
+        }
+    }
 
+    private void invokeAndWrite(HttpRequest request, HttpResponse response, ResourceInvoker invoker) {
         RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
         Response jaxrsResponse = null;
         try {
@@ -474,13 +507,9 @@ public class SynchronousDispatcher implements Dispatcher {
             Consumer<Throwable> onComplete) throws IOException {
         if (jaxrsResponse == null)
             return;
-        try {
-            pushContextObjects(request, response);
-            ServerResponseWriter.writeNomapResponse((BuiltResponse) jaxrsResponse, request, response, providerFactory,
-                    onComplete);
-        } finally {
-            ResteasyContext.removeContextDataLevel();
-        }
+        pushContextObjects(request, response);
+        ServerResponseWriter.writeNomapResponse((BuiltResponse) jaxrsResponse, request, response, providerFactory,
+                onComplete);
     }
 
     public void unhandledAsynchronousException(HttpResponse response, Throwable ex) {
@@ -505,12 +534,12 @@ public class SynchronousDispatcher implements Dispatcher {
     public void asynchronousExceptionDelivery(HttpRequest request, HttpResponse response, Throwable exception,
             Consumer<Throwable> onComplete) {
         try {
+            // The caller owns the context data level, e.g. AbstractAsynchronousResponse.internalResume()
             pushContextObjects(request, response);
             writeException(request, response, exception, t -> {
                 if (t != null)
                     unhandledAsynchronousException(response, t);
                 onComplete.accept(null);
-                ResteasyContext.removeContextDataLevel();
             });
         } catch (Throwable ex) {
             unhandledAsynchronousException(response, ex);
@@ -554,6 +583,12 @@ public class SynchronousDispatcher implements Dispatcher {
 
     public void addHttpPreprocessor(HttpRequestPreprocessor httpPreprocessor) {
         requestPreprocessors.add(httpPreprocessor);
+    }
+
+    private static List<RequestListener> loadRequestListeners() {
+        final List<RequestListener> listeners = new ArrayList<>();
+        PriorityServiceLoader.load(RequestListener.class).forEach(listeners::add);
+        return List.copyOf(listeners);
     }
 
 }

@@ -10,9 +10,9 @@ import jakarta.ws.rs.PathParam;
 public class ViolationExceptionResourceWithFiveViolations {
     @Size(min = 2, max = 4)
     @PathParam("s")
-    public String s;
+    private String s;
 
-    public String t;
+    private String t;
 
     @Size(min = 3, max = 5)
     public String getT() {
@@ -29,5 +29,9 @@ public class ViolationExceptionResourceWithFiveViolations {
     @ViolationExceptionConstraint(min = 4, max = 5)
     public ViolationExceptionObject post(@ViolationExceptionConstraint(min = 3, max = 5) ViolationExceptionObject foo) {
         return foo;
+    }
+
+    String getS() {
+        return s;
     }
 }

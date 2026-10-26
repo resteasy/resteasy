@@ -31,7 +31,7 @@ public class ResourceLocatorBaseResource {
 
         LOG.info("Uri Ancesstors Object for Subresource.doGet():");
         Assertions.assertEquals(1, uri.getMatchedResources().size());
-        Assertions.assertEquals(ResourceLocatorBaseResource.class, uri.getMatchedResources().get(0).getClass());
+        Assertions.assertInstanceOf(ResourceLocatorBaseResource.class, uri.getMatchedResources().get(0));
         return new ResourceLocatorSubresource();
     }
 

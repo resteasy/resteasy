@@ -34,6 +34,7 @@ import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl.Source
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
@@ -54,7 +55,7 @@ public class SseTest {
 
     @Deployment
     public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(SseTest.class.getSimpleName());
+        WebArchive war = ShrinkWrap.create(WebArchive.class, SseTest.class.getSimpleName() + ".war");
         war.addClass(SseTest.class);
         war.addAsResource("org/jboss/resteasy/test/providers/sse/bigmsg.json",
                 "org/jboss/resteasy/test/providers/sse/bigmsg.json");

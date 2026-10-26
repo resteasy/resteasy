@@ -17,6 +17,7 @@ import jakarta.ws.rs.ext.Provider;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.api.validation.ViolationReport;
+import org.jboss.resteasy.plugins.validation.i18n.LogMessages;
 
 /**
  *
@@ -41,6 +42,9 @@ public class ResteasyViolationExceptionMapper implements ExceptionMapper<Validat
             ResteasyViolationException resteasyViolationException = ResteasyViolationException.class.cast(exception);
             Exception e = resteasyViolationException.getException();
             if (e != null) {
+                // The exception is only reported in the response, so log it as well
+                LogMessages.LOGGER.debug(
+                        "An unexpected exception occurred during validation. Responding with an internal server error", e);
                 return buildResponse(unwrapException(e), MediaType.TEXT_PLAIN, Status.INTERNAL_SERVER_ERROR);
             } else if (resteasyViolationException.getReturnValueViolations().size() == 0) {
                 return buildViolationReportResponse(resteasyViolationException, Status.BAD_REQUEST);

@@ -1,8 +1,10 @@
 package org.jboss.resteasy.cdi;
 
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.spi.InjectionPoint;
@@ -28,10 +30,9 @@ import org.jboss.resteasy.util.GetRestful;
  * An {@link InjectionTarget} wrapper for Jakarta REST components that performs property injection and validation after
  * CDI injection.
  * <p>
- * For components not managed by CDI (e.g. EJB session beans), property injection via {@link PropertyInjectorImpl} is
- * used to populate {@code @Context} and {@code @*Param}-annotated fields. For CDI-managed components (those registered
- * in the {@link ResteasyCdiExtension ResteasyCdiExtension.beanContainer}), property injection is skipped since CDI handles
- * field injection directly through producers.
+ * Property injection via {@link PropertyInjectorImpl} is used to populate {@code @Context} and {@code @*Param}-annotated
+ * fields and setters which CDI does not inject. Members CDI injects, those annotated with {@code @Inject} on the
+ * bean's annotated type, including the members the RESTEasy CDI extensions add {@code @Inject} to, are skipped.
  * </p>
  * <p>
  * Validation is performed for all root resource classes after injection, using a {@link GeneralValidatorCDI} resolved
@@ -49,7 +50,7 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T> {
     private final InjectionTarget<T> delegate;
     private final Class<T> clazz;
     private final boolean hasPostConstruct;
-    private final boolean usePropertyInjector;
+    private final Predicate<Member> propertyInjectionFilter;
     private volatile PropertyInjector propertyInjector;
 
     private static final Function<Method, Boolean> validatePostConstructParameters = (Method m) -> {
@@ -66,34 +67,34 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T> {
      */
     @Deprecated(forRemoval = true, since = "7.0.3")
     public JaxrsInjectionTarget(final InjectionTarget<T> delegate, final Class<T> clazz) {
-        this(delegate, clazz, true);
+        this(delegate, clazz, Utils::isInjectAnnotated);
     }
 
     /**
-     * Creates a new wrapped {@link InjectionTarget} for custom RESTEasy bean validation and optional property inject.
+     * Creates a new wrapped {@link InjectionTarget} for custom RESTEasy bean validation and property injection.
      * <p>
-     * If the {@code usePropertyInjector} is set to {@code true}, a new {@link PropertyInjector} is used to inject
-     * Jakarta REST resources. These could be {@link jakarta.ws.rs.core.Context @Context} injection points or the
-     * {@link @*Param} injection points. For full CDI managed beans, this should typically be {@code false}.
+     * A {@link PropertyInjector} is used to inject the {@link jakarta.ws.rs.core.Context @Context} and {@code @*Param}
+     * injection points CDI does not inject. The {@code propertyInjectionFilter} returns {@code true} for members the
+     * property injector should skip because CDI injects them.
      * </p>
      *
-     * @param delegate            the delegate injection target
-     * @param clazz               the type of the bean
-     * @param usePropertyInjector {@code true} if a {@link PropertyInjector} should be used and this is not a fully
-     *                            managed CDI bean, otherwise {@link false}
+     * @param delegate                the delegate injection target
+     * @param clazz                   the type of the bean
+     * @param propertyInjectionFilter the filter for members RESTEasy property injection should skip
      */
-    protected JaxrsInjectionTarget(final InjectionTarget<T> delegate, final Class<T> clazz, final boolean usePropertyInjector) {
+    protected JaxrsInjectionTarget(final InjectionTarget<T> delegate, final Class<T> clazz,
+            final Predicate<Member> propertyInjectionFilter) {
         this.delegate = delegate;
         this.clazz = clazz;
         hasPostConstruct = Types.hasPostConstruct(clazz, validatePostConstructParameters);
-        this.usePropertyInjector = usePropertyInjector;
+        this.propertyInjectionFilter = propertyInjectionFilter;
     }
 
     @Override
     public void inject(T instance, CreationalContext<T> ctx) {
         delegate.inject(instance, ctx);
 
-        // We use a property injector for non-CDI managed resoruces
+        // We use a property injector for non-CDI managed resources
         final PropertyInjector propertyInjector = getPropertyInjector();
 
         HttpRequest request = ResteasyContext.getContextData(HttpRequest.class);
@@ -148,17 +149,15 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T> {
     }
 
     private PropertyInjector getPropertyInjector() {
-        if (usePropertyInjector) {
-            if (propertyInjector == null) {
-                synchronized (this) {
-                    if (propertyInjector == null) {
-                        propertyInjector = new PropertyInjectorImpl(clazz, ResteasyProviderFactory.getInstance());
-                    }
+        if (propertyInjector == null) {
+            synchronized (this) {
+                if (propertyInjector == null) {
+                    propertyInjector = new PropertyInjectorImpl(clazz, ResteasyProviderFactory.getInstance(),
+                            propertyInjectionFilter);
                 }
             }
-            return propertyInjector;
         }
-        return null;
+        return propertyInjector;
     }
 
     private void validate(HttpRequest request, T instance) {

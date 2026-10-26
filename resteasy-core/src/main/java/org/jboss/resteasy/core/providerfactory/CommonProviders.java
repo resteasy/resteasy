@@ -114,12 +114,27 @@ public class CommonProviders {
         }
     }
 
+    /**
+     * Processes the contracts of a provider instance.
+     *
+     * @deprecated core no longer invokes this method, so overriding it has no effect. Use
+     *             {@link #processProviderInstanceContracts(Object, Class, Map, Integer, boolean, Map)}, which receives
+     *             the class a container proxy delegates to.
+     */
+    @Deprecated(forRemoval = true, since = "8.0")
     protected void processProviderInstanceContracts(Object provider, Map<Class<?>, Integer> contracts,
             Integer priorityOverride, boolean builtIn, Map<Class<?>, Integer> newContracts) {
+        processProviderInstanceContracts(provider, rpf.getInjectorFactory().resolveType(provider.getClass()), contracts,
+                priorityOverride, builtIn, newContracts);
+    }
+
+    protected void processProviderInstanceContracts(Object provider, Class<?> providerClass,
+            Map<Class<?>, Integer> contracts, Integer priorityOverride, boolean builtIn,
+            Map<Class<?>, Integer> newContracts) {
         if (Utils.isA(provider, MessageBodyReader.class, contracts)) {
             try {
-                int priority = Utils.getPriority(priorityOverride, contracts, MessageBodyReader.class, provider.getClass());
-                addMessageBodyReader((MessageBodyReader) provider, provider.getClass(), priority, builtIn);
+                int priority = Utils.getPriority(priorityOverride, contracts, MessageBodyReader.class, providerClass);
+                addMessageBodyReader((MessageBodyReader) provider, providerClass, priority, builtIn);
                 newContracts.put(MessageBodyReader.class, priority);
             } catch (Exception e) {
                 throw new RuntimeException(Messages.MESSAGES.unableToInstantiateMessageBodyReader(), e);
@@ -127,15 +142,15 @@ public class CommonProviders {
         }
         if (Utils.isA(provider, MessageBodyWriter.class, contracts)) {
             try {
-                int priority = Utils.getPriority(priorityOverride, contracts, MessageBodyWriter.class, provider.getClass());
-                addMessageBodyWriter((MessageBodyWriter) provider, provider.getClass(), priority, builtIn);
+                int priority = Utils.getPriority(priorityOverride, contracts, MessageBodyWriter.class, providerClass);
+                addMessageBodyWriter((MessageBodyWriter) provider, providerClass, priority, builtIn);
                 newContracts.put(MessageBodyWriter.class, priority);
             } catch (Exception e) {
                 throw new RuntimeException(Messages.MESSAGES.unableToInstantiateMessageBodyWriter(), e);
             }
         }
         if (Utils.isA(provider, ReaderInterceptor.class, contracts)) {
-            int priority = Utils.getPriority(priorityOverride, contracts, ReaderInterceptor.class, provider.getClass());
+            int priority = Utils.getPriority(priorityOverride, contracts, ReaderInterceptor.class, providerClass);
             JaxrsInterceptorRegistry<ReaderInterceptor> registry = getReaderInterceptorRegistryForWrite();
             registry.registerSingleton((ReaderInterceptor) provider, priority);
             attachedReaderInterceptors = false;
@@ -143,7 +158,7 @@ public class CommonProviders {
             newContracts.put(ReaderInterceptor.class, priority);
         }
         if (Utils.isA(provider, WriterInterceptor.class, contracts)) {
-            int priority = Utils.getPriority(priorityOverride, contracts, WriterInterceptor.class, provider.getClass());
+            int priority = Utils.getPriority(priorityOverride, contracts, WriterInterceptor.class, providerClass);
             JaxrsInterceptorRegistry<WriterInterceptor> registry = getWriterInterceptorRegistryForWrite();
             registry.registerSingleton((WriterInterceptor) provider, priority);
             attachedWriterInterceptors = false;
@@ -151,7 +166,7 @@ public class CommonProviders {
             newContracts.put(WriterInterceptor.class, priority);
         }
         if (Utils.isA(provider, DynamicFeature.class, contracts)) {
-            int priority = Utils.getPriority(priorityOverride, contracts, DynamicFeature.class, provider.getClass());
+            int priority = Utils.getPriority(priorityOverride, contracts, DynamicFeature.class, providerClass);
             Set<DynamicFeature> registry = getDynamicFeaturesForWrite();
             registry.add((DynamicFeature) provider);
             attachedFeatures = false;
@@ -165,7 +180,7 @@ public class CommonProviders {
         SortedKey<MessageBodyReader> key = new SortedKey<MessageBodyReader>(MessageBodyReader.class, provider,
                 providerClass, priority, isBuiltin);
         Utils.injectProperties(rpf, providerClass, provider);
-        Consumes consumeMime = provider.getClass().getAnnotation(Consumes.class);
+        Consumes consumeMime = providerClass.getAnnotation(Consumes.class);
         MediaTypeMap<SortedKey<MessageBodyReader>> registry = getMessageBodyReadersForWrite();
         if (consumeMime != null) {
             for (String consume : consumeMime.value()) {
@@ -181,7 +196,7 @@ public class CommonProviders {
     protected void addMessageBodyWriter(MessageBodyWriter provider, Class<?> providerClass, int priority,
             boolean isBuiltin) {
         Utils.injectProperties(rpf, providerClass, provider);
-        Produces consumeMime = provider.getClass().getAnnotation(Produces.class);
+        Produces consumeMime = providerClass.getAnnotation(Produces.class);
         SortedKey<MessageBodyWriter> key = new SortedKey<MessageBodyWriter>(MessageBodyWriter.class, provider,
                 providerClass, priority, isBuiltin);
         MediaTypeMap<SortedKey<MessageBodyWriter>> registry = getMessageBodyWritersForWrite();

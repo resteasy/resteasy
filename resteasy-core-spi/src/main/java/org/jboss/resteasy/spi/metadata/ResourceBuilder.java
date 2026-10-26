@@ -32,11 +32,13 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.container.AsyncResponse;
 import jakarta.ws.rs.container.Suspended;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.sse.SseEventSink;
 
 import org.jboss.resteasy.annotations.Body;
 import org.jboss.resteasy.annotations.Form;
@@ -393,7 +395,19 @@ public class ResourceBuilder {
             if (param.paramType == Parameter.ParamType.SUSPENDED) {
                 method.method.asynchronous = true;
             } else if (param.paramType == Parameter.ParamType.UNKNOWN) {
-                param.paramType = Parameter.ParamType.MESSAGE_BODY;
+                // Check cases where the parameter is a AsyncResponse, SseEventSink or a known context type without
+                // the @Context parameter which may be produced by CDI. In other cases, we assume this is the message
+                // body.
+                if (AsyncResponse.class.isAssignableFrom(param.type)) {
+                    method.method.asynchronous = true;
+                    param.paramType = Parameter.ParamType.SUSPENDED;
+                } else if (SseEventSink.class.isAssignableFrom(param.type)) {
+                    param.paramType = Parameter.ParamType.CONTEXT;
+                } else if (param.isContextType()) {
+                    param.paramType = Parameter.ParamType.CONTEXT;
+                } else {
+                    param.paramType = Parameter.ParamType.MESSAGE_BODY;
+                }
             }
             return this;
         }

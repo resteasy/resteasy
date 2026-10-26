@@ -15,6 +15,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.MethodInjector;
+import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ValueInjector;
 import org.jboss.resteasy.spi.metadata.MethodParameter;
@@ -126,7 +127,21 @@ public class MethodInjectorImpl implements MethodInjector {
         }
         @SuppressWarnings("unchecked")
         CompletionStage<Object[]> stagedArgs = (CompletionStage<Object[]>) argsObj;
-        return stagedArgs.thenApply(args -> invoke(request, httpResponse, resource, args));
+        return stagedArgs.thenCompose(args -> {
+            // The arguments were resolved asynchronously. If the response completed in the meantime, e.g. because of a
+            // timeout, the request may already have completed, so the resource method must not be invoked. Otherwise,
+            // the invocation is tracked as a dispatch so the request does not complete, e.g. destroying the resource,
+            // while the resource method is invoked.
+            if (isResponseDone(request) || !RequestCompletion.dispatchResumed(request)) {
+                return CompletableFuture.failedStage(
+                        Messages.MESSAGES.responseAlreadyCompleted(method.toString()));
+            }
+            try {
+                return CompletableFuture.completedFuture(invoke(request, httpResponse, resource, args));
+            } finally {
+                RequestCompletion.dispatchEnded(request, httpResponse);
+            }
+        });
     }
 
     private Object invoke(HttpRequest request, HttpResponse httpResponse, Object resource, Object[] args) {
@@ -184,6 +199,11 @@ public class MethodInjectorImpl implements MethodInjector {
             validator.validateReturnValue(request, resource, method.getMethod(), result);
         }
         return result;
+    }
+
+    private static boolean isResponseDone(final HttpRequest request) {
+        final ResteasyAsynchronousContext asyncContext = request.getAsyncContext();
+        return asyncContext.isSuspended() && asyncContext.getAsyncResponse().isDone();
     }
 
 }

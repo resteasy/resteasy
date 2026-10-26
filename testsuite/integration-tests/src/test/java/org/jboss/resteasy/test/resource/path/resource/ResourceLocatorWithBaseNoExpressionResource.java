@@ -24,8 +24,8 @@ public class ResourceLocatorWithBaseNoExpressionResource {
         Assertions.assertEquals("a1/base/1/resources", matchedURIs.get(0), ERROR_MSG);
         Assertions.assertEquals("a1", matchedURIs.get(1), ERROR_MSG);
         Assertions.assertEquals(1, uri.getMatchedResources().size(), ERROR_MSG);
-        Assertions.assertEquals(ResourceLocatorWithBaseNoExpressionResource.class,
-                uri.getMatchedResources().get(0).getClass(), ERROR_MSG);
+        Assertions.assertInstanceOf(ResourceLocatorWithBaseNoExpressionResource.class,
+                uri.getMatchedResources().get(0), ERROR_MSG);
         return new ResourceLocatorWithBaseNoExpressionSubresource();
 
     }

@@ -83,6 +83,18 @@ and threw the given exception.
 Async processing can be done inside an `AsyncWriterInterceptor` (if using <<_asynchronous_io,Async IO>>), which is the
 asynchronous-supporting equivalent to `WriterInterceptor`. In this case, there is no need to manually suspend or resume the request.
 
+WARNING: `SuspendableContainerRequestContext` and `SuspendableContainerResponseContext` are deprecated for removal.
+Resuming a suspended filter chain may continue execution on a different thread than the one that suspended it. CDI
+contexts are bound to a specific thread, so CDI may not behave as expected after such a resumption: a
+`@RequestScoped`, `@SessionScoped`, or `@ConversationScoped` bean may fail to resolve, or resolve to a different
+instance than expected, regardless of what scope the matched resource itself uses. `@ApplicationScoped` and
+`@Dependent` beans are unaffected. This is consistent with the Jakarta Concurrency specification's own guidance
+against relying on those same CDI scopes surviving an asynchronous task boundary, and reliably fixing it is not
+something RESTEasy can do in a CDI-implementation-agnostic way. Asynchronous processing in resource methods via
+`AsyncResponse`/`CompletionStage` is not deprecated and remains fully supported as a mechanism, but is equally
+susceptible to this same caveat - code that doesn't reference any CDI bean after dispatching to another thread is
+unaffected, but code that does is not guaranteed to work.
+
 === Client Side Filters
 
 The client side also has two types of filters: `ClientRequestFilter` and `ClientResponseFilter`.
