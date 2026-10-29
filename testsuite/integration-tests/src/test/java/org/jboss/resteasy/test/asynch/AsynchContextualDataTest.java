@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * @tpSubChapter Asynchronous RESTEasy: RESTEASY-1225
@@ -104,6 +105,7 @@ public class AsynchContextualDataTest {
      * @since 8.0
      */
     @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-cdi", minVersion = "8.0.0.Alpha1")
     public void testContextualDataAfterExceptionResume() throws Exception {
         String id = "335";
 

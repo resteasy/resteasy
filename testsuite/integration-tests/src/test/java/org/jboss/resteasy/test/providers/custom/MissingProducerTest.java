@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.providers.custom;
 
-import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
@@ -29,17 +27,15 @@ public class MissingProducerTest {
     private static int initLogMsg3Count = parseLog3();
 
     private static int parseLog1() {
-        return TestUtil.getWarningCount("RESTEASY002120: ClassNotFoundException: ", false, DEFAULT_CONTAINER_QUALIFIER);
+        return TestUtil.getWarningCount("RESTEASY002120: ClassNotFoundException: ", false);
     }
 
     private static int parseLog2() {
-        return TestUtil.getWarningCount("Unable to load builtin provider org.jboss.resteasy.Missing from ", false,
-                DEFAULT_CONTAINER_QUALIFIER);
+        return TestUtil.getWarningCount("Unable to load builtin provider org.jboss.resteasy.Missing from ", false);
     }
 
     private static int parseLog3() {
-        return TestUtil.getWarningCount("classes/META-INF/services/jakarta.ws.rs.ext.Providers", false,
-                DEFAULT_CONTAINER_QUALIFIER);
+        return TestUtil.getWarningCount("classes/META-INF/services/jakarta.ws.rs.ext.Providers", false);
     }
 
     @SuppressWarnings(value = "unchecked")

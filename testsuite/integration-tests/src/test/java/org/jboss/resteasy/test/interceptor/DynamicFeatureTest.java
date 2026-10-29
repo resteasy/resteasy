@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.interceptor;
 
-import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
-
 import java.util.Map;
 
 import jakarta.ws.rs.client.Client;
@@ -52,7 +50,7 @@ public class DynamicFeatureTest {
     @Deployment
     public static Archive<?> deploy() {
         // LogCounter needs to be created before deployment because it can only count logs written after its creation
-        logCounter = new LogCounter("This should be happening exactly once", false, DEFAULT_CONTAINER_QUALIFIER);
+        logCounter = new LogCounter("This should be happening exactly once", false);
 
         WebArchive war = TestUtil.prepareArchive(DynamicFeatureTest.class.getSimpleName());
         war.addClasses(GreetingInterceptor.class, DoNothingGlobalRequestFilter.class, DoNothingMethodScopedRequestFilter.class);
