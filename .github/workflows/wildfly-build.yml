@@ -103,7 +103,7 @@ jobs:
       fail-fast: false
       matrix:
         profile:
-          - '-Pprovision-without-resteasy,without-jackson'
+          - '-Pprovision-without-resteasy'
 
     steps:
       - uses: actions/checkout@v7

@@ -15,7 +15,6 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.setup.LoggingSetupTask;
-import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingDebugLoggingEndPoint;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingDebugLoggingItem;
 import org.jboss.resteasy.test.providers.jsonb.basic.resource.JsonBindingDebugLoggingItemCorruptedGet;
@@ -78,15 +77,15 @@ public class JsonBindingDebugLoggingTest {
     public void exceptionDuringServerSend() throws Exception {
         // count log messages before request
         LogCounter peStringLog = new LogCounter(".*jakarta.ws.rs.ProcessingException.*",
-                false, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
+                true, true);
 
         LogCounter resteasyExceptionLog = new LogCounter(
                 ".*ERROR .* RESTEASY002025.*", true,
-                ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
+                true);
 
         LogCounter jsonbExceptionLog = new LogCounter(
                 "Caused by: jakarta.json.bind.JsonbException",
-                true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+                true);
 
         // perform request
         WebTarget base = client.target(generateURL("/get/nok"));
@@ -113,14 +112,13 @@ public class JsonBindingDebugLoggingTest {
     @Test
     public void exceptionDuringServerReceive() throws Exception {
         LogCounter resteasyExceptionLog = new LogCounter(".*ERROR .* RESTEASY002375.*", true,
-                ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
+                true);
 
-        LogCounter jsonbExceptionLog = new LogCounter("Caused by: jakarta.json.bind.JsonbException", true,
-                ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter jsonbExceptionLog = new LogCounter("Caused by: jakarta.json.bind.JsonbException", true);
         LogCounter applicationExcpetionLog = new LogCounter(
                 "Caused by: java.lang.RuntimeException: "
                         + JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName(),
-                true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+                true);
 
         // perform request
         WebTarget base = client.target(generateURL("/post"));
@@ -152,19 +150,19 @@ public class JsonBindingDebugLoggingTest {
 
         // count log messages before request
         LogCounter errorStringLog = new LogCounter("ERROR",
-                true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+                true);
 
         LogCounter resteasyExceptionLog = new LogCounter(
                 ".*DEBUG .* RESTEASY002340.*", true,
-                ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
+                true);
 
         LogCounter jsonbExceptionLog = new LogCounter(
                 "Caused by: jakarta.json.bind.JsonbException",
-                true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+                true);
         LogCounter applicationExcpetionLog = new LogCounter(
                 "Caused by: java.lang.RuntimeException: "
                         + JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName(),
-                true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+                true);
 
         // use JsonBindingProvider to get exception
         try {
@@ -197,19 +195,18 @@ public class JsonBindingDebugLoggingTest {
 
         // count log messages before request
         LogCounter errorStringLog = new LogCounter("ERROR",
-                true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+                true);
 
         LogCounter resteasyExceptionLog = new LogCounter(
                 ".*DEBUG .* RESTEASY004672.*", true,
-                ContainerConstants.DEFAULT_CONTAINER_QUALIFIER, true);
+                true);
 
         LogCounter jsonbExceptionLog = new LogCounter(
-                "Caused by: jakarta.json.bind.JsonbException", true,
-                ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+                "Caused by: jakarta.json.bind.JsonbException", true);
         LogCounter applicationExcpetionLog = new LogCounter(
                 "Caused by: java.lang.RuntimeException: " +
                         JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName(),
-                true, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
+                true);
 
         // use JsonBindingProvider to get exception
         try {

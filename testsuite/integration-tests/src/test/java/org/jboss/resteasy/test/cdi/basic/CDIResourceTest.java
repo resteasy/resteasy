@@ -17,7 +17,6 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.FooResource;
 import org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.TestApplication;
 import org.jboss.resteasy.test.cdi.basic.resource.resteasy1082.TestServlet;
@@ -55,7 +54,7 @@ public class CDIResourceTest {
 
     static {
         toStr = new StringBuilder()
-                .append(TestUtil.getStandaloneDir(ContainerConstants.DEFAULT_CONTAINER_QUALIFIER)).append(File.separator)
+                .append(TestUtil.getStandaloneDir()).append(File.separator)
                 .append("deployments").append(File.separator)
                 .append(WAR_NAME).toString();
         exportFile = new File(FileSystems.getDefault().getPath("target").toFile(), WAR_NAME);

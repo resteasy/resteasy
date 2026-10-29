@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.providers.jsonb.basic;
 
-import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
-
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -24,6 +22,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -34,6 +33,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@Tag("without-jsonb-client-only")
+@Tag("NotForBootableJar")
 public class JsonBindingAnnotationsJacksonTest {
 
     private static final String WAR_WITH_JSONB = "war_with_jsonb";
@@ -136,7 +137,7 @@ public class JsonBindingAnnotationsJacksonTest {
      */
     @Test
     public void negativeScenarioOnServer() throws Exception {
-        LogCounter errorLogCounter = new LogCounter("ERROR", false, DEFAULT_CONTAINER_QUALIFIER);
+        LogCounter errorLogCounter = new LogCounter("ERROR", false);
         try {
             Client client = ClientBuilder.newBuilder().register(JsonBindingCustomRepeaterProvider.class).build();
             String charset = "UTF-8";

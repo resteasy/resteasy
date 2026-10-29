@@ -24,31 +24,21 @@ public class LogCounter {
      */
     private boolean useRegexp = false;
 
-    /**
-     * Container qualifier when arquillian starts multiple instance, null otherwise.
-     */
-    private String containerQualifier;
-
-    public LogCounter(final String message, final boolean onServer, final String containerQualifier) {
-        this(message, onServer, containerQualifier, false);
+    public LogCounter(final String message, final boolean onServer) {
+        this(message, onServer, false);
     }
 
-    public LogCounter(final String message, final boolean onServer, final String containerQualifier, final boolean useRegexp) {
+    public LogCounter(final String message, final boolean onServer, final boolean useRegexp) {
         this.message = message;
         this.onServer = onServer;
-        this.containerQualifier = containerQualifier;
         this.useRegexp = useRegexp;
-        this.initCount = TestUtil.getWarningCount(message, onServer, containerQualifier, useRegexp);
-    }
-
-    public LogCounter(final String message, final boolean onServer) {
-        this(message, onServer, null);
+        this.initCount = TestUtil.getWarningCount(message, onServer, useRegexp);
     }
 
     /**
      * Get count of examined log message, logged after creation of this LogCounter
      */
     public int count() {
-        return TestUtil.getWarningCount(message, onServer, containerQualifier, useRegexp) - initCount;
+        return TestUtil.getWarningCount(message, onServer, useRegexp) - initCount;
     }
 }

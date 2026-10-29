@@ -3,29 +3,16 @@
         http://jboss.org/schema/arquillian
         http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
     <defaultProtocol type="Servlet 5.0" />
-    <group qualifier="integration-tests" default="true">
-        <container qualifier="${container.qualifier.managed}" default="true">
-            <configuration>
-                <property name="jbossHome">${jboss.home}</property>
-                <property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
-                <property name="javaVmArguments">${debugJvmArgs} -server -Xms256m -Xmx1G -Dmaven.repo.local=${settings.localRepository} -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${wildfly.system.properties} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.managed} -Djboss.server.base.dir=${container.base.dir.managed}
-                </property>
-                <property name="managementAddress">${node}</property>
-                <property name="managementPort">${container.management.port.managed}</property>
-            </configuration>
-        </container>
-        <container qualifier="${container.qualifier.managed.encoding}">
-            <configuration>
-                <property name="jbossHome">${jboss.home}</property>
-                <property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
-                <!-- Forcing file.encoding=us-ascii in order to test RESTEASY-2171 -->
-                <property name="javaVmArguments">-Dorg.jboss.resteasy.port=15080 -Dfile.encoding=us-ascii -server -Xms256m -Xmx1G -Dmaven.repo.local=${settings.localRepository} -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${wildfly.system.properties} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.managed.encoding} -Djboss.server.base.dir=${container.base.dir.managed.encoding}
-                </property>
-                <property name="managementAddress">${node}</property>
-                <property name="managementPort">${container.management.port.managed.encoding}</property>
-            </configuration>
-        </container>
-    </group>
+    <container qualifier="wildfly" default="true">
+        <configuration>
+            <property name="jbossHome">${jboss.home}</property>
+            <property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
+            <property name="javaVmArguments">${debugJvmArgs} -server -Xms256m -Xmx1G -Dmaven.repo.local=${settings.localRepository} -Djboss.bind.address=${node} -Djboss.bind.address.management=${node} -Dnode=${node} -Dipv6=${ipv6} ${additionalJvmArgs} ${wildfly.system.properties} ${ipv6ArquillianSettings} ${jacoco.agent} -Djboss.socket.binding.port-offset=${container.offset.managed}
+            </property>
+            <property name="managementAddress">${node}</property>
+            <property name="managementPort">${container.management.port.managed}</property>
+        </configuration>
+    </container>
     <extension qualifier="systemproperties">
         <property name="prefix">org.jboss.resteasy.</property>
     </extension>
