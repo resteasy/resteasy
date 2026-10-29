@@ -239,11 +239,22 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- Provisions WildFly for bootable JAR tests -->
+                    <!-- Do not provision WildFly for bootable JAR tests -->
                     <plugin>
-                        <groupId>${groupId.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar}</groupId>
-                        <artifactId>${artifactId.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar}</artifactId>
-                        <version>${version.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar}</version>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-maven-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                    <!-- Package jaxrs-server.jar with the dedicated wildfly-jar-maven-plugin. A distinct
+                         artifactId (vs wildfly-maven-plugin) avoids the plugin-merge collision that silently
+                         dropped this execution; version is overridable via -Dversion.org.wildfly.jar.plugin
+                         to test the product build of the plugin. -->
+                    <plugin>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-jar-maven-plugin</artifactId>
+                        <version>${version.org.wildfly.jar.plugin}</version>
                         <executions>
                             <!-- Package a jaxrs-server layer with a few other layers to be tested as a bootable jar -->
                             <execution>
@@ -253,14 +264,13 @@
                                 </goals>
                                 <phase>process-test-resources</phase>
                                 <configuration>
-                                    <provisioning-dir>${project.build.directory}/server</provisioning-dir>
-                                    <bootable-jar-name>jaxrs-server.jar</bootable-jar-name>
-                                    <skipDeployment>true</skipDeployment>
-                                    <record-provisioning-state>false</record-provisioning-state>
-                                    <log-provisioning-time>true</log-provisioning-time>
-                                    <galleon-options>
+                                    <output-file-name>jaxrs-server.jar</output-file-name>
+                                    <hollowJar>true</hollowJar>
+                                    <record-state>false</record-state>
+                                    <log-time>true</log-time>
+                                    <plugin-options>
                                         <jboss-fork-embedded>true</jboss-fork-embedded>
-                                    </galleon-options>
+                                    </plugin-options>
                                     <feature-packs>
                                         <feature-pack>
                                             <groupId>${server.test.feature.pack.groupId}</groupId>
@@ -288,14 +298,13 @@
                                             </manifest>
                                         </channel>
                                     </channels>
-                                    <packaging-scripts>
-                                        <execution>
-                                            <scripts>
+                                    <cli-sessions>
+                                        <cli-session>
+                                            <script-files>
                                                 <script>${basedir}/../config/configure-bootable-jar.cli</script>
-                                            </scripts>
-                                        </execution>
-                                    </packaging-scripts>
-                                    <bootable-jar>true</bootable-jar>
+                                            </script-files>
+                                        </cli-session>
+                                    </cli-sessions>
                                 </configuration>
                             </execution>
                         </executions>
