@@ -211,6 +211,18 @@ Per-request objects created outside resources, e.g. `AsyncResponse.register(Clas
 sub-resource locators and `@Form` or `@Query` classes, which are `@Dependent` CDI beans are not destroyed, so their
 `@PreDestroy` methods are not invoked. This is the same as in RESTEasy 7.
 
+==== Role-based security is enabled by default
+
+In previous releases the `@RolesAllowed`, `@PermitAll` and `@DenyAll` annotations on {spec-name} resources were silently ignored unless `resteasy.role.based.security` was explicitly set to `true`.
+Starting with RESTEasy 8 the default value of `resteasy.role.based.security` is `true`, so these annotations are enforced without any configuration.
+
+Deployments that carry these annotations but never enabled the parameter will now start rejecting requests that do not satisfy them.
+A failed role check results in a 403 (Forbidden) response.
+Resources without these annotations are not affected.
+
+To restore the previous behavior, set `resteasy.role.based.security` to `false`.
+If it is `false` and one of the annotations is found on a resource class, RESTEasy logs the warning `RESTEASY002430` once to indicate that the annotations are being ignored.
+
 [[_migration_8_configuration]]
 === Configuration
 

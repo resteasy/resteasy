@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://w3.org"
+    xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd"
+    version="6.1">
+
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>rbacAutoEnableDomain</realm-name>
+    </login-config>
+
+    <!-- No resteasy.role.based.security context-param: RBAC is enabled by default (RESTEASY-3789) -->
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Resteasy</web-resource-name>
+            <url-pattern>/rbac-auto/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <!-- Both roles must be allowed through by the servlet container;
+                        RESTEasy's RoleBasedSecurityFeature enforces @RolesAllowed("ROLE_B") -->
+            <role-name>ROLE_A</role-name>
+            <role-name>ROLE_B</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <security-role>
+        <role-name>ROLE_A</role-name>
+    </security-role>
+    <security-role>
+        <role-name>ROLE_B</role-name>
+    </security-role>
+
+</web-app>

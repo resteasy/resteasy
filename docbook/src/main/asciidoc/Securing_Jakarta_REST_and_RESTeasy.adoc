@@ -25,23 +25,26 @@ Some general security constraint elements will still need to be declared in web.
 
 
 RESTEasy supports the `@RolesAllowed`, `@PermitAll` and `@DenyAll` annotations on {spec-name} methods.
-By default, RESTEasy does not recognize these annotations.
-RESTEasy must be configured to turn on role-based security by setting the appropriate parameter.
-The code fragment below show how to enable security. 
+Role-based security is enabled by default, so these annotations are enforced without any additional configuration.
+Setting the `resteasy.role.based.security` parameter to `false` turns it off.
+If it is turned off and RESTEasy finds one of these annotations on a resource class, it logs the warning `RESTEASY002430` once, because the annotations are then ignored.
+The code fragment below shows how to disable role-based security.
 
-IMPORTANT: Do not turn on this switch if using {enterprise-beans}.  The {enterprise-beans} container will provide this functionality instead of RESTEasy.
+NOTE: If a resource is also an {enterprise-beans} bean, both the {enterprise-beans} container and RESTEasy check the annotations.
+Both checks use the same security identity, so the outcome is the same: a caller without the required role is rejected by RESTEasy before the bean is invoked.
+Set `resteasy.role.based.security` to `false` if the {enterprise-beans} container should be the only component enforcing the annotations.
 
 [source,xml]
 ----
 <web-app>
    <context-param>
       <param-name>resteasy.role.based.security</param-name>
-      <param-value>true</param-value>
+      <param-value>false</param-value>
    </context-param>
 </web-app>
 ----
 
-See <<_microprofile_config>> for more information about application configuration. 
+See <<_microprofile_config>> for more information about application configuration.
 
 RESTEasy requires that all roles used within the application be declared in the war's web.xml file.
 A security constraint that permits all of those roles access to every URL handled by the {spec-name} runtime must also be declared in the web.xml.
@@ -49,7 +52,7 @@ A security constraint that permits all of those roles access to every URL handle
 RESTEasy performs authorization by checking the method annotations.
 If a method is annotated with @RolesAllowed.
 It calls HttpServletRequest.isUserInRole.
-If one of the @RolesAllowed passes, the request is processed, otherwise, a response is returned with a 401 (Unauthorized) response code. 
+If one of the @RolesAllowed passes, the request is processed, otherwise, a response is returned with a 403 (Forbidden) response code.
 
 Here is an example of a modified RESTEasy WAR file.
 Notice that every role declared is allowed access to every URL controlled by the RESTEasy servlet. 
