@@ -20,6 +20,7 @@ import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -30,6 +31,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
+// Packages this build's RESTEasy into the deployment, so it cannot run against the server's RESTEasy
+@Tag("bundles-resteasy")
 public class CustomJackson2ProviderTest {
 
     private static Client client;

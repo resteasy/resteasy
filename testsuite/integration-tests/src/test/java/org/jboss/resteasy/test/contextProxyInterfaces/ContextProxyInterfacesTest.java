@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * @tpSubChapter context injection
@@ -57,6 +58,7 @@ public class ContextProxyInterfacesTest {
     }
 
     @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-cdi", minVersion = "8.0.0.Alpha1")
     public void testCanCastConfigurationToImplSpecificInterface() throws Exception {
         Builder builder = client.target(generateURL("/config")).request();
         try (Response response = builder.get()) {

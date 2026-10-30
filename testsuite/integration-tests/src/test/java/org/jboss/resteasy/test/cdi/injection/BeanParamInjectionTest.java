@@ -33,6 +33,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * Tests that a {@link BeanParam} aggregator which is a {@code @Dependent} CDI bean is obtained from CDI, both as an
@@ -42,6 +43,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@RequiresModule(value = "org.jboss.resteasy.resteasy-cdi", minVersion = "8.0.0.Alpha1")
 public class BeanParamInjectionTest {
     private static final String EXPECTED = "query:hello:true";
     private static final String EXPECTED_PLAIN = "query:hello:legacy:true";

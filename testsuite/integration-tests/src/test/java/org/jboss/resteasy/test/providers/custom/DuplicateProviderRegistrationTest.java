@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.providers.custom;
 
-import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
-
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
@@ -10,7 +8,6 @@ import jakarta.ws.rs.ext.ReaderInterceptor;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit5.ArquillianExtension;
-import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationFeature;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationFilter;
 import org.jboss.resteasy.test.providers.custom.resource.DuplicateProviderRegistrationInterceptor;
@@ -40,16 +37,16 @@ public class DuplicateProviderRegistrationTest {
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(DuplicateProviderRegistrationTest.class.getSimpleName());
         war.addClasses(DuplicateProviderRegistrationFeature.class, DuplicateProviderRegistrationFilter.class,
-                TestUtil.class, DuplicateProviderRegistrationInterceptor.class, ContainerConstants.class);
+                TestUtil.class, DuplicateProviderRegistrationInterceptor.class);
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
     private static int getRESTEASY002155WarningCount() {
-        return TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER);
+        return TestUtil.getWarningCount("RESTEASY002155", true);
     }
 
     private static int getRESTEASY002160WarningCount() {
-        return TestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER);
+        return TestUtil.getWarningCount("RESTEASY002160", true);
     }
 
     /**

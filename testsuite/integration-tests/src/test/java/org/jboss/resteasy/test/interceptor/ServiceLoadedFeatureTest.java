@@ -40,6 +40,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * Tests that a {@link Feature} or {@link DynamicFeature} loaded with {@link java.util.ServiceLoader} is registered
@@ -49,6 +50,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@RequiresModule(value = "org.jboss.resteasy.resteasy-cdi", minVersion = "8.0.0.Alpha1")
 public class ServiceLoadedFeatureTest {
     private static final String SERVICE_LOADER = "service-loader";
     private static final String CDI = "cdi";

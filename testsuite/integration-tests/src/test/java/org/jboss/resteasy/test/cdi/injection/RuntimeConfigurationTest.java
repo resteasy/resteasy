@@ -32,6 +32,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * Tests that an injected {@link jakarta.ws.rs.core.Configuration} and {@link jakarta.ws.rs.ext.Providers} resolve, on
@@ -43,6 +44,7 @@ import org.junit.jupiter.api.Test;
  */
 @ArquillianTest
 @RunAsClient
+@RequiresModule(value = "org.jboss.resteasy.resteasy-cdi", minVersion = "8.0.0.Alpha1")
 public class RuntimeConfigurationTest {
     private static final String CLIENT = "CLIENT:client:client";
     private static final String SERVER = "SERVER:none:none";

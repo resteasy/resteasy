@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.warning;
 
-import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
-
 import java.util.Map;
 import java.util.Set;
 
@@ -41,7 +39,7 @@ public class SubResourceWarningTest {
     }
 
     // check server.log msg count before app is deployed.  Deploying causes messages to be logged.
-    private static int preTestCnt = TestUtil.getWarningCount("have the same path, [test", false, DEFAULT_CONTAINER_QUALIFIER);
+    private static int preTestCnt = TestUtil.getWarningCount("have the same path, [test", false);
 
     @Deployment
     public static Archive<?> deploySimpleResource() {
@@ -59,7 +57,7 @@ public class SubResourceWarningTest {
      */
     @Test
     public void testWarningMsg() throws Exception {
-        int cnt = TestUtil.getWarningCount("have the same path, [test", false, DEFAULT_CONTAINER_QUALIFIER);
+        int cnt = TestUtil.getWarningCount("have the same path, [test", false);
         Assertions.assertEquals(preTestCnt + 2, cnt, "Improper log WARNING count");
     }
 }

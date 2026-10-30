@@ -11,20 +11,17 @@
 
     <properties>
         <maven.compiler.parameters>true</maven.compiler.parameters>
-        <container.base.dir.managed>${project.build.directory}${file.separator}${container.qualifier.managed}</container.base.dir.managed>
-        <container.base.dir.managed.encoding>${project.build.directory}${file.separator}${container.qualifier.managed.encoding}</container.base.dir.managed.encoding>
         <container.offset.managed>0</container.offset.managed>
-        <container.offset.managed.encoding>7000</container.offset.managed.encoding>
         <container.management.port.managed>9990</container.management.port.managed><!-- keep in sync with port offset -->
-        <container.management.port.managed.encoding>16990</container.management.port.managed.encoding><!-- keep in sync with port offset -->
-        <container.qualifier.managed>jbossas-managed</container.qualifier.managed>
-        <container.qualifier.managed.encoding>jbossas-managed-encoding</container.qualifier.managed.encoding>
 
         <module.jar.path>${jboss.home}${file.separator}modules${file.separator}system${file.separator}layers${file.separator}base</module.jar.path>
 
         <version.org.jboss.shrinkwrap.resolver>3.3.0</version.org.jboss.shrinkwrap.resolver>
         <!-- Exclude additional tests with e.g. -Dresteasy-integration-tests.additional.surefire.excludes='%regex[.*JettyClientHttpEngineTest.*|.*VertxClientHttpEngineTest.*]' -->
         <resteasy-integration-tests.additional.surefire.excludes />
+        <!-- Shared by the standard and bootable JAR executions -->
+        <surefire.groups.default>!without-jsonb-client-only</surefire.groups.default>
+        <surefire.groups.without-jsonb>without-jsonb-client | without-jsonb-client-only</surefire.groups.without-jsonb>
 
         <!-- Skip deploying tests -->
         <maven.deploy.skip>true</maven.deploy.skip>
@@ -125,6 +122,8 @@
             <id>provision-without-resteasy</id>
             <properties>
                 <jboss.home>${project.build.directory}${file.separator}wildfly</jboss.home>
+                <!-- Tests which package this build's RESTEasy into the deployment cannot run against the server's RESTEasy -->
+                <additional.surefire.excluded.groups>bundles-resteasy</additional.surefire.excluded.groups>
             </properties>
             <build>
                 <plugins>
@@ -148,41 +147,6 @@
                                             </manifest>
                                         </channel>
                                     </channels>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>without-jackson</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <excludes>
-                            </excludes>
-                        </configuration>
-                        <executions>
-                            <!-- default test execution -->
-                            <execution>
-                                <id>default-test</id>
-                                <phase>test</phase>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <configuration>
-                                    <excludes>
-                                        <!-- Tests requires excluding JsonBindingProvider-->
-                                        <exclude>**/JaxbXmlRootElementProviderTest.java</exclude>
-                                        <exclude>**/JsonBindingAnnotationsJacksonTest.java</exclude>
-                                        <exclude>**/SseJsonEventTest</exclude>
-                                        <!-- The CustomJackson2Provider doesn't work with this if the full project is not built. -->
-                                        <exclude>**/CustomJackson2ProviderTest.java</exclude>
-                                        <exclude>${resteasy-integration-tests.additional.surefire.excludes}</exclude>
-                                    </excludes>
                                 </configuration>
                             </execution>
                         </executions>
@@ -225,25 +189,10 @@
             </dependencies>
             <build>
                 <plugins>
-                    <!-- Disable the standard copy-based provisioning -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>initialize-basedirs</id>
-                                <phase>none</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <!-- Provisions WildFly for bootable JAR tests -->
                     <plugin>
-                        <groupId>${groupId.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar}</groupId>
-                        <artifactId>${artifactId.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar}</artifactId>
-                        <version>${version.org.wildfly.plugins.wildfly-maven-plugin.bootable-jar}</version>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-maven-plugin</artifactId>
                         <executions>
                             <!-- Package a jaxrs-server layer with a few other layers to be tested as a bootable jar -->
                             <execution>
@@ -306,8 +255,12 @@
                         <configuration>
                             <systemPropertyVariables combine.children="append">
                                 <install.dir>${project.build.directory}/wildfly</install.dir>
+                                <!-- Client-side log reads resolve against jboss.home, which must match install.dir -->
+                                <jboss.home>${project.build.directory}/wildfly</jboss.home>
                                 <bootable.jar>${project.build.directory}/jaxrs-server.jar</bootable.jar>
                                 <arquillian.xml>arquillian-bootable.xml</arquillian.xml>
+                                <!-- Resolve @RequiresModule against the server packaged into the bootable JAR -->
+                                <module.path>${project.build.directory}/server/modules</module.path>
                             </systemPropertyVariables>
                             <excludedGroups>${additional.surefire.excluded.groups}</excludedGroups>
                         </configuration>
@@ -328,16 +281,8 @@
                                     <goal>test</goal>
                                 </goals>
                                 <configuration>
+                                    <groups>${surefire.groups.default}</groups>
                                     <excludes>
-                                        <!-- Tests requires excluding JsonBindingProvider-->
-                                        <exclude>**/JsonBindingAnnotationsJacksonTest.java</exclude>
-                                        <exclude>**/SseJsonEventTest</exclude>
-                                        <!-- Tests without proper arquillian container in arquillian-bootable.xml -->
-                                        <exclude>**/*Gzip*</exclude>
-                                        <exclude>**/SslServerWithCorrectCertificateTest.java</exclude>
-                                        <exclude>**/SslServerWithWildcardHostnameCertificateTest.java</exclude>
-                                        <exclude>**/SslServerWithWrongHostnameCertificateTest.java</exclude>
-                                        <exclude>**/SslSniHostNamesTest.java</exclude>
                                         <exclude>${resteasy-integration-tests.additional.surefire.excludes}</exclude>
                                     </excludes>
                                 </configuration>
@@ -351,10 +296,7 @@
                                     <goal>test</goal>
                                 </goals>
                                 <configuration>
-                                    <includes>
-                                        <!-- TODO JsonBindingAnnotationsJacksonTest may be included here as well with additional changes-->
-                                        <include>**/SseJsonEventTest.java</include>
-                                    </includes>
+                                    <groups>${surefire.groups.without-jsonb}</groups>
                                     <classpathDependencyExcludes>
                                         <classpathDependencyExclude>org.jboss.resteasy:resteasy-json-binding-provider</classpathDependencyExclude>
                                     </classpathDependencyExcludes>
@@ -649,40 +591,6 @@
         </testResources>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <configuration>
-                    <skip>${skipTests}</skip>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>initialize-basedirs</id>
-                        <phase>process-test-classes</phase>
-                        <configuration>
-                            <target>
-                                <!-- Initialize basedir for tested container by copying
-                                     the original into new place.
-                                     This helps to isolate the multiple running instances.
-                                     One copy per each container in arquillian.xml -->
-
-                                <delete quiet="true" dir="${container.base.dir.managed}" />
-                                <copy todir="${container.base.dir.managed}" overwrite="true" failonerror="true">
-                                    <fileset dir="${jboss.home}/standalone" />
-                                </copy>
-
-                                <delete quiet="true" dir="${container.base.dir.managed.encoding}" />
-                                <copy todir="${container.base.dir.managed.encoding}" overwrite="true" failonerror="true">
-                                    <fileset dir="${jboss.home}/standalone" />
-                                </copy>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
                 <configuration>
@@ -737,11 +645,9 @@
                                 <goal>test</goal>
                             </goals>
                             <configuration>
+                                <!-- Tests tagged without-jsonb-client-only run only in the disable-jsonb-client execution -->
+                                <groups>${surefire.groups.default}</groups>
                                 <excludes>
-                                    <!-- Tests requires excluding JsonBindingProvider-->
-                                    <exclude>**/JaxbXmlRootElementProviderTest.java</exclude>
-                                    <exclude>**/JsonBindingAnnotationsJacksonTest.java</exclude>
-                                    <exclude>**/SseJsonEventTest</exclude>
                                     <exclude>${resteasy-integration-tests.additional.surefire.excludes}</exclude>
                                 </excludes>
                             </configuration>
@@ -755,12 +661,8 @@
                                 <goal>test</goal>
                             </goals>
                             <configuration>
-                                <includes>
-                                    <include>**/JaxbXmlRootElementProviderTest.java</include>
-                                    <include>**/JsonBindingAnnotationsJacksonTest.java</include>
-                                    <include>**/SseJsonEventTest.java</include>
-                                    <include>**/ValidationJaxbTest.java</include>
-                                </includes>
+                                <!-- Tests tagged without-jsonb-client also run in the default execution -->
+                                <groups>${surefire.groups.without-jsonb}</groups>
                                 <classpathDependencyExcludes>
                                     <classpathDependencyExclude>org.jboss.resteasy:resteasy-json-binding-provider</classpathDependencyExclude>
                                 </classpathDependencyExcludes>

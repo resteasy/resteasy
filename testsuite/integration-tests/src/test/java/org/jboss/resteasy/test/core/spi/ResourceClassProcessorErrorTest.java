@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.core.spi;
 
-import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
-
 import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -57,7 +55,7 @@ public class ResourceClassProcessorErrorTest {
     public void errorTest() {
         LogCounter errorLogCounter = new LogCounter(
                 "java.lang.RuntimeException: Exception from ResourceClassProcessorErrorImplementation",
-                false, DEFAULT_CONTAINER_QUALIFIER);
+                false);
         try {
             deployer.deploy(DEPLOYMENT_NAME);
             Assertions.fail("Exception from ResourceClassProcessor was not thrown");

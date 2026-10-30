@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.response;
 
-import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
-
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
@@ -51,7 +49,7 @@ public class DuplicitePathTest {
      * Get RESTEasy warning count
      */
     private static int getWarningCount() {
-        return TestUtil.getWarningCount("RESTEASY002142", false, DEFAULT_CONTAINER_QUALIFIER);
+        return TestUtil.getWarningCount("RESTEASY002142", false);
     }
 
     /**
@@ -60,7 +58,7 @@ public class DuplicitePathTest {
      * Example: WFLYUT0101: Duplicate servlet mapping /a/* found
      */
     private static int getServletMappingWarningCount() {
-        return TestUtil.getWarningCount("WFLYUT0101", false, DEFAULT_CONTAINER_QUALIFIER);
+        return TestUtil.getWarningCount("WFLYUT0101", false);
     }
 
     @Deployment

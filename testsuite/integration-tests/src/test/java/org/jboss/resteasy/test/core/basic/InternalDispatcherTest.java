@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * @tpSubChapter Core
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpTestCaseDetails Test for InternalDispatcher
  */
 @ExtendWith(ArquillianExtension.class)
+@RequiresModule(value = "org.jboss.resteasy.resteasy-cdi", minVersion = "8.0.0.Alpha1")
 public class InternalDispatcherTest {
     private static Logger logger = Logger.getLogger(InternalDispatcherTest.class);
 

@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.core.basic;
 
-import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +30,7 @@ public class DuplicateDeploymentTest {
     private static int initWarningCount = 0;
 
     private static int getWarningCount() {
-        return TestUtil.getWarningCount("RESTEASY002172", false, DEFAULT_CONTAINER_QUALIFIER);
+        return TestUtil.getWarningCount("RESTEASY002172", false);
     }
 
     @Deployment

@@ -53,6 +53,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * @tpSubChapter CDI
@@ -99,6 +100,7 @@ public class InterceptorTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-cdi", minVersion = "8.0.0.Alpha1")
     public void testInterceptors() throws Exception {
         Client client = ClientBuilder.newClient();
 

@@ -16,6 +16,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * @tpSubChapter Jaxrs implementation
@@ -192,6 +193,7 @@ public class HttpServletResponseContextTest {
      * @tpSince RESTEasy 4.7.0
      */
     @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-cdi", minVersion = "8.0.0.Alpha1")
     public void testPrintlnChar() {
         Client client = ClientBuilder.newClient();
         Builder request = client.target(generateURL("/println/char")).request();
@@ -328,6 +330,7 @@ public class HttpServletResponseContextTest {
      * @since 8.0.0
      */
     @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-cdi", minVersion = "8.0.0.Alpha1")
     public void writtenTrackedPerRequest() {
         try (Client client = ClientBuilder.newClient()) {
             try (Response response = client.target(generateURL("/write/optional")).queryParam("write", true).request()

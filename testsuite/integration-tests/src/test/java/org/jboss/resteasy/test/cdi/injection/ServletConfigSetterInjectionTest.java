@@ -23,6 +23,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * Tests that the parameter of a {@code @Context} setter method which is also annotated with {@code @Inject} is
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.Test;
  */
 @ArquillianTest
 @RunAsClient
+@RequiresModule(value = "org.jboss.resteasy.resteasy-cdi", minVersion = "8.0.0.Alpha1")
 public class ServletConfigSetterInjectionTest {
 
     @ArquillianResource
