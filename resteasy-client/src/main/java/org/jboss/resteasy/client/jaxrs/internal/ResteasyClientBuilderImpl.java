@@ -68,6 +68,7 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
     protected int connectionCheckoutTimeoutMs = -1;
     protected HostnameVerifier verifier = null;
     private ProxyInfo defaultProxy;
+    private boolean useJvmProxySettings = false;
     protected int responseBufferSize;
     protected List<String> sniHostNames = new ArrayList<>();
     protected boolean trustSelfSignedCertificates = true;
@@ -330,6 +331,12 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
      */
     public ResteasyClientBuilderImpl defaultProxy(String hostname, int port, final String scheme) {
         this.defaultProxy = hostname != null ? new ProxyInfo(scheme, hostname, port) : null;
+        return this;
+    }
+
+    @Override
+    public ResteasyClientBuilder useJvmProxySettings(boolean useJvmProxySettings) {
+        this.useJvmProxySettings = useJvmProxySettings;
         return this;
     }
 
@@ -605,6 +612,11 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
     @Override
     public String getDefaultProxyScheme() {
         return defaultProxy != null ? defaultProxy.scheme() : null;
+    }
+
+    @Override
+    public boolean isUseJvmProxySettings() {
+        return useJvmProxySettings;
     }
 
     @Override

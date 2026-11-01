@@ -230,6 +230,9 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
         if (that.isDisableAutomaticRetries()) {
             httpClientBuilder.disableAutomaticRetries();
         }
+        if (that.isUseJvmProxySettings()) {
+            httpClientBuilder.useSystemProperties();
+        }
         httpClient = httpClientBuilder.build();
 
         ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient, true);

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
 import jakarta.ws.rs.ProcessingException;
@@ -36,6 +37,7 @@ public class URLConnectionEngine implements ClientHttpEngine {
     protected HostnameVerifier hostnameVerifier;
     protected Integer readTimeout;
     protected Integer connectTimeout;
+    protected boolean useJvmProxySettings;
     protected String proxyHost;
     protected Integer proxyPort;
     protected String proxyScheme;
@@ -149,11 +151,17 @@ public class URLConnectionEngine implements ClientHttpEngine {
         Proxy proxy = null;
         if (this.proxyHost != null && this.proxyPort != null) {
             proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(this.proxyHost, this.proxyPort));
-        } else {
+        } else if (!this.useJvmProxySettings) {
             proxy = Proxy.NO_PROXY;
         }
 
-        HttpURLConnection connection = (HttpURLConnection) request.getUri().toURL().openConnection(proxy);
+        HttpURLConnection connection;
+        if (proxy != null) {
+            connection = (HttpURLConnection) request.getUri().toURL().openConnection(proxy);
+        } else {
+            connection = (HttpURLConnection) request.getUri().toURL().openConnection();
+        }
+
         connection.setRequestMethod(request.getMethod());
 
         if (this.connectTimeout != null) {
@@ -161,6 +169,15 @@ public class URLConnectionEngine implements ClientHttpEngine {
         }
         if (this.readTimeout != null) {
             connection.setReadTimeout(this.readTimeout);
+        }
+
+        if (connection instanceof HttpsURLConnection) {
+            if (this.hostnameVerifier != null) {
+                ((HttpsURLConnection) connection).setHostnameVerifier(this.hostnameVerifier);
+            }
+            if (this.sslContext != null) {
+                ((HttpsURLConnection) connection).setSSLSocketFactory(this.sslContext.getSocketFactory());
+            }
         }
 
         return connection;
@@ -246,6 +263,14 @@ public class URLConnectionEngine implements ClientHttpEngine {
 
     public void setReadTimeout(Integer readTimeout) {
         this.readTimeout = readTimeout;
+    }
+
+    public void setUseJvmProxySettings(boolean useJvmProxySettings) {
+        this.useJvmProxySettings = useJvmProxySettings;
+    }
+
+    public boolean isUseJvmProxySettings() {
+        return this.useJvmProxySettings;
     }
 
     public void setProxyHost(String proxyHost) {
