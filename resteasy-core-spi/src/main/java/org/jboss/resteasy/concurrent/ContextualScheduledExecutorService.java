@@ -24,6 +24,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.jboss.resteasy.spi.concurrent.ThreadContexts;
+
 /**
  * An {@linkplain ScheduledExecutorService executor} which wraps runnables and callables to capture the context of the
  * current thread.
@@ -48,30 +50,46 @@ import java.util.concurrent.TimeUnit;
  */
 public class ContextualScheduledExecutorService extends ContextualExecutorService implements ScheduledExecutorService {
 
+    ContextualScheduledExecutorService(final ContextualScheduledExecutorService delegate, final boolean managed) {
+        super(delegate, managed);
+    }
+
+    ContextualScheduledExecutorService(final ContextualScheduledExecutorService delegate, final boolean managed,
+            final ThreadContexts threadContexts) {
+        super(delegate, managed, threadContexts);
+    }
+
     ContextualScheduledExecutorService(final ScheduledExecutorService delegate, final boolean managed) {
         super(delegate, managed);
     }
 
+    ContextualScheduledExecutorService(final ScheduledExecutorService delegate, final boolean managed,
+            final ThreadContexts threadContexts) {
+        super(delegate, managed, threadContexts);
+    }
+
     @Override
     public ScheduledFuture<?> schedule(final Runnable command, final long delay, final TimeUnit unit) {
-        return getDelegate().schedule(ContextualExecutors.runnable(command), delay, unit);
+        return getDelegate().schedule(ContextualExecutors.runnable(threadContexts(), command), delay, unit);
     }
 
     @Override
     public <V> ScheduledFuture<V> schedule(final Callable<V> callable, final long delay, final TimeUnit unit) {
-        return getDelegate().schedule(ContextualExecutors.callable(callable), delay, unit);
+        return getDelegate().schedule(ContextualExecutors.callable(threadContexts(), callable), delay, unit);
     }
 
     @Override
     public ScheduledFuture<?> scheduleAtFixedRate(final Runnable command, final long initialDelay, final long period,
             final TimeUnit unit) {
-        return getDelegate().scheduleAtFixedRate(ContextualExecutors.runnable(command), initialDelay, period, unit);
+        return getDelegate().scheduleAtFixedRate(ContextualExecutors.runnable(threadContexts(), command),
+                initialDelay, period, unit);
     }
 
     @Override
     public ScheduledFuture<?> scheduleWithFixedDelay(final Runnable command, final long initialDelay, final long delay,
             final TimeUnit unit) {
-        return getDelegate().scheduleWithFixedDelay(ContextualExecutors.runnable(command), initialDelay, delay, unit);
+        return getDelegate().scheduleWithFixedDelay(ContextualExecutors.runnable(threadContexts(), command),
+                initialDelay, delay, unit);
     }
 
     @Override

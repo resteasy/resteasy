@@ -31,6 +31,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.concurrent.ThreadContexts;
 
 /**
  * An {@linkplain ExecutorService executor} which wraps runnables and callables to capture the context of the current
@@ -57,12 +59,54 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 public class ContextualExecutorService implements ExecutorService {
 
     private final boolean managed;
+    private final ThreadContexts threadContexts;
     private final AtomicBoolean shutdown;
     private volatile ExecutorService delegate;
 
+    /**
+     * Creates a new contextual executor.
+     *
+     * @param delegate the contextual executor whose delegate and thread contexts are copied
+     * @param managed  {@code true} if the delegate is managed by the user or container
+     */
+    ContextualExecutorService(final ContextualExecutorService delegate, final boolean managed) {
+        this(delegate.delegate, managed, delegate.threadContexts);
+    }
+
+    /**
+     * Creates a new contextual executor.
+     *
+     * @param delegate the executor to delegate to
+     * @param managed  {@code true} if the delegate is managed by the user or container
+     */
     ContextualExecutorService(final ExecutorService delegate, final boolean managed) {
+        this(delegate, managed, null);
+    }
+
+    /**
+     * Creates a new contextual executor.
+     *
+     * @param delegate       the executor to delegate to
+     * @param managed        {@code true} if the delegate is managed by the user or container
+     * @param threadContexts the thread contexts to capture for each task
+     */
+    ContextualExecutorService(final ContextualExecutorService delegate, final boolean managed,
+            final ThreadContexts threadContexts) {
+        this(delegate.delegate, managed, threadContexts);
+    }
+
+    /**
+     * Creates a new contextual executor.
+     *
+     * @param delegate       the executor to delegate to
+     * @param managed        {@code true} if the delegate is managed by the user or container
+     * @param threadContexts the thread contexts to capture for each task
+     */
+    ContextualExecutorService(final ExecutorService delegate, final boolean managed,
+            final ThreadContexts threadContexts) {
         this.delegate = delegate;
         this.managed = managed;
+        this.threadContexts = threadContexts;
         shutdown = new AtomicBoolean(false);
     }
 
@@ -119,47 +163,47 @@ public class ContextualExecutorService implements ExecutorService {
 
     @Override
     public <T> Future<T> submit(final Callable<T> task) {
-        return getDelegate().submit(ContextualExecutors.callable(task));
+        return getDelegate().submit(ContextualExecutors.callable(threadContexts(), task));
     }
 
     @Override
     public <T> Future<T> submit(final Runnable task, final T result) {
-        return getDelegate().submit(ContextualExecutors.runnable(task), result);
+        return getDelegate().submit(ContextualExecutors.runnable(threadContexts(), task), result);
     }
 
     @Override
     public Future<?> submit(final Runnable task) {
-        return getDelegate().submit(ContextualExecutors.runnable(task));
+        return getDelegate().submit(ContextualExecutors.runnable(threadContexts(), task));
     }
 
     @Override
     public <T> List<Future<T>> invokeAll(
             final Collection<? extends Callable<T>> tasks) throws InterruptedException {
-        return getDelegate().invokeAll(ContextualExecutors.callable(tasks));
+        return getDelegate().invokeAll(ContextualExecutors.callable(threadContexts(), tasks));
     }
 
     @Override
     public <T> List<Future<T>> invokeAll(
             final Collection<? extends Callable<T>> tasks, final long timeout,
             final TimeUnit unit) throws InterruptedException {
-        return getDelegate().invokeAll(ContextualExecutors.callable(tasks), timeout, unit);
+        return getDelegate().invokeAll(ContextualExecutors.callable(threadContexts(), tasks), timeout, unit);
     }
 
     @Override
     public <T> T invokeAny(final Collection<? extends Callable<T>> tasks)
             throws InterruptedException, ExecutionException {
-        return getDelegate().invokeAny(ContextualExecutors.callable(tasks));
+        return getDelegate().invokeAny(ContextualExecutors.callable(threadContexts(), tasks));
     }
 
     @Override
     public <T> T invokeAny(final Collection<? extends Callable<T>> tasks, final long timeout,
             final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        return getDelegate().invokeAny(ContextualExecutors.callable(tasks), timeout, unit);
+        return getDelegate().invokeAny(ContextualExecutors.callable(threadContexts(), tasks), timeout, unit);
     }
 
     @Override
     public void execute(final Runnable command) {
-        getDelegate().execute(ContextualExecutors.runnable(command));
+        getDelegate().execute(ContextualExecutors.runnable(threadContexts(), command));
     }
 
     /**
@@ -177,6 +221,17 @@ public class ContextualExecutorService implements ExecutorService {
      */
     public boolean isManaged() {
         return managed;
+    }
+
+    /**
+     * Returns the thread contexts associated with this executor. If there were no initial thread contexts associated,
+     * the {@link ResteasyProviderFactory#getInstance()} is used to
+     * {@linkplain ResteasyProviderFactory#getThreadContexts() get the thread contexts}.
+     *
+     * @return the thread contexts for this executor
+     */
+    ThreadContexts threadContexts() {
+        return threadContexts != null ? threadContexts : ResteasyProviderFactory.getInstance().getThreadContexts();
     }
 
     ExecutorService getDelegate() {

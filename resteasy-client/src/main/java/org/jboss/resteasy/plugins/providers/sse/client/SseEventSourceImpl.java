@@ -47,6 +47,8 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.concurrent.ThreadContexts;
 
 public class SseEventSourceImpl implements SseEventSource {
     public static final long RECONNECT_DEFAULT = 500;
@@ -143,6 +145,10 @@ public class SseEventSourceImpl implements SseEventSource {
         this.target = target;
         this.reconnectDelay = reconnectDelay;
         this.alwaysReconnect = alwaysReconnect;
+        // The client's thread contexts, which include the ThreadContext providers registered with the client
+        final ThreadContexts threadContexts = target.getConfiguration() instanceof ClientConfiguration
+                ? ((ClientConfiguration) target.getConfiguration()).getThreadContexts()
+                : ResteasyProviderFactory.getInstance().getThreadContexts();
 
         if (executor == null) {
             ScheduledExecutorService scheduledExecutor = null;
@@ -150,17 +156,17 @@ public class SseEventSourceImpl implements SseEventSource {
                 scheduledExecutor = ((ResteasyWebTarget) target).getResteasyClient().getScheduledExecutor();
             }
             if (name != null) {
-                this.sseEventSourceScheduler = new SseEventSourceScheduler(scheduledExecutor, name);
+                this.sseEventSourceScheduler = new SseEventSourceScheduler(scheduledExecutor, name, threadContexts);
             } else {
                 this.sseEventSourceScheduler = new SseEventSourceScheduler(scheduledExecutor,
-                        String.format("sse-event-source(%s)", target.getUri()));
+                        String.format("sse-event-source(%s)", target.getUri()), threadContexts);
             }
         } else {
             if (name != null) {
-                this.sseEventSourceScheduler = new SseEventSourceScheduler(executor, name);
+                this.sseEventSourceScheduler = new SseEventSourceScheduler(executor, name, threadContexts);
             } else {
                 this.sseEventSourceScheduler = new SseEventSourceScheduler(executor,
-                        String.format("sse-event-source(%s)", target.getUri()));
+                        String.format("sse-event-source(%s)", target.getUri()), threadContexts);
             }
         }
 

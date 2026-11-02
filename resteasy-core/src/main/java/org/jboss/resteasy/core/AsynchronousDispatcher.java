@@ -166,14 +166,15 @@ public class AsynchronousDispatcher extends SynchronousDispatcher {
      * @param executor executor service
      */
     public void setExecutor(ExecutorService executor) {
-        this.executor = ContextualExecutors.wrap(executor, true);
+        this.executor = ContextualExecutors.wrap(executor, true, providerFactory.getThreadContexts());
     }
 
     public void start() {
         cache = new Cache(maxCacheSize);
         jobs = Collections.synchronizedMap(cache);
         if (executor == null)
-            executor = ContextualExecutors.wrap(Executors.newFixedThreadPool(threadPoolSize), false);
+            executor = ContextualExecutors.wrap(Executors.newFixedThreadPool(threadPoolSize), false,
+                    providerFactory.getThreadContexts());
         registry.addSingletonResource(this, basePath);
     }
 

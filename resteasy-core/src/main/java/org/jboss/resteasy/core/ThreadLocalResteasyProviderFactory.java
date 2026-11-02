@@ -40,6 +40,7 @@ import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
+import org.jboss.resteasy.spi.concurrent.ThreadContexts;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.util.ThreadLocalStack;
 
@@ -509,5 +510,10 @@ public final class ThreadLocalResteasyProviderFactory extends ResteasyProviderFa
     @Override
     public ExceptionMapper<Throwable> getThrowableExceptionMapper() {
         return getDelegate().getThrowableExceptionMapper();
+    }
+
+    @Override
+    public ThreadContexts getThreadContexts() {
+        return getDelegate().getThreadContexts();
     }
 }

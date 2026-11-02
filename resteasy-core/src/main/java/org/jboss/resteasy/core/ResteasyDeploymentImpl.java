@@ -39,6 +39,7 @@ import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.concurrent.ThreadContexts;
 import org.jboss.resteasy.spi.config.ConfigurationFactory;
 import org.jboss.resteasy.spi.config.Options;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
@@ -143,10 +144,12 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
     }
 
     private void startInternal() {
-        // We will first create the executors
-        executorService = ContextualExecutors.newThreadPool();
-        scheduledExecutorService = ContextualExecutors.newScheduledThreadPool();
         initializeFactory();
+        // Create the executors with the deployment's thread contexts. This must not use the current provider factory
+        // as that may create the global provider factory with this deployment's class loader.
+        final ThreadContexts threadContexts = providerFactory.getThreadContexts();
+        executorService = ContextualExecutors.newThreadPool(threadContexts);
+        scheduledExecutorService = ContextualExecutors.newScheduledThreadPool(threadContexts);
         initializeDispatcher();
         pushContext();
 

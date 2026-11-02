@@ -396,9 +396,11 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
         if (serviceLoaderIterator.hasNext()) {
             config.register(new ClientConfigProviderFilter(serviceLoaderIterator.next()), Priorities.AUTHENTICATION);
         }
-        final ContextualExecutorService executor = getExecutorService();
+        final ContextualExecutorService executor = getExecutorService(config.getProviderFactory());
         return createResteasyClient(engine, executor, !executor.isManaged(),
-                ContextualExecutors.wrapOrLookup(scheduledExecutorService), config);
+                ContextualExecutors.wrapOrLookup(scheduledExecutorService,
+                        config.getThreadContexts()),
+                config);
 
     }
 
@@ -434,7 +436,9 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
     protected ResteasyClient createResteasyClient(ClientHttpEngine engine, ExecutorService executor, boolean cleanupExecutor,
             ScheduledExecutorService scheduledExecutorService, ClientConfiguration config) {
         return new ResteasyClientImpl(engine, executor, cleanupExecutor,
-                ContextualExecutors.wrapOrLookup(scheduledExecutorService), config);
+                ContextualExecutors.wrapOrLookup(scheduledExecutorService,
+                        config.getThreadContexts()),
+                config);
     }
 
     @Override
@@ -676,12 +680,12 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
         return followRedirects;
     }
 
-    private ContextualExecutorService getExecutorService() {
+    private ContextualExecutorService getExecutorService(final ResteasyProviderFactory factory) {
         if (asyncExecutor != null) {
-            return ContextualExecutors.wrap(asyncExecutor, !cleanupExecutor);
+            return ContextualExecutors.wrap(asyncExecutor, !cleanupExecutor, factory.getThreadContexts());
         }
         // Do not use the executor from the deployment for a client
-        return ContextualExecutors.threadPool(false);
+        return ContextualExecutors.threadPool(false, factory);
     }
 
     private record ProxyInfo(String scheme, String host, int port) {

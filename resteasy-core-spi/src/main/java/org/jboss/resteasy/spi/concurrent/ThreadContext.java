@@ -22,6 +22,12 @@ package org.jboss.resteasy.spi.concurrent;
 /**
  * A utility used to {@linkplain #capture() capture} the current context and {@linkplain #push(Object) set it} on a
  * thread before it's execute. Finally {@linkplain #reset(Object) resetting} the context.
+ * <p>
+ * Implementations located as services are created each time the contexts are captured, so an instance is only used
+ * for a single capture and may hold the state for it. Implementations registered as a provider are a single shared
+ * instance, like any other provider, so they must be thread-safe and should return the state to propagate from
+ * {@link #capture()}, which is then passed to {@link #push(Object)} and {@link #reset(Object)}.
+ * </p>
  *
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  * @see org.jboss.resteasy.concurrent.ContextualExecutorService

@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.ext.Provider;
 
+import org.jboss.resteasy.concurrent.ContextualExecutorService;
 import org.jboss.resteasy.concurrent.ContextualExecutors;
 import org.jboss.resteasy.spi.AsyncMessageBodyWriter;
 import org.jboss.resteasy.spi.AsyncOutputStream;
@@ -54,8 +55,12 @@ public class MultipartEntityPartWriter extends AbstractMultipartFormDataWriter
             final Annotation[] annotations, final MediaType mediaType,
             final MultivaluedMap<String, Object> httpHeaders,
             final AsyncOutputStream entityStream) {
-        return CompletableFuture.supplyAsync(() -> create(entityParts), ContextualExecutors.threadPool())
-                .thenCompose((out) -> asyncWrite(out, mediaType, httpHeaders, entityStream, annotations));
+        final ContextualExecutorService executor = ContextualExecutors.threadPool();
+        return CompletableFuture.supplyAsync(() -> create(entityParts), executor)
+                .thenCompose((out) -> asyncWrite(out, mediaType, httpHeaders, entityStream, annotations))
+                .whenComplete((out, throwable) -> {
+                    executor.shutdown();
+                });
     }
 
     private static MultipartFormDataOutput create(final List<EntityPart> entityParts) {
