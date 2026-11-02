@@ -53,6 +53,7 @@ import org.jboss.resteasy.client.jaxrs.engines.ReactiveClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
+import org.jboss.resteasy.concurrent.ContextualExecutors;
 import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
 import org.jboss.resteasy.core.interception.jaxrs.AbstractWriterInterceptorContext;
@@ -503,7 +504,10 @@ public class ClientInvocation implements Invocation {
     }
 
     public ExecutorService asyncInvocationExecutor() {
-        return client.asyncInvocationExecutor();
+        // The invocation's thread contexts include the ThreadContext providers registered after the client was
+        // built, for example on the target. The executor is managed so it never shuts down the client's executor.
+        return ContextualExecutors.wrap(client.asyncInvocationExecutor(), true,
+                configuration.getThreadContexts());
     }
 
     private <T> Function<ResultExtractor<T>, Publisher<T>> getPublisherExtractorFunction(boolean buffered) {

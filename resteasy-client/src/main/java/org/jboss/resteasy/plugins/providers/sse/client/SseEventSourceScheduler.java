@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jboss.resteasy.concurrent.ContextualExecutors;
 import org.jboss.resteasy.concurrent.ContextualScheduledExecutorService;
+import org.jboss.resteasy.spi.concurrent.ThreadContexts;
 
 /**
  *
@@ -46,10 +47,11 @@ class SseEventSourceScheduler {
 
     private final AtomicBoolean closed;
 
-    SseEventSourceScheduler(final ScheduledExecutorService scheduledExecutorService, final String threadName) {
+    SseEventSourceScheduler(final ScheduledExecutorService scheduledExecutorService, final String threadName,
+            final ThreadContexts threadContexts) {
         this.scheduledExecutorService = scheduledExecutorService == null
-                ? ContextualExecutors.scheduledThreadPool(1, new DaemonThreadFactory(threadName))
-                : ContextualExecutors.wrap(scheduledExecutorService, true);
+                ? ContextualExecutors.scheduledThreadPool(1, new DaemonThreadFactory(threadName), threadContexts)
+                : ContextualExecutors.wrap(scheduledExecutorService, true, threadContexts);
         this.phaser = new Phaser(1);
         this.closed = new AtomicBoolean(false);
     }

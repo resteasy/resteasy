@@ -146,6 +146,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
     protected StatisticsControllerImpl statisticsController = new StatisticsControllerImpl();
 
     private final boolean defaultExceptionManagerEnabled;
+    private ThreadContexts threadContexts;
 
     public ResteasyProviderFactoryImpl() {
         this(Options.ENABLE_DEFAULT_EXCEPTION_MAPPER.getValue());
@@ -171,9 +172,9 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
     public ResteasyProviderFactoryImpl(final RuntimeType runtimeType) {
         if (runtimeType != RuntimeType.CLIENT)
             throw new IllegalStateException();
+        initializeCommon(null, true, false);
         this.clientHelper = new ClientHelper(this);
         this.serverHelper = NOOPServerHelper.SINGLETON;
-        initializeCommon(null, true, false);
         // don't know when client will be made shareable so just do it here
         lockSnapshots();
         this.defaultExceptionManagerEnabled = Options.ENABLE_DEFAULT_EXCEPTION_MAPPER.getValue();
@@ -192,10 +193,10 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
     public ResteasyProviderFactoryImpl(final RuntimeType runtimeType, final ResteasyProviderFactory parent) {
         if (runtimeType == RuntimeType.CLIENT) {
             ResteasyProviderFactoryImpl impl = (ResteasyProviderFactoryImpl) parent;
-            this.clientHelper = new ClientHelper(this, impl.clientHelper);
-            this.serverHelper = NOOPServerHelper.SINGLETON;
             this.lockSnapshots = true;
             initializeCommon(impl, true, false);
+            this.clientHelper = new ClientHelper(this, impl.clientHelper);
+            this.serverHelper = NOOPServerHelper.SINGLETON;
             // don't know when client will be made shareable so just do it here
             lockSnapshots();
         } else {
@@ -273,6 +274,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
                 : new SnapshotMap<>(parent.asyncContextInjectors, true, lockSnapshots, snapFirst);
 
         injectorFactory = parent == null ? InjectorFactoryImpl.INSTANCE : parent.getInjectorFactory();
+        threadContexts = parent == null ? new ThreadContexts() : new ThreadContexts(parent.getThreadContexts());
         initialized = true;
     }
 
@@ -866,8 +868,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
             addHeaderDelegate(provider);
         }
         if (Utils.isA(provider, ThreadContext.class, contracts)) {
-            ResteasyContext.computeIfAbsent(ThreadContexts.class, ThreadContexts::new)
-                    .add(createProviderInstance((Class<? extends ThreadContext>) provider));
+            getThreadContexts().add(createProviderInstance((Class<? extends ThreadContext>) provider));
         }
     }
 
@@ -1014,8 +1015,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
             }
         }
         if (Utils.isA(provider, ThreadContext.class, contracts)) {
-            ResteasyContext.computeIfAbsent(ThreadContexts.class, ThreadContexts::new)
-                    .add((ThreadContext<?>) provider);
+            getThreadContexts().add((ThreadContext<?>) provider);
         }
     }
 
@@ -1650,6 +1650,11 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
     public ExceptionMapper<Throwable> getThrowableExceptionMapper() {
         final ExceptionMapper<Throwable> result = getExceptionMapperForClass(Throwable.class);
         return result != null ? result : DefaultExceptionMapper.INSTANCE;
+    }
+
+    @Override
+    public ThreadContexts getThreadContexts() {
+        return threadContexts == null ? (threadContexts = new ThreadContexts()) : threadContexts;
     }
 
     @Override

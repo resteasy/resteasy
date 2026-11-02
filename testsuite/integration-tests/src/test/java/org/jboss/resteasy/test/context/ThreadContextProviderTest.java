@@ -25,6 +25,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -37,8 +38,11 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.test.context.resource.ExecutorRxInvokerProvider;
 import org.jboss.resteasy.test.context.resource.TestApplication;
 import org.jboss.resteasy.test.context.resource.TestResource;
+import org.jboss.resteasy.test.context.resource.TestResourceProxy;
 import org.jboss.resteasy.test.context.resource.TestThreadContextProvider;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -119,5 +123,47 @@ public class ThreadContextProviderTest {
         Assertions.assertEquals(currentThreadName, data.get("captured"));
         Assertions.assertEquals(asyncThreadName, data.get("push"));
         Assertions.assertEquals(asyncThreadName, data.get("reset"));
+    }
+
+    /**
+     * Tests that a {@link org.jboss.resteasy.spi.concurrent.ThreadContext} registered on the target of a client proxy
+     * is propagated to the executor the proxy passes to the {@link jakarta.ws.rs.client.RxInvokerProvider}. Proxies
+     * use the client's scheduled executor, which is wrapped with the invocation's thread contexts.
+     */
+    @Test
+    public void proxyThreadContext() throws Exception {
+        final String currentThreadName = Thread.currentThread().getName();
+        final String scheduledThreadName = "Test-Scheduled-Client-Thread";
+        final CountDownLatch reset = new CountDownLatch(1);
+        final TestThreadContextProvider threadContext = new TestThreadContextProvider(reset);
+        final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(r -> {
+            final Thread result = new Thread(r);
+            result.setName(scheduledThreadName);
+            result.setDaemon(true);
+            return result;
+        });
+        try (
+                Client proxyClient = ClientBuilder.newBuilder()
+                        .scheduledExecutorService(scheduledExecutorService)
+                        .register(ExecutorRxInvokerProvider.class)
+                        .build()) {
+            final TestResourceProxy proxy = ((ResteasyWebTarget) proxyClient.target(TestUtil.generateUri(url, "test"))
+                    .register(threadContext))
+                    .proxy(TestResourceProxy.class);
+            try (Response response = proxy.response().get(5, TimeUnit.SECONDS)) {
+                Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+            }
+        } finally {
+            scheduledExecutorService.shutdownNow();
+        }
+
+        // Wait for the reset to be invoked
+        Assertions.assertTrue(reset.await(5, TimeUnit.SECONDS), "Timeout waiting for remove to be invoked.");
+        // Test context was propagated
+        final Map<String, String> data = TestThreadContextProvider.localState.get();
+        Assertions.assertEquals(3, data.size());
+        Assertions.assertEquals(currentThreadName, data.get("captured"));
+        Assertions.assertEquals(scheduledThreadName, data.get("push"));
+        Assertions.assertEquals(scheduledThreadName, data.get("reset"));
     }
 }
