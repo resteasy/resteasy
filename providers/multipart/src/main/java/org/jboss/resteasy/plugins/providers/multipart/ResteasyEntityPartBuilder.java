@@ -42,6 +42,7 @@ import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.UnmodifiableMultivaluedMap;
 import org.jboss.resteasy.spi.EntityOutputStream;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 /**
  * An implementation of the {@link EntityPart.Builder}.
@@ -141,6 +142,12 @@ public class ResteasyEntityPartBuilder implements EntityPart.Builder {
         return new EntityPartImpl(name, headers, mediaType, fileName, content);
     }
 
+    private static Providers providers() {
+        // The content may be retrieved outside a request, for example on a client thread
+        final Providers providers = ResteasyContext.getContextData(Providers.class);
+        return providers == null ? ResteasyProviderFactory.getInstance() : providers;
+    }
+
     private static class EntityPartImpl implements EntityPart {
         private final AtomicBoolean contentRetrieved = new AtomicBoolean(false);
         private final String name;
@@ -185,7 +192,7 @@ public class ResteasyEntityPartBuilder implements EntityPart.Builder {
         public <T> T getContent(final GenericType<T> type)
                 throws IllegalArgumentException, IllegalStateException, IOException, WebApplicationException {
             checkContentRetrieved();
-            final Providers providers = ResteasyContext.getRequiredContextData(Providers.class);
+            final Providers providers = providers();
             final MessageBodyReader<T> reader = (MessageBodyReader<T>) providers.getMessageBodyReader(type.getRawType(),
                     type.getType(), ANNOTATIONS, mediaType);
             if (reader == null) {
@@ -253,7 +260,7 @@ public class ResteasyEntityPartBuilder implements EntityPart.Builder {
                 return ((InputPart) content).getBody();
             }
             try (EntityOutputStream out = new EntityOutputStream()) {
-                final Providers providers = ResteasyContext.getRequiredContextData(Providers.class);
+                final Providers providers = providers();
                 @SuppressWarnings("unchecked")
                 final MessageBodyWriter<Object> messageBodyWriter = providers.getMessageBodyWriter(
                         (Class<Object>) genericType.getRawType(), genericType.getType(), ANNOTATIONS, mediaType);

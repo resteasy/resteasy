@@ -30,6 +30,7 @@ import org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.EntityExtractor
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.InvocationProcessor;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.ProcessorFactory;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.WebTargetProcessor;
+import org.jboss.resteasy.concurrent.ContextualExecutors;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
@@ -110,9 +111,10 @@ public class ClientInvoker implements MethodInvoker {
         ClientInvocationBuilder builder = (ClientInvocationBuilder) (t != null ? t : webTarget).request();
         builder.setClientInvocation(request);
         ExecutorService executor = webTarget.getResteasyClient().getScheduledExecutor();
-        if (executor == null) {
-            executor = request.asyncInvocationExecutor();
-        }
+        // Use the invocation's thread contexts, which include ThreadContext providers registered on the target
+        executor = executor == null
+                ? request.asyncInvocationExecutor()
+                : ContextualExecutors.wrap(executor, true, request.getClientConfiguration().getThreadContexts());
         RxInvoker<?> rxInvoker = (RxInvoker<?>) rxInvokerProvider.getRxInvoker(builder, executor);
         Type type = method.getGenericReturnType();
         if (type instanceof ParameterizedType) {

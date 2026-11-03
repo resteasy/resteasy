@@ -36,7 +36,9 @@ public class ResteasyClientImpl implements ResteasyClient {
     protected ResteasyClientImpl(final ClientHttpEngine httpEngine, final ExecutorService asyncInvocationExecutor,
             final boolean cleanupExecutor,
             final ScheduledExecutorService scheduledExecutorService, final ClientConfiguration configuration) {
-        this(httpEngine, asyncInvocationExecutor, cleanupExecutor, ContextualExecutors.wrap(scheduledExecutorService),
+        this(httpEngine, asyncInvocationExecutor, cleanupExecutor,
+                ContextualExecutors.wrap(scheduledExecutorService, true,
+                        configuration.getThreadContexts()),
                 configuration);
     }
 
@@ -53,7 +55,8 @@ public class ResteasyClientImpl implements ResteasyClient {
     protected ResteasyClientImpl(final ClientHttpEngine httpEngine, final ExecutorService asyncInvocationExecutor,
             final boolean cleanupExecutor, final ClientConfiguration configuration) {
         // Do not use the executor from the deployment for a client
-        this(httpEngine, asyncInvocationExecutor, cleanupExecutor, ContextualExecutors.scheduledThreadPool(false),
+        this(httpEngine, asyncInvocationExecutor, cleanupExecutor,
+                ContextualExecutors.scheduledThreadPool(false, configuration.getProviderFactory()),
                 configuration);
     }
 

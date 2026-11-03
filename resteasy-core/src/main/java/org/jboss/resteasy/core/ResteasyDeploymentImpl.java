@@ -39,6 +39,7 @@ import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.concurrent.ThreadContexts;
 import org.jboss.resteasy.spi.config.ConfigurationFactory;
 import org.jboss.resteasy.spi.config.Options;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
@@ -99,6 +100,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
     protected boolean statisticsEnabled;
     private ExecutorService executorService;
     private ScheduledExecutorService scheduledExecutorService;
+    private ClassLoader deploymentClassLoader;
 
     @SuppressWarnings("rawtypes")
     public ResteasyDeploymentImpl() {
@@ -143,10 +145,13 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
     }
 
     private void startInternal() {
-        // We will first create the executors
-        executorService = ContextualExecutors.newThreadPool();
-        scheduledExecutorService = ContextualExecutors.newScheduledThreadPool();
+        deploymentClassLoader = Thread.currentThread().getContextClassLoader();
         initializeFactory();
+        // Create the executors with the deployment's thread contexts. This must not use the current provider factory
+        // as that may create the global provider factory with this deployment's class loader.
+        final ThreadContexts threadContexts = providerFactory.getThreadContexts();
+        executorService = ContextualExecutors.newThreadPool(threadContexts);
+        scheduledExecutorService = ContextualExecutors.newScheduledThreadPool(threadContexts);
         initializeDispatcher();
         pushContext();
 
@@ -178,6 +183,9 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
 
             registerMappers();
             ((ResteasyProviderFactoryImpl) providerFactory).lockSnapshots();
+        } catch (Throwable e) {
+            RegisterBuiltin.evictResteasyProviderFactory(deploymentClassLoader);
+            throw e;
         } finally {
             ResteasyContext.removeContextDataLevel();
         }
@@ -648,6 +656,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
 
         ResteasyProviderFactory.clearInstanceIfEqual(threadLocalProviderFactory);
         ResteasyProviderFactory.clearInstanceIfEqual(providerFactory);
+        RegisterBuiltin.evictResteasyProviderFactory(deploymentClassLoader);
         // Shutdown the executors
         shutdownExecutor(executorService, "executor");
         shutdownExecutor(scheduledExecutorService, "scheduled executor");

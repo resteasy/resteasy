@@ -108,22 +108,40 @@ public class ContextualExecutors {
      * @return a new contextual executor
      */
     public static ContextualExecutorService threadPool(boolean useDeployment) {
+        return threadPool(useDeployment, ResteasyProviderFactory.getInstance());
+    }
+
+    /**
+     * Creates a new {@link ContextualExecutorService} or wraps the default {@code ManagedExecutorService} in a
+     * Jakarta EE environment. The thread contexts are captured for each task.
+     *
+     * @param useDeployment   {@code true} to use the deployment's executor if available, {@code false} to always
+     *                        create a new unmanaged executor
+     * @param providerFactory the {@link ResteasyProviderFactory} to locate the {@linkplain ResteasyDeployment deployment}
+     *                        and the {@link ThreadContexts}
+     *
+     * @return a new contextual executor
+     *
+     * @see #threadPool(boolean)
+     */
+    public static ContextualExecutorService threadPool(final boolean useDeployment,
+            final ResteasyProviderFactory providerFactory) {
         ExecutorService delegate = lookup(EXECUTOR_SERVICE_JNDI);
+        final ThreadContexts threadContexts = providerFactory.getThreadContexts();
         if (delegate == null) {
             if (useDeployment) {
-                final ResteasyDeployment deployment = ResteasyProviderFactory.getInstance()
-                        .getContextData(ResteasyDeployment.class);
+                final ResteasyDeployment deployment = providerFactory.getContextData(ResteasyDeployment.class);
                 if (deployment != null) {
                     // Deployment executors are managed by the deployment, not by us
                     delegate = deployment.getExecutorService();
                 } else {
-                    return newThreadPool();
+                    return newThreadPool(threadContexts);
                 }
             } else {
-                return newThreadPool();
+                return newThreadPool(threadContexts);
             }
         }
-        return wrap(delegate, true);
+        return wrap(delegate, true, threadContexts);
     }
 
     /**
@@ -133,10 +151,24 @@ public class ContextualExecutors {
      * @return a new contextual executor
      */
     public static ContextualExecutorService newThreadPool() {
+        return newThreadPool(currentThreadContexts());
+    }
+
+    /**
+     * Creates a new {@link ContextualExecutorService} based on a {@link ThreadPoolExecutor}. The pool size can be
+     * overridden with the {@code dev.resteasy.concurrent.core.pool.size} configuration property.
+     *
+     * @param threadContexts the thread contexts to capture for each task
+     *
+     * @return a new contextual executor
+     *
+     * @see #newThreadPool()
+     */
+    public static ContextualExecutorService newThreadPool(final ThreadContexts threadContexts) {
         final int poolSize = CoreThreads.getCoreThreads("dev.resteasy.concurrent.core.pool.size");
         final ExecutorService delegate = new ThreadPoolExecutor(poolSize, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>(), new ContextualThreadFactory("contextual-pool"));
-        return new ContextualExecutorService(delegate, false);
+        return new ContextualExecutorService(delegate, false, threadContexts);
     }
 
     /**
@@ -185,22 +217,41 @@ public class ContextualExecutors {
      * @return a new contextual executor
      */
     public static ContextualScheduledExecutorService scheduledThreadPool(boolean useDeployment) {
+        return scheduledThreadPool(useDeployment, ResteasyProviderFactory.getInstance());
+    }
+
+    /**
+     * Creates a new {@link ContextualScheduledExecutorService} or wraps the default
+     * {@code ManagedScheduledExecutorService} in a Jakarta EE environment. The thread contexts are captured for each
+     * task.
+     *
+     * @param useDeployment   {@code true} to use the deployment's executor if available, {@code false} to always
+     *                        create a new unmanaged executor
+     * @param providerFactory the {@link ResteasyProviderFactory} to locate the {@linkplain ResteasyDeployment deployment}
+     *                        and the {@link ThreadContexts}
+     *
+     * @return a new contextual executor
+     *
+     * @see #scheduledThreadPool(boolean)
+     */
+    public static ContextualScheduledExecutorService scheduledThreadPool(final boolean useDeployment,
+            final ResteasyProviderFactory providerFactory) {
         ScheduledExecutorService delegate = lookup(SCHEDULED_EXECUTOR_SERVICE_JNDI);
+        final ThreadContexts threadContexts = providerFactory.getThreadContexts();
         if (delegate == null) {
             if (useDeployment) {
-                final ResteasyDeployment deployment = ResteasyProviderFactory.getInstance()
-                        .getContextData(ResteasyDeployment.class);
+                final ResteasyDeployment deployment = providerFactory.getContextData(ResteasyDeployment.class);
                 if (deployment != null) {
                     // Deployment executors are managed by the deployment, not by us
                     delegate = deployment.getScheduledExecutorService();
                 } else {
-                    return newScheduledThreadPool();
+                    return newScheduledThreadPool(threadContexts);
                 }
             } else {
-                return newScheduledThreadPool();
+                return newScheduledThreadPool(threadContexts);
             }
         }
-        return wrap(delegate, true);
+        return wrap(delegate, true, threadContexts);
     }
 
     /**
@@ -225,13 +276,32 @@ public class ContextualExecutors {
      */
     public static ContextualScheduledExecutorService scheduledThreadPool(final int poolSize,
             final ThreadFactory threadFactory) {
+        return scheduledThreadPool(poolSize, threadFactory, currentThreadContexts());
+    }
+
+    /**
+     * Creates a new {@link ContextualScheduledExecutorService} or wraps the default
+     * {@code ManagedScheduledExecutorService} in a Jakarta EE environment. The thread contexts are captured for each
+     * task.
+     *
+     * @param poolSize       the size of the pool to create, ignored in a Jakarta EE container
+     * @param threadFactory  the thread factory to use if a new executor is created, ignored in a Jakarta EE
+     *                       container
+     * @param threadContexts the thread contexts to capture for each task
+     *
+     * @return a new contextual executor
+     *
+     * @see #scheduledThreadPool(int, ThreadFactory)
+     */
+    public static ContextualScheduledExecutorService scheduledThreadPool(final int poolSize,
+            final ThreadFactory threadFactory, final ThreadContexts threadContexts) {
         ScheduledExecutorService delegate = lookup(SCHEDULED_EXECUTOR_SERVICE_JNDI);
         boolean managed = true;
         if (delegate == null) {
             delegate = Executors.newScheduledThreadPool(poolSize, threadFactory);
             managed = false;
         }
-        return wrap(delegate, managed);
+        return wrap(delegate, managed, threadContexts);
     }
 
     /**
@@ -241,10 +311,25 @@ public class ContextualExecutors {
      * @return a new contextual executor
      */
     public static ContextualScheduledExecutorService newScheduledThreadPool() {
+        return newScheduledThreadPool(currentThreadContexts());
+    }
+
+    /**
+     * Creates a new {@link ContextualScheduledExecutorService} based on a {@link ScheduledThreadPoolExecutor}. The
+     * pool size can be overridden with the {@code resteasy.async.timeout.scheduler.min.pool.size} configuration
+     * property.
+     *
+     * @param threadContexts the thread contexts to capture for each task
+     *
+     * @return a new contextual executor
+     *
+     * @see #newScheduledThreadPool()
+     */
+    public static ContextualScheduledExecutorService newScheduledThreadPool(final ThreadContexts threadContexts) {
         final int poolSize = CoreThreads.getCoreThreads("resteasy.async.timeout.scheduler.min.pool.size");
         final ScheduledExecutorService delegate = Executors.newScheduledThreadPool(poolSize,
                 new ContextualThreadFactory("contextual-scheduled-pool"));
-        return new ContextualScheduledExecutorService(delegate, false);
+        return new ContextualScheduledExecutorService(delegate, false, threadContexts);
     }
 
     /**
@@ -281,11 +366,11 @@ public class ContextualExecutors {
         if (delegate instanceof ScheduledExecutorService) {
             return wrap(((ScheduledExecutorService) delegate), managed);
         }
-        if (delegate instanceof ContextualExecutorService && managed == ((ContextualExecutorService) delegate).isManaged()) {
-            if (managed == ((ContextualExecutorService) delegate).isManaged()) {
-                return (ContextualExecutorService) delegate;
+        if (delegate instanceof ContextualExecutorService current) {
+            if (current.isManaged() == managed) {
+                return current;
             }
-            return new ContextualExecutorService(((ContextualExecutorService) delegate).getDelegate(), managed);
+            return new ContextualExecutorService(current, managed);
         }
         return new ContextualExecutorService(delegate, managed);
     }
@@ -322,13 +407,11 @@ public class ContextualExecutors {
         if (delegate == null) {
             return null;
         }
-        if (delegate instanceof ContextualScheduledExecutorService
-                && managed == ((ContextualScheduledExecutorService) delegate).isManaged()) {
-            if (managed == ((ContextualScheduledExecutorService) delegate).isManaged()) {
-                return (ContextualScheduledExecutorService) delegate;
+        if (delegate instanceof ContextualScheduledExecutorService current) {
+            if (current.isManaged() == managed) {
+                return current;
             }
-            return new ContextualScheduledExecutorService(((ContextualScheduledExecutorService) delegate).getDelegate(),
-                    managed);
+            return new ContextualScheduledExecutorService(current, managed);
         }
         return new ContextualScheduledExecutorService(delegate, managed);
     }
@@ -353,6 +436,80 @@ public class ContextualExecutors {
     }
 
     /**
+     * Wraps the executor service in a contextual executor which captures the given thread contexts. If the delegate
+     * is already a contextual executor, its underlying delegate is wrapped and the given thread contexts replace its
+     * existing ones.
+     * <p>
+     * The context is copied in before each invocation of the delegate, then reset after the thread is done executing.
+     * </p>
+     *
+     * @param delegate       the executor to wrap
+     * @param managed        {@code true} if the lifecycle is managed by another process
+     * @param threadContexts the thread contexts to capture for each task
+     *
+     * @return a new contextual executor or {@code null} if the delegate was {@code null}
+     */
+    public static ContextualExecutorService wrap(final ExecutorService delegate, final boolean managed,
+            final ThreadContexts threadContexts) {
+        if (delegate == null) {
+            return null;
+        }
+        if (delegate instanceof ScheduledExecutorService) {
+            return wrap(((ScheduledExecutorService) delegate), managed, threadContexts);
+        }
+        if (delegate instanceof final ContextualExecutorService current) {
+            return new ContextualExecutorService(current, managed, threadContexts);
+        }
+        return new ContextualExecutorService(delegate, managed, threadContexts);
+    }
+
+    /**
+     * Wraps the executor service in a contextual executor which captures the given thread contexts. If the delegate
+     * is already a contextual executor, its underlying delegate is wrapped and the given thread contexts replace its
+     * existing ones.
+     * <p>
+     * The context is copied in before each invocation of the delegate, then reset after the thread is done executing.
+     * </p>
+     *
+     * @param delegate       the executor to wrap
+     * @param managed        {@code true} if the lifecycle is managed by another process
+     * @param threadContexts the thread contexts to capture for each task
+     *
+     * @return a new contextual executor or {@code null} if the delegate was {@code null}
+     */
+    public static ContextualScheduledExecutorService wrap(final ScheduledExecutorService delegate,
+            final boolean managed, final ThreadContexts threadContexts) {
+        if (delegate == null) {
+            return null;
+        }
+        if (delegate instanceof final ContextualScheduledExecutorService current) {
+            return new ContextualScheduledExecutorService(current, managed, threadContexts);
+        }
+        return new ContextualScheduledExecutorService(delegate, managed, threadContexts);
+    }
+
+    /**
+     * If the delegate is not {@code null}, it is wrapped. If the delegate is {@code null} and this is a Jakarta EE
+     * environment an attempt will be made to look up the default {@code ManagedScheduledExecutorService}. If found the
+     * default {@code ManagedScheduledExecutorService} will be wrapped. Otherwise, {@code null} will be returned.
+     *
+     * @param delegate       the delegate to wrap, which may be {@code null}
+     * @param threadContexts the thread contexts to capture for each task
+     *
+     * @return a wrapped contextual executor or {@code null} if no executor was provided or could be found
+     *
+     * @see #wrap(ScheduledExecutorService, boolean, ThreadContexts)
+     */
+    public static ContextualScheduledExecutorService wrapOrLookup(final ScheduledExecutorService delegate,
+            final ThreadContexts threadContexts) {
+        if (delegate != null) {
+            return wrap(delegate, true, threadContexts);
+        }
+        ScheduledExecutorService found = lookup(SCHEDULED_EXECUTOR_SERVICE_JNDI);
+        return found == null ? null : wrap(found, true, threadContexts);
+    }
+
+    /**
      * Creates a new {@linkplain Runnable runnable} which sets up the current context before the runnable is executed.
      * Finally, resetting the context.
      *
@@ -374,17 +531,7 @@ public class ContextualExecutors {
      * @return a new contextual callable
      */
     public static <V> Callable<V> callable(final Callable<V> task) {
-        final Map<ThreadContext<Object>, Object> contexts = getContexts();
-        return () -> {
-            try {
-                for (Map.Entry<ThreadContext<Object>, Object> entry : contexts.entrySet()) {
-                    entry.getKey().push(entry.getValue());
-                }
-                return task.call();
-            } finally {
-                reset(contexts);
-            }
-        };
+        return callable(getContexts(), task);
     }
 
     /**
@@ -404,6 +551,50 @@ public class ContextualExecutors {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Creates a new {@linkplain Runnable runnable} which sets up the context captured from the thread contexts
+     * before the runnable is executed. Finally, resetting the context.
+     *
+     * @param threadContexts the thread contexts to capture for each task
+     * @param task           the runnable to wrap
+     *
+     * @return a new contextual runnable
+     */
+    static Runnable runnable(final ThreadContexts threadContexts, final Runnable task) {
+        return runnable(getContexts(threadContexts), task);
+    }
+
+    /**
+     * Creates a new {@linkplain Callable callable} which sets up the context captured from the thread contexts
+     * before the callable is executed. Finally, resetting the context.
+     *
+     * @param threadContexts the thread contexts to capture for each task
+     * @param task           the callable to wrap
+     * @param <V>            the return type
+     *
+     * @return a new contextual callable
+     */
+    static <V> Callable<V> callable(final ThreadContexts threadContexts, final Callable<V> task) {
+        return callable(getContexts(threadContexts), task);
+    }
+
+    /**
+     * Creates a new collection of {@linkplain Callable callables} which sets up the context captured from the thread
+     * contexts before each callable is executed. Finally, resetting the context.
+     *
+     * @param threadContexts the thread contexts to capture for each task
+     * @param tasks          the callables to wrap
+     * @param <T>            the return type of the callable
+     *
+     * @return a collection of new contextual callables
+     */
+    static <T> Collection<? extends Callable<T>> callable(final ThreadContexts threadContexts,
+            final Collection<? extends Callable<T>> tasks) {
+        return tasks.stream()
+                .map((Function<Callable<T>, Callable<T>>) (task) -> callable(threadContexts, task))
+                .collect(Collectors.toList());
+    }
+
     private static Runnable runnable(final Map<ThreadContext<Object>, Object> contexts, final Runnable task) {
         return () -> {
             try {
@@ -417,15 +608,25 @@ public class ContextualExecutors {
         };
     }
 
+    private static <V> Callable<V> callable(final Map<ThreadContext<Object>, Object> contexts, final Callable<V> task) {
+        return () -> {
+            try {
+                for (Map.Entry<ThreadContext<Object>, Object> entry : contexts.entrySet()) {
+                    entry.getKey().push(entry.getValue());
+                }
+                return task.call();
+            } finally {
+                reset(contexts);
+            }
+        };
+    }
+
     private static Map<ThreadContext<Object>, Object> getContexts() {
+        return getContexts(currentThreadContexts());
+    }
+
+    private static Map<ThreadContext<Object>, Object> getContexts(final ThreadContexts threadContexts) {
         final Map<ThreadContext<Object>, Object> contexts = new LinkedHashMap<>();
-        // Load any registered providers
-        ThreadContexts threadContexts = ResteasyProviderFactory.getInstance()
-                .getContextData(ThreadContexts.class);
-        // Create a new ThreadContexts which will load at least the ones from services
-        if (threadContexts == null) {
-            threadContexts = new ThreadContexts();
-        }
         for (ThreadContext<Object> context : threadContexts.getThreadContexts()) {
             contexts.put(context, context.capture());
         }
@@ -448,6 +649,11 @@ public class ContextualExecutors {
         if (error != null) {
             LogMessages.LOGGER.unableToResetThreadContext(error, Thread.currentThread().getName());
         }
+    }
+
+    private static ThreadContexts currentThreadContexts() {
+        // Resolve the contexts once as the current provider factory may be a delegate for another factory
+        return ResteasyProviderFactory.getInstance().getThreadContexts();
     }
 
     private static <T extends ExecutorService> T lookup(final String jndiName) {

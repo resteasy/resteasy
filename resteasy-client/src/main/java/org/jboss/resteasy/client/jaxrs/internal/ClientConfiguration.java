@@ -31,6 +31,7 @@ import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.concurrent.ThreadContexts;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 
 /**
@@ -62,6 +63,15 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
 
     protected ResteasyProviderFactory getProviderFactory() {
         return providerFactory;
+    }
+
+    /**
+     * Returns the {@linkplain ThreadContexts thread contexts} for this configuration.
+     *
+     * @return the thread contexts for this configuration
+     */
+    public ThreadContexts getThreadContexts() {
+        return getProviderFactory().getThreadContexts();
     }
 
     public Map<String, Object> getMutableProperties() {
