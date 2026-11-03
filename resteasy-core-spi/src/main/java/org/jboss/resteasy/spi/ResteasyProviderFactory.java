@@ -28,6 +28,7 @@ import jakarta.ws.rs.ext.ReaderInterceptor;
 import jakarta.ws.rs.ext.RuntimeDelegate;
 import jakarta.ws.rs.ext.WriterInterceptor;
 
+import org.jboss.resteasy.spi.concurrent.ThreadContexts;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.statistics.StatisticsController;
@@ -329,6 +330,20 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate
      */
     public ExceptionMapper<Throwable> getThrowableExceptionMapper() {
         return getExceptionMapper(Throwable.class);
+    }
+
+    /**
+     * Returns the {@linkplain org.jboss.resteasy.spi.concurrent.ThreadContext thread contexts} for this provider
+     * factory. These include the {@link org.jboss.resteasy.spi.concurrent.ThreadContext} services and the
+     * {@link org.jboss.resteasy.spi.concurrent.ThreadContext} providers registered with this provider factory.
+     * <p>
+     * The default implementation returns a new {@link ThreadContexts} which only includes the services.
+     * </p>
+     *
+     * @return the thread contexts
+     */
+    public ThreadContexts getThreadContexts() {
+        return new ThreadContexts();
     }
 
     protected abstract boolean isOnServer();
