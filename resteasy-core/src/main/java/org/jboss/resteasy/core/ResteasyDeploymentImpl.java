@@ -100,6 +100,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
     protected boolean statisticsEnabled;
     private ExecutorService executorService;
     private ScheduledExecutorService scheduledExecutorService;
+    private ClassLoader deploymentClassLoader;
 
     @SuppressWarnings("rawtypes")
     public ResteasyDeploymentImpl() {
@@ -144,6 +145,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
     }
 
     private void startInternal() {
+        deploymentClassLoader = Thread.currentThread().getContextClassLoader();
         initializeFactory();
         // Create the executors with the deployment's thread contexts. This must not use the current provider factory
         // as that may create the global provider factory with this deployment's class loader.
@@ -181,6 +183,9 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
 
             registerMappers();
             ((ResteasyProviderFactoryImpl) providerFactory).lockSnapshots();
+        } catch (Throwable e) {
+            RegisterBuiltin.evictResteasyProviderFactory(deploymentClassLoader);
+            throw e;
         } finally {
             ResteasyContext.removeContextDataLevel();
         }
@@ -651,6 +656,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
 
         ResteasyProviderFactory.clearInstanceIfEqual(threadLocalProviderFactory);
         ResteasyProviderFactory.clearInstanceIfEqual(providerFactory);
+        RegisterBuiltin.evictResteasyProviderFactory(deploymentClassLoader);
         // Shutdown the executors
         shutdownExecutor(executorService, "executor");
         shutdownExecutor(scheduledExecutorService, "scheduled executor");

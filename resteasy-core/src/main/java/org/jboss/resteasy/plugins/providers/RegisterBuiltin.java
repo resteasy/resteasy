@@ -56,6 +56,21 @@ public class RegisterBuiltin {
         return rpf;
     }
 
+    /**
+     * Removes the {@link ResteasyProviderFactory} from the cache based on the class loader. If the class loader is
+     * {@code null}, nothing is evicted.
+     *
+     * @param cl the class loader used for the cache
+     *
+     * @return the cached {@link ResteasyProviderFactory} if it was found in the cache, otherwise {@code null}
+     */
+    public static synchronized ResteasyProviderFactory evictResteasyProviderFactory(final ClassLoader cl) {
+        if (cl == null) {
+            return null;
+        }
+        return configuredClientFactories.remove(cl);
+    }
+
     public static void register(ResteasyProviderFactory factory) {
         register(factory, Set.of());
     }
