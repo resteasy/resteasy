@@ -93,7 +93,6 @@ jobs:
       matrix:
         profile:
           - '-Dsecurity.manager'
-          - '-Denhanced.cdi.enabled'
 
     steps:
       - uses: actions/checkout@v7

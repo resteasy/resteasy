@@ -23,6 +23,8 @@ module org.jboss.resteasy.cdi {
     requires org.jboss.jandex;
     requires org.jboss.logging;
     requires static org.jboss.logging.annotations;
+    // Used if Weld is available, but may not be required in some instances
+    requires static weld.core.impl;
 
     // RESTEasy modules
     requires org.jboss.resteasy.core;
@@ -31,13 +33,10 @@ module org.jboss.resteasy.cdi {
     exports org.jboss.resteasy.cdi;
 
     // Opens
-    opens org.jboss.resteasy.cdi;
+    opens org.jboss.resteasy.cdi to weld.core.impl;
 
     // Service providers
     // CDI extension discovery
     provides jakarta.enterprise.inject.spi.Extension
-            with org.jboss.resteasy.cdi.ResteasyCdiExtension,
-                    org.jboss.resteasy.cdi.ResteasyParamCdiExtension;
-    provides jakarta.ws.rs.core.Feature
-            with org.jboss.resteasy.cdi.CdiFeature;
+            with org.jboss.resteasy.cdi.ResteasyCdiExtension;
 }

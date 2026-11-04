@@ -6,6 +6,9 @@
 package org.jboss.resteasy.cdi;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.security.AccessController;
@@ -22,7 +25,6 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Default;
-import jakarta.enterprise.inject.literal.InjectLiteral;
 import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
 import jakarta.enterprise.inject.spi.AfterTypeDiscovery;
 import jakarta.enterprise.inject.spi.AnnotatedType;
@@ -42,7 +44,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Application;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.cdi.i18n.LogMessages;
@@ -50,20 +51,14 @@ import org.jboss.resteasy.cdi.i18n.Messages;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 
 /**
- * A CDI {@link Extension} that integrates Jakarta REST components with CDI. This extension:
- * <ul>
- * <li>Assigns default scopes to discovered Jakarta REST resources ({@link RequestScoped}), providers
- * ({@link ApplicationScoped}), and {@link Application} subclasses ({@link ApplicationScoped})</li>
- * <li>Adds {@link jakarta.inject.Inject @Inject} to {@link jakarta.ws.rs.core.Context @Context}-annotated fields,
- * setter methods, and constructors so that CDI can inject context values via {@link ContextProducers}</li>
- * <li>Wraps {@link InjectionTarget} instances for Jakarta REST components within {@link JaxrsInjectionTarget}
- * to handle property injection and validation</li>
- * <li>Builds the session bean interface map used by {@link CdiInjectorFactory} for EJB lookup</li>
- * <li>Tracks CDI-managed Jakarta REST components in the {@link ResteasyBeanContainer}</li>
- * </ul>
+ * This Extension handles default scopes for discovered JAX-RS components. It
+ * also observes ProcessInjectionTarget event and wraps InjectionTargets
+ * representing JAX-RS components within JaxrsInjectionTarget. Furthermore, it
+ * builds the sessionBeanInterface map which maps Session Bean classes to a
+ * local interface. This map is used in CdiInjectorFactory during lookup of
+ * Sesion Bean JAX-RS components.
  *
  * @author Jozef Hartinger
- * @author <a href="mailto:jperkins@ibm.com">James R. Perkins</a>
  */
 public class ResteasyCdiExtension implements Extension {
     private static boolean active;
@@ -85,15 +80,10 @@ public class ResteasyCdiExtension implements Extension {
 
     private final Map<Class<?>, Type> sessionBeanInterface = new HashMap<>();
     private final Set<Class<?>> beanContainer = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private final boolean enhancedCdiSupportEnabled;
     private boolean generateClientBean = true;
     private boolean addContextProducers = true;
     private boolean noApplicationFound = true;
     private volatile ResteasyBeanContainer resteasyBeanContainer;
-
-    public ResteasyCdiExtension() {
-        enhancedCdiSupportEnabled = CdiOptions.ENHANCED_CDI_SUPPORT.getValue();
-    }
 
     /**
      * Obtain BeanManager reference for future use.
@@ -121,11 +111,11 @@ public class ResteasyCdiExtension implements Extension {
     }
 
     /**
-     * Registers producers for required injections types and for a {@link Client REST client}.
+     * Registers a producer and disable for a {@link Client REST client}.
      *
      * @param event the after bean discovery event
      */
-    public void registerBeans(@Observes final AfterBeanDiscovery event) {
+    public void registerClientProducer(@Observes final AfterBeanDiscovery event) {
         if (generateClientBean) {
             event.addBean().addTransitiveTypeClosure(Client.class)
                     .scope(ApplicationScoped.class)
@@ -134,7 +124,6 @@ public class ResteasyCdiExtension implements Extension {
                     .disposeWith((client, instance) -> client.close());
         }
         final Set<Class<?>> resources = Set.copyOf(beanContainer);
-        beanContainer.clear();
         resteasyBeanContainer = resources::contains;
     }
 
@@ -177,13 +166,6 @@ public class ResteasyCdiExtension implements Extension {
             BeanManager beanManager) {
         AnnotatedType<T> annotatedType = event.getAnnotatedType();
 
-        // If we're not an interface or decorator, add @Inject to any @Context injection points
-        if (enhancedCdiSupportEnabled && !annotatedType.getJavaClass().isInterface()
-                && !annotatedType.isAnnotationPresent(Decorator.class)
-                && !Utils.isUnproxyableClass(annotatedType.getJavaClass())) {
-            addInject(event);
-        }
-
         // Check if this is a stateful bean and consider it not managed by the CDI container. This means we will not add
         // it to the bean container.
         final boolean isStatefulBean = isStatefulBean(annotatedType);
@@ -195,11 +177,10 @@ public class ResteasyCdiExtension implements Extension {
                 LogMessages.LOGGER.debug(Messages.MESSAGES.discoveredCDIBeanJaxRsResource(annotatedType.getJavaClass()
                         .getCanonicalName()));
                 event.configureAnnotatedType().add(requestScopedLiteral);
-                if (!isStatefulBean && !Utils.isUnproxyableClass(annotatedType.getJavaClass())) {
+                if (!isStatefulBean) {
                     beanContainer.add(annotatedType.getJavaClass());
                 }
-            } else if (!isStatefulBean && Utils.isNormalScope(annotatedType, beanManager)
-                    && !Utils.isUnproxyableClass(annotatedType.getJavaClass())) {
+            } else if (!isStatefulBean && Utils.isNormalScope(annotatedType, beanManager)) {
                 beanContainer.add(annotatedType.getJavaClass());
             }
         }
@@ -216,20 +197,13 @@ public class ResteasyCdiExtension implements Extension {
             BeanManager beanManager) {
         AnnotatedType<T> annotatedType = event.getAnnotatedType();
 
-        // If we're not an interface or decorator, add @Inject to any @Context injection points
-        if (enhancedCdiSupportEnabled && !annotatedType.getJavaClass().isInterface()
-                && !annotatedType.isAnnotationPresent(Decorator.class)
-                && !Utils.isUnproxyableClass(annotatedType.getJavaClass())) {
-            addInject(event);
-        }
-
         // Check if this is a stateful bean and consider it not managed by the CDI container. This means we will not add
         // it to the bean container.
         final boolean isStatefulBean = isStatefulBean(annotatedType);
 
         if (!annotatedType.getJavaClass().isInterface()
                 && !isSessionBean(annotatedType)
-                && !Utils.isUnproxyableClass(annotatedType.getJavaClass())) {
+                && !isUnproxyableClass(annotatedType.getJavaClass())) {
             if (!Utils.isScopeDefined(annotatedType, beanManager)) {
                 LogMessages.LOGGER.debug(Messages.MESSAGES.discoveredCDIBeanJaxRsProvider(annotatedType.getJavaClass()
                         .getCanonicalName()));
@@ -253,27 +227,19 @@ public class ResteasyCdiExtension implements Extension {
     public <T extends Application> void observeApplications(@Observes ProcessAnnotatedType<T> event,
             BeanManager beanManager) {
         final Class<T> applicationClass = event.getAnnotatedType().getJavaClass();
-        final AnnotatedType<T> annotatedType = event.getAnnotatedType();
 
         // Check if this is a stateful bean and consider it not managed by the CDI container. This means we will not add
         // it to the bean container.
-        final boolean isStatefulBean = isStatefulBean(annotatedType);
+        final boolean isStatefulBean = isStatefulBean(event.getAnnotatedType());
 
         if (!Modifier.isAbstract(applicationClass.getModifiers())) {
             noApplicationFound = false;
-            // If we're not an interface or decorator, add @Inject to any @Context injection points
-            if (enhancedCdiSupportEnabled && !annotatedType.getJavaClass().isInterface()
-                    && !annotatedType.isAnnotationPresent(Decorator.class)
-                    && !Utils.isUnproxyableClass(annotatedType.getJavaClass())) {
-                addInject(event);
-            }
-            if (!Utils.isScopeDefined(annotatedType, beanManager)) {
+            if (!Utils.isScopeDefined(event.getAnnotatedType(), beanManager)) {
                 event.configureAnnotatedType().add(applicationScopedLiteral);
-                if (!isStatefulBean && !Utils.isUnproxyableClass(applicationClass)) {
+                if (!isStatefulBean) {
                     beanContainer.add(applicationClass);
                 }
-            } else if (!isStatefulBean && Utils.isNormalScope(annotatedType, beanManager)
-                    && !Utils.isUnproxyableClass(applicationClass)) {
+            } else if (!isStatefulBean && Utils.isNormalScope(event.getAnnotatedType(), beanManager)) {
                 beanContainer.add(applicationClass);
             }
         }
@@ -292,11 +258,8 @@ public class ResteasyCdiExtension implements Extension {
         }
     }
 
-    @SuppressWarnings("removal")
     protected <T> InjectionTarget<T> wrapInjectionTarget(ProcessInjectionTarget<T> event) {
-        final Class<T> injectionType = event.getAnnotatedType().getJavaClass();
-        return new JaxrsInjectionTarget<>(event.getInjectionTarget(), injectionType,
-                !enhancedCdiSupportEnabled || !beanContainer.contains(injectionType));
+        return new JaxrsInjectionTarget<>(event.getInjectionTarget(), event.getAnnotatedType().getJavaClass());
     }
 
     /**
@@ -362,31 +325,66 @@ public class ResteasyCdiExtension implements Extension {
     }
 
     /**
-     * Adds {@link Inject @Inject} to {@link Context @Context}-annotated injection points so that CDI can inject
-     * context values via {@link ContextProducers}. This covers:
-     * <ul>
-     * <li>Fields annotated with {@code @Context}</li>
-     * <li>Setter methods annotated with {@code @Context}</li>
-     * <li>Constructors with any parameter annotated with {@code @Context} (unless the constructor is already
-     * annotated with {@code @Inject})</li>
-     * </ul>
+     * Check for select case of unproxyable bean type.
+     * (see CDI 2.0 spec, section 3.11)
      *
-     * @param pat the annotated type being processed
+     * @param clazz
+     *
+     * @return
      */
-    private void addInject(final ProcessAnnotatedType<?> pat) {
-        // Add @Inject to fields
-        pat.configureAnnotatedType()
-                .filterFields(f -> !f.isAnnotationPresent(Inject.class) && f.isAnnotationPresent(Context.class))
-                .forEach(f -> f.add(InjectLiteral.INSTANCE));
-        // Add @Inject to methods
-        pat.configureAnnotatedType()
-                .filterMethods(m -> !m.isAnnotationPresent(Inject.class) && m.isAnnotationPresent(Context.class))
-                .forEach(m -> m.add(InjectLiteral.INSTANCE));
-        // Add @Inject to constructors
-        pat.configureAnnotatedType()
-                .filterConstructors(c -> !c.isAnnotationPresent(Inject.class)
-                        && c.getParameters().stream().anyMatch(p -> p.isAnnotationPresent(Context.class)))
-                .forEach(c -> c.add(InjectLiteral.INSTANCE));
+    private boolean isUnproxyableClass(Class<?> clazz) {
+        // Unproxyable bean type: classes which are declared final,
+        // or expose final methods,
+        // or have no non-private no-args constructor
+        return isFinal(clazz) ||
+                hasNonPrivateNonStaticFinalMethod(clazz) ||
+                !hasValidConstructor(clazz);
+    }
+
+    private boolean isFinal(Class<?> clazz) {
+        return Modifier.isFinal(clazz.getModifiers());
+    }
+
+    // Adapted from weld-core-impl:3.0.5.Final's Reflections.getNonPrivateNonStaticFinalMethod()
+    private boolean hasNonPrivateNonStaticFinalMethod(Class<?> type) {
+        for (Class<?> clazz = type; clazz != null && clazz != Object.class; clazz = clazz.getSuperclass()) {
+            for (Method method : clazz.getDeclaredMethods()) {
+                if (isFinal(method) && !isPrivate(method) && !isStatic(method)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean hasValidConstructor(final Class<?> clazz) {
+        // Check if there is a constructor with @Inject or a no-arg constructor
+        for (Constructor<?> c : clazz.getDeclaredConstructors()) {
+            if (c.isAnnotationPresent(Inject.class)) {
+                return true;
+            }
+        }
+        // For a bean to be considered proxyable, the bean must have a non-private constructor with no parameters. If
+        // a method matching those requirements does not exist, we'll not register this component as a CDI bean.
+        Constructor<?> constructor;
+        try {
+            constructor = clazz.getDeclaredConstructor();
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
+        return !isPrivate(constructor);
+    }
+
+    private boolean isFinal(Member member) {
+        return Modifier.isFinal(member.getModifiers());
+    }
+
+    private boolean isPrivate(Member member) {
+        return Modifier.isPrivate(member.getModifiers());
+    }
+
+    private boolean isStatic(Member member) {
+        return Modifier.isStatic(member.getModifiers());
     }
 
     private static ClassLoader getClassLoader() {
