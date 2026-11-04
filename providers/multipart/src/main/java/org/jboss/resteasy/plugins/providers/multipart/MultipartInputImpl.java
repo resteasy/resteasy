@@ -176,7 +176,9 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
                 contentType = defaultPartContentType;
             if (getCharset(contentType) == null) {
                 if (defaultPartCharset != null) {
-                    contentType = getMediaTypeWithDefaultCharset(contentType);
+                    if (!isOctetStream(contentType)) {
+                        contentType = getMediaTypeWithDefaultCharset(contentType);
+                    }
                 } else if (contentType.getType().equalsIgnoreCase("text")) {
                     contentType = getMediaTypeWithCharset(contentType, "us-ascii");
                 }
@@ -328,6 +330,11 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
     @Override
     public void close() {
         cleanable.clean();
+    }
+
+    private static boolean isOctetStream(MediaType mediaType) {
+        return "application".equalsIgnoreCase(mediaType.getType())
+                && "octet-stream".equalsIgnoreCase(mediaType.getSubtype());
     }
 
     protected String getCharset(MediaType mediaType) {
