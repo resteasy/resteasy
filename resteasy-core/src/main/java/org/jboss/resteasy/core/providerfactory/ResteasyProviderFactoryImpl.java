@@ -102,7 +102,6 @@ import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClassProcessor;
 import org.jboss.resteasy.spi.statistics.StatisticsController;
-import org.jboss.resteasy.spi.util.PickConstructor;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.statistics.StatisticsControllerImpl;
 import org.jboss.resteasy.tracing.RESTEasyTracingLogger;
@@ -1307,8 +1306,10 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
      * @return instance of type T
      */
     public <T> T injectedInstance(Class<? extends T> clazz) {
-        Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
-        ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
+        final ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(clazz, this);
+        if (constructorInjector == null) {
+            throw new IllegalArgumentException(Messages.MESSAGES.unableToFindPublicConstructorForClass(clazz.getName()));
+        }
         Object obj = constructorInjector.construct(false);
         PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
         if (obj instanceof CompletionStage) {
@@ -1339,16 +1340,13 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory
      * @return instance of type T
      */
     public <T> T injectedInstance(Class<? extends T> clazz, HttpRequest request, HttpResponse response) {
-        Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
-        Object obj = null;
-        if (constructor == null) {
+        final ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(clazz, this);
+        if (constructorInjector == null) {
             throw new IllegalArgumentException(Messages.MESSAGES.unableToFindPublicConstructorForClass(clazz.getName()));
-        } else {
-            ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
-            obj = constructorInjector.construct(request, response, false);
-            if (obj instanceof CompletionStage) {
-                obj = ((CompletionStage<Object>) obj).toCompletableFuture().getNow(null);
-            }
+        }
+        Object obj = constructorInjector.construct(request, response, false);
+        if (obj instanceof CompletionStage) {
+            obj = ((CompletionStage<Object>) obj).toCompletableFuture().getNow(null);
         }
         PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
 
