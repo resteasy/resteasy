@@ -632,6 +632,7 @@ public class ClientInvocation implements Invocation {
     private CloseableContext pushProvidersContext() {
         CloseableContext ret = ResteasyContext.addCloseableContextDataLevel();
         ResteasyContext.pushContext(Providers.class, configuration);
+        ResteasyContext.pushContext(Configuration.class, configuration);
         return ret;
     }
 
