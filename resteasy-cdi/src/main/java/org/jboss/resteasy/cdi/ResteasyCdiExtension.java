@@ -6,9 +6,6 @@
 package org.jboss.resteasy.cdi;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -37,7 +34,6 @@ import jakarta.enterprise.inject.spi.ProcessInjectionTarget;
 import jakarta.enterprise.inject.spi.ProcessSessionBean;
 import jakarta.enterprise.inject.spi.WithAnnotations;
 import jakarta.enterprise.util.AnnotationLiteral;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -175,10 +171,11 @@ public class ResteasyCdiExtension implements Extension {
                 LogMessages.LOGGER.debug(Messages.MESSAGES.discoveredCDIBeanJaxRsResource(annotatedType.getJavaClass()
                         .getCanonicalName()));
                 event.configureAnnotatedType().add(requestScopedLiteral);
-                if (!isStatefulBean) {
+                if (!isStatefulBean && !Utils.isUnproxyableClass(annotatedType.getJavaClass())) {
                     beanContainer.add(annotatedType.getJavaClass());
                 }
-            } else if (!isStatefulBean && Utils.isNormalScope(annotatedType, beanManager)) {
+            } else if (!isStatefulBean && Utils.isNormalScope(annotatedType, beanManager)
+                    && !Utils.isUnproxyableClass(annotatedType.getJavaClass())) {
                 beanContainer.add(annotatedType.getJavaClass());
             }
         }
@@ -201,7 +198,7 @@ public class ResteasyCdiExtension implements Extension {
 
         if (!annotatedType.getJavaClass().isInterface()
                 && !isSessionBean(annotatedType)
-                && !isUnproxyableClass(annotatedType.getJavaClass())) {
+                && !Utils.isUnproxyableClass(annotatedType.getJavaClass())) {
             if (!Utils.isScopeDefined(annotatedType, beanManager)) {
                 LogMessages.LOGGER.debug(Messages.MESSAGES.discoveredCDIBeanJaxRsProvider(annotatedType.getJavaClass()
                         .getCanonicalName()));
@@ -234,10 +231,11 @@ public class ResteasyCdiExtension implements Extension {
             noApplicationFound = false;
             if (!Utils.isScopeDefined(event.getAnnotatedType(), beanManager)) {
                 event.configureAnnotatedType().add(applicationScopedLiteral);
-                if (!isStatefulBean) {
+                if (!isStatefulBean && !Utils.isUnproxyableClass(applicationClass)) {
                     beanContainer.add(applicationClass);
                 }
-            } else if (!isStatefulBean && Utils.isNormalScope(event.getAnnotatedType(), beanManager)) {
+            } else if (!isStatefulBean && Utils.isNormalScope(event.getAnnotatedType(), beanManager)
+                    && !Utils.isUnproxyableClass(applicationClass)) {
                 beanContainer.add(applicationClass);
             }
         }
@@ -320,69 +318,6 @@ public class ResteasyCdiExtension implements Extension {
             }
         }
         return false;
-    }
-
-    /**
-     * Check for select case of unproxyable bean type.
-     * (see CDI 2.0 spec, section 3.11)
-     *
-     * @param clazz
-     *
-     * @return
-     */
-    private boolean isUnproxyableClass(Class<?> clazz) {
-        // Unproxyable bean type: classes which are declared final,
-        // or expose final methods,
-        // or have no non-private no-args constructor
-        return isFinal(clazz) ||
-                hasNonPrivateNonStaticFinalMethod(clazz) ||
-                !hasValidConstructor(clazz);
-    }
-
-    private boolean isFinal(Class<?> clazz) {
-        return Modifier.isFinal(clazz.getModifiers());
-    }
-
-    // Adapted from weld-core-impl:3.0.5.Final's Reflections.getNonPrivateNonStaticFinalMethod()
-    private boolean hasNonPrivateNonStaticFinalMethod(Class<?> type) {
-        for (Class<?> clazz = type; clazz != null && clazz != Object.class; clazz = clazz.getSuperclass()) {
-            for (Method method : clazz.getDeclaredMethods()) {
-                if (isFinal(method) && !isPrivate(method) && !isStatic(method)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean hasValidConstructor(final Class<?> clazz) {
-        // Check if there is a constructor with @Inject or a no-arg constructor
-        for (Constructor<?> c : clazz.getDeclaredConstructors()) {
-            if (c.isAnnotationPresent(Inject.class)) {
-                return true;
-            }
-        }
-        // For a bean to be considered proxyable, the bean must have a non-private constructor with no parameters. If
-        // a method matching those requirements does not exist, we'll not register this component as a CDI bean.
-        Constructor<?> constructor;
-        try {
-            constructor = clazz.getDeclaredConstructor();
-        } catch (NoSuchMethodException e) {
-            return false;
-        }
-        return !isPrivate(constructor);
-    }
-
-    private boolean isFinal(Member member) {
-        return Modifier.isFinal(member.getModifiers());
-    }
-
-    private boolean isPrivate(Member member) {
-        return Modifier.isPrivate(member.getModifiers());
-    }
-
-    private boolean isStatic(Member member) {
-        return Modifier.isStatic(member.getModifiers());
     }
 
     private static ClassLoader getClassLoader() {

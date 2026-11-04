@@ -7,6 +7,7 @@ package org.jboss.resteasy.cdi;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 import jakarta.enterprise.inject.spi.AnnotatedType;
@@ -162,6 +163,44 @@ public class Utils {
             }
         }
         return false;
+    }
+
+    /**
+     * Check for select case of unproxyable bean type.
+     * (see CDI 2.0 spec, section 3.11)
+     *
+     * @param clazz the type to check
+     *
+     * @return {@code true} if this type cannot be a CDI proxy, otherwise {@code false}
+     */
+    static boolean isUnproxyableClass(final Class<?> clazz) {
+        // Unproxyable bean type: classes which are declared final,
+        // or expose final methods,
+        // or have no non-private no-args constructor
+        return Modifier.isFinal(clazz.getModifiers()) ||
+                hasNonPrivateNonStaticFinalMethod(clazz) ||
+                !hasValidConstructor(clazz);
+    }
+
+    // Adapted from weld-core-impl:3.0.5.Final's Reflections.getNonPrivateNonStaticFinalMethod()
+    private static boolean hasNonPrivateNonStaticFinalMethod(Class<?> type) {
+        for (Class<?> clazz = type; clazz != null && clazz != Object.class; clazz = clazz.getSuperclass()) {
+            for (Method method : clazz.getDeclaredMethods()) {
+                if (Modifier.isFinal(method.getModifiers()) && !Modifier.isPrivate(method.getModifiers())
+                        && !Modifier.isStatic(method.getModifiers())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean hasValidConstructor(final Class<?> clazz) {
+        try {
+            return !Modifier.isPrivate(clazz.getDeclaredConstructor().getModifiers());
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
     }
 
     /**
