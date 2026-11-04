@@ -38,10 +38,6 @@ import jakarta.enterprise.inject.spi.ProcessSessionBean;
 import jakarta.enterprise.inject.spi.WithAnnotations;
 import jakarta.enterprise.util.AnnotationLiteral;
 import jakarta.inject.Inject;
-import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -50,7 +46,6 @@ import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.cdi.i18n.LogMessages;
 import org.jboss.resteasy.cdi.i18n.Messages;
-import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 
 /**
@@ -128,22 +123,6 @@ public class ResteasyCdiExtension implements Extension {
         }
         final Set<Class<?>> resources = Set.copyOf(beanContainer);
         resteasyBeanContainer = resources::contains;
-    }
-
-    /**
-     * Registers producers for the Jakarta Servlet types which are required to be injectable, if no other bean already
-     * provides them.
-     *
-     * @param event       the after bean discovery event
-     * @param beanManager the bean manager
-     */
-    public void registerContextProducers(@Observes final AfterBeanDiscovery event, final BeanManager beanManager) {
-
-        // Register producers, if they don't exist, for known servlet types
-        registerContextProducer(event, beanManager, HttpServletRequest.class);
-        registerContextProducer(event, beanManager, HttpServletResponse.class);
-        registerContextProducer(event, beanManager, ServletContext.class);
-        registerContextProducer(event, beanManager, ServletConfig.class);
     }
 
     /**
@@ -404,23 +383,6 @@ public class ResteasyCdiExtension implements Extension {
 
     private boolean isStatic(Member member) {
         return Modifier.isStatic(member.getModifiers());
-    }
-
-    private static void registerContextProducer(final AfterBeanDiscovery event, final BeanManager beanManager,
-            final Class<?> beanType) {
-        if (beanManager.getBeans(beanType).isEmpty()) {
-            registerContextProducer(event, beanType);
-        }
-    }
-
-    private static void registerContextProducer(final AfterBeanDiscovery event, final Class<?> beanType) {
-        // Only the required type is added. Adding the transitive type closure would resolve super types, e.g.
-        // ServletRequest, which are neither required to be injectable nor checked for an existing bean.
-        event.addBean().addType(beanType)
-                .addQualifier(Any.Literal.INSTANCE)
-                .addQualifier(Default.Literal.INSTANCE)
-                .scope(RequestScoped.class)
-                .produceWith(instance -> ResteasyContext.getRequiredContextData(beanType));
     }
 
     private static ClassLoader getClassLoader() {

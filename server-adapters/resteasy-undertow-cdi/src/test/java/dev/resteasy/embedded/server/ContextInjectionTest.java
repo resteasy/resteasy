@@ -20,23 +20,32 @@
 package dev.resteasy.embedded.server;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UncheckedIOException;
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
-import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.RuntimeType;
 import jakarta.ws.rs.SeBootstrap;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.container.ResourceContext;
 import jakarta.ws.rs.container.ResourceInfo;
+import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Configuration;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -45,24 +54,31 @@ import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriInfo;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.ext.Providers;
 import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseEventSink;
+import jakarta.ws.rs.sse.SseEventSource;
 
 import org.jboss.jandex.Index;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import dev.resteasy.junit.extension.annotations.RequestPath;
 import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
 import dev.resteasy.junit.extension.api.ConfigurationProvider;
 
 /**
- * Tests fields annotated with {@link Context @Context} are injected with the expected values.
+ * Tests injection of the known types from the {@link org.jboss.resteasy.cdi.ContextProducers} are injectable.
  *
- * @author <a href="mailto:jperkins@ibm.com">James R. Perkins</a>
+ * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
 @RestBootstrap(application = ContextInjectionTest.RootApplication.class, configFactory = ContextInjectionTest.InjectionConfiguration.class)
-public class ContextInjectionTest extends AbstractContextInjectionTest {
+public class ContextInjectionTest {
     public static class InjectionConfiguration implements ConfigurationProvider {
         @Override
         public SeBootstrap.Configuration getConfiguration(final ExtensionContext context) {
@@ -75,42 +91,162 @@ public class ContextInjectionTest extends AbstractContextInjectionTest {
         }
     }
 
+    @Test
+    public void application(@RestResource @RequestPath("inject/application/test.property") final WebTarget target)
+            throws Exception {
+        final Response response = get(target);
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("test value", response.readEntity(String.class));
+    }
+
+    @Test
+    public void client(@RestResource @RequestPath("inject/client/request") final WebTarget target) throws Exception {
+        final Response response = get(target);
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("GET", response.readEntity(String.class));
+    }
+
+    @Test
+    public void configuration(@RestResource @RequestPath("inject/configuration") final WebTarget target) {
+        final Response response = get(target);
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals(RuntimeType.SERVER.name(), response.readEntity(String.class));
+    }
+
+    @Test
+    public void httpHeader(@RestResource @RequestPath("inject/httpHeaders/test-header") final WebTarget target) {
+        final Response response = get(target);
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("test-value", response.readEntity(String.class));
+    }
+
+    @Test
+    public void httpRequest(@RestResource @RequestPath("inject/httpRequest") final WebTarget target) {
+        final Response response = get(target);
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("GET", response.readEntity(String.class));
+    }
+
+    @Test
+    public void provider(@RestResource @RequestPath("inject/providers") final WebTarget target) throws Exception {
+        final Response response = get(target);
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        final String value = response.readEntity(String.class);
+        Assertions.assertTrue(value.contains(TestExceptionMapper.class.getSimpleName()),
+                String.format("Value expected to contain %s but was %s", TestExceptionMapper.class.getSimpleName(), value));
+    }
+
+    @Test
+    public void request(@RestResource @RequestPath("inject/request") final WebTarget target) {
+        final Response response = get(target);
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("GET", response.readEntity(String.class));
+    }
+
+    @Test
+    public void resourceContext(@RestResource @RequestPath("inject/resourceContext") final WebTarget target) {
+        final Response response = get(target);
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertTrue(response.readEntity(String.class)
+                .startsWith(InjectionResource.class.getName()));
+    }
+
+    @Test
+    public void resourceInfo(@RestResource @RequestPath("inject/resourceInfo") final WebTarget target) {
+        final Response response = get(target);
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals(response.readEntity(String.class), "resourceInfo");
+    }
+
+    @Test
+    public void securityContext(@RestResource @RequestPath("inject/securityContext") final WebTarget target) {
+        final Response response = get(target);
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("false", response.readEntity(String.class));
+    }
+
+    @Test
+    public void uriInfo(@RestResource @RequestPath("inject/uriInfo") final WebTarget target) {
+        final Response response = get(target);
+        Assertions.assertEquals(Response.Status.OK, response.getStatusInfo());
+        Assertions.assertEquals("/inject/uriInfo", response.readEntity(String.class));
+    }
+
+    @Test
+    public void sse(@RestResource @RequestPath("inject/sse") final WebTarget target) throws Exception {
+        final CompletableFuture<String> cf = new CompletableFuture<>();
+        try (SseEventSource source = SseEventSource.target(target).build()) {
+            source.register(event -> {
+                try {
+                    cf.complete(event.readData());
+                } catch (Throwable t) {
+                    cf.completeExceptionally(t);
+                }
+            });
+            source.open();
+            Thread.sleep(500L);
+        }
+        Assertions.assertEquals("test", cf.get(5, TimeUnit.SECONDS));
+    }
+
+    private Response get(final WebTarget target) {
+        return target
+                .request()
+                .header("test-header", "test-value")
+                .get();
+    }
+
+    @Provider
+    public static class TestExceptionMapper implements ExceptionMapper<IllegalStateException> {
+
+        @Override
+        public Response toResponse(final IllegalStateException exception) {
+            final StringWriter writer = new StringWriter();
+            exception.printStackTrace(new PrintWriter(writer));
+            return Response.serverError()
+                    .entity(writer.toString())
+                    .build();
+        }
+    }
+
+    @ApplicationPath("/")
+    @ApplicationScoped
+    public static class RootApplication extends Application {
+        @Override
+        public Map<String, Object> getProperties() {
+            return Collections.singletonMap("test.property", "test value");
+        }
+    }
+
     @Path("/inject")
     @Produces(MediaType.TEXT_PLAIN)
     @RequestScoped
+    @SuppressWarnings("CdiInjectionPointsInspection")
     public static class InjectionResource {
-        @Context
+        @Inject
         RootApplication application;
-        @Context
+        @Inject
+        Client client;
+        @Inject
         Configuration configuration;
-        @Context
+        @Inject
         HttpHeaders httpHeaders;
-        @Context
+        @Inject
         HttpRequest httpRequest;
-        @Context
+        @Inject
         Providers providers;
-        @Context
+        @Inject
         Request request;
-        @Context
+        @Inject
         ResourceContext resourceContext;
-        @Context
+        @Inject
         ResourceInfo resourceInfo;
-        @Context
+        @Inject
         SecurityContext securityContext;
-        @Context
+        @Inject
         Sse sse;
-        @Context
+        @Inject
         UriInfo uriInfo;
-
-        // Servlet types given we're in a Jakarta Servlet Container
-        @Context
-        HttpServletRequest httpServletRequest;
-        @Context
-        HttpServletResponse httpServletResponse;
-        @Context
-        ServletConfig servletConfig;
-        @Context
-        ServletContext servletContext;
 
         @GET
         @Path("/application/{propertyName}")
@@ -152,12 +288,7 @@ public class ContextInjectionTest extends AbstractContextInjectionTest {
         @GET
         @Path("resourceContext")
         public Response resourceContext() {
-            final Object resource = resourceContext.getResource(getClass());
-            if (resource == null) {
-                throw new WebApplicationException(
-                        String.format("Failed to find resource %s in %s", getClass(), resourceContext));
-            }
-            return Response.ok("ok").build();
+            return Response.ok(resourceContext.getResource(getClass()).getClass().getCanonicalName()).build();
         }
 
         @GET
@@ -175,7 +306,7 @@ public class ContextInjectionTest extends AbstractContextInjectionTest {
         @GET
         @Path("/sse")
         @Produces(MediaType.SERVER_SENT_EVENTS)
-        public CompletionStage<?> sse(@Context final SseEventSink eventSink) throws IOException {
+        public CompletionStage<?> sse(@Context final SseEventSink eventSink) {
             if (eventSink == null) {
                 throw new WebApplicationException("No client connected.");
             }
@@ -184,7 +315,7 @@ public class ContextInjectionTest extends AbstractContextInjectionTest {
                         try {
                             eventSink.close();
                         } catch (IOException e) {
-                            throw new UncheckedIOException(e);
+                            throw new RuntimeException(e);
                         }
                     });
         }
@@ -196,27 +327,11 @@ public class ContextInjectionTest extends AbstractContextInjectionTest {
         }
 
         @GET
-        @Path("/servletRequest")
-        public Response servletRequest() {
-            return Response.ok(httpServletRequest.getMethod()).build();
-        }
-
-        @GET
-        @Path("/servletResponse")
-        public Response servletResponse() {
-            return Response.ok(httpServletResponse.getStatus()).build();
-        }
-
-        @GET
-        @Path("servletContext")
-        public Response servletContext() {
-            return Response.ok(servletContext.getContextPath()).build();
-        }
-
-        @GET
-        @Path("servletConfig")
-        public Response servletConfig() {
-            return Response.ok(servletConfig.getServletName()).build();
+        @Path("/client/{path}")
+        public Response client(@PathParam("path") final String path) {
+            return client.target(uriInfo.getBaseUriBuilder().path("inject/" + path))
+                    .request()
+                    .get();
         }
     }
 }
