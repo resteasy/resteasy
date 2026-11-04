@@ -53,6 +53,24 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage {
         return asynchronousContext;
     }
 
+    /**
+     * Completes the async cycle, tolerating a container that has already recycled the exchange.
+     *
+     * <p>
+     * When a resumed response is delivered after the client has disconnected, the servlet
+     * container may recycle the exchange before the completion callback runs (Jetty ee11 does
+     * this). {@link AsyncContext#complete()} then throws {@link IllegalStateException}. The request
+     * is already finished, so there is nothing left to complete and the exception is ignored.
+     */
+    static void completeRecycleSafe(AsyncContext asyncContext) {
+        try {
+            asyncContext.complete();
+        } catch (IllegalStateException e) {
+            // Recycled exchanges are routine under client disconnects, so trace rather than debug.
+            LogMessages.LOGGER.trace(e.getMessage(), e);
+        }
+    }
+
     private class Servlet3ExecutionContext extends AbstractExecutionContext {
         protected final ServletRequest servletRequest;
         protected volatile boolean done;
@@ -89,7 +107,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage {
                     done = true;
                     return internalResume(entity, t -> {
                         try {
-                            asyncContext.complete();
+                            completeRecycleSafe(asyncContext);
                         } finally {
                             close();
                         }
@@ -108,7 +126,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage {
                     try {
                         AsyncContext asyncContext = getAsyncContext();
                         done = true;
-                        asyncContext.complete();
+                        completeRecycleSafe(asyncContext);
                     } finally {
                         close();
                     }
@@ -127,7 +145,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage {
                     done = true;
                     return internalResume(exc, t -> {
                         try {
-                            asyncContext.complete();
+                            completeRecycleSafe(asyncContext);
                         } finally {
                             close();
                         }
@@ -184,7 +202,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage {
                     LogMessages.LOGGER.debug(Messages.MESSAGES.cancellingWith503());
                     return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).build(), t -> {
                         try {
-                            asyncContext.complete();
+                            completeRecycleSafe(asyncContext);
                         } finally {
                             close();
                         }
@@ -207,7 +225,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage {
                                     .build(),
                             t -> {
                                 try {
-                                    asyncContext.complete();
+                                    completeRecycleSafe(asyncContext);
                                 } finally {
                                     close();
                                 }
@@ -230,7 +248,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage {
                                     .build(),
                             t -> {
                                 try {
-                                    asyncContext.complete();
+                                    completeRecycleSafe(asyncContext);
                                 } finally {
                                     close();
                                 }
