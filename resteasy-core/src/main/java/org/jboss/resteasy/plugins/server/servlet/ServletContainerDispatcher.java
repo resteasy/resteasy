@@ -217,11 +217,6 @@ public class ServletContainerDispatcher {
 
                 ResteasyContext.pushContext(SecurityContext.class, new ServletSecurityContext(request));
                 ResteasyContext.pushContext(ServletConfig.class, servletConfig);
-                final ServletConfig servletConfig = this.servletConfig;
-                ResteasyContext.pushContext(ServletConfig.class, servletConfig);
-                if (servletConfig != null) {
-                    ResteasyContext.pushContext(ServletContext.class, servletConfig.getServletContext());
-                }
 
                 if (handleNotFound) {
                     dispatcher.invoke(in, theResponse);

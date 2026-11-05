@@ -1,6 +1,20 @@
 /*
- * Copyright The RESTEasy Authors
- * SPDX-License-Identifier: Apache-2.0
+ * JBoss, Home of Professional Open Source.
+ *
+ * Copyright 2022 Red Hat, Inc., and individual contributors
+ * as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.jboss.resteasy.test.cdi.injection.resource;
@@ -10,15 +24,13 @@ import java.io.UncheckedIOException;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiConsumer;
 
-import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.container.ResourceContext;
 import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.Application;
@@ -37,44 +49,36 @@ import jakarta.ws.rs.sse.SseEventSink;
 import org.jboss.resteasy.spi.HttpRequest;
 
 /**
- * @author <a href="mailto:jperkins@ibm.com">James R. Perkins</a>
+ * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
  */
-@Path("/context")
+@Path("/inject")
 @Produces(MediaType.TEXT_PLAIN)
 public class RequiredInjectableContextResource {
 
-    @Context
+    @Inject
     Application application;
-    @Context
+    @Inject
+    Client client;
+    @Inject
     Configuration configuration;
-    @Context
+    @Inject
     HttpHeaders httpHeaders;
-    @Context
+    @Inject
     HttpRequest httpRequest;
-    @Context
+    @Inject
     Providers providers;
-    @Context
+    @Inject
     Request request;
-    @Context
+    @Inject
     ResourceContext resourceContext;
-    @Context
+    @Inject
     ResourceInfo resourceInfo;
-    @Context
+    @Inject
     SecurityContext securityContext;
-    @Context
+    @Inject
     Sse sse;
-    @Context
+    @Inject
     UriInfo uriInfo;
-
-    // Servlet types given we're in a Jakarta EE Container
-    @Context
-    HttpServletRequest httpServletRequest;
-    @Context
-    HttpServletResponse httpServletResponse;
-    @Context
-    ServletConfig servletConfig;
-    @Context
-    ServletContext servletContext;
 
     @GET
     @Path("/application/{propertyName}")
@@ -116,11 +120,7 @@ public class RequiredInjectableContextResource {
     @GET
     @Path("resourceContext")
     public Response resourceContext() {
-        final Object resource = resourceContext.getResource(getClass());
-        if (resource == null) {
-            throw new WebApplicationException(String.format("Failed to find resource %s in %s", getClass(), resourceContext));
-        }
-        return Response.ok("ok").build();
+        return Response.ok(resourceContext.getResource(getClass()).getClass().getCanonicalName()).build();
     }
 
     @GET
@@ -159,26 +159,10 @@ public class RequiredInjectableContextResource {
     }
 
     @GET
-    @Path("/servletRequest")
-    public Response servletRequest() {
-        return Response.ok(httpServletRequest.getMethod()).build();
-    }
-
-    @GET
-    @Path("/servletResponse")
-    public Response servletResponse() {
-        return Response.ok(httpServletResponse.getStatus()).build();
-    }
-
-    @GET
-    @Path("servletContext")
-    public Response servletContext() {
-        return Response.ok(servletContext.getContextPath()).build();
-    }
-
-    @GET
-    @Path("servletConfig")
-    public Response servletConfig() {
-        return Response.ok(servletConfig.getServletName()).build();
+    @Path("/client/{path}")
+    public Response client(@PathParam("path") final String path) {
+        return client.target(uriInfo.getBaseUriBuilder().path("inject/" + path))
+                .request()
+                .get();
     }
 }

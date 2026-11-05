@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.client;
 
-import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
-
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.Feature;
@@ -43,7 +41,7 @@ public class ClientBuilderTest {
     }
 
     private int getWarningCount() {
-        return TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER);
+        return TestUtil.getWarningCount("RESTEASY002155", true);
     }
 
     /**
@@ -71,8 +69,8 @@ public class ClientBuilderTest {
      */
     @Test
     public void testDoubleRegistration() {
-        int countRESTEASY002160 = TestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER);
-        int countRESTEASY002155 = TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER);
+        int countRESTEASY002160 = TestUtil.getWarningCount("RESTEASY002160", true);
+        int countRESTEASY002155 = TestUtil.getWarningCount("RESTEASY002155", true);
         Client client = ClientBuilder.newClient();
         int count = client.getConfiguration().getInstances().size();
         Object reg = new FeatureReturningFalse();
@@ -80,10 +78,10 @@ public class ClientBuilderTest {
         client.register(reg).register(reg);
         client.register(FeatureReturningFalse.class).register(FeatureReturningFalse.class);
         Assertions.assertEquals(1,
-                TestUtil.getWarningCount("RESTEASY002160", true, DEFAULT_CONTAINER_QUALIFIER) - countRESTEASY002160,
+                TestUtil.getWarningCount("RESTEASY002160", true) - countRESTEASY002160,
                 "Expect 1 warnining messages of Provider instance is already registered");
         Assertions.assertEquals(2,
-                TestUtil.getWarningCount("RESTEASY002155", true, DEFAULT_CONTAINER_QUALIFIER) - countRESTEASY002155,
+                TestUtil.getWarningCount("RESTEASY002155", true) - countRESTEASY002155,
                 "Expect 1 warnining messages of Provider class is already registered");
         Assertions.assertEquals(count + 1, client.getConfiguration().getInstances().size());
 

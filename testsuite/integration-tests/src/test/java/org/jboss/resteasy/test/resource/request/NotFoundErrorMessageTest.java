@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.resource.request;
 
-import static org.jboss.resteasy.test.ContainerConstants.DEFAULT_CONTAINER_QUALIFIER;
-
 import java.io.IOException;
 
 import jakarta.ws.rs.client.Client;
@@ -45,7 +43,7 @@ public class NotFoundErrorMessageTest {
     }
 
     private static int getWarningCount() {
-        return TestUtil.getWarningCount("RESTEASY002010", false, DEFAULT_CONTAINER_QUALIFIER);
+        return TestUtil.getWarningCount("RESTEASY002010", false);
     }
 
     @Deployment

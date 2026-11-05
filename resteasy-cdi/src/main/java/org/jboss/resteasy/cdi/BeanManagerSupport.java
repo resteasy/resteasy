@@ -5,9 +5,14 @@
 
 package org.jboss.resteasy.cdi;
 
+import java.lang.reflect.Type;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.ServletContext;
@@ -23,6 +28,45 @@ import org.jboss.resteasy.core.ResteasyContext;
  */
 class BeanManagerSupport {
     private static final String BEAN_MANAGER_ATTRIBUTE_PREFIX = "org.jboss.weld.environment.servlet.";
+
+    /**
+     * Resolves the bean for the type. If several beans have the type, e.g. because subclasses of the type are beans as
+     * well, only the bean whose class is the type, or an enabled alternative, is a candidate. If none of them is, all the
+     * beans are resolved.
+     *
+     * @param beanManager the bean manager
+     * @param type        the bean type
+     *
+     * @return the resolved bean or {@code null} if there is no bean for the type
+     *
+     * @throws jakarta.enterprise.inject.AmbiguousResolutionException if the bean cannot be resolved
+     */
+    static Bean<?> findBean(final BeanManager beanManager, final Type type) {
+        return findBean(beanManager, type, beanManager.getBeans(type));
+    }
+
+    /**
+     * Resolves the bean for the type from the given beans, as {@link #findBean(BeanManager, Type)} does.
+     *
+     * @param beanManager the bean manager
+     * @param type        the bean type
+     * @param beans       the beans of the type, e.g. those of an {@link jakarta.enterprise.inject.Instance}
+     *
+     * @return the resolved bean or {@code null} if there is no bean for the type
+     *
+     * @throws jakarta.enterprise.inject.AmbiguousResolutionException if the bean cannot be resolved
+     */
+    static Bean<?> findBean(final BeanManager beanManager, final Type type, final Set<Bean<?>> beans) {
+        if (beans.size() > 1) {
+            final Set<Bean<?>> candidates = beans.stream()
+                    .filter(bean -> type.equals(bean.getBeanClass()) || bean.isAlternative())
+                    .collect(Collectors.toSet());
+            if (!candidates.isEmpty()) {
+                return beanManager.resolve(candidates);
+            }
+        }
+        return beanManager.resolve(beans);
+    }
 
     /**
      * Finds the bean manager for our current context.
