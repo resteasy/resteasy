@@ -45,6 +45,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * @author <a href="mailto:jperkins@redhat.com">James R. Perkins</a>
@@ -78,12 +79,15 @@ public class DefaultProvidersTest {
     }
 
     @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "8.0.0.Alpha1")
     public void defaultException() throws Exception {
         final Response response = client.target(TestUtil.generateUri(url, "exception"))
                 .request()
                 .get();
         Assertions.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
-        Assertions.assertEquals(ExceptionResource.EXCEPTION_MESSAGE, response.readEntity(String.class));
+        final String body = response.readEntity(String.class);
+        Assertions.assertTrue(body == null || body.isBlank(),
+                "Default exception mapper must not disclose the exception message in the response body, got: " + body);
     }
 
     @Test

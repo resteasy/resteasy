@@ -63,6 +63,7 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * Tests the conditions for callbacks defined in {@link SseEventSource}.
@@ -300,6 +301,7 @@ public class SseCallbackTest {
      * @see SseEventSource#register(Consumer, Consumer, Runnable)
      */
     @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "8.0.0.Alpha1")
     public void onCompleteNotInvokedWAE() throws Exception {
         try (Client client = ClientBuilder.newClient()) {
             final CompletableFuture<Throwable> cause = new CompletableFuture<>();
@@ -313,7 +315,10 @@ public class SseCallbackTest {
                 source.open();
                 Assertions.assertInstanceOf(WebApplicationException.class, cause.get(5, TimeUnit.SECONDS));
                 final WebApplicationException wae = (WebApplicationException) cause.get();
-                Assertions.assertEquals("Failed on purpose with RuntimeException", wae.getResponse().readEntity(String.class));
+                // The body of the response should be empty
+                final String body = wae.getResponse().readEntity(String.class);
+                Assertions.assertTrue(body.isEmpty(),
+                        () -> String.format("Expected the response body to be empty. Got: \"%s\"", body));
                 // The events should be empty
                 Assertions.assertTrue(eventCollector.isEmpty(),
                         () -> String.format("Expected no events but got %s", eventCollector));
