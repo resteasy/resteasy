@@ -133,12 +133,12 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
     public void start() {
         try {
             startInternal();
-        } catch (RuntimeException | Error e) {
+        } catch (Throwable t) {
             // A failed start never reaches stop(), so remove any global factory this deployment installed. Otherwise
             // it is left as the global factory and used by other deployments.
             ResteasyProviderFactory.clearInstanceIfEqual(threadLocalProviderFactory);
             ResteasyProviderFactory.clearInstanceIfEqual(providerFactory);
-            throw e;
+            throw t;
         } finally {
             ThreadLocalResteasyProviderFactory.pop();
         }
