@@ -20,6 +20,7 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.resource.basic.resource.MultipleGetResource;
+import org.jboss.resteasy.utils.LogCounter;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -75,12 +76,17 @@ public class MultipleGetResourceTest {
 
     @Test
     public void testFailFast() throws Exception {
+        final LogCounter resteasy005042Log = new LogCounter("RESTEASY005042",
+                false, DEFAULT_CONTAINER_QUALIFIER);
 
         WebTarget base = client.target(generateURL("/api"));
         try (Response response = base.request().get()) {
             Assertions.assertEquals(500, response.getStatus());
-            final String error = response.readEntity(String.class);
-            Assertions.assertTrue(error.contains("RESTEASY005042"), "RESTEASY005042 not found in: " + error);
+            // We must expect an empty body, see https://redhat.atlassian.net/browse/RESTEASY-3823
+            Assertions.assertFalse(response.hasEntity(),
+                    "Default exception mapper must not disclose the exception message in the response body");
+            Assertions.assertTrue(resteasy005042Log.count() > 0,
+                    "RESTEASY005042 should be logged in the server log");
         }
     }
 }

@@ -55,7 +55,9 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.container.annotation.ArquillianTest;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl;
+import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.providers.sse.resource.SseCallbackResource;
+import org.jboss.resteasy.utils.LogCounter;
 import org.jboss.resteasy.utils.TestApplication;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -301,6 +303,8 @@ public class SseCallbackTest {
      */
     @Test
     public void onCompleteNotInvokedWAE() throws Exception {
+        final LogCounter runtimeExceptionLog = new LogCounter("Failed on purpose with RuntimeException",
+                false, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
         try (Client client = ClientBuilder.newClient()) {
             final CompletableFuture<Throwable> cause = new CompletableFuture<>();
             final CountDownLatch latch = new CountDownLatch(1);
@@ -313,7 +317,10 @@ public class SseCallbackTest {
                 source.open();
                 Assertions.assertInstanceOf(WebApplicationException.class, cause.get(5, TimeUnit.SECONDS));
                 final WebApplicationException wae = (WebApplicationException) cause.get();
-                Assertions.assertEquals("Failed on purpose with RuntimeException", wae.getResponse().readEntity(String.class));
+                // Although the original exception is wrapped into a WebApplicationException by the resteasy-client
+                // logic, we must expect an empty body, see https://redhat.atlassian.net/browse/RESTEASY-3823
+                Assertions.assertFalse(wae.getResponse().hasEntity(),
+                        "Default exception mapper must not disclose the exception message in the response body");
                 // The events should be empty
                 Assertions.assertTrue(eventCollector.isEmpty(),
                         () -> String.format("Expected no events but got %s", eventCollector));
@@ -324,6 +331,8 @@ public class SseCallbackTest {
                         "onComplete callbacks seem to have been invoked");
             }
         }
+        Assertions.assertTrue(runtimeExceptionLog.count() > 0,
+                "\"Failed on purpose with RuntimeException\" should be logged in the server log");
     }
 
     /**
