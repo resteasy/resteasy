@@ -65,6 +65,7 @@ import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.spi.concurrent.ThreadContexts;
 import org.jboss.resteasy.spi.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
+import org.jboss.resteasy.spi.model.EntityProvider;
 import org.jboss.resteasy.spi.statistics.StatisticsController;
 
 /**
@@ -440,6 +441,12 @@ public class ResteasyProviderFactoryDelegate extends ResteasyProviderFactory {
     public Map<MessageBodyWriter<?>, Class<?>> getPossibleMessageBodyWritersMap(Class type, Type genericType,
             Annotation[] annotations, MediaType accept) {
         return resteasyProviderFactoryDelegator.getPossibleMessageBodyWritersMap(type, genericType, annotations, accept);
+    }
+
+    @Override
+    public List<EntityProvider<MessageBodyWriter<?>>> resolveMessageBodyWriters(final Class<?> type, final Type genericType,
+            final Annotation[] annotations, final MediaType accept) {
+        return resteasyProviderFactoryDelegator.resolveMessageBodyWriters(type, genericType, annotations, accept);
     }
 
     @SuppressWarnings("deprecation")
