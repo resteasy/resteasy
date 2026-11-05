@@ -79,7 +79,7 @@ public class DefaultProvidersTest {
     }
 
     @Test
-    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "7.0.6.Final")
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "8.0.0.Alpha1")
     public void defaultException() throws Exception {
         final Response response = client.target(TestUtil.generateUri(url, "exception"))
                 .request()

@@ -301,7 +301,7 @@ public class SseCallbackTest {
      * @see SseEventSource#register(Consumer, Consumer, Runnable)
      */
     @Test
-    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "7.0.6.Final")
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "8.0.0.Alpha1")
     public void onCompleteNotInvokedWAE() throws Exception {
         try (Client client = ClientBuilder.newClient()) {
             final CompletableFuture<Throwable> cause = new CompletableFuture<>();
@@ -315,10 +315,10 @@ public class SseCallbackTest {
                 source.open();
                 Assertions.assertInstanceOf(WebApplicationException.class, cause.get(5, TimeUnit.SECONDS));
                 final WebApplicationException wae = (WebApplicationException) cause.get();
-                // Although the original exception is wrapped into a WebApplicationException by the resteasy-client
-                // logic, we must expect an empty body, see https://redhat.atlassian.net/browse/RESTEASY-3823
-                Assertions.assertFalse(wae.getResponse().hasEntity(),
-                        "Default exception mapper must not disclose the exception message in the response body");
+                // The body of the response should be empty
+                final String body = wae.getResponse().readEntity(String.class);
+                Assertions.assertTrue(body.isEmpty(),
+                        () -> String.format("Expected the response body to be empty. Got: \"%s\"", body));
                 // The events should be empty
                 Assertions.assertTrue(eventCollector.isEmpty(),
                         () -> String.format("Expected no events but got %s", eventCollector));
