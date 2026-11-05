@@ -94,12 +94,15 @@ public class JsonBindingDebugLoggingTest {
 
         // perform request
         WebTarget base = client.target(generateURL("/get/nok"));
-        Response response = base.request().get();
-        // check response
-        Assertions.assertEquals(500, response.getStatus(), "Wrong response code");
-        // We must expect an empty body, see https://redhat.atlassian.net/browse/RESTEASY-3823
-        Assertions.assertFalse(response.hasEntity(),
-                "Default exception mapper must not disclose the exception message in the response body");
+        try (Response response = base.request().get()) {
+            final String body = response.readEntity(String.class);
+            // We should have a 500 response
+            Assertions.assertEquals(500, response.getStatus(), () -> String.format("Expected a 500 status code %d: %s",
+                    response.getStatus(), body));
+            // Expect an empty body
+            Assertions.assertTrue(body.isEmpty(),
+                    () -> String.format("Expected the response body to be empty. Got: \"%s\"", body));
+        }
 
         Assertions.assertEquals(0, resteasyExceptionLog.count(), "RESTEasy exception should not be logged");
         Assertions.assertTrue(jsonbExceptionLog.count() > 0, "Jakarta JSON Binding exception should be logged");
@@ -130,11 +133,17 @@ public class JsonBindingDebugLoggingTest {
         WebTarget base = client.target(generateURL("/post"));
         JsonBindingDebugLoggingItem wrongItem = new JsonBindingDebugLoggingItem();
         wrongItem.setA(5);
-        Response response = base.request().post(Entity.entity(wrongItem,
-                MediaType.APPLICATION_JSON));
-        // We must expect an empty body, see https://redhat.atlassian.net/browse/RESTEASY-3823
-        Assertions.assertFalse(response.hasEntity(),
-                "Default exception mapper must not disclose the exception message in the response body");
+        try (
+                Response response = base.request().post(Entity.entity(wrongItem,
+                        MediaType.APPLICATION_JSON))) {
+            final String body = response.readEntity(String.class);
+            // We should have a 500 response
+            Assertions.assertEquals(500, response.getStatus(), () -> String.format("Expected a 500 status code %d: %s",
+                    response.getStatus(), body));
+            // Expect an empty body
+            Assertions.assertTrue(body.isEmpty(), () -> String.format("Body should be empty, but was \"%s\"", body));
+        }
+
         Assertions.assertEquals(1, applicationExceptionLog.count(), "Application Exception should be logged");
         Assertions.assertEquals(1, resteasyExceptionLog.count(), "RESTEasy exception should be logged");
         Assertions.assertTrue(jsonbExceptionLog.count() > 0, "Jakarta JSON Binding exception should be logged");
