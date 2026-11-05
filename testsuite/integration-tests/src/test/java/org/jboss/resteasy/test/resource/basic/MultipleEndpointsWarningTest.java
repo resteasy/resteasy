@@ -19,7 +19,10 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
@@ -31,6 +34,7 @@ import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MultipleEndpointsWarningTest {
     private static Client client;
 
@@ -103,6 +107,8 @@ public class MultipleEndpointsWarningTest {
                 "Incorrectly logged " + LogHandler.MESSAGE_CODE);
     }
 
+    // We need this to run after the other tests
+    @Order(Order.DEFAULT + 1)
     @Test
     public void testDuplicate() throws Exception {
         Response response = client.target(generateURL("/duplicate")).request().get();

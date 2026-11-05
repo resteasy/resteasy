@@ -18,7 +18,10 @@ import org.jboss.resteasy.test.resource.resource.ProgrammaticResource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 /**
  * @tpSubChapter Resource tests
@@ -26,6 +29,7 @@ import org.junit.jupiter.api.Test;
  * @tpTestCaseDetails Tests programmatic creation of resources.
  * @tpSince RESTEasy 3.0.20
  */
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ProgrammaticTest {
 
     private static Dispatcher dispatcher;
@@ -44,6 +48,7 @@ public class ProgrammaticTest {
      * @tpTestDetails Programmatically create resource class
      * @tpSince RESTEasy 3.0.20
      */
+    @Order(2)
     @Test
     public void testPerRequest() throws Exception {
         Method get = ProgrammaticResource.class.getMethod("get", String.class);
@@ -80,6 +85,7 @@ public class ProgrammaticTest {
      * @tpTestDetails Programmatically create singleton
      * @tpSince RESTEasy 3.0.20
      */
+    @Order(1)
     @Test
     public void testSingleton() throws Exception {
         Method get = ProgrammaticResource.class.getMethod("get", String.class);
@@ -109,6 +115,7 @@ public class ProgrammaticTest {
      *
      * @throws Exception
      */
+    @Order(3)
     @Test
     public void testCharsetHeader() throws Exception {
         Method get = ProgrammaticResource.class.getMethod("get", String.class);
