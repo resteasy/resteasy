@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
@@ -39,6 +40,7 @@ import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "6.2.20.Final")
 public class MultipleGetResourceTest {
     static ResteasyClient client;
 
@@ -82,9 +84,9 @@ public class MultipleGetResourceTest {
         WebTarget base = client.target(generateURL("/api"));
         try (Response response = base.request().get()) {
             Assertions.assertEquals(500, response.getStatus());
-            // We must expect an empty body, see https://redhat.atlassian.net/browse/RESTEASY-3823
-            Assertions.assertFalse(response.hasEntity(),
-                    "Default exception mapper must not disclose the exception message in the response body");
+            final String error = response.readEntity(String.class);
+            Assertions.assertTrue(error.isEmpty(),
+                    () -> String.format("Expected the response body to be empty. Got: %s", error));
             Assertions.assertTrue(resteasy005042Log.count() > 0,
                     "RESTEASY005042 should be logged in the server log");
         }

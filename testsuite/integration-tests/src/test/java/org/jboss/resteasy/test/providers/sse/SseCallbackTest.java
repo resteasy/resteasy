@@ -65,6 +65,7 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * Tests the conditions for callbacks defined in {@link SseEventSource}.
@@ -302,6 +303,7 @@ public class SseCallbackTest {
      * @see SseEventSource#register(Consumer, Consumer, Runnable)
      */
     @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "6.2.20.Final")
     public void onCompleteNotInvokedWAE() throws Exception {
         final LogCounter runtimeExceptionLog = new LogCounter("Failed on purpose with RuntimeException",
                 false, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
@@ -319,8 +321,9 @@ public class SseCallbackTest {
                 final WebApplicationException wae = (WebApplicationException) cause.get();
                 // Although the original exception is wrapped into a WebApplicationException by the resteasy-client
                 // logic, we must expect an empty body, see https://redhat.atlassian.net/browse/RESTEASY-3823
-                Assertions.assertFalse(wae.getResponse().hasEntity(),
-                        "Default exception mapper must not disclose the exception message in the response body");
+                final String body = wae.getResponse().readEntity(String.class);
+                Assertions.assertTrue(body.isEmpty(),
+                        () -> String.format("Expected the response body to be empty. Got: \"%s\"", body));
                 // The events should be empty
                 Assertions.assertTrue(eventCollector.isEmpty(),
                         () -> String.format("Expected no events but got %s", eventCollector));
