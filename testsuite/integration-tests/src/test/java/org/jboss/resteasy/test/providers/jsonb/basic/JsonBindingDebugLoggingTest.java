@@ -30,6 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * @tpSubChapter Interceptors
@@ -74,6 +75,7 @@ public class JsonBindingDebugLoggingTest {
      * @tpSince RESTEasy 4.0.0.Beta7
      */
     @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "7.0.6.Final")
     public void exceptionDuringServerSend() throws Exception {
         // count log messages before request
         LogCounter peStringLog = new LogCounter(".*jakarta.ws.rs.ProcessingException.*",
@@ -87,20 +89,21 @@ public class JsonBindingDebugLoggingTest {
                 "Caused by: jakarta.json.bind.JsonbException",
                 true);
 
+        LogCounter resteasy008205Log = new LogCounter("RESTEASY008205",
+                true);
+
         // perform request
         WebTarget base = client.target(generateURL("/get/nok"));
         Response response = base.request().get();
         // check response
         Assertions.assertEquals(500, response.getStatus(), "Wrong response code");
-        final String body = response.readEntity(String.class);
-        Assertions.assertAll("Response message doesn't contains full stacktrace",
-                () -> Assertions.assertTrue(body.contains(JsonBindingDebugLoggingItemCorruptedGet.class.getSimpleName())),
-                () -> Assertions
-                        .assertTrue(body.contains("jakarta.json.bind.JsonbException: Unable to serialize property 'a'")),
-                () -> Assertions.assertTrue(body.contains("RESTEASY008205")));
+        // We must expect an empty body, see https://redhat.atlassian.net/browse/RESTEASY-3823
+        Assertions.assertFalse(response.hasEntity(),
+                "Default exception mapper must not disclose the exception message in the response body");
 
         Assertions.assertEquals(0, resteasyExceptionLog.count(), "RESTEasy exception should not be logged");
         Assertions.assertTrue(jsonbExceptionLog.count() > 0, "Jakarta JSON Binding exception should be logged");
+        Assertions.assertTrue(resteasy008205Log.count() > 0, "RESTEASY008205 should be logged in the server log");
 
         Assertions.assertEquals(1, peStringLog.count(), "There are not only 1 error logs in server");
     }
@@ -110,14 +113,17 @@ public class JsonBindingDebugLoggingTest {
      * @tpSince RESTEasy 4.0.0.Beta7
      */
     @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "7.0.6.Final")
     public void exceptionDuringServerReceive() throws Exception {
         LogCounter resteasyExceptionLog = new LogCounter(".*ERROR .* RESTEASY002375.*", true,
                 true);
 
         LogCounter jsonbExceptionLog = new LogCounter("Caused by: jakarta.json.bind.JsonbException", true);
-        LogCounter applicationExcpetionLog = new LogCounter(
+        LogCounter applicationExceptionLog = new LogCounter(
                 "Caused by: java.lang.RuntimeException: "
                         + JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName(),
+                true);
+        LogCounter resteasy008200Log = new LogCounter("RESTEASY008200",
                 true);
 
         // perform request
@@ -126,16 +132,13 @@ public class JsonBindingDebugLoggingTest {
         wrongItem.setA(5);
         Response response = base.request().post(Entity.entity(wrongItem,
                 MediaType.APPLICATION_JSON));
-
-        final String body = response.readEntity(String.class);
-        Assertions.assertAll("Response message doesn't contains proper message",
-                () -> Assertions.assertTrue(body.contains("RESTEASY008200: JSON Binding deserialization error")),
-                () -> Assertions.assertTrue(body.contains(JsonBindingDebugLoggingItemCorruptedSet.class.getSimpleName())),
-                () -> Assertions.assertTrue(body.contains("jakarta.json.bind.JsonbException: ")));
-
-        Assertions.assertEquals(1, applicationExcpetionLog.count(), "Application Exception should be logged");
+        // We must expect an empty body, see https://redhat.atlassian.net/browse/RESTEASY-3823
+        Assertions.assertFalse(response.hasEntity(),
+                "Default exception mapper must not disclose the exception message in the response body");
+        Assertions.assertEquals(1, applicationExceptionLog.count(), "Application Exception should be logged");
         Assertions.assertEquals(1, resteasyExceptionLog.count(), "RESTEasy exception should be logged");
         Assertions.assertTrue(jsonbExceptionLog.count() > 0, "Jakarta JSON Binding exception should be logged");
+        Assertions.assertTrue(resteasy008200Log.count() > 0, "RESTEASY008200 should be logged in the server log");
     }
 
     /**
