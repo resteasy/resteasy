@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * @tpSubChapter Json-binding provider.
@@ -136,6 +137,7 @@ public class JsonBindingAnnotationsJacksonTest {
      * @tpSince RESTEasy 3.5
      */
     @Test
+    @RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "7.0.6.Final")
     public void negativeScenarioOnServer() throws Exception {
         LogCounter errorLogCounter = new LogCounter("ERROR", false);
         try {
@@ -154,8 +156,9 @@ public class JsonBindingAnnotationsJacksonTest {
             int responseCode = response.getStatus();
             Assertions.assertEquals(responseCode, 500, "Wrong response code");
             String responseBody = response.readEntity(String.class);
-            Assertions.assertTrue(responseBody.matches(".*RESTEASY008200:.*jakarta.json.bind.JsonbException.*"),
-                    "Wrong response error message: " + responseBody);
+            // Expect an empty body
+            Assertions.assertTrue(responseBody.isEmpty(),
+                    () -> String.format("Expected the response body to be empty. Got: \"%s\"", responseBody));
         } finally {
             client.close();
         }

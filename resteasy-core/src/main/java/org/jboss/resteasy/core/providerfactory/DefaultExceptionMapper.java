@@ -96,8 +96,6 @@ class DefaultExceptionMapper implements ExceptionMapper<Throwable> {
         if (exception instanceof WebApplicationException) {
             return ((WebApplicationException) exception).getResponse();
         }
-        return Response.serverError()
-                .entity(exception.getLocalizedMessage())
-                .build();
+        return Response.serverError().build();
     }
 }
