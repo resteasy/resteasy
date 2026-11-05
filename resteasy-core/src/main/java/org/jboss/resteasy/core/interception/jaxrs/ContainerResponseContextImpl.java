@@ -54,6 +54,8 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
     private Throwable throwable;
     private Consumer<Throwable> onComplete;
     private boolean weSuspended;
+    private volatile boolean written;
+    private volatile Throwable writeResult;
 
     @Deprecated
     public ContainerResponseContextImpl(final HttpRequest request, final HttpResponse httpResponse,
@@ -291,6 +293,16 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
         try (CloseableContext c = ResteasyContext.addCloseableContextDataLevel(contextDataMap)) {
             filter();
         } catch (Throwable t) {
+            // AsyncCompletion.afterCompletion makes this check, but it is package-private in org.jboss.resteasy.core.
+            // filter() rethrows a write failure unwrapped, so this check compares identity only.
+            if (written) {
+                if (t == writeResult)
+                    LogMessages.LOGGER.debug("Exception after the asynchronous response completed", t);
+                else
+                    LogMessages.LOGGER.exceptionAfterAsynchronousCompletion(t);
+                request.getAsyncContext().getAsyncResponse().completionCallbacks(t);
+                return;
+            }
             // don't throw to client
             writeException(t);
         }
@@ -383,10 +395,15 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
         // try to write it out
         try {
             continuation.run((t) -> {
-                onComplete.accept(t);
-                if (weSuspended) {
-                    // if we're the ones who turned the request async, nobody will call complete() for us, so we have to
-                    request.getAsyncContext().complete();
+                writeResult = t;
+                written = true;
+                try {
+                    onComplete.accept(t);
+                } finally {
+                    if (weSuspended) {
+                        // if we're the ones who turned the request async, nobody will call complete() for us, so we have to
+                        request.getAsyncContext().complete();
+                    }
                 }
             });
         } catch (IOException e) {

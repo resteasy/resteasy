@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import jakarta.ws.rs.NotAcceptableException;
@@ -159,18 +161,35 @@ public class ServerResponseWriter {
             RESTEasyTracingLogger tracingLogger = RESTEasyTracingLogger.getInstance(request);
             final long timestamp = tracingLogger.timestamp("WI_SUMMARY");
 
-            AbstractWriterInterceptorContext writerContext = new ServerWriterInterceptorContext(writerInterceptors,
-                    providerFactory, entity, type, generic, annotations, mt,
-                    jaxrsResponse.getMetadata(), os, request, onWriteComplete);
-
-            CompletionStage<Void> writerAction = writerContext.getStarted().whenComplete((v, t) -> {
-                tracingLogger.logDuration("WI_SUMMARY", timestamp, writerContext.getProcessedInterceptorCount());
-
-                if (t == null && sendHeaders) {
-                    response.setOutputStream(writerContext.getOutputStream()); //propagate interceptor changes on the outputstream to the response
-                    callback.commit(); // just in case the output stream is never used
+            // Finish with the response before onWriteComplete, which can hand it back. See AsyncCompletion.
+            final AbstractWriterInterceptorContext[] writerContext = new AbstractWriterInterceptorContext[1];
+            AtomicReference<Throwable> commitFailure = new AtomicReference<>();
+            Thread caller = Thread.currentThread();
+            Consumer<Throwable> written = t -> {
+                Throwable failure = t;
+                try {
+                    tracingLogger.logDuration("WI_SUMMARY", timestamp, writerContext[0].getProcessedInterceptorCount());
+                    if (t == null && sendHeaders) {
+                        response.setOutputStream(writerContext[0].getOutputStream()); //propagate interceptor changes on the outputstream to the response
+                        callback.commit(); // just in case the output stream is never used
+                    }
+                } catch (Throwable x) {
+                    if (failure == null)
+                        failure = x;
+                    else
+                        failure.addSuppressed(x);
                 }
-            });
+                // Only a commit failure recorded on the calling thread is rethrown. When the writer finishes on another
+                // thread, before or after the caller returns, the failure reaches only the callback.
+                if (failure != t && Thread.currentThread() == caller)
+                    commitFailure.set(failure);
+                onWriteComplete.accept(failure);
+            };
+            writerContext[0] = new ServerWriterInterceptorContext(writerInterceptors,
+                    providerFactory, entity, type, generic, annotations, mt,
+                    jaxrsResponse.getMetadata(), os, request, written);
+
+            CompletionStage<Void> writerAction = writerContext[0].getStarted();
 
             try {
                 writerAction.toCompletableFuture().getNow(null); // give a chance at non-async exceptions to be propagated up
@@ -178,6 +197,9 @@ public class ServerResponseWriter {
                 // make sure we unwrap these horrors
                 SynchronousDispatcher.rethrow(x.getCause());
             }
+            // Rethrow here, not in the callback, where it would skip the rest of the write's completion.
+            if (commitFailure.get() != null)
+                SynchronousDispatcher.rethrow(commitFailure.get());
         });
     }
 
@@ -232,16 +254,27 @@ public class ServerResponseWriter {
         }
 
         if (responseFilters != null) {
+            RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
+            final long timestamp = logger.timestamp("RESPONSE_FILTER_SUMMARY");
+            final int filterCount = responseFilters.length;
+            // Log the summary when the continuation starts, before writeException's callback traces FINISHED and
+            // flushes the tracing events.
+            AtomicBoolean summarized = new AtomicBoolean();
+            Runnable summary = () -> {
+                if (summarized.compareAndSet(false, true))
+                    logger.logDuration("RESPONSE_FILTER_SUMMARY", timestamp, filterCount);
+            };
+
             ResponseContainerRequestContext requestContext = new ResponseContainerRequestContext(request);
             ContainerResponseContextImpl responseContext = new ContainerResponseContextImpl(request, response, jaxrsResponse,
-                    requestContext, responseFilters, onComplete, continuation);
+                    requestContext, responseFilters, onComplete, onWriteComplete -> {
+                        summary.run();
+                        continuation.run(onWriteComplete);
+                    });
 
-            RESTEasyTracingLogger logger = RESTEasyTracingLogger.getInstance(request);
-
-            final long timestamp = logger.timestamp("RESPONSE_FILTER_SUMMARY");
             // filter calls the continuation
             responseContext.filter();
-            logger.logDuration("RESPONSE_FILTER_SUMMARY", timestamp, responseFilters.length);
+            summary.run();
         } else {
             try {
                 continuation.run(onComplete);
