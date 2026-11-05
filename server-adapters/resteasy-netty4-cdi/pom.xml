@@ -108,7 +108,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <dependenciesToScan>${project.groupId}:resteasy-embedded-server-tests</dependenciesToScan>
-                    <argLine>--add-reads org.jboss.resteasy.cdi=ALL-UNNAMED</argLine>
+                    <argLine>--add-reads org.jboss.resteasy.cdi=ALL-UNNAMED --add-opens org.jboss.resteasy.netty.cdi/org.jboss.resteasy.plugins.server.netty.cdi=weld.core.impl</argLine>
                 </configuration>
             </plugin>
         </plugins>

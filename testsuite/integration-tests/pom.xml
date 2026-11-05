@@ -445,29 +445,6 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <id>enhanced-cdi-enabled</id>
-            <activation>
-                <property>
-                    <name>enhanced.cdi.enabled</name>
-                </property>
-            </activation>
-            <properties>
-                <wildfly.system.properties>-Ddev.resteasy.cdi.enhanced.enabled=true</wildfly.system.properties>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <systemPropertyVariables>
-                                <dev.resteasy.cdi.enhanced.enabled>true</dev.resteasy.cdi.enhanced.enabled>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
     </profiles>
 
     <dependencies>

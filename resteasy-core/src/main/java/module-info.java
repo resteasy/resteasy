@@ -51,7 +51,6 @@ module org.jboss.resteasy.core {
     exports org.jboss.resteasy.statistics;
     exports org.jboss.resteasy.tracing;
     exports org.jboss.resteasy.util;
-    exports org.jboss.resteasy.core.extractors;
 
     // Service consumers
     // Note: Registry and EntityPart.Builder use PriorityServiceLoader with custom constructors,

@@ -644,9 +644,6 @@ public interface Messages {
     @Message(id = 3875, value = "Unable to find a constructor that takes a String param or a valueOf() or fromString() method for {0} on {1} for basetype: {2}", format = Format.MESSAGE_FORMAT)
     String unableToFindConstructor(String paramSignature, AccessibleObject target, String className);
 
-    @Message(id = 3876, value = "Unable to find a constructor that takes a String param or a valueOf() or fromString() method for %s with a base type of %s")
-    RuntimeException unableToFindStringConstructor(String paramSignature, String className);
-
     @Message(id = 3880, value = "Unable to find contextual data of type: %s")
     String unableToFindContextualData(String className);
 
@@ -842,8 +839,8 @@ public interface Messages {
     @Message(id = 5050, value = "The executor has been shutdown and is no longer available.")
     IllegalStateException executorShutdown();
 
-    @Message(id = 5051, value = "Required context value for \"%s\" not found.")
-    IllegalArgumentException requiredContextParameterNotFound(String typeName);
+    @Message(id = 5051, value = "Required context value not found.")
+    IllegalArgumentException requiredContextParameterNotFound();
 
     @Message(id = 5060, value = "Failed to load services for type %s")
     UncheckedIOException failedToLoadService(@Cause IOException e, Class<?> type);
@@ -893,9 +890,6 @@ public interface Messages {
 
     @Message(id = 5097, value = "Deployment has either not been started or stopped. There are no executor services available.")
     IllegalStateException executorNotAvailable();
-
-    @Message(id = 5110, value = "The annotation @%s is not supported for parameter extraction.")
-    IllegalArgumentException unsupportedAnnotation(String annotationName);
 
     @Message(id = 5120, value = "Invalid image dimensions: %dx%d")
     BadRequestException invalidImageDimensions(int width, int height);
