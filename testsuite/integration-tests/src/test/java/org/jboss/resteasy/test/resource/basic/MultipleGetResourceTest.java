@@ -20,6 +20,7 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.test.resource.basic.resource.MultipleGetResource;
+import org.jboss.resteasy.utils.LogCounter;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
 
 /**
@@ -38,6 +40,7 @@ import org.wildfly.testing.tools.deployments.DeploymentDescriptors;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
+@RequiresModule(value = "org.jboss.resteasy.resteasy-core", minVersion = "6.2.20.Final")
 public class MultipleGetResourceTest {
     static ResteasyClient client;
 
@@ -75,12 +78,17 @@ public class MultipleGetResourceTest {
 
     @Test
     public void testFailFast() throws Exception {
+        final LogCounter resteasy005042Log = new LogCounter("RESTEASY005042",
+                false, DEFAULT_CONTAINER_QUALIFIER);
 
         WebTarget base = client.target(generateURL("/api"));
         try (Response response = base.request().get()) {
             Assertions.assertEquals(500, response.getStatus());
             final String error = response.readEntity(String.class);
-            Assertions.assertTrue(error.contains("RESTEASY005042"), "RESTEASY005042 not found in: " + error);
+            Assertions.assertTrue(error.isEmpty(),
+                    () -> String.format("Expected the response body to be empty. Got: %s", error));
+            Assertions.assertTrue(resteasy005042Log.count() > 0,
+                    "RESTEASY005042 should be logged in the server log");
         }
     }
 }

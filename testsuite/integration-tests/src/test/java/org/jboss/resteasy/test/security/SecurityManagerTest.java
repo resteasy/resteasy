@@ -37,8 +37,10 @@ import org.jboss.resteasy.setup.LoggingSetupTask;
 import org.jboss.resteasy.setup.SystemPropertySetupTask;
 import org.jboss.resteasy.spi.config.Options;
 import org.jboss.resteasy.spi.config.security.ConfigPropertyPermission;
+import org.jboss.resteasy.test.ContainerConstants;
 import org.jboss.resteasy.test.security.resource.RestActivator;
 import org.jboss.resteasy.test.security.resource.SecurityCheckResource;
+import org.jboss.resteasy.utils.LogCounter;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -107,66 +109,91 @@ public class SecurityManagerTest {
     @OperateOnDeployment(ACCESS_DENIED_DEPLOYMENT)
     @Test
     public void envPropertyFailed() throws Exception {
+        final LogCounter permissionLog = new LogCounter(
+                "\"java.lang.RuntimePermission\" \"getenv." + ENV_NAME + "\"",
+                false, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
         try (Client client = ClientBuilder.newClient()) {
             final Response response = client.target(TestUtil.generateUri(uri, "/test/security/env/" + ENV_NAME))
                     .request().get();
             final String value = checkFailedResponse(response);
-            Assertions.assertTrue(value.contains("\"java.lang.RuntimePermission\" \"getenv." + ENV_NAME + "\""),
-                    () -> "Expected the response to have failed with a property permission: " + value);
+            // We must expect an empty body, see https://redhat.atlassian.net/browse/RESTEASY-3823
+            Assertions.assertTrue(value == null || value.isBlank(),
+                    "Default exception mapper must not disclose the exception message in the response body, got: " + value);
+            Assertions.assertTrue(permissionLog.count() > 0,
+                    "Expected the server log to contain a RuntimePermission denial for getenv." + ENV_NAME);
         }
     }
 
     @OperateOnDeployment(ACCESS_DENIED_DEPLOYMENT)
     @Test
     public void systemPropertyFailed() throws Exception {
+        final LogCounter permissionLog = new LogCounter(
+                "\"java.util.PropertyPermission\" \"" + PROPERTY_NAME + "\"",
+                false, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
         try (Client client = ClientBuilder.newClient()) {
             final Response response = client
                     .target(TestUtil.generateUri(uri, "/test/security/system-property/" + PROPERTY_NAME))
                     .request().get();
             final String value = checkFailedResponse(response);
-            Assertions.assertTrue(value.contains("\"java.util.PropertyPermission\" \"" + PROPERTY_NAME + "\""),
-                    () -> "Expected the response to have failed with a property permission: " + value);
+            // We must expect an empty body, see https://redhat.atlassian.net/browse/RESTEASY-3823
+            Assertions.assertTrue(value == null || value.isBlank(),
+                    "Default exception mapper must not disclose the exception message in the response body, got: " + value);
+            Assertions.assertTrue(permissionLog.count() > 0,
+                    "Expected the server log to contain a PropertyPermission denial for " + PROPERTY_NAME);
         }
     }
 
     @OperateOnDeployment(ACCESS_DENIED_DEPLOYMENT)
     @Test
     public void configPropertyFailed() throws Exception {
+        final LogCounter permissionLog = new LogCounter(
+                "\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"" + PROPERTY_NAME + "\"",
+                false, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
         try (Client client = ClientBuilder.newClient()) {
             final Response response = client.target(TestUtil.generateUri(uri, "/test/security/config/" + PROPERTY_NAME))
                     .request().get();
             final String value = checkFailedResponse(response);
-            Assertions.assertTrue(
-                    value.contains(
-                            "\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"" + PROPERTY_NAME + "\""),
-                    () -> "Expected the response to have failed with a property permission: " + value);
+            // We must expect an empty body, see https://redhat.atlassian.net/browse/RESTEASY-3823
+            Assertions.assertTrue(value == null || value.isBlank(),
+                    "Default exception mapper must not disclose the exception message in the response body, got: " + value);
+            Assertions.assertTrue(permissionLog.count() > 0,
+                    "Expected the server log to contain a ConfigPropertyPermission denial for " + PROPERTY_NAME);
         }
     }
 
     @OperateOnDeployment(ACCESS_DENIED_DEPLOYMENT)
     @Test
     public void envConfigPropertyFailed() throws Exception {
+        final LogCounter permissionLog = new LogCounter(
+                "\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"" + ENV_NAME + "\"",
+                false, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
         try (Client client = ClientBuilder.newClient()) {
             final Response response = client.target(TestUtil.generateUri(uri, "/test/security/config/" + ENV_NAME))
                     .request().get();
             final String value = checkFailedResponse(response);
-            Assertions.assertTrue(
-                    value.contains("\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"" + ENV_NAME + "\""),
-                    () -> "Expected the response to have failed with a property permission: " + value);
+            // We must expect an empty body, see https://redhat.atlassian.net/browse/RESTEASY-3823
+            Assertions.assertTrue(value == null || value.isBlank(),
+                    "Default exception mapper must not disclose the exception message in the response body, got: " + value);
+            Assertions.assertTrue(permissionLog.count() > 0,
+                    "Expected the server log to contain a ConfigPropertyPermission denial for " + ENV_NAME);
         }
     }
 
     @OperateOnDeployment(ACCESS_DENIED_DEPLOYMENT)
     @Test
     public void optionFailed() throws Exception {
+        final LogCounter permissionLog = new LogCounter(
+                "\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"dev.resteasy.exception.mapper\"",
+                false, ContainerConstants.DEFAULT_CONTAINER_QUALIFIER);
         try (Client client = ClientBuilder.newClient()) {
             final Response response = client.target(TestUtil.generateUri(uri, "/test/security/option/"))
                     .request().get();
             final String value = checkFailedResponse(response);
-            Assertions.assertTrue(
-                    value.contains(
-                            "\"org.jboss.resteasy.spi.config.security.ConfigPropertyPermission\" \"dev.resteasy.exception.mapper\""),
-                    () -> "Expected the response to have failed with a property permission: " + value);
+            // We must expect an empty body, see https://redhat.atlassian.net/browse/RESTEASY-3823
+            Assertions.assertTrue(value == null || value.isBlank(),
+                    "Default exception mapper must not disclose the exception message in the response body, got: " + value);
+            Assertions.assertTrue(permissionLog.count() > 0,
+                    "Expected the server log to contain a ConfigPropertyPermission denial for dev.resteasy.exception.mapper");
         }
     }
 
