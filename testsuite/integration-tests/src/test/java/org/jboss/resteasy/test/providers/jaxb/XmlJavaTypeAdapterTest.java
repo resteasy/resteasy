@@ -29,7 +29,10 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
@@ -38,6 +41,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @tpSince RESTEasy 3.0.16
  */
 @ExtendWith(ArquillianExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class XmlJavaTypeAdapterTest {
 
     private final Logger logger = Logger.getLogger(XmlJavaTypeAdapterTest.class.getName());
@@ -90,6 +94,8 @@ public class XmlJavaTypeAdapterTest {
      * @tpInfo RESTEASY-1088
      * @tpSince RESTEasy 3.0.16
      */
+    // This needs to run towards the end
+    @Order(Order.DEFAULT + 1)
     @Test
     @RunAsClient
     public void testPostFooToFoo() {
@@ -106,6 +112,8 @@ public class XmlJavaTypeAdapterTest {
      * @tpInfo RESTEASY-1088
      * @tpSince RESTEasy 3.0.16
      */
+    // This needs to run towards the end
+    @Order(Order.DEFAULT + 1)
     @Test
     @RunAsClient
     public void testPostFooToString() {
