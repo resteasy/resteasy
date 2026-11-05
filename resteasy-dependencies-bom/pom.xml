@@ -73,9 +73,8 @@
     </issueManagement>
 
     <properties>
-        <jdk.min.version>17</jdk.min.version>
-        <!-- Compile to Java 17 -->
-        <maven.compiler.release>17</maven.compiler.release>
+        <!-- Compile to Java 21 -->
+        <maven.compiler.release>21</maven.compiler.release>
 
         <version.com.fasterxml.classmate>1.8.0</version.com.fasterxml.classmate>
         <version.com.fasterxml.jackson>2.21.8</version.com.fasterxml.jackson>

@@ -221,6 +221,8 @@ sub-resource locators and `@Form` or `@Query` classes, which are `@Dependent` CD
 [[_migration_8_requirements]]
 === Requirements
 
+RESTEasy 8 requires Java SE 21 or later.
+
 A Jakarta Validation provider's CDI integration, e.g. `hibernate-validator-cdi`, must be available for validation. It's
 included in WildFly. `resteasy-validator-provider` now depends on Hibernate Validator, its CDI integration and the
 Jakarta Expression Language implementation Expressly, so nothing needs to be added when using the Java SE bootstrap.
