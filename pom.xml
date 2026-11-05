@@ -140,7 +140,7 @@
         <version.impsort.maven.plugin>1.13.0</version.impsort.maven.plugin>
         <version.org.jacoco.plugin>0.8.15</version.org.jacoco.plugin>
         <version.org.wildfly.galleon-plugins>8.2.2.Final</version.org.wildfly.galleon-plugins>
-        <version.org.wildfly.plugins.wildfly-maven-plugin>6.0.3.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
+        <version.org.wildfly.plugins.wildfly-maven-plugin>6.2.0.Final</version.org.wildfly.plugins.wildfly-maven-plugin>
 
         <skipFormatting>false</skipFormatting>
 
