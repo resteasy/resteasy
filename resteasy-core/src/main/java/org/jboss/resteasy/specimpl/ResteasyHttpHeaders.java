@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -135,27 +136,20 @@ public class ResteasyHttpHeaders implements HttpHeaders {
     }
 
     @Override
-    public String getHeaderString(String name) {
-        List<String> vals = requestHeaders.get(name);
+    public String getHeaderString(final String name, final String separator) {
+        final List<String> vals = requestHeaders.get(name);
         if (vals == null)
             return null;
-        StringBuilder builder = new StringBuilder();
-        boolean first = true;
-        for (String val : vals) {
-            if (first)
-                first = false;
-            else
-                builder.append(",");
-            builder.append(val);
+        final StringBuilder builder = new StringBuilder();
+        final Iterator<String> iterator = vals.iterator();
+        while (iterator.hasNext()) {
+            final String val = iterator.next();
+            builder.append(val == null ? "" : val);
+            if (iterator.hasNext()) {
+                builder.append(separator);
+            }
         }
         return builder.toString();
-    }
-
-    // TODO (jrp) add @Override
-    //@Override
-    public String getHeaderString(final String name, final String separator) {
-        // TODO (jrp) implement
-        throw new UnsupportedOperationException();
     }
 
     @Override

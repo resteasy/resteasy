@@ -260,6 +260,11 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
     }
 
     @Override
+    public String getHeaderString(final String name, final String separator) {
+        return jaxrsResponse.getHeaderString(name, separator);
+    }
+
+    @Override
     public boolean containsHeaderString(final String name, final Predicate<String> valuePredicate) {
         return containsHeaderString(name, ",", valuePredicate);
     }

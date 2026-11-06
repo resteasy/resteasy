@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -169,17 +170,21 @@ public class ClientRequestHeaders {
     }
 
     public String getHeader(String name) {
-        List vals = headers.get(name);
+        return getHeader(name, ",");
+    }
+
+    public String getHeader(final String name, final String separator) {
+        final List<Object> vals = headers.get(name);
         if (vals == null)
             return null;
-        StringBuilder builder = new StringBuilder();
-        boolean first = true;
-        for (Object val : vals) {
-            if (first)
-                first = false;
-            else
-                builder.append(",");
-            builder.append(configuration.toHeaderString(val));
+        final StringBuilder builder = new StringBuilder();
+        final Iterator<Object> iterator = vals.iterator();
+        while (iterator.hasNext()) {
+            final String val = configuration.toHeaderString(iterator.next());
+            builder.append(val == null ? "" : val);
+            if (iterator.hasNext()) {
+                builder.append(separator);
+            }
         }
         return builder.toString();
     }

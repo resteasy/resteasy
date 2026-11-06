@@ -200,6 +200,11 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
     }
 
     @Override
+    public String getHeaderString(final String name, final String separator) {
+        return httpRequest.getHttpHeaders().getHeaderString(name, separator);
+    }
+
+    @Override
     public boolean containsHeaderString(final String name, final Predicate<String> valuePredicate) {
         return httpRequest.getHttpHeaders().containsHeaderString(name, valuePredicate);
     }
