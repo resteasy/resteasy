@@ -19,6 +19,7 @@ import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.core.ProvidersContextRetainer;
 import org.jboss.resteasy.core.ResteasyContext;
+import org.jboss.resteasy.core.ResteasyContext.CloseableContext;
 import org.jboss.resteasy.core.interception.jaxrs.AbstractReaderInterceptorContext;
 import org.jboss.resteasy.core.interception.jaxrs.ClientReaderInterceptorContext;
 import org.jboss.resteasy.plugins.providers.sse.EventInput;
@@ -168,12 +169,11 @@ public abstract class ClientResponse extends BuiltResponse {
             useType = Types.getRawType(useGeneric);
         }
 
-        Providers current = ResteasyContext.getContextData(Providers.class);
-        Configuration currentConfiguration = ResteasyContext.getContextData(Configuration.class);
-        ResteasyContext.pushContext(Providers.class, configuration);
-        ResteasyContext.pushContext(Configuration.class, configuration);
+        final boolean keepProviders = Publisher.class.isAssignableFrom(type) || EventInput.class.isAssignableFrom(type);
         Object obj = null;
-        try {
+        try (CloseableContext ctx = keepProviders ? null : ResteasyContext.addCloseableContextDataLevel()) {
+            ResteasyContext.pushContext(Providers.class, configuration);
+            ResteasyContext.pushContext(Configuration.class, configuration);
             InputStream is = getEntityStream();
             if (is == null) {
                 throw new IllegalStateException(Messages.MESSAGES.inputStreamWasEmpty());
@@ -221,16 +221,8 @@ public abstract class ClientResponse extends BuiltResponse {
         } catch (Exception ex) {
             throw new ProcessingException(ex);
         } finally {
-            if (!Publisher.class.isAssignableFrom(type) && !EventInput.class.isAssignableFrom(type)) {
-                ResteasyContext.popContextData(Providers.class);
-                if (current != null)
-                    ResteasyContext.pushContext(Providers.class, current);
-                ResteasyContext.popContextData(Configuration.class);
-                if (currentConfiguration != null)
-                    ResteasyContext.pushContext(Configuration.class, currentConfiguration);
-                if (obj instanceof ProvidersContextRetainer)
-                    ((ProvidersContextRetainer) obj).setProviders(configuration);
-            }
+            if (!keepProviders && obj instanceof ProvidersContextRetainer)
+                ((ProvidersContextRetainer) obj).setProviders(configuration);
         }
     }
 
