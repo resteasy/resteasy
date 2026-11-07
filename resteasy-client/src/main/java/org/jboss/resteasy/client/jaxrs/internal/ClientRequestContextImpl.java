@@ -201,11 +201,9 @@ public class ClientRequestContextImpl implements ClientRequestContext {
         return invocation.getHeaders().getHeader(name);
     }
 
-    // TODO (jrp) add @Override
-    //@Override
+    @Override
     public String getHeaderString(final String name, final String separator) {
-        // TODO (jrp) implement
-        throw new UnsupportedOperationException();
+        return invocation.getHeaders().getHeader(name, separator);
     }
 
     @Override

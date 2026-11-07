@@ -408,24 +408,7 @@ public abstract class AbstractBuiltResponse extends Response {
 
     @Override
     public String getHeaderString(String name) {
-        List vals = metadata.get(name);
-        if (vals == null)
-            return null;
-        StringBuilder builder = new StringBuilder();
-        boolean first = true;
-        for (Object val : vals) {
-            if (first)
-                first = false;
-            else
-                builder.append(",");
-            if (val == null)
-                val = "";
-            val = toHeaderString(val);
-            if (val == null)
-                val = "";
-            builder.append(val);
-        }
-        return builder.toString();
+        return getHeaderString(name, ",");
     }
 
     @Override
@@ -473,6 +456,41 @@ public abstract class AbstractBuiltResponse extends Response {
         if (link == null)
             return null;
         return Link.fromLink(link);
+    }
+
+    /**
+     * Joins the values of a header into a single string. This is not part of {@link Response}, it backs the
+     * {@code getHeaderString(String, String)} methods of the response contexts.
+     * <p>
+     * Values are converted with the {@link HeaderValueProcessor}. A {@code null} value, or a value which is converted
+     * to {@code null}, is treated as an empty string.
+     * </p>
+     *
+     * @param name      the name of the header
+     * @param separator the string to place between the values
+     *
+     * @return the joined values, an empty string if the header has no values, or {@code null} if the header is not
+     *         present
+     *
+     * @since 8.0
+     */
+    public String getHeaderString(String name, String separator) {
+        final List<Object> vals = metadata.get(name);
+        if (vals == null)
+            return null;
+        final StringBuilder builder = new StringBuilder();
+        boolean first = true;
+        for (Object val : vals) {
+            if (first)
+                first = false;
+            else
+                builder.append(separator);
+            if (val == null)
+                val = "";
+            val = toHeaderString(val);
+            builder.append(val == null ? "" : val);
+        }
+        return builder.toString();
     }
 
     private final class LinkHeaders {

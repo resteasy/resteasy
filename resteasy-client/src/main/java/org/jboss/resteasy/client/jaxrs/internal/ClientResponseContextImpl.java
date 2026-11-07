@@ -141,11 +141,9 @@ public class ClientResponseContextImpl implements ClientResponseContext {
         return response.getHeaderString(name);
     }
 
-    // TODO (jrp) add @Override
-    //@Override
+    @Override
     public String getHeaderString(final String name, final String separator) {
-        // TODO (jrp) implement
-        throw new UnsupportedOperationException();
+        return response.getHeaderString(name, separator);
     }
 
     @Override
