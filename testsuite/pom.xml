@@ -2,7 +2,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>8.0.0.Alpha1-SNAPSHOT</version>
+        <version>8.0.0.Alpha1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <name>RESTEasy Main testsuite</name>
@@ -12,8 +12,8 @@
     <artifactId>resteasy-testsuite</artifactId>
 
     <properties>
-        <version.resteasy.testsuite>8.0.0.Alpha1-SNAPSHOT</version.resteasy.testsuite>
-        <additional.surefire.excluded.groups/>
+        <version.resteasy.testsuite>8.0.0.Alpha1</version.resteasy.testsuite>
+        <additional.surefire.excluded.groups />
         <jacoco.agent />
         <ipv6ArquillianSettings />
         <debugJvmArgs />
