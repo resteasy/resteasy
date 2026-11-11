@@ -43,6 +43,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
     protected List<CompletionCallback> completionCallbacks = new CopyOnWriteArrayList<>();
     protected Map<Class<?>, Object> contextDataMap;
     private final AtomicBoolean callbacksCalled = new AtomicBoolean(false);
+    private final RequestCompletion requestCompletion;
 
     protected AbstractAsynchronousResponse(final SynchronousDispatcher dispatcher, final HttpRequest request,
             final HttpResponse response) {
@@ -50,6 +51,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
         this.request = request;
         this.response = response;
         contextDataMap = ResteasyContext.getContextDataMap();
+        requestCompletion = RequestCompletion.of(request);
     }
 
     @Override
@@ -153,7 +155,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
                 callback.onComplete(throwable);
             }
         } finally {
-            RequestCompletion.responseCompleted(request, response);
+            RequestCompletion.responseCompleted(requestCompletion, request, response);
         }
     }
 
@@ -181,8 +183,9 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
                 jaxrsResponse.addMethodAnnotations(method.getMethodAnnotations());
                 response = jaxrsResponse;
             }
+            AsyncCompletion completion = AsyncCompletion.whenWritten();
             try {
-                dispatcher.asynchronousDelivery(this.request, this.response, response, t -> {
+                dispatcher.asynchronousDelivery(this.request, this.response, response, completion.onWritten(t -> {
                     if (t != null) {
                         internalResume(t, t2 -> {
                             onComplete.accept(t);
@@ -192,8 +195,12 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
                         onComplete.accept(null);
                         completionCallbacks(null);
                     }
-                });
+                }));
             } catch (Throwable e) {
+                if (completion.afterCompletion(e)) {
+                    completionCallbacks(e);
+                    return true;
+                }
                 return internalResume(e, t -> {
                     onComplete.accept(e);
                     // callbacks done by internalResume

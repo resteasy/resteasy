@@ -86,14 +86,27 @@ class RequestCompletion {
     }
 
     /**
+     * Returns the tracker of the request. An asynchronous response looks it up while the request still belongs to
+     * RESTEasy, because the container can recycle the request once the response completes.
+     *
+     * @param request the request
+     *
+     * @return the tracker, or {@code null} if no listeners are registered
+     */
+    static RequestCompletion of(final HttpRequest request) {
+        return (RequestCompletion) request.getAttribute(ATTRIBUTE_NAME);
+    }
+
+    /**
      * Marks the asynchronous response as completed. If the dispatch has already returned, the listeners are notified.
      * Otherwise, they are notified when the dispatch returns.
      *
-     * @param request  the request
-     * @param response the response for the request
+     * @param completion the tracker from {@link #of(HttpRequest)}, or {@code null}
+     * @param request    the request
+     * @param response   the response for the request
      */
-    static void responseCompleted(final HttpRequest request, final HttpResponse response) {
-        final RequestCompletion completion = (RequestCompletion) request.getAttribute(ATTRIBUTE_NAME);
+    static void responseCompleted(final RequestCompletion completion, final HttpRequest request,
+            final HttpResponse response) {
         if (completion != null && completion.markResponseCompleted()) {
             completion.notifyListeners(request, response);
         }
