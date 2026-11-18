@@ -167,6 +167,7 @@ public class ResteasyCdiExtension implements Extension {
         final boolean isStatefulBean = isStatefulBean(annotatedType);
 
         if (!annotatedType.getJavaClass().isInterface()
+                && !Modifier.isAbstract(annotatedType.getJavaClass().getModifiers())
                 && !isSessionBean(annotatedType)
                 && !annotatedType.isAnnotationPresent(Decorator.class)) {
             if (!Utils.isScopeDefined(annotatedType, beanManager)) {
