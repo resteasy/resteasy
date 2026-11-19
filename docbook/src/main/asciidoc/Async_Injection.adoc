@@ -1,6 +1,46 @@
 [[_async_injection]]
 == Asynchronous Injection
 
+WARNING: `ContextInjector` is deprecated for removal. Use a CDI producer method instead, see
+<<_async_injection_cdi_producer>>. RESTEasy does not resolve an asynchronous `ContextInjector` for the fields and setter
+methods of a component that CDI creates, so such a field or setter method is not injected. Resources and providers are
+CDI beans in RESTEasy 8.
+
+[[_async_injection_cdi_producer]]
+=== Replacing a ContextInjector with a CDI producer
+
+Produce the type with a CDI producer method and inject it with `@Inject`. To keep the response asynchronous, inject the
+`CompletionStage` and return a `CompletionStage` from the resource method:
+
+[source,java]
+----
+@ApplicationScoped
+public class FooProducer {
+
+    @Produces
+    @Dependent
+    public CompletionStage<Foo> foo() {
+        return CompletableFuture.supplyAsync(() -> new Foo("made it"));
+    }
+}
+
+@Path("/foo")
+public class FooResource {
+
+    @Inject
+    CompletionStage<Foo> foo;
+
+    @GET
+    public CompletionStage<String> get() {
+        return foo.thenApply(Foo::getValue);
+    }
+}
+----
+
+Unlike a `ContextInjector`, the producer does not delay the invocation of the resource method until the value is
+resolved. The resource method composes the `CompletionStage` instead. If the value is available synchronously, produce
+`Foo` itself and inject `Foo`.
+
 Pluggable Asynchronous Injection, also referred to as Asynch Injection, is a feature that allows users to create custom injectable asynchronous types.
 For example, it is possible to declare an injector for `Single<Foo>` and inject it into an endpoint as a class variable
 or as a method parameter using `@Context Foo`. The response will be made asynchronous automatically and the resource
