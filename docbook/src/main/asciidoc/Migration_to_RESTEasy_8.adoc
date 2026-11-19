@@ -215,7 +215,8 @@ sub-resource locators and `@Form` or `@Query` classes, which are `@Dependent` CD
 === Configuration
 
 * `dev.resteasy.cdi.enhanced.enabled` has been removed. The CDI integration, including the injection of `@Context` and
-`@*Param` annotated members through CDI, can no longer be disabled.
+`@*Param` annotated members through CDI, can no longer be disabled. See <<_cdi_members_without_inject>> for the members
+RESTEasy adds `@Inject` to.
 * `resteasy.proxy.implement.all.interfaces` is deprecated.
 
 [[_migration_8_requirements]]
