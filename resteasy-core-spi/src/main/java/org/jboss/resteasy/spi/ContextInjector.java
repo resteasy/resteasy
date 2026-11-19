@@ -6,7 +6,9 @@ import java.lang.reflect.Type;
 /**
  * @param <WrappedType>   A class that wraps a data type or data object (e.g. Single{@literal <}Foo{@literal >})
  * @param <UnwrappedType> The data type or data object declared in the WrappedType (e.g. Foo)
+ * @deprecated use a CDI producer method for the type instead
  */
+@Deprecated(forRemoval = true, since = "8.0")
 public interface ContextInjector<WrappedType, UnwrappedType> {
     // FIXME: remove rawType and genericType?
 

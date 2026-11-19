@@ -54,8 +54,16 @@ public abstract class ResteasyProviderFactory extends RuntimeDelegate
 
     public abstract Map<Class<?>, AsyncStreamProvider> getAsyncStreamProviders();
 
+    /**
+     * @deprecated {@link ContextInjector} is deprecated, use a CDI producer method instead
+     */
+    @Deprecated(forRemoval = true, since = "8.0")
     public abstract Map<Type, ContextInjector> getContextInjectors();
 
+    /**
+     * @deprecated {@link ContextInjector} is deprecated, use a CDI producer method instead
+     */
+    @Deprecated(forRemoval = true, since = "8.0")
     public abstract Map<Type, ContextInjector> getAsyncContextInjectors();
 
     public abstract Set<Class<?>> getProviderClasses();

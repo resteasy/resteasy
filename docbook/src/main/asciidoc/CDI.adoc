@@ -18,22 +18,32 @@ As a result, CDI services like injection, lifecycle management, events, decorati
 
 === Default scopes
 
-A CDI bean that does not explicitly define a scope is `@Dependent` scoped by default.
-This pseudo scope means that the bean adapts to the lifecycle of the bean it is injected into.
-Normal scopes (request, session, application) are more suitable for {spec-name} components as they designate component's lifecycle boundaries explicitly.
-Therefore, the resteasy-cdi module alters the default scoping in the following way: 
+A component that does not declare a scope gets the default scope of its kind. The `@Path`, `@Provider` and
+`@ApplicationPath` annotations are CDI stereotypes, which define these defaults, and RESTEasy applies the same defaults
+to components without these annotations:
 
-* If a {spec-name} root resource does not define a scope explicitly, it is bound to the Request scope.
-* If a {spec-name} Provider or `jakarta.ws.rs.Application` subclass does not define a scope explicitly, it is bound to the Application scope.
+[cols="1,2"]
+|===
+|Component |Default scope
 
+|Resource
+|`@RequestScoped`. `@Dependent` if the class cannot be proxied, for example a `final` class, or if it declares type
+variables.
 
-[WARNING]
-====
-Since the scope of all beans that do not declare a scope is modified by resteasy-cdi, this affects session beans as well.
-As a result, a conflict occurs if the scope of a stateless session bean or singleton is changed automatically as the spec prohibits these components to be @RequestScoped.
-Therefore, you need to explicitly define a scope when using stateless session beans or singletons.
-This requirement is likely to be removed in future releases. 
-====
+|Provider
+|`@ApplicationScoped`. `@Singleton` if the class cannot be proxied. `@Dependent` if it declares type variables, and
+RESTEasy still creates one instance of the provider.
+
+|`Application` subclass
+|`@ApplicationScoped`
+
+|Stateless or singleton session bean
+|`@Dependent`, because CDI allows no other scope on a stateless session bean. A singleton session bean can declare
+`@ApplicationScoped`.
+|===
+
+If a resource or provider cannot be proxied or declares type variables, RESTEasy uses the `@Dependent` or `@Singleton`
+scope from the table above and logs a warning. To avoid the warning, declare that scope on the class.
 
 === Constructor Injection
 
@@ -233,6 +243,44 @@ public class SearchResource {
 Parameter values are converted from their string representation to the target Java type using the same conversion rules
 as standard {spec-name} parameter handling (see the {spec-name} specification for details on `ParamConverterProvider`,
 `valueOf`, and `fromString` resolution).
+
+[[_cdi_members_without_inject]]
+=== Members without `@Inject`
+
+Components that use `@Context` or a parameter annotation without `@Inject` keep working when CDI manages them. RESTEasy
+adds `@Inject` to these members when CDI discovers the class, so CDI injects them. However, it is suggested you add
+`@Inject` to remain portable.
+
+RESTEasy adds `@Inject` in the following cases:
+
+[cols="1,1,2"]
+|===
+|Member |Class |Condition
+
+|Field or setter method
+|Resource, provider or `Application` subclass
+|The member is annotated with `@Context`, and its type is a context type.
+
+|Constructor
+|Resource, provider or `Application` subclass
+|A parameter is annotated with `@Context`, and its type is a context type. RESTEasy adds `@Inject` to the public
+constructor with the most parameters, unless a constructor is already annotated with `@Inject`.
+
+|Field or method
+|Resource, or a `@BeanParam` class that is not a bean
+|The member is annotated with a parameter annotation, such as `@QueryParam`.
+
+|Constructor
+|Resource, or a `@BeanParam` class that is not a bean
+|A parameter is annotated with a parameter annotation. RESTEasy adds `@Inject` to each such constructor, and CDI fails
+the deployment if a class has more than one `@Inject` constructor, so declare only one. RESTEasy does not add `@Inject`
+to the constructors of a resource that CDI cannot proxy, such as a `final` class or a class without a non-private
+no-arg constructor.
+|===
+
+The context types are `Application`, `Configuration`, `HttpHeaders`, `Providers`, `Request`, `ResourceContext`,
+`ResourceInfo`, `SecurityContext`, `Sse`, `UriInfo` and `org.jboss.resteasy.spi.HttpRequest`, and, in a Servlet
+container, `HttpServletRequest`, `HttpServletResponse`, `ServletConfig` and `ServletContext`.
 
 === Configuration within WildFly
 

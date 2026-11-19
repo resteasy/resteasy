@@ -1,19 +1,43 @@
 [[_context]]
 == @Context
 
-WARNING: Support for `@Context` inject has been
-https://jakarta.ee/specifications/restful-ws/3.1/jakarta-restful-ws-spec-3.1.html#context-injection[deprecated,window=_blank].
-RESTEasy supports using the `@Inject` annotation on instance variables. Support for method and constructor injection
-will be available in a future release.
+The `@Context` annotation injects the context types, such as `UriInfo`, that RESTEasy manages for the current request.
 
-The `@Context` annotation allows the injection of instances of the following types:
+In an environment with CDI, `@Context` is a CDI qualifier. Inject a context type with `@Inject`, with or without
+`@Context`: `@Inject UriInfo` and `@Inject @Context UriInfo` inject the same instance. If a field, setter method or
+constructor of a component uses `@Context` without `@Inject`, RESTEasy adds `@Inject`, see <<_cdi>>.
 
+Use `@Inject @Context` for the Servlet types, so that CDI injects the instance that RESTEasy manages. Without
+`@Context`, CDI can resolve another bean of the same type, for example a servlet class, which is a bean of type
+`ServletConfig`. Use `@Inject @Context Application` to inject the deployed `Application`, and `@Inject MyApplication` to
+inject your own subclass.
+
+Without CDI, `@Context` injects the context types into fields, setter methods, constructor parameters and resource
+method parameters.
+
+NOTE: The {spec-name} 5.0 API milestone that RESTEasy uses still deprecates `@Context` for removal and does not declare
+it a qualifier, so your compiler reports a deprecation warning. RESTEasy registers `@Context` as a qualifier itself. The
+specification change that makes `@Context` a qualifier and removes the deprecation is in
+https://github.com/jakartaee/rest/pull/1367[jakartaee/rest#1367,window=_blank].
+
+The context types are:
+
+* `jakarta.ws.rs.core.Application`
+* `jakarta.ws.rs.core.Configuration`
 * `jakarta.ws.rs.core.HttpHeaders`
-* `jakarta.ws.rs.core.UriInfo`
 * `jakarta.ws.rs.core.Request`
+* `jakarta.ws.rs.core.SecurityContext`
+* `jakarta.ws.rs.core.UriInfo`
+* `jakarta.ws.rs.container.ResourceContext`
+* `jakarta.ws.rs.container.ResourceInfo`
+* `jakarta.ws.rs.ext.Providers`
+* `jakarta.ws.rs.sse.Sse`
+* `org.jboss.resteasy.spi.HttpRequest`
+
+In a Servlet container, the context types also include:
+
 * `jakarta.servlet.http.HttpServletRequest`
 * `jakarta.servlet.http.HttpServletResponse`
 * `jakarta.servlet.ServletConfig`
 * `jakarta.servlet.ServletContext`
-* `jakarta.ws.rs.core.SecurityContext`
 

@@ -200,6 +200,18 @@ bean, is not validated. Other sub-resources are validated.
 
 See <<_validation>> for details.
 
+==== `ContextInjector` is deprecated
+
+`org.jboss.resteasy.spi.ContextInjector` is deprecated for removal. RESTEasy does not resolve an asynchronous
+`ContextInjector` for the fields and setter methods of a component that CDI creates, so a `@Context Foo` field resolved
+by an asynchronous `ContextInjector` is `null`.
+
+A constructor which declares a `@Context` parameter of a type resolved by a `ContextInjector`, e.g. `@Context Foo`,
+together with a {spec-name} context type, e.g. `@Context UriInfo`, fails the deployment (e.g. `WELD-001408`). RESTEasy
+adds `@Inject` to the constructor because of the context type, and no CDI bean resolves `Foo`.
+
+Use a CDI producer method instead, see <<_async_injection_cdi_producer>>.
+
 ==== `CompletionCallback` on client disconnect
 
 In a servlet container, the registered `CompletionCallback` instances are invoked, with the failure, when the
@@ -215,7 +227,8 @@ sub-resource locators and `@Form` or `@Query` classes, which are `@Dependent` CD
 === Configuration
 
 * `dev.resteasy.cdi.enhanced.enabled` has been removed. The CDI integration, including the injection of `@Context` and
-`@*Param` annotated members through CDI, can no longer be disabled.
+`@*Param` annotated members through CDI, can no longer be disabled. See <<_cdi_members_without_inject>> for the members
+RESTEasy adds `@Inject` to.
 * `resteasy.proxy.implement.all.interfaces` is deprecated.
 
 [[_migration_8_requirements]]
