@@ -291,7 +291,8 @@ public class ResteasyCdiExtension implements Extension {
             final BeanManager beanManager) {
         final AnnotatedType<T> annotatedType = event.getAnnotatedType();
         final Class<T> javaClass = annotatedType.getJavaClass();
-        if (javaClass.isInterface() || annotatedType.isAnnotationPresent(Decorator.class)) {
+        // Abstract classes, interfaces and decorators are not managed as resource beans
+        if (Modifier.isAbstract(javaClass.getModifiers()) || annotatedType.isAnnotationPresent(Decorator.class)) {
             return;
         }
         // Add @Inject to any @Context injection points. If the type does not end up being a bean, the RESTEasy property
@@ -318,7 +319,8 @@ public class ResteasyCdiExtension implements Extension {
             final BeanManager beanManager) {
         final AnnotatedType<T> annotatedType = event.getAnnotatedType();
         final Class<T> javaClass = annotatedType.getJavaClass();
-        if (javaClass.isInterface() || annotatedType.isAnnotationPresent(Decorator.class)) {
+        // Abstract classes, interfaces and decorators are not managed as provider beans
+        if (Modifier.isAbstract(javaClass.getModifiers()) || annotatedType.isAnnotationPresent(Decorator.class)) {
             return;
         }
         // Add @Inject to any @Context injection points. If the type does not end up being a bean, the RESTEasy property
