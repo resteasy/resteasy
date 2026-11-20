@@ -113,6 +113,15 @@ public class ResteasyCdiExtension implements Extension {
             SecurityContext.class,
             UriInfo.class);
 
+    // Types for which RESTEasy registers a fallback @Default bean unless already provided by the application or a library
+    private static final Set<Class<?>> FALLBACK_DEFAULT_TYPES = Set.of(
+            Client.class,
+            Application.class,
+            HttpServletRequest.class,
+            HttpServletResponse.class,
+            ServletContext.class,
+            ServletConfig.class);
+
     public static boolean isCDIActive() {
         return active;
     }
@@ -125,7 +134,7 @@ public class ResteasyCdiExtension implements Extension {
     private final Set<Class<?>> resourceTypes = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final Set<Class<?>> providerTypes = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final Set<Class<?>> applicationTypes = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private boolean generateClientBean = true;
+    private final Set<Class<?>> existingDefaultBeanTypes = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private volatile ResteasyBeanContainer resteasyBeanContainer;
 
     /**
@@ -139,17 +148,23 @@ public class ResteasyCdiExtension implements Extension {
     }
 
     /**
-     * Process any client beans.
+     * Records existing beans that provide fallback types with the {@link Default @Default} qualifier,
+     * so RESTEasy does not register conflicting synthetic {@code @Default} beans during
+     * {@linkplain AfterBeanDiscovery after bean discovery}.
      *
-     * @param pb the bean being processed
+     * @param event the bean being processed
      */
-    public void processClientBean(@Observes final ProcessBean<?> pb) {
-        // this method will get notified if there is any bean of type `Client` created
-        if (pb.getBean().getTypes().contains(Client.class)) {
-            final Set<Annotation> qualifiers = pb.getBean()
-                    .getQualifiers(); // you want to detect beans with no explicit qualifiers
-            if (qualifiers.contains(Any.Literal.INSTANCE) && qualifiers.contains(Default.Literal.INSTANCE)) {
-                generateClientBean = false;
+    public void processDefaultBeans(@Observes final ProcessBean<?> event) {
+        if (event instanceof ProcessSyntheticBean<?> syntheticBean
+                && syntheticBean.getSource() instanceof ResteasyCdiExtension) {
+            return;
+        }
+        final Bean<?> bean = event.getBean();
+        if (bean.getQualifiers().contains(Default.Literal.INSTANCE)) {
+            for (Type type : bean.getTypes()) {
+                if (FALLBACK_DEFAULT_TYPES.contains(type)) {
+                    existingDefaultBeanTypes.add((Class<?>) type);
+                }
             }
         }
     }
@@ -201,7 +216,7 @@ public class ResteasyCdiExtension implements Extension {
      * @param event the after bean discovery event
      */
     public void registerBeans(@Observes final AfterBeanDiscovery event) {
-        if (generateClientBean) {
+        if (!existingDefaultBeanTypes.contains(Client.class)) {
             event.addBean().addTransitiveTypeClosure(Client.class)
                     .scope(ApplicationScoped.class)
                     .produceWith(instance -> {
@@ -228,10 +243,9 @@ public class ResteasyCdiExtension implements Extension {
      * {@link Default @Default} bean is only registered if no other bean already provides the type.
      * </p>
      *
-     * @param event       the after bean discovery event
-     * @param beanManager the bean manager
+     * @param event the after bean discovery event
      */
-    public void registerContextProducers(@Observes final AfterBeanDiscovery event, final BeanManager beanManager) {
+    public void registerContextProducers(@Observes final AfterBeanDiscovery event) {
         for (Class<?> type : PROXIED_CONTEXT_TYPES) {
             registerContextTypeProxy(event, type);
         }
@@ -242,7 +256,7 @@ public class ResteasyCdiExtension implements Extension {
 
         // Register a producer for the application if one was not provided, e.g. no application with a @ApplicationPath
         // or the application was defined in the web.xml
-        if (beanManager.getBeans(Application.class).isEmpty()) {
+        if (!existingDefaultBeanTypes.contains(Application.class)) {
             event.addBean().addType(Application.class)
                     .addQualifier(Any.Literal.INSTANCE)
                     .addQualifier(Default.Literal.INSTANCE)
@@ -260,10 +274,10 @@ public class ResteasyCdiExtension implements Extension {
         }
 
         // Register producers, if they don't exist, for known servlet types
-        registerContextProducer(event, beanManager, HttpServletRequest.class);
-        registerContextProducer(event, beanManager, HttpServletResponse.class);
-        registerContextProducer(event, beanManager, ServletContext.class);
-        registerContextProducer(event, beanManager, ServletConfig.class);
+        registerContextProducer(event, HttpServletRequest.class);
+        registerContextProducer(event, HttpServletResponse.class);
+        registerContextProducer(event, ServletContext.class);
+        registerContextProducer(event, ServletConfig.class);
     }
 
     /**
@@ -694,15 +708,14 @@ public class ResteasyCdiExtension implements Extension {
                 .produceWith(instance -> ContextTypeInvocationHandler.createProxy(type));
     }
 
-    private static void registerContextProducer(final AfterBeanDiscovery event, final BeanManager beanManager,
-            final Class<?> beanType) {
-        registerContextProducer(event, beanManager, beanType, RequestScoped.class);
+    private void registerContextProducer(final AfterBeanDiscovery event, final Class<?> beanType) {
+        registerContextProducer(event, beanType, RequestScoped.class);
     }
 
-    private static void registerContextProducer(final AfterBeanDiscovery event, final BeanManager beanManager,
-            final Class<?> beanType, final Class<? extends Annotation> scope) {
-        if (beanManager.getBeans(beanType).isEmpty()) {
-            registerContextProducer(event, beanType, scope);
+    private void registerContextProducer(final AfterBeanDiscovery event, final Class<?> beanType,
+            final Class<? extends Annotation> scope) {
+        if (!existingDefaultBeanTypes.contains(beanType)) {
+            registerDefaultContextProducer(event, beanType, scope);
         }
         // Register a synthetic producer for the @Context CDI qualifier
         event.addBean().addType(beanType)
@@ -712,7 +725,7 @@ public class ResteasyCdiExtension implements Extension {
                 .produceWith(instance -> ResteasyContext.getRequiredContextData(beanType));
     }
 
-    private static void registerContextProducer(final AfterBeanDiscovery event, final Class<?> beanType,
+    private static void registerDefaultContextProducer(final AfterBeanDiscovery event, final Class<?> beanType,
             final Class<? extends Annotation> scope) {
         // Only the required type is added. Adding the transitive type closure would resolve super types, e.g.
         // ServletRequest, which are neither required to be injectable nor checked for an existing bean.
