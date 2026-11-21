@@ -164,7 +164,8 @@ public class ResteasyCdiExtension implements Extension {
         // it to the bean container.
         final boolean isStatefulBean = isStatefulBean(annotatedType);
 
-        if (!annotatedType.getJavaClass().isInterface()
+        // Abstract classes, interfaces, session beans and decorators are not managed as resource beans
+        if (!Modifier.isAbstract(annotatedType.getJavaClass().getModifiers())
                 && !isSessionBean(annotatedType)
                 && !annotatedType.isAnnotationPresent(Decorator.class)) {
             if (!Utils.isScopeDefined(annotatedType, beanManager)) {
@@ -196,7 +197,8 @@ public class ResteasyCdiExtension implements Extension {
         // it to the bean container.
         final boolean isStatefulBean = isStatefulBean(annotatedType);
 
-        if (!annotatedType.getJavaClass().isInterface()
+        // An abstract class or interface is never the bean class of a managed bean
+        if (!Modifier.isAbstract(annotatedType.getJavaClass().getModifiers())
                 && !isSessionBean(annotatedType)
                 && !Utils.isUnproxyableClass(annotatedType.getJavaClass())) {
             if (!Utils.isScopeDefined(annotatedType, beanManager)) {
@@ -227,6 +229,7 @@ public class ResteasyCdiExtension implements Extension {
         // it to the bean container.
         final boolean isStatefulBean = isStatefulBean(event.getAnnotatedType());
 
+        // An abstract class is never the bean class of a managed bean
         if (!Modifier.isAbstract(applicationClass.getModifiers())) {
             noApplicationFound = false;
             if (!Utils.isScopeDefined(event.getAnnotatedType(), beanManager)) {
