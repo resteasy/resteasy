@@ -346,6 +346,12 @@ public interface LogMessages extends BasicLogger {
     @Message(id = 2420, value = "Failed to notify the request listener %s")
     void failedToNotifyRequestListener(@Cause Throwable cause, String listener);
 
+    @LogMessage(level = Level.WARN)
+    @Message(id = 2430, value = "RBAC annotations (@RolesAllowed, @DenyAll, @PermitAll) were found on "
+            + "Jakarta REST resource classes but role-based security has been explicitly disabled via '%s=false'. "
+            + "The annotations will be ignored.")
+    void rbacAnnotationsIgnoredSecurityDisabled(String propertyName);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                                                  TRACE                                                //
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////

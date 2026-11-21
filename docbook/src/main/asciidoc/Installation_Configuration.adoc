@@ -737,8 +737,8 @@ RESTEasy can receive the following configuration options from any ConfigSource's
   header. See <<_jakarta_rest_content_negotiation>> for more details.
 
 | resteasy.role.based.security
-| false
-|  Enables role based security. See <<_securing_jakarta_rest_and_resteasy>> for more details.
+| true
+|  Enables role based security, so that `@RolesAllowed`, `@PermitAll` and `@DenyAll` are enforced. Set to `false` to turn it off. See <<_securing_jakarta_rest_and_resteasy>> for more details.
 
 | resteasy.document.expand.entity.references
 | false

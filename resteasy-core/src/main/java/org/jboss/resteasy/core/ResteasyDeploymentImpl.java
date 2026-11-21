@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,9 @@ import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.container.DynamicFeature;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Configurable;
@@ -78,7 +82,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
     private final Set<String> disabledProviders;
     // Feature and DynamicFeature instances loaded with the ServiceLoader, keyed by their type
     private final Map<Class<?>, Object> serviceLoadedProviders = new LinkedHashMap<>();
-    protected boolean securityEnabled = false;
+    protected boolean securityEnabled = true;
     protected List<String> jndiResources;
     protected List<String> resourceClasses;
     protected List<String> unwrappedExceptions;
@@ -513,6 +517,9 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
         // All providers should be registered before resources because of interceptors.
         // interceptors must exist as they are applied only once when the resource is registered.
 
+        // Tracks whether any registered resource uses RBAC annotations. Only checked when security is disabled.
+        boolean hasRbacAnnotations = false;
+
         if (useScanning && scannedJndiComponentResources != null) {
             for (String resource : scannedJndiComponentResources) {
                 registerJndiComponentResource(resource);
@@ -537,6 +544,7 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
                 } catch (ClassNotFoundException e) {
                     throw new RuntimeException(e);
                 }
+                hasRbacAnnotations = hasRbacAnnotations || (!securityEnabled && hasRbacOnClassOrMethods(clazz));
                 registry.addPerRequestResource(clazz);
             }
         }
@@ -569,6 +577,8 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
                         throw new RuntimeException(e);
                     }
 
+                    hasRbacAnnotations = hasRbacAnnotations
+                            || (!securityEnabled && hasRbacOnClassOrMethods(resourceClass));
                     registry.addPerRequestResource(resourceClass, resourceBuilder);
                 }
             }
@@ -582,18 +592,22 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
                 } catch (ClassNotFoundException e) {
                     throw new RuntimeException(e);
                 }
+                hasRbacAnnotations = hasRbacAnnotations || (!securityEnabled && hasRbacOnClassOrMethods(clazz));
                 registry.addPerRequestResource(clazz);
             }
         }
 
         if (resources != null) {
             for (Object obj : resources) {
+                hasRbacAnnotations = hasRbacAnnotations || (!securityEnabled && hasRbacOnClassOrMethods(obj.getClass()));
                 registry.addSingletonResource(obj);
             }
         }
 
         if (actualResourceClasses != null) {
             for (Class<?> actualResourceClass : actualResourceClasses) {
+                hasRbacAnnotations = hasRbacAnnotations
+                        || (!securityEnabled && hasRbacOnClassOrMethods(actualResourceClass));
                 registry.addPerRequestResource(actualResourceClass);
             }
         }
@@ -604,6 +618,11 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
             }
         }
         registry.checkAmbiguousUri();
+
+        if (!securityEnabled && hasRbacAnnotations) {
+            LogMessages.LOGGER.rbacAnnotationsIgnoredSecurityDisabled(
+                    ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY);
+        }
     }
 
     protected boolean registerApplication() {
@@ -915,6 +934,22 @@ public class ResteasyDeploymentImpl implements ResteasyDeployment {
 
     public void setSecurityEnabled(boolean securityEnabled) {
         this.securityEnabled = securityEnabled;
+    }
+
+    private static boolean hasRbacOnClassOrMethods(final Class<?> clazz) {
+        if (clazz.isAnnotationPresent(RolesAllowed.class)
+                || clazz.isAnnotationPresent(DenyAll.class)
+                || clazz.isAnnotationPresent(PermitAll.class)) {
+            return true;
+        }
+        for (Method method : clazz.getMethods()) {
+            if (method.isAnnotationPresent(RolesAllowed.class)
+                    || method.isAnnotationPresent(DenyAll.class)
+                    || method.isAnnotationPresent(PermitAll.class)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<String> getJndiResources() {
