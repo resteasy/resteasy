@@ -28,11 +28,13 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  *
  * @author <a href="mailto:jperkins@ibm.com">James R. Perkins</a>
  */
+@RequiresModule(value = "org.jboss.resteasy.resteasy-cdi", minVersion = "8.0.0.Alpha1")
 abstract class AbstractParamTest {
 
     private final String contextPath;
