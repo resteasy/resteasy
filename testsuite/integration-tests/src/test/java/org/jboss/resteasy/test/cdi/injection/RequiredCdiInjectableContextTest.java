@@ -23,7 +23,7 @@ import org.wildfly.arquillian.junit.annotations.RequiresModule;
  */
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
-@RequiresModule(value = "org.jboss.resteasy.resteasy-cdi", minVersion = "7.0.5.Final")
+@RequiresModule(value = "org.jboss.resteasy.resteasy-cdi", minVersion = "8.0.0.Alpha1")
 public class RequiredCdiInjectableContextTest extends AbstractRequiredInjectableContextTest {
 
     public RequiredCdiInjectableContextTest() {

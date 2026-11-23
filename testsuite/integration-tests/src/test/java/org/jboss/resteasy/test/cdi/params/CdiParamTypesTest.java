@@ -26,6 +26,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.wildfly.arquillian.junit.annotations.RequiresModule;
 
 /**
  * Tests various {@code @*Param} injections work with various required types.
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.Test;
  * @author <a href="mailto:jperkins@ibm.com">James R. Perkins</a>
  */
 @ArquillianTest
+@RequiresModule(value = "org.jboss.resteasy.resteasy-cdi", minVersion = "8.0.0.Alpha1")
 class CdiParamTypesTest {
 
     @ArquillianResource
