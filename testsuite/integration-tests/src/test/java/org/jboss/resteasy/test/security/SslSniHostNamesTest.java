@@ -162,7 +162,7 @@ public class SslSniHostNamesTest extends SslTestBase {
                     resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
 
                     client = resteasyClientBuilder.trustStore(truststore).build();
-                    client.target(URL).request().get();
+                    client.target(generateHttpsURL("127.0.0.1")).request().get();
                 });
         Assertions.assertTrue(thrown instanceof ProcessingException);
     }

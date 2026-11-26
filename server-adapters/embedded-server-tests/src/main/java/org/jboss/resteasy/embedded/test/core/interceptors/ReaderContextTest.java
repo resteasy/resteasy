@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 
 import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Application;
@@ -48,8 +47,6 @@ public class ReaderContextTest {
      */
     @Test
     public void readerContextOnClientTest(@RestResource @RequestPath("/resource/poststring") final URI uri) {
-        client = ClientBuilder.newClient();
-
         WebTarget target = client.target(uri);
         target.register(ReaderContextFirstReaderInterceptor.class);
         target.register(ReaderContextSecondReaderInterceptor.class);

@@ -29,6 +29,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -36,6 +37,7 @@ import javax.net.ssl.X509TrustManager;
 
 import jakarta.ws.rs.core.Configuration;
 
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.api.ClientBuilderConfiguration;
 import org.jboss.resteasy.client.jaxrs.engines.PassthroughTrustManager;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
@@ -53,12 +55,14 @@ class DefaultClientBuilderConfiguration implements ClientBuilderConfiguration {
     private final String proxyScheme;
     private final boolean cookieManagementEnabled;
     private final SSLContext sslContext;
+    private final HostnameVerifier hostnameVerifier;
     private final long readTimeout;
     private final long connectionTimeout;
     private final boolean isFollowRedirect;
     private final ExecutorService executorService;
     private final ScheduledExecutorService scheduledExecutorService;
     private final Configuration configuration;
+    private final int responseBufferSize;
 
     DefaultClientBuilderConfiguration(final ResteasyClientBuilderImpl builder) {
         this.connectionTTL = builder.getConnectionTTL(TimeUnit.MILLISECONDS);
@@ -68,12 +72,14 @@ class DefaultClientBuilderConfiguration implements ClientBuilderConfiguration {
         this.proxyScheme = builder.getDefaultProxyScheme();
         this.cookieManagementEnabled = builder.isCookieManagementEnabled();
         this.sslContext = resolveSslContext(builder);
+        this.hostnameVerifier = resolveHostnameVerifier(builder);
         this.readTimeout = builder.getReadTimeout(TimeUnit.MILLISECONDS);
         this.connectionTimeout = builder.getConnectionTimeout(TimeUnit.MILLISECONDS);
         this.isFollowRedirect = builder.isFollowRedirects();
         this.executorService = builder.asyncExecutor;
         this.scheduledExecutorService = builder.scheduledExecutorService;
         this.configuration = builder.getConfiguration();
+        this.responseBufferSize = builder.getResponseBufferSize();
     }
 
     static DefaultClientBuilderConfiguration create(final ResteasyClientBuilderImpl builder) {
@@ -116,6 +122,11 @@ class DefaultClientBuilderConfiguration implements ClientBuilderConfiguration {
     }
 
     @Override
+    public Optional<HostnameVerifier> hostnameVerifier() {
+        return Optional.ofNullable(hostnameVerifier);
+    }
+
+    @Override
     public long readTimeout(final TimeUnit unit) {
         return TimeUnit.MILLISECONDS.convert(readTimeout, unit);
     }
@@ -143,6 +154,11 @@ class DefaultClientBuilderConfiguration implements ClientBuilderConfiguration {
     @Override
     public Configuration configuration() {
         return configuration;
+    }
+
+    @Override
+    public int responseBufferSize() {
+        return responseBufferSize <= 0 ? 8192 : responseBufferSize;
     }
 
     private SSLContext resolveSslContext(final ResteasyClientBuilderImpl resteasyClientBuilder) {
@@ -199,6 +215,20 @@ class DefaultClientBuilderConfiguration implements ClientBuilderConfiguration {
             }
         }
         return SSLContext.getInstance(protocol);
+    }
+
+    private static HostnameVerifier resolveHostnameVerifier(final ResteasyClientBuilderImpl builder) {
+        // With the trust manager disabled, every certificate is trusted, so the host name is not verified either
+        if (builder.isTrustManagerDisabled()) {
+            return (hostname, session) -> true;
+        }
+        if (builder.getHostnameVerifier() != null) {
+            return builder.getHostnameVerifier();
+        }
+        if (builder.getHostnameVerification() == ResteasyClientBuilder.HostnameVerificationPolicy.ANY) {
+            return (hostname, session) -> true;
+        }
+        return null;
     }
 
     private static class TrustSelfSignedTrustManager implements X509TrustManager {

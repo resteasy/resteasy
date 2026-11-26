@@ -1,6 +1,8 @@
 package org.jboss.resteasy.test.tracing;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import jakarta.ws.rs.client.Client;
@@ -12,6 +14,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.tracing.api.RESTEasyTracing;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -28,6 +31,9 @@ public abstract class TracingTestBase {
     protected static final String WAR_BASIC_TRACING_FILE = "war_basic_tracing";
     protected static final String WAR_ON_DEMAND_TRACING_FILE = "war_on_demand_tracing";
     private static final Logger LOG = Logger.getLogger(TracingTestBase.class);
+    // HTTP/2 headers are lower case, we need to check against a known case. Because of this, we will use the lower
+    // case variant.
+    static final String PREFIX = RESTEasyTracing.HEADER_TRACING_PREFIX.toLowerCase(Locale.ROOT);
 
     static WebArchive war;
     static Client client;
@@ -86,7 +92,7 @@ public abstract class TracingTestBase {
     }
 
     protected void verifyResults(Response response, Map<String, Boolean> results) {
-        for (Map.Entry entry : response.getStringHeaders().entrySet()) {
+        for (Map.Entry<String, List<String>> entry : response.getStringHeaders().entrySet()) {
             LOG.info("<K, V> ->" + entry);
 
             try {
@@ -95,9 +101,8 @@ public abstract class TracingTestBase {
                         .toString()
                         .split("\\[")[1].split(" ")[1];
 
-                if (results.keySet()
-                        .contains(item)) {
-                    results.put(item.replaceAll(" ", ""), true);
+                if (results.containsKey(item)) {
+                    results.put(item.replace(" ", ""), true);
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
                 // irrelevant response headers

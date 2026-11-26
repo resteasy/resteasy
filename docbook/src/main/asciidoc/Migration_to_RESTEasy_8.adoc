@@ -235,6 +235,45 @@ Resources without these annotations are not affected.
 To restore the previous behavior, set `resteasy.role.based.security` to `false`.
 If it is `false` and one of the annotations is found on a resource class, RESTEasy logs the warning `RESTEASY002430` once to indicate that the annotations are being ignored.
 
+[[_migration_8_client]]
+=== Client
+
+RESTEasy 8 sends client requests with the Java HTTP Client, `java.net.http.HttpClient`, see
+<<_java_http_client_engine>>. The Apache HTTP Client 4 engines are deprecated and will be removed. RESTEasy uses them
+only if you configure them.
+
+Most clients need no change. Check your code for these differences, which <<_java_http_client_differences>> describes in
+full:
+
+* Response header names are in lowercase. Header lookups ignore case.
+* `getStatusInfo().getReasonPhrase()` returns the standard phrase for the status code, not the one the server sent.
+* `readTimeout(...)` sets the Java HTTP Client's request timeout (`HttpRequest.Builder.timeout(...)`), not a timeout between
+two reads. See the documentation of your Java runtime for what it covers.
+* The request path is sent as you build it. Apache HttpClient 4 removed empty segments from the path, so a URI
+built as `base + "/items"` from a `base` that ends in `/` was sent as `/items`. The Java HTTP Client sends `//items`,
+which may not match a resource. Build URIs with `WebTarget.path(...)`, which joins segments with one `/`, or check
+that concatenated URIs do not contain `//`.
+* Requests over TLS can use HTTP/2.
+* Redirects follow the Java HTTP Client's rules. For example, a `307` resends a `POST` with its entity. On a redirect
+to another origin, Java 21.0.8 and later do not send the `Authorization` and `Cookie` headers. Earlier Java 21 updates
+send them to the other origin, so use 21.0.8 or later if you follow redirects.
+* The `https` proxy scheme is not supported.
+* SNI is sent for single-label host names such as `localhost`, and `sniHostNames(...)` applies only to IP address
+hosts.
+* `HostnameVerificationPolicy.WILDCARD` rejects partial wildcards such as `*host`.
+* An entity on a `GET`, `HEAD` or `CONNECT` request fails with a `ProcessingException`.
+* `connectionPoolSize(...)`, `maxPooledPerRoute(...)`, `connectionTTL(...)`, `connectionCheckoutTimeout(...)` and
+`disableAutomaticRetries()` have no effect.
+
+The Java HTTP Client reads its limits, such as the maximum header size and the HTTP/2 window sizes, from JVM-wide system
+properties. In WildFly, every deployment shares them, see <<_java_http_client_jvm_settings>>.
+
+`ResteasyClientBuilder.HostnameVerificationPolicy`, `hostnameVerification(...)` and `getHostnameVerification()` are
+deprecated for removal. Use `ClientBuilder.hostnameVerifier(...)` instead. To replace `ANY`, set a `HostnameVerifier`
+which accepts every host name. To replace `WILDCARD` or `STRICT`, set nothing.
+
+To keep the Apache HTTP Client 4 engine until it is removed, see <<_using_another_engine>>.
+
 [[_migration_8_configuration]]
 === Configuration
 

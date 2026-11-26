@@ -31,8 +31,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 public class DefaultClientHttpEngineTest extends ClientHttpEngineTest {
 
     protected DefaultClientHttpEngineTest() {
-        // The current default is the Apache HTTP Client
-        super("Apache");
+        // The current default is the JDK HTTP Client
+        super("Java-http-client");
     }
 
     @Deployment

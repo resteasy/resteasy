@@ -1,7 +1,8 @@
 package org.jboss.resteasy.test.client;
 
-import java.net.SocketTimeoutException;
+import java.net.http.HttpTimeoutException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -67,7 +68,10 @@ public class TimeoutTest extends ClientTestBase {
             target.queryParam("sleep", "5").request().get();
             Assertions.fail("The request didn't timeout as expected");
         } catch (ProcessingException e) {
-            Assertions.assertEquals(e.getCause().getClass(), SocketTimeoutException.class, "Expected SocketTimeoutException");
+            // ClientBuilder.readTimeout() requires a TimeoutException as the cause
+            final Throwable cause = e.getCause();
+            Assertions.assertInstanceOf(TimeoutException.class, cause);
+            Assertions.assertInstanceOf(HttpTimeoutException.class, cause.getCause());
         }
 
         TimeoutResourceInterface proxy = client.target(generateURL("")).proxy(TimeoutResourceInterface.class);
@@ -75,7 +79,10 @@ public class TimeoutTest extends ClientTestBase {
             proxy.get(5);
             Assertions.fail("The request didn't timeout as expected when using client proxy");
         } catch (ProcessingException e) {
-            Assertions.assertEquals(e.getCause().getClass(), SocketTimeoutException.class, "Expected SocketTimeoutException");
+            // ClientBuilder.readTimeout() requires a TimeoutException as the cause
+            final Throwable cause = e.getCause();
+            Assertions.assertInstanceOf(TimeoutException.class, cause);
+            Assertions.assertInstanceOf(HttpTimeoutException.class, cause.getCause());
         }
         clientengine.close();
     }

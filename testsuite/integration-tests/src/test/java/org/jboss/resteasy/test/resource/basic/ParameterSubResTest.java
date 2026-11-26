@@ -10,6 +10,8 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.resteasy.spi.HttpResponseCodes;
 import org.jboss.resteasy.spi.util.Types;
 import org.jboss.resteasy.test.resource.basic.resource.ApplicationScopeObject;
+import org.jboss.resteasy.test.resource.basic.resource.MultiInterfaceResLocatorIntf1;
+import org.jboss.resteasy.test.resource.basic.resource.MultiInterfaceResLocatorIntf2;
 import org.jboss.resteasy.test.resource.basic.resource.MultiInterfaceResLocatorResource;
 import org.jboss.resteasy.test.resource.basic.resource.MultiInterfaceResLocatorSubresource;
 import org.jboss.resteasy.test.resource.basic.resource.ParameterSubResClassSub;
@@ -51,6 +53,8 @@ public class ParameterSubResTest {
         WebArchive war = TestUtil.prepareArchive(ParameterSubResTest.class.getSimpleName());
         war.addClass(MultiInterfaceResLocatorResource.class);
         war.addClass(MultiInterfaceResLocatorSubresource.class);
+        war.addClass(MultiInterfaceResLocatorIntf1.class);
+        war.addClass(MultiInterfaceResLocatorIntf2.class);
         war.addClass(ParameterSubResConcreteSubImpl.class);
         war.addClass(ParameterSubResDoubleInterface.class);
         war.addClass(ParameterSubResGenericInterface.class);

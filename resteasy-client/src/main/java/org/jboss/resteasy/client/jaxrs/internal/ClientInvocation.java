@@ -13,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import jakarta.ws.rs.BadRequestException;
@@ -483,21 +484,33 @@ public class ClientInvocation implements Invocation {
 
     private <T> Future<T> doSubmit(boolean buffered, InvocationCallback<T> callback, ResultExtractor<T> extractor) {
         if (client.httpEngine() instanceof AsyncClientHttpEngine) {
-            return submitRequest(extractor, buffered)
+            // Records the response the result is extracted from, including an aborted response, so it can be closed
+            // after the callback returns
+            final AtomicReference<ClientResponse> underlying = new AtomicReference<>();
+            final CompletableFuture<T> request = submitRequest((response) -> {
+                underlying.set(response);
+                return extractor.extractResult(response);
+            }, buffered).toCompletableFuture();
+            return CompletableFutures.cancelWith(request
                     .whenComplete((response, error) -> {
                         if (callback != null) {
-                            if (error != null) {
-                                callback.failed(error);
-                            } else {
-                                try {
+                            try {
+                                if (error != null) {
+                                    callback.failed(CompletableFutures.unwrap(error));
+                                } else {
                                     callback.completed(response);
-                                } catch (Throwable t) {
-                                    LogMessages.LOGGER.exceptionIgnored(t);
+                                }
+                            } catch (Throwable t) {
+                                LogMessages.LOGGER.exceptionIgnored(t);
+                            } finally {
+                                // The runtime closes the underlying Response after the InvocationCallback method returns
+                                final ClientResponse clientResponse = underlying.get();
+                                if (clientResponse != null) {
+                                    clientResponse.close();
                                 }
                             }
                         }
-                    })
-                    .toCompletableFuture();
+                    }), request);
         } else {
             return executorSubmit(asyncInvocationExecutor(), callback, extractor);
         }
@@ -682,7 +695,9 @@ public class ClientInvocation implements Invocation {
 
     private <T> CompletionStage<T> submitRequest(final ResultExtractor<T> extractor, final boolean buffered) {
         final ClientRequestContextImpl requestContext = new ClientRequestContextImpl(this);
-        return CompletableFuture.supplyAsync(() -> {
+        // Created before the engine future, so a cancel of the result can be passed to the engine future
+        final CompletableFuture<T> result = new CompletableFuture<>();
+        CompletableFuture.supplyAsync(() -> {
             try (CloseableContext ctx = pushProvidersContext()) {
                 ClientResponse aborted = filterRequest(requestContext);
                 if (aborted != null) {
@@ -697,10 +712,32 @@ public class ClientInvocation implements Invocation {
                     if (aborted != null) {
                         return CompletableFuture.completedFuture(aborted);
                     }
-                    final ResultExtractor<T> wrapped = (response) -> extractor
-                            .extractResult(filterResponse(requestContext, response));
-                    return ((AsyncClientHttpEngine) client.httpEngine()).submit(ClientInvocation.this, buffered, wrapped);
+                    // The result was cancelled while the request filters ran, so the request is not sent
+                    if (result.isCancelled()) {
+                        return result;
+                    }
+                    // The writer and the response filters run outside the request filter context above. Push the
+                    // client context, so they use the client configuration instead of one from the calling thread.
+                    final ResultExtractor<T> wrapped = (response) -> {
+                        try (CloseableContext ctx = pushProvidersContext()) {
+                            return extractor.extractResult(filterResponse(requestContext, response));
+                        }
+                    };
+                    try (CloseableContext ctx = pushProvidersContext()) {
+                        final CompletableFuture<T> future = ((AsyncClientHttpEngine) client.httpEngine())
+                                .submit(ClientInvocation.this, buffered, wrapped, asyncInvocationExecutor());
+                        CompletableFutures.cancelWith(result, future);
+                        return future;
+                    }
+                })
+                .whenComplete((value, error) -> {
+                    if (error != null) {
+                        result.completeExceptionally(error);
+                    } else {
+                        result.complete(value);
+                    }
                 });
+        return result;
     }
 
     private <T> CompletableFuture<T> executorSubmit(ExecutorService executor, final InvocationCallback<T> callback,

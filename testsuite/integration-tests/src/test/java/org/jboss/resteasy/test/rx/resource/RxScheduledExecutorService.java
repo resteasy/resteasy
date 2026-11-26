@@ -33,7 +33,8 @@ public class RxScheduledExecutorService implements ScheduledExecutorService {
         }
     }
 
-    private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());
+    private final ScheduledExecutorService executor = Executors
+            .newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), new DaemonThreadFactory());
     public static boolean used;
 
     @Override

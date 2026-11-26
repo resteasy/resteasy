@@ -1,105 +1,129 @@
+/*
+ * Copyright The RESTEasy Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
 package org.jboss.resteasy.test.client;
 
-import jakarta.ws.rs.client.ClientBuilder;
+import java.net.URI;
 
-import org.apache.http.HttpHost;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import dev.resteasy.junit.extension.annotations.RestBootstrap;
+import dev.resteasy.junit.extension.annotations.RestResource;
+
 /**
- * @tpSubChapter Resteasy-client
- * @tpChapter HTTP proxy setup
- * @tpSince RESTEasy 3.8.0
+ * Tests that requests are sent through the configured HTTP proxy. The server acts as the proxy: the request is sent to
+ * a host which does not resolve, so it only reaches the server through the proxy.
+ *
+ * @author <a href="mailto:jperkins@ibm.com">James R. Perkins</a>
  */
-public class HttpProxyTest {
+@RestBootstrap(HttpProxyTest.HostResource.class)
+class HttpProxyTest {
+    // The .invalid top-level domain never resolves (RFC 2606)
+    private static final String PROXIED_HOST = "proxied.invalid";
 
+    @RestResource
+    private URI uri;
+
+    /**
+     * Checks that the proxy host and port properties send the request through the proxy.
+     */
     @Test
-    public void testHttpProxyHostSetup() {
-        final String testProxyHost = "myproxy.com";
-        ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder()
-                .property(ResteasyClientBuilder.PROPERTY_PROXY_HOST, testProxyHost);
-        ResteasyClient client = clientBuilder.build();
-        ApacheHttpClient43Engine engine = (ApacheHttpClient43Engine) client.httpEngine();
-        HttpHost proxy = engine.getDefaultProxy();
-
-        Assertions.assertEquals(testProxyHost, proxy.getHostName());
-        // since port was not set, it must be -1
-        Assertions.assertEquals(-1, proxy.getPort());
-        // since scheme was not set, it must be http
-        Assertions.assertEquals("http", proxy.getSchemeName());
-        client.close();
+    void proxyFromProperties() {
+        try (
+                Client client = ClientBuilder.newBuilder()
+                        .property(ResteasyClientBuilder.PROPERTY_PROXY_HOST, uri.getHost())
+                        .property(ResteasyClientBuilder.PROPERTY_PROXY_PORT, uri.getPort())
+                        .build()) {
+            assertProxied(client, uri);
+        }
     }
 
+    /**
+     * Checks that a proxy set with {@link ResteasyClientBuilder#defaultProxy(String, int)} is used instead of the
+     * proxy properties.
+     */
     @Test
-    public void testHttpProxyHostPortSchemeSetup() {
-        final String testProxyHost = "myproxy.com";
-        final String testProxyPort = "8080";
-        final String testProxyScheme = "https";
-        ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder()
-                .property(ResteasyClientBuilder.PROPERTY_PROXY_HOST, testProxyHost)
-                .property(ResteasyClientBuilder.PROPERTY_PROXY_PORT, testProxyPort)
-                .property(ResteasyClientBuilder.PROPERTY_PROXY_SCHEME, testProxyScheme);
-        ResteasyClient client = clientBuilder.build();
-        ApacheHttpClient43Engine engine = (ApacheHttpClient43Engine) client.httpEngine();
-        HttpHost proxy = engine.getDefaultProxy();
-
-        Assertions.assertEquals(testProxyHost, proxy.getHostName());
-        Assertions.assertEquals(Integer.parseInt(testProxyPort), proxy.getPort());
-        Assertions.assertEquals(testProxyScheme, proxy.getSchemeName());
-        client.close();
-
-        //modify and re-use builder...
-        clientBuilder.property(ResteasyClientBuilder.PROPERTY_PROXY_PORT, Integer.parseInt(testProxyPort) + 10)
-                .property(ResteasyClientBuilder.PROPERTY_PROXY_SCHEME, "http");
-        client = clientBuilder.build();
-        engine = (ApacheHttpClient43Engine) client.httpEngine();
-        proxy = engine.getDefaultProxy();
-
-        Assertions.assertEquals(testProxyHost, proxy.getHostName());
-        Assertions.assertEquals(8090, proxy.getPort());
-        Assertions.assertEquals("http", proxy.getSchemeName());
-        client.close();
+    void defaultProxyOverridesProperties() {
+        final ResteasyClientBuilder builder = (ResteasyClientBuilder) ClientBuilder.newBuilder()
+                .property(ResteasyClientBuilder.PROPERTY_PROXY_HOST, "127.0.0.1")
+                .property(ResteasyClientBuilder.PROPERTY_PROXY_PORT, 1);
+        try (Client client = builder.defaultProxy(uri.getHost(), uri.getPort()).build()) {
+            assertProxied(client, uri);
+        }
     }
 
+    /**
+     * Checks that a client can be built with a proxy which has no port.
+     */
     @Test
-    public void testHttpProxyOverride() {
-        ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder()
-                .property(ResteasyClientBuilder.PROPERTY_PROXY_HOST, "myproxy.com")
-                .property(ResteasyClientBuilder.PROPERTY_PROXY_PORT, "8080")
-                .property(ResteasyClientBuilder.PROPERTY_PROXY_SCHEME, "https");
-        clientBuilder.defaultProxy("myoverrideproxy.com");
-        ResteasyClient client = clientBuilder.build();
-        ApacheHttpClient43Engine engine = (ApacheHttpClient43Engine) client.httpEngine();
-        HttpHost proxy = engine.getDefaultProxy();
+    void defaultProxyWithoutPort() {
+        final ResteasyClientBuilder builder = ((ResteasyClientBuilder) ClientBuilder.newBuilder())
+                .defaultProxy("myproxy.example");
+        try (Client client = Assertions.assertDoesNotThrow(builder::build)) {
+            Assertions.assertNotNull(client);
+            Assertions.assertEquals(-1, builder.getDefaultProxyPort());
+        }
+    }
 
-        Assertions.assertEquals("myoverrideproxy.com", proxy.getHostName());
-        Assertions.assertEquals(-1, proxy.getPort());
-        Assertions.assertEquals("http", proxy.getSchemeName());
-        client.close();
+    /**
+     * Checks that a builder whose proxy properties are removed builds a client which does not use a proxy.
+     */
+    @Test
+    void removedPropertiesUseNoProxy() {
+        final ClientBuilder builder = ClientBuilder.newBuilder()
+                .property(ResteasyClientBuilder.PROPERTY_PROXY_HOST, uri.getHost())
+                .property(ResteasyClientBuilder.PROPERTY_PROXY_PORT, uri.getPort());
+        try (Client client = builder.build()) {
+            assertProxied(client, uri);
+        }
+        builder.property(ResteasyClientBuilder.PROPERTY_PROXY_HOST, null)
+                .property(ResteasyClientBuilder.PROPERTY_PROXY_PORT, null);
+        try (Client client = builder.build()) {
+            Assertions.assertThrows(ProcessingException.class,
+                    () -> client.target(proxiedUri(uri)).request().get(),
+                    "The request was sent without a proxy, so the host should not resolve");
+        }
+    }
 
-        //modify and re-use builder...
-        clientBuilder.defaultProxy(null);
-        client = clientBuilder.build();
-        engine = (ApacheHttpClient43Engine) client.httpEngine();
-        proxy = engine.getDefaultProxy();
+    private static void assertProxied(final Client client, final URI uri) {
+        try (Response response = client.target(proxiedUri(uri)).request().get()) {
+            Assertions.assertEquals(Response.Status.OK, response.getStatusInfo().toEnum());
+            Assertions.assertEquals(PROXIED_HOST, response.readEntity(String.class));
+        }
+    }
 
-        Assertions.assertEquals("myproxy.com", proxy.getHostName());
-        Assertions.assertEquals(8080, proxy.getPort());
-        Assertions.assertEquals("https", proxy.getSchemeName());
-        client.close();
+    // The same request URI with a host which only the proxy can reach
+    private static URI proxiedUri(final URI uri) {
+        return UriBuilder.fromUri(uri)
+                .host(PROXIED_HOST)
+                .port(-1)
+                .path("proxy/host")
+                .build();
+    }
 
-        //modify and re-use builder...
-        clientBuilder.property(ResteasyClientBuilder.PROPERTY_PROXY_HOST, null)
-                .property(ResteasyClientBuilder.PROPERTY_PROXY_PORT, null)
-                .property(ResteasyClientBuilder.PROPERTY_PROXY_SCHEME, null);
-        client = clientBuilder.build();
-        engine = (ApacheHttpClient43Engine) client.httpEngine();
-        proxy = engine.getDefaultProxy();
+    @Path("/proxy")
+    public static class HostResource {
 
-        Assertions.assertNull(proxy);
-        client.close();
+        @GET
+        @Path("host")
+        @Produces(MediaType.TEXT_PLAIN)
+        public String host(@HeaderParam(HttpHeaders.HOST) final String host) {
+            return host;
+        }
     }
 }

@@ -12,7 +12,6 @@ import java.security.cert.CertificateException;
 
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -78,27 +77,6 @@ public class SslServerWithWildcardHostnameCertificateTest extends SslTestBase {
         try (InputStream in = new FileInputStream(CLIENT_TRUSTSTORE_PATH)) {
             truststore.load(in, PASSWORD.toCharArray());
         }
-    }
-
-    /**
-     * @tpTestDetails HostnameVerificationPolicy.WILDCARD test
-     *                Client has truststore containing self-signed certificate.
-     *                Server/endpoint is secured with the same self-signed certificate, but only wildcard of server hostname
-     *                (*host) is included among 'subject alternative names' in the certificate.
-     *                Client should trust the server because HostnameVerificationPolicy is set to WILDCARD.
-     * @tpSince RESTEasy 3.7.0
-     */
-    @Test
-    public void testHostnameVerificationPolicyWildcard() {
-        resteasyClientBuilder = (ResteasyClientBuilder) ClientBuilder.newBuilder();
-        resteasyClientBuilder.setIsTrustSelfSignedCertificates(false);
-
-        resteasyClientBuilder.hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.WILDCARD);
-
-        client = resteasyClientBuilder.trustStore(truststore).build();
-        Response response = client.target(URL).request().get();
-        Assertions.assertEquals("Hello World!", response.readEntity(String.class));
-        Assertions.assertEquals(200, response.getStatus());
     }
 
     /**
