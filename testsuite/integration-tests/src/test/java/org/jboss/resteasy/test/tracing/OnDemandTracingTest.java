@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import jakarta.ws.rs.client.WebTarget;
@@ -78,8 +80,10 @@ public class OnDemandTracingTest extends TracingTestBase {
 
     private void testTracingEnabled(Response response, boolean flag) {
         boolean hasTracing = false;
-        for (Map.Entry entry : response.getStringHeaders().entrySet()) {
-            if (entry.getKey().toString().startsWith(RESTEasyTracing.HEADER_TRACING_PREFIX)) {
+        for (Map.Entry<String, List<String>> entry : response.getStringHeaders().entrySet()) {
+            // HTTP/2 headers are lower case, but HTTP/1.1 can have mixed case
+            final String name = entry.getKey().toLowerCase(Locale.ROOT);
+            if (name.startsWith(PREFIX)) {
                 LOG.info("<K, V> ->" + entry);
                 hasTracing = true;
                 break;

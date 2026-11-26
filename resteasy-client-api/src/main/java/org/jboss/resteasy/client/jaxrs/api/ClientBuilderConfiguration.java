@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -91,6 +92,23 @@ public interface ClientBuilderConfiguration {
     SSLContext sslContext();
 
     /**
+     * Returns the {@link HostnameVerifier} the engine uses to verify the host name of the server.
+     * <p>
+     * The verifier is the one set with {@link ClientBuilder#hostnameVerifier(HostnameVerifier)}. If none was set and
+     * the host name verification policy is {@code ANY}, the verifier accepts every host name. If the trust manager is
+     * disabled, the verifier accepts every host name, even if a verifier was set.
+     * </p>
+     *
+     * @return the host name verifier, or an empty {@link Optional} if the engine should apply the standard
+     *         {@code HTTPS} host name verification
+     *
+     * @since 8.0
+     */
+    default Optional<HostnameVerifier> hostnameVerifier() {
+        return Optional.empty();
+    }
+
+    /**
      * Returns the read timeout converted in the time unit provided.
      *
      * @param unit the time unit used to convert the read timeout
@@ -137,4 +155,14 @@ public interface ClientBuilderConfiguration {
      * @return the configuration
      */
     Configuration configuration();
+
+    /**
+     * Returns the default buffer size for the response. The default is {@code 8KB}
+     *
+     * @return the default response buffer size
+     * @since 8.0
+     */
+    default int responseBufferSize() {
+        return 8192;
+    }
 }

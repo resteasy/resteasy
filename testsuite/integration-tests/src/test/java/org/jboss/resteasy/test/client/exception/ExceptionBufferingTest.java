@@ -120,8 +120,9 @@ public class ExceptionBufferingTest {
                 fail("Was expecting a second exception: " + s);
             } catch (ProcessingException e1) {
                 logger.info("and caught: " + e1);
-                Assertions.assertTrue(e1.getCause() instanceof IOException, "Wrong exception thrown");
-                Assertions.assertEquals("Attempted read on closed stream.", e1.getCause().getMessage());
+                Assertions.assertInstanceOf(IOException.class, e1.getCause(), "Wrong exception thrown");
+                Assertions.assertTrue(e1.getCause().getMessage().contains("closed"),
+                        () -> String.format("Expected message to include \"closed\": %s", e1.getCause().getMessage()));
             } catch (Exception e1) {
                 fail("Was expecting a ProcessingException instead of " + e1);
             }

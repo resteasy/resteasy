@@ -66,7 +66,7 @@ public class XxeSecureProcessingTest {
     private static final String T_FALSE = "false";
 
     public static Archive<?> deploy(String expandEntityReferences) {
-        WebArchive war = TestUtil.prepareArchive(expandEntityReferences);
+        WebArchive war = TestUtil.prepareArchive(expandEntityReferences == null ? T_DEFAULT : expandEntityReferences);
         Map<String, String> contextParam = new HashMap<>();
         contextParam.put("resteasy.document.secure.disableDTDs", "false");
         if (expandEntityReferences != null) {
@@ -107,7 +107,7 @@ public class XxeSecureProcessingTest {
      */
     @Test
     public void testXmlRootElementDefaultSmall() throws Exception {
-        Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", null)).request()
+        Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", T_DEFAULT)).request()
                 .post(Entity.entity(small, "application/xml"));
         Assertions.assertEquals(200, response.getStatus());
         String entity = response.readEntity(String.class);
@@ -122,7 +122,7 @@ public class XxeSecureProcessingTest {
      */
     @Test
     public void testXmlRootElementDefaultBig() throws Exception {
-        Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", null)).request()
+        Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", T_DEFAULT)).request()
                 .post(Entity.entity(big, "application/xml"));
         Assertions.assertEquals(400, response.getStatus());
         String entity = response.readEntity(String.class);

@@ -39,7 +39,13 @@ public class TestThreadContextProvider implements ThreadContext<Map<String, Stri
 
     @Override
     public Map<String, String> capture() {
-        localState.get().put("captured", Thread.currentThread().getName());
+        final Map<String, String> map = localState.get();
+        // We only want to add the captured value if it's not already present. Multiple client threads may be used
+        // depending on the backing ClientHttpEngine. We don't want to overwite the original value. Our goal is o ensure
+        // the conext is propagated.
+        if (!map.containsKey("captured")) {
+            map.put("captured", Thread.currentThread().getName());
+        }
         return localState.get();
     }
 

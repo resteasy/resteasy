@@ -10,6 +10,7 @@
 module org.jboss.resteasy.client {
     // JDK modules
     requires java.management;  // For statistics/monitoring
+    requires java.net.http;
 
     // Third-party dependencies
     requires org.apache.commons.codec;
@@ -29,6 +30,7 @@ module org.jboss.resteasy.client {
     exports org.jboss.resteasy.client.jaxrs.cache;
     exports org.jboss.resteasy.client.jaxrs.engine;
     exports org.jboss.resteasy.client.jaxrs.engines;
+    exports org.jboss.resteasy.client.jaxrs.engines.config;
     exports org.jboss.resteasy.client.jaxrs.internal;
     exports org.jboss.resteasy.client.jaxrs.internal.proxy;
     exports org.jboss.resteasy.client.jaxrs.internal.proxy.extractors;

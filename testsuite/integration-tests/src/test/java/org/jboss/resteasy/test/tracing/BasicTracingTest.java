@@ -3,6 +3,8 @@ package org.jboss.resteasy.test.tracing;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import jakarta.ws.rs.client.WebTarget;
@@ -11,7 +13,6 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpResponseCodes;
-import org.jboss.resteasy.tracing.api.RESTEasyTracing;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -59,8 +60,10 @@ public class BasicTracingTest extends TracingTestBase {
             Response response = base.request().get();
             Assertions.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             boolean hasTracing = false;
-            for (Map.Entry entry : response.getStringHeaders().entrySet()) {
-                if (entry.getKey().toString().startsWith(RESTEasyTracing.HEADER_TRACING_PREFIX)) {
+            for (Map.Entry<String, List<String>> entry : response.getStringHeaders().entrySet()) {
+                // HTTP/2 headers are lower case, but HTTP/1.1 can have mixed case
+                final String name = entry.getKey().toLowerCase(Locale.ROOT);
+                if (name.startsWith(PREFIX)) {
                     LOG.info("<K, V> ->" + entry);
                     hasTracing = true;
                     break;

@@ -146,22 +146,26 @@ public class PortProviderUtil {
      * @return a full URL
      */
     public static String generateURL(String path, String testName, String hostName, int port) {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("http://");
+        if (ipv6) {
+            builder.append('[')
+                    .append(hostName)
+                    .append(']');
+        } else {
+            builder.append(hostName);
+        }
+
+        builder.append(':')
+                .append(port)
+                .append('/');
+
         // quarkus does not generate URLs with contextRoot (i.e. archive name)
-        String localTestName = (isQuarkus) ? "" : testName;
-
-        String localPath = path;
-        if (isQuarkus) {
-            if (path.startsWith("/")) {
-                localPath = path.substring(1);
-            }
+        if (!isQuarkus) {
+            appendPath(builder, testName);
         }
-
-        // ipv4
-        if (!ipv6) {
-            return String.format("http://%s:%d/%s%s", hostName, port, localTestName, localPath);
-        }
-        // ipv6
-        return String.format("http://[%s]:%d/%s%s", hostName, port, localTestName, localPath);
+        appendPath(builder, path);
+        return builder.toString();
     }
 
     /**
@@ -220,5 +224,17 @@ public class PortProviderUtil {
             }
         }
         throw new RuntimeException("Could not find any available port starting with " + minPort);
+    }
+
+    private static void appendPath(final StringBuilder builder, final String value) {
+        if (value == null || value.isEmpty()) {
+            return;
+        }
+        // Avoid a double slash between the parts of the URL
+        if (builder.charAt(builder.length() - 1) == '/' && value.charAt(0) == '/') {
+            builder.append(value, 1, value.length());
+        } else {
+            builder.append(value);
+        }
     }
 }

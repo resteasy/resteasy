@@ -22,6 +22,13 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
  * @version $Revision: 1 $
  */
 public abstract class ResteasyClientBuilder extends ClientBuilder {
+    /**
+     * The policy used to verify the hostname of the server's certificate.
+     *
+     * @deprecated use {@link #hostnameVerifier(HostnameVerifier)} instead. Without a {@link HostnameVerifier}, the HTTP
+     *             client engine verifies the hostname.
+     */
+    @Deprecated(forRemoval = true, since = "8.0")
     public enum HostnameVerificationPolicy {
         /**
          * Hostname verification is not done on the server's certificate
@@ -145,9 +152,21 @@ public abstract class ResteasyClientBuilder extends ClientBuilder {
      *
      * @param policy SSL policy
      * @return an updated client builder instance
+     * @deprecated use {@link #hostnameVerifier(HostnameVerifier)} instead. For
+     *             {@link HostnameVerificationPolicy#ANY}, set a {@link HostnameVerifier} which accepts
+     *             every hostname. For the other policies, set nothing, as the HTTP client engine verifies the
+     *             hostname by default.
      */
+    @Deprecated(forRemoval = true, since = "8.0")
     public abstract ResteasyClientBuilder hostnameVerification(HostnameVerificationPolicy policy);
 
+    /**
+     * Returns the policy used to verify hostnames.
+     *
+     * @return the hostname verification policy
+     * @deprecated use {@link #getHostnameVerifier()} instead
+     */
+    @Deprecated(forRemoval = true, since = "8.0")
     public abstract HostnameVerificationPolicy getHostnameVerification();
 
     /**

@@ -23,8 +23,7 @@ import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engine.ClientHttpEngineFactory;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpAsyncClient4Engine;
-import org.jboss.resteasy.client.jaxrs.engines.ClientHttpEngineBuilder43;
+import org.jboss.resteasy.client.jaxrs.engines.JavaClientHttpEngineFactory;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.spi.ClientConfigProvider;
@@ -249,9 +248,9 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
     }
 
     public ResteasyClientBuilderImpl useAsyncHttpEngine() {
-        // Attempt to find the AsyncHttpEngine
-        this.httpEngine = clientHttpEngineFactory == null ? new ApacheHttpAsyncClient4Engine(true)
-                : clientHttpEngineFactory.asyncHttpClientEngine(DefaultClientBuilderConfiguration.create(this));
+        // The asynchronous engine is created in build(), so configuration set after this method applies to it. An
+        // engine set with httpEngine() before this method is replaced by the asynchronous engine.
+        this.httpEngine = null;
         useAsyncHttpClient = true;
         return this;
     }
@@ -382,12 +381,11 @@ public class ResteasyClientBuilderImpl extends ResteasyClientBuilder {
         if (this.httpEngine != null) {
             engine = this.httpEngine;
         } else {
-            // We currently do not have a default factory, continue using the builder
-            if (clientHttpEngineFactory == null) {
-                engine = new ClientHttpEngineBuilder43().resteasyClientBuilder(this).build();
-            } else {
-                engine = clientHttpEngineFactory.httpClientEngine(DefaultClientBuilderConfiguration.create(this));
-            }
+            // If no factory was found, use the Java HttpClient engine
+            final ClientHttpEngineFactory factory = clientHttpEngineFactory == null ? new JavaClientHttpEngineFactory()
+                    : clientHttpEngineFactory;
+            engine = useAsyncHttpClient ? factory.asyncHttpClientEngine(DefaultClientBuilderConfiguration.create(this))
+                    : factory.httpClientEngine(DefaultClientBuilderConfiguration.create(this));
         }
         if (resetProxy) {
             this.defaultProxy = null;

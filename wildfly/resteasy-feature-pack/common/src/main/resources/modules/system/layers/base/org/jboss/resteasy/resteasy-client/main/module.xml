@@ -32,6 +32,7 @@
     <dependencies>
         <module name="java.logging" />
         <module name="java.management" />
+        <module name="java.net.http" />
         <module name="jakarta.ws.rs.api" />
         <module name="org.apache.commons.codec" />
         <module name="org.apache.httpcomponents" />

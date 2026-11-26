@@ -58,8 +58,7 @@ request.setChunked(b);
 Note that `org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder`, unlike `jakarta.ws.rs.client.Invocation.Builder`, is a RESTEasy class. 
 
 NOTE: The ability to send in chunked mode depends on the underlying transport layer; in particular, it depends on which implementation of `org.jboss.resteasy.client.jaxrs.ClientHttpEngine` is being used.
-Currently, only the default implementation, `ApacheHttpClient43Engine`, supports chunked mode.
-See Section <<_transport_layer,Apache HTTP Client 4.x and other backends>> for more information. 
+Both the Java HTTP Client engine and Apache HTTP Client engines support chunked mode. See Section <<_transport_layer,HTTP Client Engines>> for more information.
 
 [NOTE]
 ====
@@ -423,19 +422,240 @@ It is generally possible to share an interface between the client and server.
 In this scenario, just have the {spec-name} services implement an annotated interface and then reuse that same interface to create client proxies to invoke on the client-side.
 
 [[_transport_layer]]
-=== Apache HTTP Client 4.x and other backends
+=== HTTP Client Engines
+
+The client sends each request through a `ClientHttpEngine`. By default, RESTEasy uses the Java HTTP Client,
+`java.net.http.HttpClient`. You can use another engine when you need settings the Java HTTP Client does not offer,
+see <<_using_another_engine>>.
 
 [WARNING]
 ====
-The Apache HTTP Client support is deprecated in RESTEasy. The exposed API's will eventually be removed. However, it's
-still the default client implementation as we prepare for a replacement backing HTTP client.
+The Apache HTTP Client 4 engines are deprecated and will be removed. RESTEasy does not use them unless you configure
+them.
 ====
 
-Network communication between the client and server is handled by default in RESTEasy.
-The interface between the RESTEasy Client Framework and the network is defined by RESTEasy's `ClientHttpEngine` interface.
-RESTEasy ships with multiple implementations of this interface. 
+[[_java_http_client_engine]]
+=== Java HTTP Client Engine
 
-The default implementation is `ApacheHttpClient43Engine`, which uses version 4.3 of the `HttpClient` from the Apache `HttpComponents` project. 
+The default engine needs no dependency besides `resteasy-client` and no configuration.
+
+==== Features
+
+* HTTP/1.1, and HTTP/2 over TLS, negotiated with ALPN. Requests to `http` URIs use HTTP/1.1, so the client does not
+try a cleartext HTTP/2 upgrade. A chunked request, set with `setChunked(true)`, always uses HTTP/1.1.
+* Synchronous and asynchronous requests. The client executor, set with `ClientBuilder.executorService(...)`, processes
+the responses of asynchronous requests. The `HttpClient` runs its I/O on its own threads, so a synchronous request sent
+from a thread of a bounded executor, such as a `ManagedExecutorService`, does not wait for a free thread of that
+executor.
+* Connection pooling and keep-alive. Each `Client` has its own connection pool.
+* A `HostnameVerifier` set with `ClientBuilder.hostnameVerifier(...)`. Without one, the engine uses the Java HTTP Client's
+HTTPS hostname verification.
+* An `SSLContext` for each target from a `ClientConfigProvider`, see <<_java_http_client_per_uri_ssl>>.
+* Cookies, if you call `ResteasyClientBuilder.enableCookieManagement()`.
+* An HTTP proxy, set with `ResteasyClientBuilder.defaultProxy(...)` or the `org.jboss.resteasy.jaxrs.client.proxy.host`
+and `org.jboss.resteasy.jaxrs.client.proxy.port` properties. If you set no port, the engine uses port 80.
+* Redirects, if you call `ResteasyClientBuilder.setFollowRedirects(true)` or set the
+`dev.resteasy.client.follow.redirects` property to `true`. The engine does not follow a redirect from `https` to
+`http`.
+
+The engine writes a request entity to memory before it sends the request. If the entity is larger than the
+`dev.resteasy.entity.memory.threshold` option (5 MB by default), the engine writes it to a temporary file instead, and
+deletes the file when the request completes. Because the entity is kept, the engine sends a `Content-Length` header
+and can send the entity again on a `307` or `308` redirect.
+
+The engine rejects an entity on a `GET`, `HEAD` or `CONNECT` request with a `ProcessingException`, before it sends the
+request.
+
+==== Engine options
+
+[cols="2,3,2", options="header"]
+|===
+| Option
+| Description
+| Default
+
+| `dev.resteasy.client.engine.http.version`
+| The HTTP version of each request. As a client property, the value is a `java.net.http.HttpClient.Version`, for example
+`HttpClient.Version.HTTP_1_1`. As a configuration value, use the name of the constant, for example `HTTP_1_1`.
+| HTTP/1.1 for `http` URIs; HTTP/2, negotiated with ALPN, for `https` URIs
+|===
+
+[[_java_http_client_per_uri_ssl]]
+==== Per-URI SSL contexts
+
+If you do not configure an `SSLContext`, a key store or a trust store on the builder, and a `ClientConfigProvider` is
+available, the engine asks the provider for the `SSLContext` of each `https` target. In WildFly, Elytron provides a
+`ClientConfigProvider`. Requests to `http` URIs do not use the provider.
+
+The engine asks the provider for the `SSLContext` of each TLS connection, with the host and port of the connection. A
+connection that the engine opens to follow a redirect therefore uses the `SSLContext` for the redirect target. The URI
+the provider receives has no port when the port is 443. Each connection uses the protocols and cipher suites of the
+`SSLContext` the provider returns.
+
+Each `SSLContext` keeps its own cache of TLS sessions. Return the same `SSLContext` instance for the same
+configuration, so later connections can resume a TLS session. If the provider creates a new `SSLContext` on each call,
+each connection performs a full TLS handshake.
+
+[source,java]
+----
+public class MyClientConfigProvider implements ClientConfigProvider {
+    private final SSLContext exampleApiContext = createExampleApiSSLContext();
+
+    @Override
+    public SSLContext getSSLContext(URI uri) {
+        // Return the same instance for the same target, so TLS sessions can be resumed
+        if ("api.example.com".equals(uri.getHost())) {
+            return exampleApiContext;
+        }
+        return null;
+    }
+}
+----
+
+If the provider returns `null`, the connection uses the default `SSLContext` of the JVM. Register the provider in
+`META-INF/services/org.jboss.resteasy.client.jaxrs.spi.ClientConfigProvider`.
+
+[[_java_http_client_differences]]
+==== Differences from the Apache HTTP Client engine
+
+If you move from the Apache HTTP Client 4 engine, check these differences.
+
+[cols="2,3,4", options="header"]
+|===
+| Behavior
+| Apache HTTP Client 4 engine
+| Java HTTP Client engine
+
+| Response header names
+| In the case the server sends
+| In lowercase. Header lookups, for example `Response.getHeaderString(...)`, ignore case, so only code that compares
+the names in `getHeaders().keySet()` sees the difference.
+
+| Reason phrase
+| As the server sends it
+| The reason phrase of the matching `Response.Status`. A status code with no `Response.Status` has no reason phrase.
+
+| Read timeout (`ClientBuilder.readTimeout(...)`)
+| The longest time between two reads
+| The Java HTTP Client's request timeout (`HttpRequest.Builder.timeout(...)`), not a timeout between two reads. See
+the documentation of your Java runtime for what it covers. When the timeout expires, the engine throws a
+`ProcessingException` whose cause is a `TimeoutException`.
+
+| HTTP/2
+| Not supported
+| Over TLS, negotiated with ALPN
+
+| Redirects
+| Followed for `GET` and `HEAD` requests
+| A `301` or `302` changes `POST` to `GET`. A `303` changes the method to `GET`. A `307` or `308` keeps the method and
+sends the entity again. On a redirect to another origin, the engine does not send the `Authorization`, `Cookie`,
+`Origin`, `Referer` and `Host` headers. On Java 21 updates before 21.0.8, the engine sends these headers to the other
+origin, so use 21.0.8 or later if you follow redirects. The engine follows at most 5 redirects. A redirect without a `Location` header
+fails with a `ProcessingException`.
+
+| Proxy
+| `http` or `https` proxy scheme
+| `http` proxy only. The engine ignores the `https` proxy scheme. Requests to `https` URIs pass through the proxy with
+`CONNECT`.
+
+| SNI
+| Sent for host names that contain a dot. `ResteasyClientBuilder.sniHostNames(...)` sets the names.
+| Sent for every host name, including single-label names such as `localhost`. The engine uses the names from
+`sniHostNames(...)` only for IP address hosts.
+
+| `HostnameVerificationPolicy`
+| `WILDCARD` accepts partial wildcards such as `*host`
+| `WILDCARD` and `STRICT` both use the Java HTTP Client's HTTPS hostname verification, which rejects partial wildcards. The policy is
+deprecated; use `ClientBuilder.hostnameVerifier(...)` instead.
+
+| The `Connection`, `Content-Length`, `Expect`, `Host` and `Upgrade` request headers
+| Passed to Apache HTTP Client
+| Not sent, except `Expect: 100-continue`, which the engine passes to the Java HTTP Client. The JVM-wide
+`jdk.httpclient.allowRestrictedHeaders` system property allows them, see <<_java_http_client_jvm_settings>>.
+|===
+
+The engine ignores these `ResteasyClientBuilder` settings:
+
+* `connectionPoolSize(...)`
+* `maxPooledPerRoute(...)`
+* `connectionTTL(...)`
+* `connectionCheckoutTimeout(...)`
+* `disableAutomaticRetries()`
+
+The Java HTTP Client retries a request only when the server has not processed it: a `GET` or `HEAD` request whose pooled
+connection was already closed, or a request whose connection failed.
+
+[[_java_http_client_jvm_settings]]
+==== JVM-wide settings
+
+The Java HTTP Client reads its limits from system properties. It reads each property once, when the JVM first uses the
+client, and the value applies to every `HttpClient` in the JVM. You cannot set a different value for one `Client`, and
+a value you set after the first request has no effect.
+
+In WildFly, every deployment shares these values. Set them in the server configuration, for example in
+`standalone.conf`, not in a deployment. If one deployment needs different limits, configure another engine for its
+clients, see <<_using_another_engine>>.
+
+[cols="2,3", options="header"]
+|===
+| System property
+| What it limits
+
+| `jdk.httpclient.connectionPoolSize`
+| The number of idle HTTP/1.1 connections each client keeps. `0`, the default, means no limit.
+
+| `jdk.httpclient.keepalive.timeout`, `jdk.httpclient.keepalive.timeout.h2`
+| How long, in seconds, an idle HTTP/1.1 or HTTP/2 connection stays open. The default is 30.
+
+| `jdk.httpclient.maxstreams`
+| The number of concurrent streams on an HTTP/2 connection
+
+| `jdk.httpclient.connectionWindowSize`, `jdk.httpclient.windowsize`
+| The HTTP/2 flow-control window of a connection and of a stream
+
+| `jdk.httpclient.bufsize`
+| The size of the buffers the client reads into
+
+| `jdk.http.maxHeaderSize`
+| The size of the response headers
+
+| `jdk.httpclient.redirects.retrylimit`
+| The number of redirects the client follows. The default is 5.
+
+| `jdk.httpclient.allowRestrictedHeaders`
+| The restricted request headers the client allows you to set
+|===
+
+The `java.net.http` module documentation of your Java runtime lists all properties and their defaults.
+
+[[_using_another_engine]]
+==== Using another engine
+
+You can replace the default engine in two ways:
+
+* Add an engine that registers a `ClientHttpEngineFactory` with `ServiceLoader`, such as the Vert.x engine, see
+<<_vertx_client>>. RESTEasy uses the registered factory with the highest priority, and uses the Java HTTP Client engine only if no
+factory is registered.
+* Set an engine on the builder with `ResteasyClientBuilder.httpEngine(...)`.
+
+To keep the deprecated Apache HTTP Client 4 engine until it is removed, build it from the builder, so it uses the
+builder's settings:
+
+[source,java]
+----
+ResteasyClientBuilder builder = (ResteasyClientBuilder) ClientBuilder.newBuilder()
+        .connectTimeout(10, TimeUnit.SECONDS);
+ClientHttpEngine engine = new ClientHttpEngineBuilder43().resteasyClientBuilder(builder).build();
+Client client = builder.httpEngine(engine).build();
+----
+
+=== Apache HTTP Client Engine (Deprecated)
+
+The interface between the RESTEasy Client Framework and the network is defined by RESTEasy's `ClientHttpEngine` interface.
+RESTEasy ships with multiple implementations of this interface.
+
+`ApacheHttpClient43Engine` uses version 4.3 of the `HttpClient` from the Apache `HttpComponents` project.
+It is deprecated and will be removed. RESTEasy uses it only if you configure it, see <<_using_another_engine>>.
 
 `ApacheHttpAsyncClient4Engine`, instead, is built on top of _HttpAsyncClient_ (still from the Apache _HttpComponents_ project) with internally dispatches requests using a non-blocking IO model. 
 
@@ -445,28 +665,39 @@ The default implementation is `ApacheHttpClient43Engine`, which uses version 4.3
 
 `ReactorNettyClientHttpEngine` is built on top of __Reactor Netty__, which provides a non-blocking HTTP client based on Netty framework. 
 
-[cols="1,1", frame="topbot", options="header"]
+[cols="1,1,1", frame="topbot", options="header"]
 |===
 | RESTEasy ClientHttpEngine implementations
-|
+| Description
+| Status
 
-| ApacheHttpClient43Engine (deprecated)
+| JavaClientHttpEngine
+| Uses the Java HTTP Client, `java.net.http.HttpClient`
+| Current
+
+| ApacheHttpClient43Engine
 | Uses HttpComponents HttpClient 4.3+
+| Deprecated
 
-| ApacheHttpAsyncClient4Engine (deprecated)
+| ApacheHttpAsyncClient4Engine
 | Uses HttpComponents HttpAsyncClient
+| Deprecated
 
 | JettyClientEngine
 | Uses Eclipse Jetty
+| Current
 
 | ReactorNettyClientHttpEngine
 | Uses Reactor Netty
+| Current
 
 | VertxClientHttpEngine
 | Uses Eclipse Vert.x
+| Current
 
 | URLConnectionEngine
 | Uses java.net.HttpURLConnection
+| Current
 |===
 
 The RESTEasy Client Framework can also be customized.
@@ -723,8 +954,9 @@ With that the user is always responsible for calling `close()` as no `finalize()
 [[_apache_asynch]]
 ==== Asynchronous HTTP Request Processing
 
-RESTEasy's default async engine implementation class is `ApacheHttpAsyncClient4Engine`.
-It can be set as the active engine by calling method `useAsyncHttpEngine` in `ResteasyClientBuilder`.
+The default Java HTTP Client engine handles asynchronous requests itself, see <<_java_http_client_engine>>.
+`ApacheHttpAsyncClient4Engine` is the deprecated asynchronous Apache engine.
+`ResteasyClientBuilder.useAsyncHttpEngine()` selects the asynchronous engine of the engine factory in use.
 
 [source,java]
 ----
