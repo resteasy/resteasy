@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
+import jakarta.annotation.Priority;
 import jakarta.decorator.Decorator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.Dependent;
@@ -31,6 +32,7 @@ import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.literal.InjectLiteral;
 import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
 import jakarta.enterprise.inject.spi.AfterDeploymentValidation;
+import jakarta.enterprise.inject.spi.AnnotatedMethod;
 import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
@@ -53,6 +55,13 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HEAD;
+import jakarta.ws.rs.OPTIONS;
+import jakarta.ws.rs.PATCH;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -76,6 +85,7 @@ import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.providers.sse.SseImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.RequiredContextTypes;
+import org.jboss.resteasy.util.GetRestful;
 
 /**
  * A CDI {@link Extension} that integrates Jakarta REST components with CDI. This extension:
@@ -100,6 +110,16 @@ public class ResteasyCdiExtension implements Extension {
     private static final String JAKARTA_EJB_STATEFUL = "jakarta.ejb.Stateful";
     private static final String JAKARTA_EJB_STATELESS = "jakarta.ejb.Stateless";
     private static final String JAKARTA_EJB_SINGLETON = "jakarta.ejb.Singleton";
+
+    // The interceptor bindings the Jakarta Validation CDI integrations add to a constrained method. They are internal
+    // to the validation provider, so they are matched by name.
+    private static final Set<String> METHOD_VALIDATION_BINDINGS = Set.of(
+            // Hibernate Validator 7.0 and later
+            "org.hibernate.validator.cdi.interceptor.internal.MethodValidated",
+            // Hibernate Validator 6.x
+            "org.hibernate.validator.internal.cdi.interceptor.MethodValidated",
+            // Apache BVal
+            "org.apache.bval.cdi.BValBinding");
 
     // Context types which change per request or per deployment, resolved on each invocation by a proxy
     private static final List<Class<?>> PROXIED_CONTEXT_TYPES = List.of(
@@ -304,6 +324,79 @@ public class ResteasyCdiExtension implements Extension {
             LogMessages.LOGGER.debug(Messages.MESSAGES.discoveredCDIBeanJaxRsResource(javaClass.getCanonicalName()));
             resourceTypes.add(javaClass);
         }
+    }
+
+    /**
+     * Removes the interceptor binding the Jakarta Validation CDI integration adds to the constrained methods of a
+     * Jakarta REST resource, so the resource methods are not validated twice.
+     * <p>
+     * RESTEasy validates the parameters and the return value of a resource method itself, see
+     * {@code org.jboss.resteasy.core.MethodInjectorImpl}. A resource which is a CDI bean with constrained methods is
+     * also intercepted by the method validation interceptor of the validation provider, which validates the same
+     * parameters and return value a second time. Besides the cost of validating twice, a constraint validator with a
+     * side effect is run twice.
+     * </p>
+     * <p>
+     * RESTEasy, rather than the interceptor, has to do the validation, as it reports the violations as a
+     * {@code ViolationReport} with the status the Jakarta REST specification requires, interpolates the messages with
+     * the locale of the request and reports the parameter violations together with the violations of the class, field
+     * and property constraints of the resource.
+     * </p>
+     * <p>
+     * The binding is added by an observer of the validation provider with the default priority, so this observer uses
+     * a later priority to see and remove it. Only Jakarta REST resources are configured, so the methods of any other
+     * bean, e.g. a service bean a resource injects, are still validated by the interceptor, as Jakarta Validation
+     * requires.
+     * </p>
+     *
+     * @param <T>   type
+     * @param event event
+     */
+    public <T> void removeMethodValidationInterceptorBinding(
+            @WithAnnotations({ Path.class, GET.class, POST.class, PUT.class, DELETE.class, HEAD.class, OPTIONS.class,
+                    PATCH.class }) @Observes @Priority(Interceptor.Priority.APPLICATION
+                            + 600) ProcessAnnotatedType<T> event) {
+        final AnnotatedType<T> annotatedType = event.getAnnotatedType();
+        final Class<T> javaClass = annotatedType.getJavaClass();
+        if (javaClass.isInterface() || annotatedType.isAnnotationPresent(Decorator.class)) {
+            return;
+        }
+        // A sub resource returned by a locator has no @Path of its own, so a resource is any type with a resource
+        // method or a sub resource locator
+        if (!GetRestful.isSubResourceClass(javaClass)) {
+            return;
+        }
+        // Only the methods the validation provider added the binding to are configured, so the annotated type is not
+        // replaced for a resource which is not validated by the interceptor
+        if (annotatedType.getMethods().stream().noneMatch(ResteasyCdiExtension::hasMethodValidationBinding)) {
+            return;
+        }
+        LogMessages.LOGGER.debugf("Removing the method validation interceptor binding from %s, as RESTEasy validates" +
+                " the resource methods itself.", javaClass.getName());
+        event.configureAnnotatedType()
+                .methods()
+                .forEach(method -> method.remove(a -> isMethodValidationBinding(a.annotationType())));
+    }
+
+    private static boolean hasMethodValidationBinding(final AnnotatedMethod<?> method) {
+        for (Annotation annotation : method.getAnnotations()) {
+            if (isMethodValidationBinding(annotation.annotationType())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Indicates whether the annotation is the interceptor binding a validation provider adds to a constrained method.
+     * The bindings are matched by name, as they are internal to the provider and not on the class path of RESTEasy.
+     *
+     * @param annotationType the type of the annotation
+     *
+     * @return {@code true} if the annotation is a method validation interceptor binding
+     */
+    private static boolean isMethodValidationBinding(final Class<? extends Annotation> annotationType) {
+        return METHOD_VALIDATION_BINDINGS.contains(annotationType.getName());
     }
 
     /**
