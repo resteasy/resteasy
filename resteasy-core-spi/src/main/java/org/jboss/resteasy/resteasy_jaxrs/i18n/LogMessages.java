@@ -60,6 +60,10 @@ public interface LogMessages extends BasicLogger {
     void unhandledAsynchronousException(@Cause Throwable ignored);
 
     @LogMessage(level = Level.ERROR)
+    @Message(id = 2021, value = "Exception after the asynchronous response completed. The response was not changed.")
+    void exceptionAfterAsynchronousCompletion(@Cause Throwable cause);
+
+    @LogMessage(level = Level.ERROR)
     @Message(id = 2025, value = "Unknown exception while executing {0} {1}", format = Format.MESSAGE_FORMAT)
     void unknownException(String method, String path, @Cause Throwable cause);
 
