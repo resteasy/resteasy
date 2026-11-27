@@ -3,6 +3,8 @@ package org.jboss.resteasy.core.providerfactory;
 import jakarta.ws.rs.Priorities;
 
 import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.spi.model.AbstractEntityProvider;
+import org.jboss.resteasy.spi.model.EntityProvider;
 import org.jboss.resteasy.spi.util.Types;
 
 /**
@@ -12,20 +14,13 @@ import org.jboss.resteasy.spi.util.Types;
  * This helps out a lot when the desired media type is a wildcard and to weed out all the possible
  * default mappings.
  */
-public class SortedKey<T> implements Comparable<SortedKey<T>>, MediaTypeMap.Typed {
-    private final T obj;
-    private final boolean isBuiltin;
-    private final Class<?> template;
-    private final int priority;
+// TODO (jrp) it would be nice to deprecate this. It would be better to use the EntityProvider and explicit implementations for the types
+public class SortedKey<T> extends AbstractEntityProvider<T>
+        implements Comparable<SortedKey<T>>, MediaTypeMap.Typed, EntityProvider<T> {
 
     public SortedKey(final Class<?> intf, final T reader, final Class<?> readerClass, final int priority,
             final boolean isBuiltin) {
-        this.obj = reader;
-        // check the super class for the generic type 1st
-        Class<?> t = Types.getTemplateParameterOfInterface(readerClass, intf);
-        template = (t != null) ? t : Object.class;
-        this.priority = priority;
-        this.isBuiltin = isBuiltin;
+        super(reader, resolveGenericType(readerClass, intf), priority, isBuiltin);
     }
 
     public SortedKey(final Class<?> intf, final T reader, final Class<?> readerClass, final boolean isBuiltin) {
@@ -45,42 +40,45 @@ public class SortedKey<T> implements Comparable<SortedKey<T>>, MediaTypeMap.Type
      * @param priority
      */
     public SortedKey(final T obj, final boolean isBuiltin, final Class<?> template, final int priority) {
-        this.obj = obj;
-        this.isBuiltin = isBuiltin;
-        this.template = template;
-        this.priority = priority;
+        super(obj, template, priority, isBuiltin);
     }
 
     public int compareTo(SortedKey<T> tMessageBodyKey) {
         // Sort user provider before builtins
         if (this == tMessageBodyKey)
             return 0;
-        if (isBuiltin == tMessageBodyKey.isBuiltin) {
-            if (this.priority < tMessageBodyKey.priority) {
+        if (isBuiltIn() == tMessageBodyKey.isBuiltIn()) {
+            if (this.priority() < tMessageBodyKey.priority()) {
                 return -1;
             }
-            if (this.priority == tMessageBodyKey.priority) {
+            if (this.priority() == tMessageBodyKey.priority()) {
                 return 0;
             }
-            if (this.priority > tMessageBodyKey.priority) {
+            if (this.priority() > tMessageBodyKey.priority()) {
                 return 1;
             }
         }
-        if (isBuiltin)
+        if (isBuiltIn())
             return 1;
         else
             return -1;
     }
 
     public Class<?> getType() {
-        return template;
+        return providerType();
     }
 
     public T getObj() {
-        return obj;
+        return provider();
     }
 
     public int getPriority() {
-        return priority;
+        return priority();
+    }
+
+    private static Class<?> resolveGenericType(final Class<?> type, final Class<?> intf) {
+        // check the super class for the generic type 1st
+        final Class<?> t = Types.getTemplateParameterOfInterface(type, intf);
+        return (t != null) ? t : Object.class;
     }
 }
