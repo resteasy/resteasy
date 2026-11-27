@@ -4,9 +4,11 @@ import java.beans.Introspector;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.RecordComponent;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -52,6 +54,10 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object> 
         MultipartFormDataInputImpl input = new MultipartFormDataInputImpl(
                 mediaType, workers);
         input.parse(entityStream);
+
+        if (type.isRecord()) {
+            return readRecord(type, input);
+        }
 
         Object obj;
         try {
@@ -122,6 +128,109 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object> 
             input.close();
         }
         return obj;
+    }
+
+    protected Object readRecord(Class<?> type, MultipartFormDataInputImpl input) throws IOException {
+        RecordComponent[] components = type.getRecordComponents();
+        Class<?>[] parameterTypes = new Class<?>[components.length];
+        Object[] arguments = new Object[components.length];
+        boolean hasInputStream = false;
+
+        for (int i = 0; i < components.length; i++) {
+            RecordComponent component = components[i];
+            parameterTypes[i] = component.getType();
+
+            String name = getFormParamName(component);
+            if (name != null) {
+                List<InputPart> list = input.getFormDataMap().get(name);
+                if (list != null && !list.isEmpty()) {
+                    InputPart part = list.get(0);
+                    if (part != null) {
+                        if (InputPart.class.equals(component.getType())) {
+                            hasInputStream = true;
+                            arguments[i] = part;
+                        } else {
+                            if (InputStream.class.equals(component.getType())) {
+                                hasInputStream = true;
+                            }
+                            arguments[i] = part.getBody(component.getType(), component.getGenericType());
+                        }
+                    }
+                }
+            }
+            if (arguments[i] == null && component.getType().isPrimitive()) {
+                arguments[i] = getPrimitiveDefault(component.getType());
+            }
+        }
+
+        Object obj;
+        try {
+            Constructor<?> constructor = type.getDeclaredConstructor(parameterTypes);
+            constructor.setAccessible(true);
+            obj = constructor.newInstance(arguments);
+        } catch (InvocationTargetException e) {
+            throw new ReaderException(e.getCause());
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+            throw new ReaderException(e);
+        }
+
+        if (!hasInputStream) {
+            input.close();
+        }
+        return obj;
+    }
+
+    private static String getFormParamName(RecordComponent component) {
+        FormParam param = getComponentAnnotation(component, FormParam.class);
+        if (param != null) {
+            return param.value();
+        }
+        org.jboss.resteasy.annotations.jaxrs.FormParam param2 = getComponentAnnotation(component,
+                org.jboss.resteasy.annotations.jaxrs.FormParam.class);
+        if (param2 != null) {
+            String name = param2.value();
+            return name == null || name.isEmpty() ? component.getName() : name;
+        }
+        return null;
+    }
+
+    private static <T extends Annotation> T getComponentAnnotation(RecordComponent component, Class<T> annotationType) {
+        T annotation = component.getAnnotation(annotationType);
+        if (annotation != null) {
+            return annotation;
+        }
+        Method accessor = component.getAccessor();
+        if (accessor != null) {
+            annotation = accessor.getAnnotation(annotationType);
+            if (annotation != null) {
+                return annotation;
+            }
+        }
+        try {
+            Field field = component.getDeclaringRecord().getDeclaredField(component.getName());
+            return field.getAnnotation(annotationType);
+        } catch (NoSuchFieldException e) {
+            return null;
+        }
+    }
+
+    private static Object getPrimitiveDefault(Class<?> type) {
+        if (type == boolean.class) {
+            return Boolean.FALSE;
+        } else if (type == char.class) {
+            return Character.valueOf('\u0000');
+        } else if (type == byte.class) {
+            return Byte.valueOf((byte) 0);
+        } else if (type == short.class) {
+            return Short.valueOf((short) 0);
+        } else if (type == int.class) {
+            return Integer.valueOf(0);
+        } else if (type == long.class) {
+            return Long.valueOf(0L);
+        } else if (type == float.class) {
+            return Float.valueOf(0F);
+        }
+        return Double.valueOf(0D);
     }
 
     protected boolean setFields(Class<?> type, MultipartFormDataInputImpl input,
