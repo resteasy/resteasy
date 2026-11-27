@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core.registry;
 
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -138,7 +139,14 @@ public class SegmentNode {
             }
         }
         if (matches.size() == 0) {
-            throw new NotFoundException(Messages.MESSAGES.couldNotFindResourceForFullPath(request.getUri().getRequestUri()));
+            URI uri = null;
+            try  {
+                uri = uriInfo.getRequestUri();
+            }
+            catch (Exception e) {
+                logger.log("Invalid URI", e);
+            }
+            throw new NotFoundException(Messages.MESSAGES.couldNotFindResourceForFullPath(uri));
         }
         MatchCache match = match(matches, request.getHttpMethod(), request);
         if (match.match != null) {
